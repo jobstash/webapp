@@ -1,12 +1,15 @@
-import type { Route } from "./+types/home";
+// import type { Route } from './+types/home'
 
-export function meta({}: Route.MetaArgs) {
+// export const meta = ({}: Route.MetaArgs) => {
+export const meta = () => {
   return [
-    { title: "JobStash" },
-    { name: "description", content: "Crypto Native Jobs" },
-  ];
+    { title: 'JobStash' },
+    { name: 'description', content: 'Crypto Native Jobs' },
+  ]
 }
 
-export default function Home() {
-  return <p>Hello, JobStash!</p>;
+const Home = () => {
+  return <p>Hello, JobStash!</p>
 }
+
+export default Home
