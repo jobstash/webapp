@@ -66,3 +66,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+#shader-web-background {
+  z-index: 10 !important;
+  opacity: 0.2;
+}
