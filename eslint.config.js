@@ -6,5 +6,9 @@ export default antfu({
   rules: {
     'antfu/top-level-function': 'off',
     'react-refresh/only-export-components': 'off',
+    'node/prefer-global/process': 'off',
   },
+  ignores: [
+    'public/init-shader.js',
+  ],
 })
