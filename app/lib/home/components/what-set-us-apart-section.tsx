@@ -19,7 +19,7 @@ const TEXTS = [
     title: 'We take the hard road',
     description: 'At JobStash we\'ve spent the past years obsessing over how to build an amazing experience for talent specifically in crypto. We have done crazy things, such as built data pipelines that consume literal years of compute time to import all of crypto GitHub, just to be able to detect if a user is actually part of an organization, as he may claim. See, in crypto you can\'t trust anybody. We take the same approach. We verify every single bit of data, and strive for accuracy and completeness. We don\'t simply operate as a job board. We are an intelligence hub for people operations in crypto, and base this on a foundation of rigorous data verification, comprehensive analytics, and deep insights into the Web3 talent landscape.',
   },
-]
+];
 
 export const WhatSetUsApartSection = () => {
   return (
@@ -34,5 +34,5 @@ export const WhatSetUsApartSection = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

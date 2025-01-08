@@ -9,5 +9,5 @@ export const HeroSection = () => {
         <button type="button">Post Your Job for Free</button>
       </div>
     </div>
-  )
-}
+  );
+};

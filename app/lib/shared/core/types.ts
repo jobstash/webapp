@@ -1,4 +1,4 @@
 export interface TagElement {
-  text: string
-  icon?: React.ReactNode
+  text: string;
+  icon?: React.ReactNode;
 }

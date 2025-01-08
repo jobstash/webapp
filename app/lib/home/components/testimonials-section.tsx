@@ -1,16 +1,16 @@
 interface TestimonialProps {
-  image: string
-  description: string
-  name: string
-  position: string
+  image: string;
+  description: string;
+  name: string;
+  position: string;
   organization: {
-    name: string
-    logo: string
-  }
+    name: string;
+    logo: string;
+  };
 }
 
 const Testimonial = (props: TestimonialProps) => {
-  const { image, description, name, position, organization } = props
+  const { image, description, name, position, organization } = props;
   return (
     <div className="flex flex-col gap-4">
       <img src={image} alt={name} />
@@ -25,8 +25,8 @@ const Testimonial = (props: TestimonialProps) => {
         <p>{organization.name}</p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const TESTIMONIALS: TestimonialProps[] = [
   {
@@ -59,7 +59,7 @@ const TESTIMONIALS: TestimonialProps[] = [
       logo: '/testimony-reserve-org.svg',
     },
   },
-]
+];
 
 export const TestimonialsSection = () => {
   return (
@@ -72,5 +72,5 @@ export const TestimonialsSection = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

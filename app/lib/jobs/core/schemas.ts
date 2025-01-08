@@ -1,5 +1,11 @@
-import * as v from 'valibot'
-import { nonEmptyStringSchema, nullableBooleanSchema, nullableNumberSchema, nullableStringSchema, tagSchema } from '~/lib/shared/core/schemas'
+import * as v from 'valibot';
+import {
+  nonEmptyStringSchema,
+  nullableBooleanSchema,
+  nullableNumberSchema,
+  nullableStringSchema,
+  tagSchema,
+} from '~/lib/shared/core/schemas';
 
 export const jobInfoTagsSchema = v.object({
   seniority: nullableStringSchema,
@@ -13,8 +19,8 @@ export const jobInfoTagsSchema = v.object({
   offersTokenAllocation: nullableBooleanSchema,
   salaryCurrency: nullableStringSchema,
   classification: nullableStringSchema,
-})
-export type JobInfoTagsSchema = v.InferOutput<typeof jobInfoTagsSchema>
+});
+export type JobInfoTagsSchema = v.InferOutput<typeof jobInfoTagsSchema>;
 
 const jobListItemProjectSchema = v.object({
   name: nonEmptyStringSchema,
@@ -23,7 +29,7 @@ const jobListItemProjectSchema = v.object({
   infoTags: v.array(tagSchema),
   tvlTags: v.array(tagSchema),
   auditTags: v.array(tagSchema),
-})
+});
 
 export const jobListItemSchema = v.object({
   id: nonEmptyStringSchema,
@@ -49,6 +55,6 @@ export const jobListItemSchema = v.object({
     }),
   })),
   project: v.nullable(jobListItemProjectSchema),
-})
+});
 
-export type JobListItemSchema = v.InferOutput<typeof jobListItemSchema>
+export type JobListItemSchema = v.InferOutput<typeof jobListItemSchema>;

@@ -1,13 +1,13 @@
 interface Props {
-  param: string
+  param: string;
   items: {
-    label: string
-    href: string
-  }[]
+    label: string;
+    href: string;
+  }[];
   counts: {
-    jobs: number
-    organizations: number
-  }
+    jobs: number;
+    organizations: number;
+  };
 }
 
 export const JobSearchItems = ({ param, items, counts }: Props) => {
@@ -39,5 +39,5 @@ export const JobSearchItems = ({ param, items, counts }: Props) => {
       </p>
       <a href="/jobs">Explore Crypto Jobs</a>
     </div>
-  )
-}
+  );
+};

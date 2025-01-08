@@ -1,16 +1,16 @@
-import type { TagElement } from '~/lib/shared/core/types'
+import type { TagElement } from '~/lib/shared/core/types';
 
 interface NewestJobCardProps {
   org: {
-    title: string
-    logo: string
-  }
+    title: string;
+    logo: string;
+  };
   job: {
-    id: string
-    title: string
-    description: string
-    tags: TagElement[]
-  }
+    id: string;
+    title: string;
+    description: string;
+    tags: TagElement[];
+  };
 }
 
 const NewestJobCard = ({ org, job }: NewestJobCardProps) => {
@@ -30,8 +30,8 @@ const NewestJobCard = ({ org, job }: NewestJobCardProps) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const dummyData: NewestJobCardProps[] = [
   {
@@ -70,15 +70,14 @@ const dummyData: NewestJobCardProps[] = [
       tags: [{ text: 'Tag E' }, { text: 'Tag F' }],
     },
   },
-]
+];
 
 export const NewestJobsSection = () => {
   return (
     <div className="space-y-4">
       <p>Newest Jobs</p>
       <p>
-        JobStash Curates Crypto Native Jobs Across the Entire Crypto Ecosystem,
-        Powered by AI and Enhanced by Unique Data Insights—As a Public Good.
+        JobStash Curates Crypto Native Jobs Across the Entire Crypto Ecosystem, Powered by AI and Enhanced by Unique Data Insights—As a Public Good.
       </p>
       <div className="flex gap-4">
         {dummyData.map(data => (
@@ -87,5 +86,5 @@ export const NewestJobsSection = () => {
 
       </div>
     </div>
-  )
-}
+  );
+};

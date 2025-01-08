@@ -1,4 +1,4 @@
-import type { Route } from './+types/root'
+import type { Route } from './+types/root';
 
 import {
   isRouteErrorResponse,
@@ -7,8 +7,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from 'react-router'
-import stylesheet from './app.css?url'
+} from 'react-router';
+import stylesheet from './app.css?url';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -27,7 +27,7 @@ export const links: Route.LinksFunction = () => [
   { rel: 'shortcut icon', href: '/favicon.ico' },
   { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
   { rel: 'manifest', href: '/site.webmanifest' },
-]
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -45,28 +45,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
 
 export default function App() {
-  return <Outlet />
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = 'Oops!'
-  let details = 'An unexpected error occurred.'
-  let stack: string | undefined
+  let message = 'Oops!';
+  let details = 'An unexpected error occurred.';
+  let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? '404' : 'Error'
+    message = error.status === 404 ? '404' : 'Error';
     details
       = error.status === 404
         ? 'The requested page could not be found.'
-        : error.statusText || details
+        : error.statusText || details;
   }
   else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message
-    stack = error.stack
+    details = error.message;
+    stack = error.stack;
   }
 
   return (
@@ -79,5 +79,5 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         </pre>
       )}
     </main>
-  )
+  );
 }
