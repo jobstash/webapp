@@ -22,7 +22,8 @@
     "react-dom": "^19.0.0",
     "react-router": "^7.1.1",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "valibot": "1.0.0-beta.11"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.1",
@@ -54,7 +55,7 @@
   },
   "simple-git-hooks": {
     "commit-msg": "pnpm dlx commitlint --edit $1",
-    "pre-commit": "pnpm lint-staged --no-warn-ignored",
+    "pre-commit": "pnpm lint-staged",
     "pre-push": "pnpm typecheck && pnpm build && pnpm test"
   },
   "lint-staged": {
