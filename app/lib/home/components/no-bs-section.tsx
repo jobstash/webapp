@@ -30,7 +30,7 @@ const CandidatesIcon = () => (
       fill="#4337F2"
     />
   </svg>
-)
+);
 
 const DaoIcon = () => (
   <svg
@@ -79,13 +79,13 @@ const DaoIcon = () => (
       fill="#4337F2"
     />
   </svg>
-)
+);
 
 interface InfoSectionProps {
-  icon: React.ReactNode
-  title: string
-  description: string
-  items: { emoji: string, text: string }[]
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  items: { emoji: string; text: string }[];
 }
 
 const InfoSection = ({ icon, title, description, items }: InfoSectionProps) => {
@@ -106,8 +106,8 @@ const InfoSection = ({ icon, title, description, items }: InfoSectionProps) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const INFO_SECTIONS: InfoSectionProps[] = [
   {
@@ -196,7 +196,7 @@ const INFO_SECTIONS: InfoSectionProps[] = [
       },
     ],
   },
-]
+];
 
 export const NoBsSection = () => {
   return (
@@ -210,5 +210,5 @@ export const NoBsSection = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

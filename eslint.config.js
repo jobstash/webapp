@@ -1,4 +1,4 @@
-import antfu from '@antfu/eslint-config'
+import antfu from '@antfu/eslint-config';
 
 export default antfu({
   formatters: true,
@@ -11,4 +11,10 @@ export default antfu({
   ignores: [
     'public/init-shader.js',
   ],
-})
+  stylistic: {
+    quotes: 'single',
+    semi: true,
+    indent: 2,
+    jsx: true,
+  },
+});

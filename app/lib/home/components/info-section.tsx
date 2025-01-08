@@ -1,10 +1,10 @@
 interface InfoCardProps {
-  title: string
-  description: string
+  title: string;
+  description: string;
   cta: {
-    text: string
-    href: string
-  }
+    text: string;
+    href: string;
+  };
 }
 
 const InfoCard = ({ title, description, cta }: InfoCardProps) => {
@@ -14,8 +14,8 @@ const InfoCard = ({ title, description, cta }: InfoCardProps) => {
       <p>{description}</p>
       <a href={cta.href}>{cta.text}</a>
     </div>
-  )
-}
+  );
+};
 
 const INFO_CARDS: InfoCardProps[] = [
   {
@@ -34,7 +34,7 @@ const INFO_CARDS: InfoCardProps[] = [
       href: '/employers',
     },
   },
-]
+];
 
 export const InfoSection = () => {
   return (
@@ -59,5 +59,5 @@ export const InfoSection = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

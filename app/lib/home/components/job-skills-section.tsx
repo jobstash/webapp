@@ -1,6 +1,6 @@
-import { JobSearchItems } from './job-search-items'
+import { JobSearchItems } from './job-search-items';
 
-const PARAM = 'Skill'
+const PARAM = 'Skill';
 
 // TODO: Fetch from API
 const ITEMS = [
@@ -47,14 +47,14 @@ const ITEMS = [
   { label: 'Jotai', href: '/jobs?tags=jotai' },
   { label: 'Influencer Marketing', href: '/jobs?tags=influencer-marketing' },
   { label: 'Cloud Native', href: '/jobs?tags=cloud-native' },
-]
+];
 
 // TODO: Fetch from API
 const COUNTS = {
   jobs: 3062,
   organizations: 7425,
-}
+};
 
 export const JobSkillsSection = () => {
-  return <JobSearchItems param={PARAM} items={ITEMS} counts={COUNTS} />
-}
+  return <JobSearchItems param={PARAM} items={ITEMS} counts={COUNTS} />;
+};

@@ -1,4 +1,4 @@
-import { FRONTEND_URL } from '~/lib/shared/core/envs'
+import { FRONTEND_URL } from '~/lib/shared/core/envs';
 
 export const ShaderScripts = () => {
   return (
@@ -149,5 +149,5 @@ export const ShaderScripts = () => {
 
       <script type="text/javascript" src={`${FRONTEND_URL}/init-shader.js`} />
     </>
-  )
-}
+  );
+};
