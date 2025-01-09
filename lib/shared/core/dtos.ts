@@ -58,6 +58,13 @@ export const auditDto = v.object({
 });
 export type AuditDto = v.InferOutput<typeof auditDto>;
 
+export const tagDto = v.object({
+  id: nonEmptyStringSchema,
+  name: nonEmptyStringSchema,
+  normalizedName: nonEmptyStringSchema,
+});
+export type TagDto = v.InferOutput<typeof tagDto>;
+
 export const orgInfoDto = v.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,

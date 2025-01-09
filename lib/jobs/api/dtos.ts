@@ -5,7 +5,6 @@ import {
   nullableBooleanSchema,
   nullableNumberSchema,
   nullableStringSchema,
-  tagSchema,
 } from '@/lib/shared/core/schemas';
 import * as v from 'valibot';
 import {
@@ -13,6 +12,7 @@ import {
   investorDto,
   orgInfoDto,
   projectAllInfoDto,
+  tagDto,
 } from '@/lib/shared/core/dtos';
 
 export const jobListItemDto = v.object({
@@ -38,7 +38,7 @@ export const jobListItemDto = v.object({
   salaryCurrency: nullableStringSchema,
   classification: nullableStringSchema,
 
-  tags: v.array(tagSchema),
+  tags: v.array(tagDto),
 
   organization: v.nullable(
     v.object({

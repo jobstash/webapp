@@ -4,14 +4,20 @@ import {
   nonEmptyStringSchema,
   nullableNumberSchema,
   nullableStringSchema,
-  tagSchema,
 } from '@/lib/shared/core/schemas';
+
+export const jobTagSchema = v.object({
+  name: nonEmptyStringSchema,
+  normalizedName: nonEmptyStringSchema,
+  colorIndex: v.pipe(v.number(), v.minValue(1), v.maxValue(12)),
+});
+export type JobTagSchema = v.InferOutput<typeof jobTagSchema>;
 
 export const jobListItemProjectSchema = v.object({
   name: nonEmptyStringSchema,
   website: nullableStringSchema,
   logo: nullableStringSchema,
-  chains: v.array(nonEmptyStringSchema), // Chain logos
+  chains: v.array(nonEmptyStringSchema),
   infoTags: v.array(mappedInfoTagSchema),
   tvlTags: v.array(mappedInfoTagSchema),
   auditTags: v.array(mappedInfoTagSchema),
@@ -26,7 +32,7 @@ export const jobListItemSchema = v.object({
   timestamp: v.number(),
   access: v.picklist(['public', 'protected']),
   infoTags: v.array(mappedInfoTagSchema),
-  tags: v.array(tagSchema),
+  tags: v.array(jobTagSchema),
   promotion: v.object({
     isFeatured: v.boolean(),
     endDate: nullableNumberSchema,
