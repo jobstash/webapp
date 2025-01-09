@@ -1,34 +1,20 @@
 import * as v from 'valibot';
 import {
+  mappedInfoTagSchema,
   nonEmptyStringSchema,
-  nullableBooleanSchema,
   nullableNumberSchema,
   nullableStringSchema,
   tagSchema,
 } from '@/lib/shared/core/schemas';
 
-export const jobInfoTagsSchema = v.object({
-  seniority: nullableStringSchema,
-  minimumSalary: nullableNumberSchema,
-  maximumSalary: nullableNumberSchema,
-  salary: nullableNumberSchema,
-  location: nullableStringSchema,
-  locationType: nullableStringSchema,
-  commitment: nullableStringSchema,
-  paysInCrypto: nullableBooleanSchema,
-  offersTokenAllocation: nullableBooleanSchema,
-  salaryCurrency: nullableStringSchema,
-  classification: nullableStringSchema,
-});
-export type JobInfoTagsSchema = v.InferOutput<typeof jobInfoTagsSchema>;
-
 const jobListItemProjectSchema = v.object({
   name: nonEmptyStringSchema,
+  website: nullableStringSchema,
   logo: nullableStringSchema,
   chains: v.array(nonEmptyStringSchema), // Chain logos
-  infoTags: v.array(tagSchema),
-  tvlTags: v.array(tagSchema),
-  auditTags: v.array(tagSchema),
+  infoTags: v.array(mappedInfoTagSchema),
+  tvlTags: v.array(mappedInfoTagSchema),
+  auditTags: v.array(mappedInfoTagSchema),
 });
 
 export const jobListItemSchema = v.object({
@@ -38,16 +24,16 @@ export const jobListItemSchema = v.object({
   shortUUID: nonEmptyStringSchema,
   timestamp: v.number(),
   access: v.picklist(['public', 'protected']),
-  infoTags: jobInfoTagsSchema,
+  infoTags: v.array(mappedInfoTagSchema),
   tags: v.array(tagSchema),
   promotion: v.object({
     isFeatured: v.boolean(),
-    startDate: nullableNumberSchema,
     endDate: nullableNumberSchema,
   }),
   organization: v.nullable(
     v.object({
       name: nonEmptyStringSchema,
+      website: nullableStringSchema,
       logo: nullableStringSchema,
       projects: v.array(jobListItemProjectSchema),
       funding: v.object({
@@ -60,3 +46,10 @@ export const jobListItemSchema = v.object({
 });
 
 export type JobListItemSchema = v.InferOutput<typeof jobListItemSchema>;
+
+export const jobListPageSchema = v.object({
+  page: v.number(),
+  total: v.number(),
+  data: v.array(jobListItemSchema),
+});
+export type JobListPageSchema = v.InferOutput<typeof jobListPageSchema>;
