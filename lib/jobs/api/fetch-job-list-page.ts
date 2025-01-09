@@ -1,11 +1,14 @@
 import 'server-only';
 
-import { MW_URL } from '@/lib/shared/core/envs';
-import { kyFetch } from '@/lib/shared/data/ky-fetch';
 import * as v from 'valibot';
-import { jobListPageDto } from './dtos';
+
+import { MW_URL } from '@/lib/shared/core/envs';
 import { MwSchemaError } from '@/lib/shared/core/errors';
+
+import { kyFetch } from '@/lib/shared/data/ky-fetch';
+
 import { dtoToJobListPage } from './dto-to-job-list-page';
+import { jobListPageDto } from './dtos';
 
 interface Props {
   page: number;

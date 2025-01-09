@@ -1,8 +1,9 @@
 import 'server-only';
 
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
-import { JobListItemProjectSchema } from '../core/schemas';
 import { MappedInfoTagSchema } from '@/lib/shared/core/schemas';
+import { JobListItemProjectSchema } from '@/lib/jobs/core/schemas';
+
 import { formatNumber } from '@/lib/shared/utils/format-number';
 import { pluralText } from '@/lib/shared/utils/plural-text';
 

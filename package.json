@@ -31,6 +31,8 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "lint-staged": "^15.3.0",
     "postcss": "^8",
     "prettier": "^3.4.2",
@@ -47,6 +49,6 @@
   "simple-git-hooks": {
     "commit-msg": "pnpm dlx commitlint --edit $1",
     "pre-commit": "pnpm lint-staged",
-    "pre-push": "pnpm typecheck && pnpm build && pnpm test"
+    "pre-push": "pnpm build && pnpm test"
   }
 }

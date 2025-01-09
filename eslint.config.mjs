@@ -1,6 +1,6 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { FlatCompat } from '@eslint/eslintrc';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,7 +11,63 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.config({
-    extends: ["next/core-web-vitals", "next/typescript", "prettier"],
+    extends: ['next/core-web-vitals', 'next/typescript', 'prettier'],
+    plugins: ['prefer-arrow', 'simple-import-sort'],
+    overrides: [
+      {
+        files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
+        rules: {
+          // Sort
+          'simple-import-sort/exports': 'error',
+          'simple-import-sort/imports': [
+            'error',
+            {
+              groups: [
+                // Side effects first e.g. 'server-only'
+                ['^\\u0000'],
+                // `react`, `next
+                ['^(react|next)'],
+                // test dependencies
+                ['^(@storybook/react|msw)'],
+                // Other npm libraries.
+                ['^@?\\w'],
+                // Internal packages
+                ['^@/lib/shared/core', '^(@)(/.*/core|$)'],
+                ['^@/lib/shared/utils', '^(@)(/.*/utils|$)'],
+                [
+                  '^@/lib/shared/data',
+                  '^(@)(/.*/data|$)',
+                  '^@/lib/shared/hooks',
+                  '^(@)(/.*/hooks|$)',
+                ],
+                ['^@/lib/shared/api', '^(@)(/.*/api|$)'],
+                [
+                  '^@/lib/shared/ui',
+                  '^(@)(/.*/ui|$)',
+                  '^@/lib/shared/features',
+                  '^(@)(/.*/features|$)',
+                ],
+                ['^@/lib/shared/testutils', '^(@)(/.*/testutils|$)'],
+
+                // Parent imports `..`
+                ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+                // Other relative imports '.'
+                ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+              ],
+            },
+          ],
+          // Enforce arrow functions
+          'prefer-arrow/prefer-arrow-functions': [
+            'error',
+            {
+              disallowPrototype: true,
+              singleReturnOnly: true,
+              classPropertiesAllowed: false,
+            },
+          ],
+        },
+      },
+    ],
   }),
 ];
 
