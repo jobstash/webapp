@@ -12,7 +12,6 @@ export const dtoToJobListPage = (dto: JobListPageDto): JobListPageSchema => ({
   total: dto.total,
   data: dto.data.map((jobItemDto) => {
     const {
-      id,
       title,
       url,
       shortUUID,
@@ -26,10 +25,9 @@ export const dtoToJobListPage = (dto: JobListPageDto): JobListPageSchema => ({
     } = jobItemDto;
 
     return {
-      id,
+      id: shortUUID,
       title,
       url,
-      shortUUID,
       timestamp,
       access,
       infoTags: createJobInfoTags(jobItemDto),
