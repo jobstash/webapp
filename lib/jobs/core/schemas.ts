@@ -7,7 +7,7 @@ import {
   tagSchema,
 } from '@/lib/shared/core/schemas';
 
-const jobListItemProjectSchema = v.object({
+export const jobListItemProjectSchema = v.object({
   name: nonEmptyStringSchema,
   website: nullableStringSchema,
   logo: nullableStringSchema,
@@ -16,6 +16,7 @@ const jobListItemProjectSchema = v.object({
   tvlTags: v.array(mappedInfoTagSchema),
   auditTags: v.array(mappedInfoTagSchema),
 });
+export type JobListItemProjectSchema = v.InferOutput<typeof jobListItemProjectSchema>;
 
 export const jobListItemSchema = v.object({
   id: nonEmptyStringSchema,
@@ -37,7 +38,7 @@ export const jobListItemSchema = v.object({
       logo: nullableStringSchema,
       projects: v.array(jobListItemProjectSchema),
       funding: v.object({
-        date: nullableStringSchema,
+        lastDate: nullableStringSchema,
         lastAmount: nullableStringSchema,
       }),
     }),

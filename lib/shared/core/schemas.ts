@@ -14,7 +14,8 @@ export const tagSchema = v.object({
 export type TagSchema = v.InferOutput<typeof tagSchema>;
 
 export const mappedInfoTagSchema = v.object({
-  key: nonEmptyStringSchema,
+  iconKey: nonEmptyStringSchema,
   label: nonEmptyStringSchema,
+  href: optionalStringSchema,
 });
 export type MappedInfoTagSchema = v.InferOutput<typeof mappedInfoTagSchema>;
