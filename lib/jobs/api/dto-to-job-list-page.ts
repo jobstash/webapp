@@ -1,10 +1,11 @@
 import 'server-only';
 
 import { getOrgFundingInfo } from '@/lib/shared/utils/get-org-funding-info';
-import { JobListPageSchema } from '../core/schemas';
+import { JobListPageSchema } from '@/lib/jobs/core/schemas';
 import { JobListPageDto } from './dtos';
 import { createJobInfoTags } from '@/lib/shared/utils/create-job-info-tags';
 import { dtoToJobListItemProject } from './dto-to-job-list-item-project';
+import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
 
 export const dtoToJobListPage = (dto: JobListPageDto): JobListPageSchema => ({
   page: dto.page,
@@ -32,7 +33,11 @@ export const dtoToJobListPage = (dto: JobListPageDto): JobListPageSchema => ({
       timestamp,
       access,
       infoTags: createJobInfoTags(jobItemDto),
-      tags,
+      tags: tags.map((tag) => ({
+        name: tag.name,
+        normalizedName: tag.normalizedName,
+        colorIndex: getJobTechColorIndex(tag.id),
+      })),
       promotion: {
         isFeatured: featured,
         endDate: featureEndDate,
