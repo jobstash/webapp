@@ -1,11 +1,13 @@
 import 'server-only';
 
-import { JobListItemDto } from '@/lib/jobs/api/dtos';
+import { MappedInfoTagSchema } from '@/lib/shared/core/schemas';
 import { jobSeniorityMapping } from '@/lib/jobs/core/constants';
-import { MappedInfoTagSchema } from '../core/schemas';
+
+import { JobListItemDto } from '@/lib/jobs/api/dtos';
+
+import { capitalize } from './capitalize';
 import { formatNumber } from './format-number';
 import { titleCase } from './title-case';
-import { capitalize } from './capitalize';
 
 export const createJobInfoTags = (dto: JobListItemDto) => {
   const {

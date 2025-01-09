@@ -1,6 +1,7 @@
+import './globals.css';
+
 import type { Metadata } from 'next';
 import { Inter_Tight, Space_Grotesk } from 'next/font/google';
-import './globals.css';
 import Head from 'next/head';
 
 const interTight = Inter_Tight({

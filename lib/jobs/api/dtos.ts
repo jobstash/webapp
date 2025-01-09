@@ -1,12 +1,7 @@
 import 'server-only';
 
-import {
-  nonEmptyStringSchema,
-  nullableBooleanSchema,
-  nullableNumberSchema,
-  nullableStringSchema,
-} from '@/lib/shared/core/schemas';
 import * as v from 'valibot';
+
 import {
   fundingRoundDto,
   investorDto,
@@ -14,6 +9,12 @@ import {
   projectAllInfoDto,
   tagDto,
 } from '@/lib/shared/core/dtos';
+import {
+  nonEmptyStringSchema,
+  nullableBooleanSchema,
+  nullableNumberSchema,
+  nullableStringSchema,
+} from '@/lib/shared/core/schemas';
 
 export const jobListItemDto = v.object({
   id: nonEmptyStringSchema,

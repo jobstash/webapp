@@ -1,11 +1,13 @@
 import 'server-only';
 
-import { getOrgFundingInfo } from '@/lib/shared/utils/get-org-funding-info';
 import { JobListPageSchema } from '@/lib/jobs/core/schemas';
-import { JobListPageDto } from './dtos';
+
 import { createJobInfoTags } from '@/lib/shared/utils/create-job-info-tags';
-import { dtoToJobListItemProject } from './dto-to-job-list-item-project';
+import { getOrgFundingInfo } from '@/lib/shared/utils/get-org-funding-info';
 import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
+
+import { dtoToJobListItemProject } from './dto-to-job-list-item-project';
+import { JobListPageDto } from './dtos';
 
 export const dtoToJobListPage = (dto: JobListPageDto): JobListPageSchema => ({
   page: dto.page,
