@@ -1,6 +1,6 @@
 import ky from 'ky';
 
-const DEFAULT_TIMEOUT = 15_000;
+const DEFAULT_TIMEOUT = 60_000;
 
 export const kyFetch = ky.create({
   credentials: 'include',
