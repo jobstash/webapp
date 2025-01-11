@@ -2,11 +2,6 @@
 
 import 'server-only';
 
-import {
-  unstable_cacheLife as cacheLife,
-  unstable_cacheTag as cacheTag,
-} from 'next/cache';
-
 import * as v from 'valibot';
 
 import { MW_URL } from '@/lib/shared/core/envs';
@@ -24,15 +19,18 @@ interface Props {
 }
 
 const DEFAULT_LIMIT = 6;
+const REVALIDATE_INTERVAL = 3600;
 
 export const fetchJobListPage = async ({ page, limit = DEFAULT_LIMIT }: Props) => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag(jobsCacheTags.list(page));
-
   const url = `${MW_URL}/jobs/list?page=${page}&limit=${limit}`;
 
-  const response = await kyFetch(url).json();
+  const response = await kyFetch(url, {
+    next: {
+      revalidate: REVALIDATE_INTERVAL,
+      tags: [jobsCacheTags.list(page)],
+    },
+  }).json();
+
   const parsed = v.safeParse(jobListPageDto, response);
 
   if (!parsed.success) {
