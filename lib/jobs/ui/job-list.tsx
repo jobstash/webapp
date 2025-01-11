@@ -12,6 +12,9 @@ export const JobList = () => {
   const { data, isLoading, size, setSize } = useSWRInfinite(
     (page: number) => ({ page: page + 2 }),
     ({ page }) => fetchJobListPage({ page }),
+    {
+      revalidateFirstPage: false,
+    },
   );
 
   const { ref } = useInView({
