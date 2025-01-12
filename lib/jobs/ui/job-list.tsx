@@ -14,6 +14,7 @@ export const JobList = () => {
     ({ page }) => fetchJobListPage({ page }),
     {
       revalidateFirstPage: false,
+      shouldRetryOnError: false,
     },
   );
 
