@@ -19,6 +19,7 @@ import {
 
 const client = new BrowserClient({
   dsn: 'https://714cca1095c042fda9f542dde5ed7063@o4504495959703552.ingest.us.sentry.io/4504519276363776',
+  tunnel: '/sentry-tunnel',
   tracesSampleRate: 1,
   debug: false,
   transport: makeFetchTransport,
