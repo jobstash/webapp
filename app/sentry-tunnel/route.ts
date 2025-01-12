@@ -1,5 +1,5 @@
 const SENTRY_HOST = 'o4504495959703552.ingest.us.sentry.io';
-const SENTRY_PROJECT_IDS = ['4504519276363776'];
+const SENTRY_PROJECT_IDS = ['4508628441366528'];
 
 export const POST = async (req: Request) => {
   try {

@@ -18,7 +18,7 @@ import {
 } from '@sentry/nextjs';
 
 const client = new BrowserClient({
-  dsn: 'https://714cca1095c042fda9f542dde5ed7063@o4504495959703552.ingest.us.sentry.io/4504519276363776',
+  dsn: 'https://d9c07cf404c1777bcf744cb901dfc7c2@o4504495959703552.ingest.us.sentry.io/4508628441366528',
   tunnel: '/sentry-tunnel',
   tracesSampleRate: 1,
   debug: false,
