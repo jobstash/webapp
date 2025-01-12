@@ -13,6 +13,7 @@
     "test": "echo \"Skipping tests ...\" && exit 0"
   },
   "dependencies": {
+    "@sentry/nextjs": "^8",
     "ky": "^1.7.4",
     "next": "15.1.4",
     "react": "^19.0.0",
