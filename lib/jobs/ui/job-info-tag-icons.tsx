@@ -1,4 +1,4 @@
-import { ClassificationIcon } from '@/lib/shared/ui/svgs/classification-icon';
+import { CategoryIcon } from '@/lib/shared/ui/svgs/category-icon';
 import { CommitmentIcon } from '@/lib/shared/ui/svgs/commitment-icon';
 import { LocationIcon } from '@/lib/shared/ui/svgs/location-icon';
 import { PaysInCryptoIcon } from '@/lib/shared/ui/svgs/pays-in-crypto-icon';
@@ -15,5 +15,5 @@ export const jobInfoTagIcons: Record<string, React.ReactNode> = {
   commitment: <CommitmentIcon />,
   paysInCrypto: <PaysInCryptoIcon />,
   offersTokenAllocation: <TokenAllocationIcon />,
-  classification: <ClassificationIcon />,
+  classification: <CategoryIcon />,
 };
