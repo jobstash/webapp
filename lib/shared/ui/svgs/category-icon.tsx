@@ -1,4 +1,4 @@
-export const ClassificationIcon = () => {
+export const CategoryIcon = () => {
   return (
     <svg
       width='15'
