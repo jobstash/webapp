@@ -12,3 +12,11 @@ export const mappedInfoTagSchema = v.object({
   href: optionalStringSchema,
 });
 export type MappedInfoTagSchema = v.InferOutput<typeof mappedInfoTagSchema>;
+
+export const infiniteListPageSchema = <T>(itemSchema: v.GenericSchema<T>) =>
+  v.object({
+    page: v.number(),
+    total: v.number(),
+    data: v.array(itemSchema),
+  });
+export type InfiniteListPageSchema<T> = ReturnType<typeof infiniteListPageSchema<T>>;
