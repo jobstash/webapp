@@ -1,6 +1,7 @@
 import * as v from 'valibot';
 
 import {
+  infiniteListPageSchema,
   mappedInfoTagSchema,
   nonEmptyStringSchema,
   nullableNumberSchema,
@@ -54,9 +55,5 @@ export const jobListItemSchema = v.object({
 
 export type JobListItemSchema = v.InferOutput<typeof jobListItemSchema>;
 
-export const jobListPageSchema = v.object({
-  page: v.number(),
-  total: v.number(),
-  data: v.array(jobListItemSchema),
-});
+export const jobListPageSchema = infiniteListPageSchema(jobListItemSchema);
 export type JobListPageSchema = v.InferOutput<typeof jobListPageSchema>;
