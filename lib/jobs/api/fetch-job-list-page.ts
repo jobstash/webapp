@@ -4,9 +4,9 @@ import 'server-only';
 
 import { addBreadcrumb } from '@sentry/nextjs';
 
-import { MW_URL } from '@/lib/shared/core/envs';
 import { MwSchemaError } from '@/lib/shared/core/errors';
 import { jobsCacheTags } from '@/lib/jobs/core/cache-tags';
+import { jobEndpoints } from '@/lib/jobs/core/job-endpoints';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
 
@@ -38,7 +38,7 @@ export const fetchJobListPage = async (props: Props) => {
   }
   const { page, limit } = parsedParams.output;
 
-  const url = `${MW_URL}/jobs/list?page=${page}&limit=${limit}`;
+  const url = jobEndpoints.list({ page, limit });
   const response = await kyFetch(url, {
     next: {
       revalidate: REVALIDATE_INTERVAL,
