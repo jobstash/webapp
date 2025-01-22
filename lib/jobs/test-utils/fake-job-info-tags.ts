@@ -38,7 +38,7 @@ const createFakeLabel = (key: string) => {
     }
 
     const salary = faker.number.int({ min: 20_000, max: 200_000 });
-    return `Salary: ${currency} ${salary}`;
+    return `Salary: ${currency} ${formatNumber(salary)}`;
   }
 
   if (key === 'location') {

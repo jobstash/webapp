@@ -7,7 +7,7 @@ import { fakeJobProject } from '@/lib/jobs/test-utils/fake-job-project';
 import { fakeJobTags } from '@/lib/jobs/test-utils/fake-job-tags';
 
 export const fakeJobListItem = (
-  overrides: Partial<JobListItemSchema>,
+  overrides?: Partial<JobListItemSchema>,
 ): JobListItemSchema => {
   const isFeatured = faker.datatype.boolean();
   const endDate = isFeatured ? faker.date.future().getTime() : null;

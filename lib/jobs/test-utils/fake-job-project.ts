@@ -106,12 +106,14 @@ const fakeProjectHack = () => {
 const fakeProjectAuditTags = () => {
   const tags: MappedInfoTagSchema[] = [];
 
-  const audits = Array.from({ length: faker.number.int({ min: 0, max: 5 }) }, () =>
-    fakeProjectAudit(),
+  const audits = Array.from(
+    { length: faker.number.int({ min: 0, max: 5 }) },
+    fakeProjectAudit,
   );
 
-  const hacks = Array.from({ length: faker.number.int({ min: 0, max: 5 }) }, () =>
-    fakeProjectHack(),
+  const hacks = Array.from(
+    { length: faker.number.int({ min: 0, max: 5 }) },
+    fakeProjectHack,
   );
 
   tags.push(...audits, ...hacks);
