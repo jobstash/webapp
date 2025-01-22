@@ -1,6 +1,6 @@
 'use server';
 
-import 'server-only';
+// import 'server-only';
 
 import { addBreadcrumb } from '@sentry/nextjs';
 
