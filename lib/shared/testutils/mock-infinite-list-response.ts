@@ -1,22 +1,21 @@
 import { delay, http, HttpResponse } from 'msw';
 
-import { InfiniteListPageSchema } from '@/lib/shared/core/schemas';
 import { MOCK_RESPONSE_RESULT } from '@/lib/shared/testutils/core';
 
 const DEFAULT_ITEM_COUNT = 5;
 
-interface Options<T> {
+export interface MockInfiniteListQueryOptions<T> {
   baseURL: string;
-  fakeFn: () => InfiniteListPageSchema<T>;
+  itemFakeFn: () => T;
   result: MOCK_RESPONSE_RESULT;
   itemCount?: number;
   networkDelay?: number;
 }
 
-export const mockInfiniteListQuery = <T>(options: Options<T>) => {
+export const mockInfiniteListResponse = <T>(options: MockInfiniteListQueryOptions<T>) => {
   const {
     baseURL,
-    fakeFn,
+    itemFakeFn,
     result,
     itemCount = DEFAULT_ITEM_COUNT,
     networkDelay = 0,
@@ -32,7 +31,7 @@ export const mockInfiniteListQuery = <T>(options: Options<T>) => {
       return HttpResponse.json({
         page,
         total: itemCount * 5,
-        data: fakeFn(),
+        data: Array.from({ length: itemCount }).map(itemFakeFn),
       });
     }
 
@@ -68,7 +67,7 @@ export const mockInfiniteListQuery = <T>(options: Options<T>) => {
       return HttpResponse.json({
         page,
         total: itemCount,
-        data: fakeFn(),
+        data: Array.from({ length: itemCount }).map(itemFakeFn),
       });
     }
 
