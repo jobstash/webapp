@@ -7,6 +7,7 @@ interface Props {
 }
 
 export const SsrJobList = ({ jobs }: Props) => {
+  if (!jobs.length) return <p>TODO: Empty SSR UI</p>;
   return (
     <>
       {jobs.map((job) => (

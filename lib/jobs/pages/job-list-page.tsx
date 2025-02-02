@@ -16,6 +16,7 @@ export const JobListPage = ({ ssrData }: Props) => {
     <div className='flex w-full justify-center'>
       <div className='w-full max-w-2xl space-y-16 py-16'>
         <SsrJobList jobs={ssrData} />
+
         {showClientJobList && (
           <Suspense fallback={<p>LOADING ...</p>}>
             <JobList />
