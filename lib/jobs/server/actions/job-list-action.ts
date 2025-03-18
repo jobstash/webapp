@@ -1,6 +1,6 @@
 'use server';
 
-import { flattenValidationErrors } from 'next-safe-action';
+import { flattenValidationErrors, InferSafeActionFnResult } from 'next-safe-action';
 
 import * as v from 'valibot';
 
@@ -21,3 +21,5 @@ export const jobListAction = actionClient
   .action(async ({ parsedInput: { page, limit } }) => {
     return fetchJobListPage({ page, limit });
   });
+
+export type JobListActionResult = InferSafeActionFnResult<typeof jobListAction>;
