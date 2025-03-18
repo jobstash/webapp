@@ -5,6 +5,8 @@ import React from 'react';
 import type { Preview } from '@storybook/react';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 
+import { SWRConfig } from 'swr';
+
 import { grotesk, interTight } from '../lib/shared/core/fonts';
 
 // MSW
@@ -32,11 +34,19 @@ const preview: Preview = {
   loaders: [mswLoader],
 
   decorators: [
-    (Story) => (
-      <div className={`${interTight.variable} ${grotesk.variable} antialiased`}>
-        <Story />
-      </div>
-    ),
+    (Story) => {
+      return (
+        <div className={`${interTight.variable} ${grotesk.variable} antialiased`}>
+          <SWRConfig
+            value={{
+              provider: () => new Map(),
+            }}
+          >
+            <Story />
+          </SWRConfig>
+        </div>
+      );
+    },
   ],
 
   // tags: ['autodocs'],
