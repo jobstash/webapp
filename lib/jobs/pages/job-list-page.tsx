@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { PAGE_SIZE } from '@/lib/shared/core/envs';
+import { envs } from '@/lib/shared/core/envs';
 import { JobListPageSchema } from '@/lib/jobs/core/schemas';
 
 import { JobList } from '@/lib/jobs/ui/job-list';
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const JobListPage = ({ ssrData }: Props) => {
-  const showClientJobList = ssrData.length >= PAGE_SIZE;
+  const showClientJobList = ssrData.length >= envs.PAGE_SIZE;
   return (
     <div className='flex w-full justify-center'>
       <div className='w-full max-w-2xl space-y-16 py-16'>
