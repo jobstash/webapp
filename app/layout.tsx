@@ -1,29 +1,18 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import { Inter_Tight, Space_Grotesk } from 'next/font/google';
 import Head from 'next/head';
 
-const interTight = Inter_Tight({
-  subsets: ['latin'],
-  variable: '--font-inter-tight',
-});
-
-const grotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space-grotesk',
-});
+import { grotesk, interTight } from '@/lib/shared/core/fonts';
 
 export const metadata: Metadata = {
   title: 'JobStash',
   description: 'Crypto Native Jobs',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+type Props = Readonly<React.PropsWithChildren>;
+
+export default function RootLayout({ children }: Props) {
   return (
     <html lang='en'>
       <Head>
