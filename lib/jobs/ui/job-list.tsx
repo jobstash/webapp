@@ -19,6 +19,7 @@ export const JobList = () => {
     },
     async (args) => jobListAction(args),
     {
+      errorRetryCount: 0,
       revalidateFirstPage: false,
       shouldRetryOnError: false,
     },
