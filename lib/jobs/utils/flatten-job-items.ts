@@ -1,17 +1,19 @@
-import { JobListItemSchema, JobListPageSchema } from '@/lib/jobs/core/schemas';
+import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+
+import { JobListActionResult } from '@/lib/jobs/server/actions';
 
 export const flattenJobItems = (
-  pages: JobListPageSchema[] | unknown,
+  data: (JobListActionResult | undefined)[] | undefined,
 ): JobListItemSchema[] => {
-  if (!pages || !Array.isArray(pages)) return [];
+  if (!data || !Array.isArray(data)) return [];
 
-  const result: JobListItemSchema[] = [];
+  const items: JobListItemSchema[] = [];
 
-  for (const page of pages) {
-    if (page && page.data && Array.isArray(page.data.data)) {
-      result.push(...page.data.data);
+  for (const result of data) {
+    if (result?.data) {
+      items.push(...result.data.data);
     }
   }
 
-  return result;
+  return items;
 };
