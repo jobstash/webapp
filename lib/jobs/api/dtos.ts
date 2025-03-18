@@ -9,7 +9,7 @@ import {
   projectAllInfoDto,
   tagDto,
 } from '@/lib/shared/core/dtos';
-import { PAGE_SIZE } from '@/lib/shared/core/envs';
+import { envs } from '@/lib/shared/core/envs';
 import {
   nonEmptyStringSchema,
   nullableBooleanSchema,
@@ -78,6 +78,6 @@ export type JobListPageDto = v.InferOutput<typeof jobListPageDto>;
 
 export const jobListPageParamsDto = v.object({
   page: v.pipe(v.number(), v.minValue(1)),
-  limit: v.optional(v.pipe(v.number(), v.minValue(1)), PAGE_SIZE),
+  limit: v.optional(v.pipe(v.number(), v.minValue(1)), envs.PAGE_SIZE),
 });
 export type JobListPageParamsDto = v.InferOutput<typeof jobListPageParamsDto>;

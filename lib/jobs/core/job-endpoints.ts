@@ -1,8 +1,8 @@
 import 'server-only';
 
-import { MW_URL } from '@/lib/shared/core/envs';
+import { envs } from '@/lib/shared/core/envs';
 
-const BASE_URL = `${MW_URL}/jobs`;
+const BASE_URL = `${envs.MW_URL}/jobs`;
 
 export const JOB_BASE_URLS = {
   LIST: `${BASE_URL}/list`,
