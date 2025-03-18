@@ -9,7 +9,7 @@ import { getOrgFundingInfo } from '@/lib/shared/utils/get-org-funding-info';
 import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
 
 import { dtoToJobListItemProject } from './dto-to-job-list-item-project';
-import { JobListPageDto } from './dtos';
+import { JobListPageDto } from './job-list-dtos';
 
 export const dtoToJobListPage = (dto: JobListPageDto): JobListPageSchema => {
   addBreadcrumb({

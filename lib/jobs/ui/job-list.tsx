@@ -4,7 +4,7 @@ import { useInView } from 'react-intersection-observer';
 
 import useSWRInfinite from 'swr/infinite';
 
-import { fetchJobListPage } from '@/lib/jobs/api/fetch-job-list-page';
+import { fetchJobListPage } from '@/lib/jobs/server/data';
 
 import { JobListItem } from '@/lib/jobs/ui/job-list-item';
 

@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 
 import { createMock } from 'storybook-addon-module-mock';
 
-import * as fetchJobListPageModule from '@/lib/jobs/api/fetch-job-list-page';
+import * as fetchJobListPageModule from '@/lib/jobs/server/data';
 
 import JobsPage from './page';
 
