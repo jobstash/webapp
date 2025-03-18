@@ -15,7 +15,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@sentry/nextjs": "^8.50.0",
+    "@sentry/nextjs": "^9.6.0",
     "ky": "^1.7.4",
     "next": "15.2.3",
     "react": "19.0.0",
@@ -84,6 +84,14 @@
     "overrides": {
       "@types/react": "19.0.10",
       "@types/react-dom": "19.0.4"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@sentry/cli",
+      "core-js-pure",
+      "esbuild",
+      "msw",
+      "sharp",
+      "simple-git-hooks"
+    ]
   }
 }
