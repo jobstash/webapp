@@ -1,9 +1,11 @@
+import '../app/globals.css';
+
 import React from 'react';
 
 import type { Preview } from '@storybook/react';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 
-import Layout from '../app/layout';
+import { grotesk, interTight } from '../lib/shared/core/fonts';
 
 // MSW
 initialize({
@@ -31,9 +33,9 @@ const preview: Preview = {
 
   decorators: [
     (Story) => (
-      <Layout>
+      <div className={`${interTight.variable} ${grotesk.variable} antialiased`}>
         <Story />
-      </Layout>
+      </div>
     ),
   ],
 
