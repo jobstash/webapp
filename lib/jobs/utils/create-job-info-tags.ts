@@ -3,9 +3,9 @@ import 'server-only';
 import { MappedInfoTagSchema } from '@/lib/shared/core/schemas';
 import { jobSeniorityMapping } from '@/lib/jobs/core/constants';
 
-import { capitalize } from './capitalize';
-import { formatNumber } from './format-number';
-import { titleCase } from './title-case';
+import { capitalize } from '@/lib/shared/utils/capitalize';
+import { formatNumber } from '@/lib/shared/utils/format-number';
+import { titleCase } from '@/lib/shared/utils/title-case';
 
 import { JobListItemDto } from '@/lib/jobs/server/dtos';
 

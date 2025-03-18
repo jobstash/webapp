@@ -4,8 +4,8 @@ import { addBreadcrumb } from '@sentry/nextjs';
 
 import { JobListPageSchema } from '@/lib/jobs/core/schemas';
 
-import { createJobInfoTags } from '@/lib/shared/utils/create-job-info-tags';
 import { getOrgFundingInfo } from '@/lib/shared/utils/get-org-funding-info';
+import { createJobInfoTags } from '@/lib/jobs/utils/create-job-info-tags';
 import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
 
 import { dtoToJobListItemProject } from './dto-to-job-list-item-project';
