@@ -1,4 +1,4 @@
-import { fetchJobListPage } from '@/lib/jobs/api/fetch-job-list-page';
+import { fetchJobListPage } from '@/lib/jobs/server/data';
 
 import { JobListPage } from '@/lib/jobs/pages/job-list-page';
 
