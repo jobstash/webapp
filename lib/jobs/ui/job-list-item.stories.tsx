@@ -11,6 +11,12 @@ export default meta;
 type Story = StoryObj<typeof JobListItem>;
 
 export const Default: Story = {
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/6tx4TVjW8hA8Fg5bZe5Wm4/Jobstash-website?node-id=4509-127100&t=u6u2uqfmyjXjHeao-4',
+    },
+  },
   args: {
     job: {
       id: 'n61Cgw',

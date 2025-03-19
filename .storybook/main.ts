@@ -13,6 +13,7 @@ const config: StorybookConfig = {
     '@chromatic-com/storybook',
     '@storybook/addon-interactions',
     'storybook-addon-module-mock',
+    '@storybook/addon-designs',
   ],
 
   framework: {
