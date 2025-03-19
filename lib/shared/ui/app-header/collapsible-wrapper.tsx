@@ -45,6 +45,34 @@ export const CollapsibleWrapper = ({ children, header }: Props) => {
   // Measure heights after initial render and DOM is ready
   useLayoutEffect(() => {
     updateHeights();
+  }, [updateHeights, children, header]);
+
+  // Add resize observer to detect content size changes
+  useEffect(() => {
+    if (!headerRef.current || !contentRef.current) return;
+
+    // Throttle resize observations
+    let resizeObserverTicking = false;
+
+    const handleElementResize = () => {
+      if (!resizeObserverTicking) {
+        window.requestAnimationFrame(() => {
+          updateHeights();
+          resizeObserverTicking = false;
+        });
+        resizeObserverTicking = true;
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(handleElementResize);
+
+    // Observe both header and content elements
+    resizeObserver.observe(headerRef.current);
+    resizeObserver.observe(contentRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [updateHeights]);
 
   // Add resize listener to update measurements when window size changes
@@ -114,20 +142,18 @@ export const CollapsibleWrapper = ({ children, header }: Props) => {
   return (
     <>
       <div
-        className='sticky top-0 z-30 w-full overflow-hidden border border-neutral-800/50 bg-sidebar/30 px-3 backdrop-blur-md transition-all duration-400 ease-linear lg:top-6 lg:mt-6 lg:rounded-3xl'
+        className='sticky top-0 z-30 w-full overflow-hidden border border-neutral-800/50 bg-sidebar/30 backdrop-blur-md transition-all duration-400 ease-linear lg:top-6 lg:mt-6 lg:rounded-2xl'
         style={{
           height,
         }}
       >
-        {isExpanded && (
-          <div className='absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-sidebar/60' />
-        )}
-
         {/* Fixed height header section - always visible */}
         <div ref={headerRef}>{header}</div>
 
         {/* Expandable content section */}
-        <div ref={contentRef}>{children}</div>
+        <div ref={contentRef} className='pb-8'>
+          {children}
+        </div>
       </div>
 
       {/* Gradient black fade below the header */}
