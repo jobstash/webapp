@@ -14,9 +14,11 @@ export const dtoToJobListItemProject = (
   website: dto.website,
   logo: dto.logo,
   chains: dto.chains.map((chain) => chain.logo).filter(Boolean) as string[],
-  infoTags: createInfoTags(dto),
-  tvlTags: createTvlTags(dto),
-  auditTags: createAuditTags(dto),
+  tags: {
+    info: createInfoTags(dto),
+    tvl: createTvlTags(dto),
+    audit: createAuditTags(dto),
+  },
 });
 
 const createInfoTags = (dto: ProjectAllInfoDto) => {

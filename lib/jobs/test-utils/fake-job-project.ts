@@ -129,8 +129,10 @@ export const fakeJobProject = () => {
     chains: Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, () =>
       faker.image.url(),
     ),
-    infoTags: fakeProjectInfoTags(),
-    tvlTags: fakeProjectTvlTags(),
-    auditTags: fakeProjectAuditTags(),
+    tags: {
+      info: fakeProjectInfoTags(),
+      tvl: fakeProjectTvlTags(),
+      audit: fakeProjectAuditTags(),
+    },
   };
 };
