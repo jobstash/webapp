@@ -20,9 +20,11 @@ export const jobListItemProjectSchema = v.object({
   website: nullableStringSchema,
   logo: nullableStringSchema,
   chains: v.array(nonEmptyStringSchema),
-  infoTags: v.array(mappedInfoTagSchema),
-  tvlTags: v.array(mappedInfoTagSchema),
-  auditTags: v.array(mappedInfoTagSchema),
+  tags: v.object({
+    info: v.array(mappedInfoTagSchema),
+    tvl: v.array(mappedInfoTagSchema),
+    audit: v.array(mappedInfoTagSchema),
+  }),
 });
 export type JobListItemProjectSchema = v.InferOutput<typeof jobListItemProjectSchema>;
 
