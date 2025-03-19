@@ -7,6 +7,7 @@ export const kyFetch = ky.create({
   credentials: 'include',
   mode: 'cors',
   timeout: DEFAULT_TIMEOUT,
+  cache: 'no-store',
   hooks: {
     beforeRequest: [
       (req, options) => {

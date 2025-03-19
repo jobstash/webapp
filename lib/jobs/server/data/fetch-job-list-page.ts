@@ -1,7 +1,6 @@
 'use server';
 
 import { MwSchemaError } from '@/lib/shared/core/errors';
-import { jobsCacheTags } from '@/lib/jobs/core/cache-tags';
 import { jobEndpoints } from '@/lib/jobs/core/job-endpoints';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
@@ -19,8 +18,6 @@ interface Input {
   limit?: number;
 }
 
-const REVALIDATE_INTERVAL = 3600;
-
 export const fetchJobListPage = async (input: Input) => {
   const parsedParams = safeParse('jobListPageParams', jobListPageParamsDto, input);
   if (!parsedParams.success) {
@@ -29,12 +26,7 @@ export const fetchJobListPage = async (input: Input) => {
   const { page, limit } = parsedParams.output;
 
   const url = jobEndpoints.list({ page, limit });
-  const response = await kyFetch(url, {
-    next: {
-      revalidate: REVALIDATE_INTERVAL,
-      tags: [jobsCacheTags.list(page)],
-    },
-  }).json();
+  const response = await kyFetch(url).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);
   if (!parsed.success) {
