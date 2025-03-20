@@ -4,7 +4,7 @@ import { useInView } from 'react-intersection-observer';
 
 import useSWRInfinite from 'swr/infinite';
 
-import { JobListItem } from '@/lib/jobs/ui/job-list-item';
+import { JobListItem } from '@/lib/jobs/ui/job-list-item/job-list-item';
 
 import { flattenJobItems } from '../utils/flatten-job-items';
 

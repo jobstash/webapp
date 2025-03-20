@@ -1,6 +1,6 @@
 import { JobListItemSchema } from '@/lib/jobs/core/schemas';
 
-import { JobListItem } from '@/lib/jobs/ui/job-list-item';
+import { JobListItem } from '@/lib/jobs/ui/job-list-item/job-list-item';
 
 interface Props {
   jobs: JobListItemSchema[];
