@@ -44,7 +44,9 @@ const preview: Preview = {
                 provider: () => new Map(),
               }}
             >
-              <Story />
+              <div className='h-[100vh] overflow-auto'>
+                <Story />
+              </div>
             </SWRConfig>
           </ThemeProvider>
         </div>
