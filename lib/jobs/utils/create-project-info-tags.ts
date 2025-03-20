@@ -1,25 +1,8 @@
-import 'server-only';
-
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
 import { MappedInfoTagSchema } from '@/lib/shared/core/schemas';
-import { JobListItemProjectSchema } from '@/lib/jobs/core/schemas';
 
 import { formatNumber } from '@/lib/shared/utils/format-number';
 import { pluralText } from '@/lib/shared/utils/plural-text';
-
-export const dtoToJobListItemProject = (
-  dto: ProjectAllInfoDto,
-): JobListItemProjectSchema => ({
-  name: dto.name,
-  website: dto.website,
-  logo: dto.logo,
-  chains: dto.chains.map((chain) => chain.logo).filter(Boolean) as string[],
-  tags: {
-    info: createInfoTags(dto),
-    tvl: createTvlTags(dto),
-    audit: createAuditTags(dto),
-  },
-});
 
 const createInfoTags = (dto: ProjectAllInfoDto) => {
   const { tokenSymbol, category } = dto;
@@ -119,4 +102,12 @@ const createAuditTags = (dto: ProjectAllInfoDto) => {
   }
 
   return tags;
+};
+
+export const createProjectInfoTags = (dto: ProjectAllInfoDto) => {
+  return {
+    info: createInfoTags(dto),
+    tvl: createTvlTags(dto),
+    audit: createAuditTags(dto),
+  };
 };
