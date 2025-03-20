@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { JobListItem } from '@/lib/jobs/ui/job-list-item';
+import { JobListItem } from '@/lib/jobs/ui/job-list-item/job-list-item';
 
 const meta: Meta<typeof JobListItem> = {
   component: JobListItem,
@@ -96,13 +96,10 @@ export const Default: Story = {
         name: 'P2P.org',
         website: 'https://p2p.org',
         logo: 'https://www.google.com/s2/favicons?domain=p2p.org&sz=64',
-        projects: [],
-        funding: {
-          lastDate: null,
-          lastAmount: null,
-        },
+        infoTags: [],
+        location: 'Remote',
       },
-      project: null,
+      projects: [],
     },
   },
 };
