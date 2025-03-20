@@ -1,6 +1,7 @@
 import * as v from 'valibot';
 
 const envSchema = v.object({
+  FRONTEND_URL: v.string(),
   MW_URL: v.string(),
   PAGE_SIZE: v.pipe(
     v.string(),
@@ -10,6 +11,7 @@ const envSchema = v.object({
 
 export const envs = (() => {
   const envValues = {
+    FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
     MW_URL: process.env.NEXT_PUBLIC_MW_URL,
     PAGE_SIZE: process.env.NEXT_PUBLIC_PAGE_SIZE,
   };
@@ -28,6 +30,7 @@ export const envs = (() => {
   }
 
   return {
+    FRONTEND_URL: result.output.FRONTEND_URL,
     MW_URL: result.output.MW_URL,
     PAGE_SIZE: Number(result.output.PAGE_SIZE),
   };
