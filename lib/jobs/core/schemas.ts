@@ -44,6 +44,7 @@ export const jobListItemSchema = v.object({
     v.object({
       name: nonEmptyStringSchema,
       website: nullableStringSchema,
+      location: nullableStringSchema,
       logo: nullableStringSchema,
       infoTags: v.array(mappedInfoTagSchema),
     }),
