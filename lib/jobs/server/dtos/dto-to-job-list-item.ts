@@ -54,7 +54,7 @@ const dtoToJobListItemOrg = (
   };
 };
 
-export const dtoToJobListItem = (jobItemDto: JobListItemDto) => {
+export const dtoToJobListItem = (jobItemDto: JobListItemDto): JobListItemSchema => {
   const {
     title,
     url,
@@ -65,13 +65,12 @@ export const dtoToJobListItem = (jobItemDto: JobListItemDto) => {
     featured,
     featureEndDate,
     organization,
-    project,
   } = jobItemDto;
 
   const infoTags = createJobInfoTags(jobItemDto);
   const mappedTags = dtoToJobListItemTag(tags);
   const mappedOrg = dtoToJobListItemOrg(organization);
-  const mappedProject = project ? dtoToJobListItemProject(project) : null;
+  const projects = dtoToJobListItemProjects(jobItemDto);
 
   return {
     id: shortUUID,
@@ -86,6 +85,6 @@ export const dtoToJobListItem = (jobItemDto: JobListItemDto) => {
       endDate: featureEndDate,
     },
     organization: mappedOrg,
-    project: mappedProject,
+    projects,
   };
 };
