@@ -6,9 +6,8 @@ import { fakeJobInfoTags } from '@/lib/jobs/test-utils/fake-job-info-tags';
 import { fakeJobProject } from '@/lib/jobs/test-utils/fake-job-project';
 import { fakeJobTags } from '@/lib/jobs/test-utils/fake-job-tags';
 
-export const fakeJobListItem = (
-  overrides?: Partial<JobListItemSchema>,
-): JobListItemSchema => {
+export const fakeJobListItem = () // overrides?: Partial<JobListItemSchema>,
+: JobListItemSchema => {
   const isFeatured = faker.datatype.boolean();
   const endDate = isFeatured ? faker.date.future().getTime() : null;
 
@@ -31,17 +30,14 @@ export const fakeJobListItem = (
       ? {
           name: faker.company.name(),
           website: faker.internet.url(),
+          location: faker.location.country(),
           logo: faker.image.url(),
-          projects: faker.datatype.boolean()
-            ? Array.from({ length: faker.number.int({ min: 1, max: 3 }) })
-            : [],
-          funding: {
-            lastDate: faker.datatype.boolean() ? faker.date.past().toISOString() : null,
-            lastAmount: faker.datatype.boolean() ? faker.finance.amount() : null,
-          },
+          infoTags: [],
         }
       : null,
-    project: faker.datatype.boolean() ? fakeJobProject() : null,
-    ...overrides,
+    projects: Array.from(
+      { length: faker.number.int({ min: 1, max: 3 }) },
+      fakeJobProject,
+    ),
   };
 };
