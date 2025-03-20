@@ -49,6 +49,7 @@ const dtoToJobListItemOrg = (
     name: dto.name,
     website: dto.website,
     logo: dto.logoUrl,
+    location: dto.location,
     infoTags: createJobOrgInfoTags(dto),
   };
 };
