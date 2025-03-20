@@ -1,15 +1,16 @@
 import 'server-only';
 
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
+import { JobListItemSchema } from '@/lib/jobs/core/schemas';
 
-import { getOrgFundingInfo } from '@/lib/shared/utils/get-org-funding-info';
 import { createJobInfoTags } from '@/lib/jobs/utils/create-job-info-tags';
+import { createJobOrgInfoTags } from '@/lib/jobs/utils/create-job-org-info-tags';
 import { createProjectInfoTags } from '@/lib/jobs/utils/create-project-info-tags';
 import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
 
 import { JobListItemDto } from './job-list-dtos';
 
-const dtoToJobListItemTag = (dto: JobListItemDto['tags']) => {
+const dtoToJobListItemTag = (dto: JobListItemDto['tags']): JobListItemSchema['tags'] => {
   return dto.map((tag) => ({
     name: tag.name,
     normalizedName: tag.normalizedName,
@@ -17,7 +18,9 @@ const dtoToJobListItemTag = (dto: JobListItemDto['tags']) => {
   }));
 };
 
-export const dtoToJobListItemProject = (dto: ProjectAllInfoDto) => ({
+export const dtoToJobListItemProject = (
+  dto: ProjectAllInfoDto,
+): JobListItemSchema['projects'][number] => ({
   name: dto.name,
   website: dto.website,
   logo: dto.logo,
@@ -25,18 +28,28 @@ export const dtoToJobListItemProject = (dto: ProjectAllInfoDto) => ({
   tags: createProjectInfoTags(dto),
 });
 
-const dtoToJobListItemOrg = (dto: JobListItemDto['organization']) => {
-  if (!dto) return null;
+export const dtoToJobListItemProjects = (
+  dto: JobListItemDto,
+): JobListItemSchema['projects'] => {
+  const project = dto.project;
+  const orgProjects = dto.organization?.projects ?? [];
 
-  const projects = dto.projects.map(dtoToJobListItemProject);
-  const funding = getOrgFundingInfo(dto?.fundingRounds ?? []);
+  return [
+    ...(project ? [dtoToJobListItemProject(project)] : []),
+    ...orgProjects.map(dtoToJobListItemProject),
+  ];
+};
+
+const dtoToJobListItemOrg = (
+  dto: JobListItemDto['organization'],
+): JobListItemSchema['organization'] => {
+  if (!dto) return null;
 
   return {
     name: dto.name,
     website: dto.website,
     logo: dto.logoUrl,
-    projects,
-    funding,
+    infoTags: createJobOrgInfoTags(dto),
   };
 };
 
