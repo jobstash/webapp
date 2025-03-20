@@ -5,21 +5,21 @@ import { Input } from '@/lib/shared/ui/base/input';
 
 import { CollapsibleWrapper } from './collapsible-wrapper';
 
-const dummyInvestors = [
-  'Polychain Capital',
-  'Paradigm',
-  'a16z',
-  'Coinbase Ventures',
-  'Binance Labs',
-  'Andreessen Horowitz',
-  'Galaxy',
-  'FTX Ventures',
-  'Apollo',
-  'Tiger Global',
-  'Sequoia',
-  'Y Combinator',
-  'Kleiner Perkins',
-  'Redpoint',
+const dummyItems = [
+  'Blockchain Dev',
+  'Smart Contracts',
+  'DeFi',
+  'Frontend',
+  'Backend',
+  'DevOps',
+  'Community',
+  'Marketing',
+  'Product',
+  'Research',
+  'Security',
+  'NFT',
+  'Data Analytics',
+  'Trading',
 ];
 
 /**
@@ -49,15 +49,15 @@ export const AppHeader = () => {
       }
     >
       <div className='flex shrink-0 flex-col gap-4 px-4 pt-4'>
-        <h1 className='text-2xl font-bold'>Accounting Jobs in Crypto (331)</h1>
+        <h1 className='text-2xl font-bold'>Remote Jobs in Crypto</h1>
         <p>
-          Discover accounting roles in crypto companies. Find opportunities across
-          blockchain organizations and decentralized finance projects.
+          Discover remote blockchain opportunities from leading crypto companies. Find
+          roles across various Web3 projects and protocols.
         </p>
         <div className='flex flex-wrap gap-4'>
-          {dummyInvestors.map((investor) => (
-            <Button key={investor} variant='secondary' size='sm'>
-              {investor}
+          {dummyItems.map((category) => (
+            <Button key={category} variant='secondary' size='sm'>
+              {category}
             </Button>
           ))}
         </div>
