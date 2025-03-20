@@ -37,17 +37,17 @@ export const createJobInfoTags = (dto: JobListItemDto) => {
     });
   }
 
-  if (locationType) {
-    tags.push({
-      iconKey: 'workMode',
-      label: capitalize(locationType, true),
-    });
-  }
-
   if (location) {
     tags.push({
       iconKey: 'location',
       label: capitalize(location),
+    });
+  }
+
+  if (locationType) {
+    tags.push({
+      iconKey: 'workMode',
+      label: capitalize(locationType, true),
     });
   }
 
@@ -68,13 +68,13 @@ export const createJobInfoTags = (dto: JobListItemDto) => {
   if (offersTokenAllocation) {
     tags.push({
       iconKey: 'offersTokenAllocation',
-      label: 'Offers Token Allocation',
+      label: 'Token Allocation',
     });
   }
 
   if (classification) {
     tags.push({
-      iconKey: 'classification',
+      iconKey: 'category',
       label: titleCase(classification),
     });
   }
