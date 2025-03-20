@@ -3,6 +3,7 @@ import 'server-only';
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
 import { JobListItemSchema } from '@/lib/jobs/core/schemas';
 
+import { getLogoUrl } from '@/lib/shared/utils/get-logo-url';
 import { createJobInfoTags } from '@/lib/jobs/utils/create-job-info-tags';
 import { createJobOrgInfoTags } from '@/lib/jobs/utils/create-job-org-info-tags';
 import { createProjectInfoTags } from '@/lib/jobs/utils/create-project-info-tags';
@@ -23,9 +24,9 @@ export const dtoToJobListItemProject = (
 ): JobListItemSchema['projects'][number] => ({
   name: dto.name,
   website: dto.website,
-  logo: dto.logo,
+  logo: getLogoUrl(dto.website, dto.logo),
   chains: dto.chains.map((chain) => chain.logo).filter(Boolean) as string[],
-  tags: createProjectInfoTags(dto),
+  infoTags: createProjectInfoTags(dto),
 });
 
 export const dtoToJobListItemProjects = (

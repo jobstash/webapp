@@ -105,9 +105,5 @@ const createAuditTags = (dto: ProjectAllInfoDto) => {
 };
 
 export const createProjectInfoTags = (dto: ProjectAllInfoDto) => {
-  return {
-    info: createInfoTags(dto),
-    tvl: createTvlTags(dto),
-    audit: createAuditTags(dto),
-  };
+  return [...createInfoTags(dto), ...createTvlTags(dto), ...createAuditTags(dto)];
 };
