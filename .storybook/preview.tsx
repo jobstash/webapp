@@ -8,6 +8,7 @@ import { initialize, mswLoader } from 'msw-storybook-addon';
 import { SWRConfig } from 'swr';
 
 import { grotesk, interTight } from '../lib/shared/core/fonts';
+import { ThemeProvider } from '../lib/shared/providers/theme-provider';
 
 // MSW
 initialize({
@@ -37,13 +38,15 @@ const preview: Preview = {
     (Story) => {
       return (
         <div className={`${interTight.variable} ${grotesk.variable} antialiased`}>
-          <SWRConfig
-            value={{
-              provider: () => new Map(),
-            }}
-          >
-            <Story />
-          </SWRConfig>
+          <ThemeProvider attribute='class' defaultTheme='dark' disableTransitionOnChange>
+            <SWRConfig
+              value={{
+                provider: () => new Map(),
+              }}
+            >
+              <Story />
+            </SWRConfig>
+          </ThemeProvider>
         </div>
       );
     },
