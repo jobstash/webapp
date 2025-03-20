@@ -1,6 +1,6 @@
 import './globals.css';
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Head from 'next/head';
 
 import { grotesk, interTight } from '@/lib/shared/core/fonts';
@@ -10,6 +10,13 @@ import { RootProviders } from '@/lib/shared/providers/root-providers';
 export const metadata: Metadata = {
   title: 'JobStash',
   description: 'Crypto Native Jobs',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 type Props = Readonly<React.PropsWithChildren>;
