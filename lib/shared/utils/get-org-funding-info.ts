@@ -5,7 +5,7 @@ import { FundingRoundDto } from '@/lib/shared/core/dtos';
 import { formatNumber } from './format-number';
 import { shortTimestamp } from './short-timestamp';
 
-export const getOrgFundingInfo = (fundingRounds: FundingRoundDto[]) => {
+export const getOrgFundingInfo = (fundingRounds: FundingRoundDto[] = []) => {
   let lastFundingAmount = null;
   let lastFundingDate = null;
 
@@ -19,9 +19,9 @@ export const getOrgFundingInfo = (fundingRounds: FundingRoundDto[]) => {
   }
 
   return {
-    lastDate: lastFundingDate ? `Funding Date: ${shortTimestamp(lastFundingDate)}` : null,
+    lastDate: lastFundingDate ? `${shortTimestamp(lastFundingDate)}` : null,
     lastAmount: lastFundingAmount
-      ? `Last Funding: $${formatNumber(lastFundingAmount * 1_000_000)}`
+      ? `${formatNumber(lastFundingAmount * 1_000_000)}`
       : null,
   };
 };
