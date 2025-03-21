@@ -24,10 +24,10 @@ export const fakeJobItem = () // overrides?: Partial<JobItemSchema>,
     access: faker.helpers.arrayElement(['public', 'protected']),
     infoTags,
     tags,
-    promotion: {
-      isFeatured,
-      endDate,
-    },
+    badge: null,
+    promotionEndDate: endDate,
+    hasGradientBorder: isFeatured,
+    isUrgentlyHiring: isFeatured,
     organization: faker.datatype.boolean()
       ? {
           name: faker.company.name(),

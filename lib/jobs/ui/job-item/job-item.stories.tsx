@@ -88,10 +88,6 @@ export const Default: Story = {
           colorIndex: 6,
         },
       ],
-      promotion: {
-        isFeatured: false,
-        endDate: null,
-      },
       organization: {
         name: 'P2P.org',
         website: 'https://p2p.org',
@@ -100,6 +96,10 @@ export const Default: Story = {
         location: 'Remote',
       },
       projects: [],
+      promotionEndDate: null,
+      hasGradientBorder: false,
+      isUrgentlyHiring: false,
+      badge: null,
     },
   },
 };

@@ -7,6 +7,7 @@ import {
   nullableNumberSchema,
   nullableStringSchema,
 } from '@/lib/shared/core/schemas';
+import { jobBadgeLabels } from '@/lib/jobs/core/constants';
 
 export const jobTagSchema = v.object({
   name: nonEmptyStringSchema,
@@ -28,14 +29,9 @@ export const jobItemSchema = v.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   url: nullableStringSchema,
-  timestampText: nonEmptyStringSchema,
   access: v.picklist(['public', 'protected']),
   infoTags: v.array(mappedInfoTagSchema),
   tags: v.array(jobTagSchema),
-  promotion: v.object({
-    isFeatured: v.boolean(),
-    endDate: nullableNumberSchema,
-  }),
   organization: v.nullable(
     v.object({
       name: nonEmptyStringSchema,
@@ -46,6 +42,11 @@ export const jobItemSchema = v.object({
     }),
   ),
   projects: v.array(jobItemProjectSchema),
+  promotionEndDate: nullableNumberSchema,
+  hasGradientBorder: v.boolean(),
+  badge: v.nullable(v.picklist(Object.values(jobBadgeLabels))),
+  isUrgentlyHiring: v.boolean(),
+  timestampText: nonEmptyStringSchema,
 });
 
 export type JobItemSchema = v.InferOutput<typeof jobItemSchema>;

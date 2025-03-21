@@ -65,6 +65,8 @@ export const jobItemDto = v.object({
       hasUser: v.boolean(),
     }),
   ),
+
+  onboardIntoWeb3: v.boolean(),
 });
 export type JobItemDto = v.InferOutput<typeof jobItemDto>;
 
