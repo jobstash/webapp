@@ -147,3 +147,22 @@ Make sure disabled buttons don't get the pointer cursor.
 :disabled {
   cursor: default;
 }
+
+.animate-gradient-text {
+  background-size: 300%;
+  -webkit-animation: animate-gradient-text 6s ease infinite alternate;
+  -moz-animation: animate-gradient-text 6s ease infinite alternate;
+  animation: animate-gradient-text 6s ease infinite alternate;
+}
+
+@keyframes animate-gradient-text {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
