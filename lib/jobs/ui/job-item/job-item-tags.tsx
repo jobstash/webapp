@@ -1,13 +1,13 @@
-import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { Button } from '@/lib/shared/ui/base/button';
 import { Divider } from '@/lib/shared/ui/divider';
 
 interface Props {
-  tags: JobListItemSchema['tags'];
+  tags: JobItemSchema['tags'];
 }
 
-export const JobListItemTags = ({ tags }: Props) => {
+export const JobItemTags = ({ tags }: Props) => {
   if (tags.length === 0) return null;
 
   return (

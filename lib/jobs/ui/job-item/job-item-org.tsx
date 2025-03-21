@@ -1,4 +1,4 @@
-import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { Divider } from '@/lib/shared/ui/divider';
 import { InfoTags } from '@/lib/shared/ui/info-tags';
@@ -6,10 +6,10 @@ import { LogoTitle } from '@/lib/shared/ui/logo-title';
 import { jobOrgInfoTagsMap } from '@/lib/jobs/ui/tag-icon-map';
 
 interface Props {
-  org: JobListItemSchema['organization'];
+  org: JobItemSchema['organization'];
 }
 
-export const JobListItemOrg = ({ org }: Props) => {
+export const JobItemOrg = ({ org }: Props) => {
   if (!org) return null;
 
   const { name, location, logo, infoTags } = org;

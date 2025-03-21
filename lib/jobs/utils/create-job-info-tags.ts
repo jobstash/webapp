@@ -7,9 +7,9 @@ import { capitalize } from '@/lib/shared/utils/capitalize';
 import { formatNumber } from '@/lib/shared/utils/format-number';
 import { titleCase } from '@/lib/shared/utils/title-case';
 
-import { JobListItemDto } from '@/lib/jobs/server/dtos';
+import { JobItemDto } from '@/lib/jobs/server/dtos';
 
-export const createJobInfoTags = (dto: JobListItemDto) => {
+export const createJobInfoTags = (dto: JobItemDto) => {
   const {
     seniority,
     locationType,
@@ -82,7 +82,7 @@ export const createJobInfoTags = (dto: JobListItemDto) => {
   return tags;
 };
 
-const getSalaryText = (dto: JobListItemDto) => {
+const getSalaryText = (dto: JobItemDto) => {
   const { minimumSalary, maximumSalary, salary, salaryCurrency } = dto;
 
   if (minimumSalary && maximumSalary) {

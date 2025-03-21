@@ -15,16 +15,16 @@ export const jobTagSchema = v.object({
 });
 export type JobTagSchema = v.InferOutput<typeof jobTagSchema>;
 
-export const jobListItemProjectSchema = v.object({
+export const jobItemProjectSchema = v.object({
   name: nonEmptyStringSchema,
   website: nullableStringSchema,
   logo: nullableStringSchema,
   chains: v.array(nonEmptyStringSchema),
   infoTags: v.array(mappedInfoTagSchema),
 });
-export type JobListItemProjectSchema = v.InferOutput<typeof jobListItemProjectSchema>;
+export type JobItemProjectSchema = v.InferOutput<typeof jobItemProjectSchema>;
 
-export const jobListItemSchema = v.object({
+export const jobItemSchema = v.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   url: nullableStringSchema,
@@ -45,10 +45,10 @@ export const jobListItemSchema = v.object({
       infoTags: v.array(mappedInfoTagSchema),
     }),
   ),
-  projects: v.array(jobListItemProjectSchema),
+  projects: v.array(jobItemProjectSchema),
 });
 
-export type JobListItemSchema = v.InferOutput<typeof jobListItemSchema>;
+export type JobItemSchema = v.InferOutput<typeof jobItemSchema>;
 
-export const jobListPageSchema = infiniteListPageSchema(jobListItemSchema);
+export const jobListPageSchema = infiniteListPageSchema(jobItemSchema);
 export type JobListPageSchema = v.InferOutput<typeof jobListPageSchema>;

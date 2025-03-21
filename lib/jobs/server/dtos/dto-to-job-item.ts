@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
-import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { getLogoUrl } from '@/lib/shared/utils/get-logo-url';
 import { prettyTimestamp } from '@/lib/shared/utils/pretty-timestamp';
@@ -10,9 +10,9 @@ import { createJobOrgInfoTags } from '@/lib/jobs/utils/create-job-org-info-tags'
 import { createProjectInfoTags } from '@/lib/jobs/utils/create-project-info-tags';
 import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
 
-import { JobListItemDto } from './job-list-dtos';
+import { JobItemDto } from './job-list-dtos';
 
-const dtoToJobListItemTag = (dto: JobListItemDto['tags']): JobListItemSchema['tags'] => {
+const dtoToJobItemTag = (dto: JobItemDto['tags']): JobItemSchema['tags'] => {
   return dto.map((tag) => ({
     name: tag.name,
     normalizedName: tag.normalizedName,
@@ -20,9 +20,9 @@ const dtoToJobListItemTag = (dto: JobListItemDto['tags']): JobListItemSchema['ta
   }));
 };
 
-export const dtoToJobListItemProject = (
+export const dtoToJobItemProject = (
   dto: ProjectAllInfoDto,
-): JobListItemSchema['projects'][number] => ({
+): JobItemSchema['projects'][number] => ({
   name: dto.name,
   website: dto.website,
   logo: getLogoUrl(dto.website, dto.logo),
@@ -30,21 +30,19 @@ export const dtoToJobListItemProject = (
   infoTags: createProjectInfoTags(dto),
 });
 
-export const dtoToJobListItemProjects = (
-  dto: JobListItemDto,
-): JobListItemSchema['projects'] => {
+export const dtoToJobItemProjects = (dto: JobItemDto): JobItemSchema['projects'] => {
   const project = dto.project;
   const orgProjects = dto.organization?.projects ?? [];
 
   return [
-    ...(project ? [dtoToJobListItemProject(project)] : []),
-    ...orgProjects.map(dtoToJobListItemProject),
+    ...(project ? [dtoToJobItemProject(project)] : []),
+    ...orgProjects.map(dtoToJobItemProject),
   ];
 };
 
-const dtoToJobListItemOrg = (
-  dto: JobListItemDto['organization'],
-): JobListItemSchema['organization'] => {
+const dtoToJobItemOrg = (
+  dto: JobItemDto['organization'],
+): JobItemSchema['organization'] => {
   if (!dto) return null;
 
   return {
@@ -56,7 +54,7 @@ const dtoToJobListItemOrg = (
   };
 };
 
-export const dtoToJobListItem = (jobItemDto: JobListItemDto): JobListItemSchema => {
+export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
   const {
     title,
     url,
@@ -70,9 +68,9 @@ export const dtoToJobListItem = (jobItemDto: JobListItemDto): JobListItemSchema 
   } = jobItemDto;
 
   const infoTags = createJobInfoTags(jobItemDto);
-  const mappedTags = dtoToJobListItemTag(tags);
-  const mappedOrg = dtoToJobListItemOrg(organization);
-  const projects = dtoToJobListItemProjects(jobItemDto);
+  const mappedTags = dtoToJobItemTag(tags);
+  const mappedOrg = dtoToJobItemOrg(organization);
+  const projects = dtoToJobItemProjects(jobItemDto);
   const timestampText = prettyTimestamp(timestamp);
 
   return {

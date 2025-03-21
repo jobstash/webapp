@@ -17,7 +17,7 @@ import {
   nullableStringSchema,
 } from '@/lib/shared/core/schemas';
 
-export const jobListItemDto = v.object({
+export const jobItemDto = v.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   url: nullableStringSchema,
@@ -66,13 +66,13 @@ export const jobListItemDto = v.object({
     }),
   ),
 });
-export type JobListItemDto = v.InferOutput<typeof jobListItemDto>;
+export type JobItemDto = v.InferOutput<typeof jobItemDto>;
 
 export const jobListPageDto = v.object({
   page: v.number(),
   count: v.number(),
   total: v.number(),
-  data: v.array(jobListItemDto),
+  data: v.array(jobItemDto),
 });
 export type JobListPageDto = v.InferOutput<typeof jobListPageDto>;
 

@@ -1,13 +1,13 @@
-import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { JobListActionResult } from '@/lib/jobs/server/actions';
 
 export const flattenJobItems = (
   data: (JobListActionResult | undefined)[] | undefined,
-): JobListItemSchema[] => {
+): JobItemSchema[] => {
   if (!data || !Array.isArray(data)) return [];
 
-  const items: JobListItemSchema[] = [];
+  const items: JobItemSchema[] = [];
 
   for (const result of data) {
     if (result?.data) {

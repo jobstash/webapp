@@ -1,17 +1,17 @@
-import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { BorderBeam } from '@/lib/shared/ui/base/border-beam';
 import { InfoTags } from '@/lib/shared/ui/info-tags';
 import { jobInfoTagsMap } from '@/lib/jobs/ui/tag-icon-map';
 
-import { JobListItemOrg } from './job-list-item-org';
-// import { JobListItemProjects } from './job-list-item-projects';
-import { JobListItemTags } from './job-list-item-tags';
+import { JobItemOrg } from './job-item-org';
+// import { JobItemProjects } from './job-list-item-projects';
+import { JobItemTags } from './job-item-tags';
 interface Props {
-  job: JobListItemSchema;
+  job: JobItemSchema;
 }
 
-export const JobListItem = ({ job }: Props) => {
+export const JobItem = ({ job }: Props) => {
   const {
     title,
     infoTags,
@@ -29,9 +29,9 @@ export const JobListItem = ({ job }: Props) => {
         <span className='text-xs text-neutral-400'>{timestampText}</span>
       </div>
       <InfoTags iconMap={jobInfoTagsMap} infoTags={infoTags} />
-      <JobListItemOrg org={organization} />
-      <JobListItemTags tags={tags} />
-      {/* <JobListItemProjects projects={projects} /> */}
+      <JobItemOrg org={organization} />
+      <JobItemTags tags={tags} />
+      {/* <JobItemProjects projects={projects} /> */}
       {isFeatured && <BorderBeam size={320} duration={12} delay={9} />}
     </article>
   );

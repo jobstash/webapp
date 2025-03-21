@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 import { MappedInfoTagSchema } from '@/lib/shared/core/schemas';
-import { JobListItemProjectSchema } from '@/lib/jobs/core/schemas';
+import { JobItemProjectSchema } from '@/lib/jobs/core/schemas';
 
 import { formatNumber } from '@/lib/shared/utils/format-number';
 import { pluralText } from '@/lib/shared/utils/plural-text';
@@ -122,7 +122,7 @@ const fakeProjectAuditTags = () => {
   return tags;
 };
 
-export const fakeJobProject = (): JobListItemProjectSchema => {
+export const fakeJobProject = (): JobItemProjectSchema => {
   return {
     name: faker.commerce.productName(),
     website: faker.internet.url(),

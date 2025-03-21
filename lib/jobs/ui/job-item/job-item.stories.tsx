@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { JobListItem } from '@/lib/jobs/ui/job-list-item/job-list-item';
+import { JobItem } from '@/lib/jobs/ui/job-item/job-item';
 
-const meta: Meta<typeof JobListItem> = {
-  component: JobListItem,
+const meta: Meta<typeof JobItem> = {
+  component: JobItem,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof JobListItem>;
+type Story = StoryObj<typeof JobItem>;
 
 export const Default: Story = {
   parameters: {
@@ -22,7 +22,7 @@ export const Default: Story = {
       id: 'n61Cgw',
       title: 'Product Manager',
       url: 'https://p2porg.global.huntflow.io/vacancy/product-manager-re-staking-sol-ton-btc',
-      timestamp: 1731931218292,
+      timestampText: 'last month',
       access: 'public',
       infoTags: [
         {
