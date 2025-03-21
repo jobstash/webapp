@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { prettyTimestamp } from '@/lib/shared/utils/pretty-timestamp';
 
@@ -8,8 +8,8 @@ import { fakeJobInfoTags } from '@/lib/jobs/test-utils/fake-job-info-tags';
 import { fakeJobProject } from '@/lib/jobs/test-utils/fake-job-project';
 import { fakeJobTags } from '@/lib/jobs/test-utils/fake-job-tags';
 
-export const fakeJobListItem = () // overrides?: Partial<JobListItemSchema>,
-: JobListItemSchema => {
+export const fakeJobItem = () // overrides?: Partial<JobItemSchema>,
+: JobItemSchema => {
   const isFeatured = faker.datatype.boolean();
   const endDate = isFeatured ? faker.date.future().getTime() : null;
 

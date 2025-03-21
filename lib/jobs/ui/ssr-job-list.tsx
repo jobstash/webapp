@@ -1,9 +1,9 @@
-import { JobListItemSchema } from '@/lib/jobs/core/schemas';
+import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
-import { JobListItem } from '@/lib/jobs/ui/job-list-item/job-list-item';
+import { JobItem } from '@/lib/jobs/ui/job-item/job-item';
 
 interface Props {
-  jobs: JobListItemSchema[];
+  jobs: JobItemSchema[];
 }
 
 export const SsrJobList = ({ jobs }: Props) => {
@@ -11,7 +11,7 @@ export const SsrJobList = ({ jobs }: Props) => {
   return (
     <>
       {jobs.map((job) => (
-        <JobListItem key={job.id} job={job} />
+        <JobItem key={job.id} job={job} />
       ))}
     </>
   );

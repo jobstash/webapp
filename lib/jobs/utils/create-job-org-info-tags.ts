@@ -2,10 +2,10 @@ import { MappedInfoTagSchema } from '@/lib/shared/core/schemas';
 
 import { getOrgFundingInfo } from '@/lib/shared/utils/get-org-funding-info';
 
-import { JobListItemDto } from '@/lib/jobs/server/dtos';
+import { JobItemDto } from '@/lib/jobs/server/dtos';
 
 export const createJobOrgInfoTags = (
-  dto: JobListItemDto['organization'],
+  dto: JobItemDto['organization'],
 ): MappedInfoTagSchema[] => {
   if (!dto) return [];
 

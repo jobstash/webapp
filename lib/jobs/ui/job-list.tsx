@@ -4,7 +4,7 @@ import { useInView } from 'react-intersection-observer';
 
 import useSWRInfinite from 'swr/infinite';
 
-import { JobListItem } from '@/lib/jobs/ui/job-list-item/job-list-item';
+import { JobItem } from '@/lib/jobs/ui/job-item/job-item';
 
 import { flattenJobItems } from '../utils/flatten-job-items';
 
@@ -42,7 +42,7 @@ export const JobList = () => {
   return (
     <>
       {jobItems.map((job) => (
-        <JobListItem key={job.id} job={job} />
+        <JobItem key={job.id} job={job} />
       ))}
       <div className='py-20'>
         <p ref={ref}>Loading ...</p>
