@@ -17,13 +17,17 @@ export const JobListItem = ({ job }: Props) => {
     infoTags,
     tags,
     organization,
+    timestampText,
     // projects,
     promotion: { isFeatured },
   } = job;
 
   return (
     <article className='relative flex w-full flex-col gap-4 rounded-3xl border border-neutral-800/80 bg-sidebar p-6'>
-      <h2 className='text-xl font-bold'>{title}</h2>
+      <div className='flex items-center justify-between'>
+        <h2 className='text-xl font-bold'>{title}</h2>
+        <span className='text-xs text-neutral-400'>{timestampText}</span>
+      </div>
       <InfoTags iconMap={jobInfoTagsMap} infoTags={infoTags} />
       <JobListItemOrg org={organization} />
       <JobListItemTags tags={tags} />
