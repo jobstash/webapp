@@ -2,7 +2,7 @@ import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { BorderBeam } from '@/lib/shared/ui/base/border-beam';
 import { InfoTags } from '@/lib/shared/ui/info-tags';
-import { jobInfoTagsMap } from '@/lib/jobs/ui/tag-icon-map';
+import { jobInfoTagsIconMap } from '@/lib/jobs/ui/job-icon-map';
 
 import { JobItemOrg } from './job-item-org';
 // import { JobItemProjects } from './job-list-item-projects';
@@ -28,7 +28,7 @@ export const JobItem = ({ job }: Props) => {
         <h2 className='text-xl font-bold'>{title}</h2>
         <span className='text-xs text-neutral-400'>{timestampText}</span>
       </div>
-      <InfoTags iconMap={jobInfoTagsMap} infoTags={infoTags} />
+      <InfoTags iconMap={jobInfoTagsIconMap} infoTags={infoTags} />
       <JobItemOrg org={organization} />
       <JobItemTags tags={tags} />
       {/* <JobItemProjects projects={projects} /> */}

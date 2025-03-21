@@ -5,7 +5,7 @@ import { JobItemSchema } from '@/lib/jobs/core/schemas';
 import { Divider } from '@/lib/shared/ui/divider';
 import { InfoTags } from '@/lib/shared/ui/info-tags';
 import { LogoTitle } from '@/lib/shared/ui/logo-title';
-import { jobProjectInfoTagsMap } from '@/lib/jobs/ui/tag-icon-map';
+import { jobProjectInfoTagsIconMap } from '@/lib/jobs/ui/job-icon-map';
 
 interface Props {
   projects: JobItemSchema['projects'];
@@ -19,7 +19,7 @@ export const JobItemProjects = ({ projects }: Props) => {
         <div key={name} className='flex items-center gap-4'>
           <LogoTitle size='sm' title={name} src={logo ?? ''} />
           {infoTags.length > 0 && (
-            <InfoTags iconMap={jobProjectInfoTagsMap} infoTags={infoTags} />
+            <InfoTags iconMap={jobProjectInfoTagsIconMap} infoTags={infoTags} />
           )}
         </div>
       </div>

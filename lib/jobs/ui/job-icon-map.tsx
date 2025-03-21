@@ -14,7 +14,9 @@ import { TvlIcon } from '@/lib/shared/ui/svgs/tvl-icon';
 import { UsersIcon } from '@/lib/shared/ui/svgs/users-icon';
 import { WorkModeIcon } from '@/lib/shared/ui/svgs/work-mode-icon';
 
-export const jobInfoTagsMap: Record<string, React.ReactNode> = {
+type IconMap = Record<string, React.ReactNode>;
+
+export const jobInfoTagsIconMap: IconMap = {
   seniority: <SeniorityIcon />,
   salary: <SalaryIcon />,
   location: <LocationIcon />,
@@ -25,13 +27,13 @@ export const jobInfoTagsMap: Record<string, React.ReactNode> = {
   category: <CategoryIcon />,
 };
 
-export const jobOrgInfoTagsMap: Record<string, React.ReactNode> = {
+export const jobOrgInfoTagsIconMap: IconMap = {
   lastFundingAmount: <SalaryIcon />,
   lastFundingDate: <BankIcon />,
   employees: <UsersIcon />,
 };
 
-export const jobProjectInfoTagsMap: Record<string, React.ReactNode> = {
+export const jobProjectInfoTagsIconMap: IconMap = {
   tokenSymbol: <TokenIcon />,
   category: <CategoryIcon />,
   tvl: <TvlIcon />,
