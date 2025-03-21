@@ -71,7 +71,7 @@ export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemOrg(organization);
   const projects = dtoToJobItemProjects(jobItemDto);
-  const timestampText = prettyTimestamp(timestamp);
+  const timestampText = featured ? 'Urgently Hiring' : prettyTimestamp(timestamp);
 
   return {
     id: shortUUID,
