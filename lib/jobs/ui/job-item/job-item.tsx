@@ -1,8 +1,11 @@
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
+import { cn } from '@/lib/shared/utils';
+
 import { BorderBeam } from '@/lib/shared/ui/base/border-beam';
 import { InfoTags } from '@/lib/shared/ui/info-tags';
 import { jobInfoTagsIconMap } from '@/lib/jobs/ui/job-icon-map';
+import { JobItemBadge } from '@/lib/jobs/ui/job-item/job-item-badge';
 
 import { JobItemOrg } from './job-item-org';
 // import { JobItemProjects } from './job-list-item-projects';
@@ -17,22 +20,34 @@ export const JobItem = ({ job }: Props) => {
     infoTags,
     tags,
     organization,
+    badge,
+    hasGradientBorder,
     timestampText,
+    isUrgentlyHiring,
+    // promotionEndDate,
     // projects,
-    promotion: { isFeatured },
   } = job;
 
   return (
     <article className='relative flex w-full flex-col gap-4 rounded-3xl border border-neutral-800/80 bg-sidebar p-6'>
-      <div className='flex items-center justify-between'>
-        <h2 className='text-xl font-bold'>{title}</h2>
-        <span className='text-xs text-neutral-400'>{timestampText}</span>
+      <div className='flex items-baseline justify-between'>
+        <div className='flex flex-col gap-0'>
+          <JobItemBadge badge={badge} />
+          <h2 className='text-xl font-bold'>{title}</h2>
+        </div>
+        <span
+          className={cn('text-xs text-neutral-400', {
+            'font-semibold text-white': isUrgentlyHiring,
+          })}
+        >
+          {timestampText}
+        </span>
       </div>
       <InfoTags iconMap={jobInfoTagsIconMap} infoTags={infoTags} />
       <JobItemOrg org={organization} />
       <JobItemTags tags={tags} />
       {/* <JobItemProjects projects={projects} /> */}
-      {isFeatured && <BorderBeam size={320} duration={12} delay={9} />}
+      {hasGradientBorder && <BorderBeam size={320} duration={12} delay={9} />}
     </article>
   );
 };
