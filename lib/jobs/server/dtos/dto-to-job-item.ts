@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
+import { jobBadgeLabels } from '@/lib/jobs/core/constants';
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { getLogoUrl } from '@/lib/shared/utils/get-logo-url';
@@ -54,6 +55,16 @@ const dtoToJobItemOrg = (
   };
 };
 
+export const dtoToJobItemBadge = (dto: JobItemDto): JobItemSchema['badge'] => {
+  const { featured, access, onboardIntoWeb3 } = dto;
+
+  if (featured) return jobBadgeLabels.FEATURED;
+  if (access === 'protected') return jobBadgeLabels.EXPERT;
+  if (onboardIntoWeb3) return jobBadgeLabels.BEGINNER;
+
+  return null;
+};
+
 export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
   const {
     title,
@@ -65,27 +76,31 @@ export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
     featured,
     featureEndDate,
     organization,
+    onboardIntoWeb3,
   } = jobItemDto;
 
   const infoTags = createJobInfoTags(jobItemDto);
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemOrg(organization);
   const projects = dtoToJobItemProjects(jobItemDto);
-  const timestampText = featured ? 'Urgently Hiring' : prettyTimestamp(timestamp);
+  const hasGradientBorder = featured || access === 'protected' || onboardIntoWeb3;
+  const badge = dtoToJobItemBadge(jobItemDto);
+  const isUrgentlyHiring = featured || access === 'protected';
+  const timestampText = isUrgentlyHiring ? 'Urgently Hiring' : prettyTimestamp(timestamp);
 
   return {
     id: shortUUID,
     title,
     url,
-    timestampText,
     access,
     infoTags,
     tags: mappedTags,
-    promotion: {
-      isFeatured: featured,
-      endDate: featureEndDate,
-    },
     organization: mappedOrg,
     projects,
+    promotionEndDate: featureEndDate,
+    hasGradientBorder,
+    badge,
+    isUrgentlyHiring,
+    timestampText,
   };
 };
