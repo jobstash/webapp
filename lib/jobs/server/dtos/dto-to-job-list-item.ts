@@ -4,6 +4,7 @@ import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
 import { JobListItemSchema } from '@/lib/jobs/core/schemas';
 
 import { getLogoUrl } from '@/lib/shared/utils/get-logo-url';
+import { prettyTimestamp } from '@/lib/shared/utils/pretty-timestamp';
 import { createJobInfoTags } from '@/lib/jobs/utils/create-job-info-tags';
 import { createJobOrgInfoTags } from '@/lib/jobs/utils/create-job-org-info-tags';
 import { createProjectInfoTags } from '@/lib/jobs/utils/create-project-info-tags';
@@ -72,12 +73,13 @@ export const dtoToJobListItem = (jobItemDto: JobListItemDto): JobListItemSchema 
   const mappedTags = dtoToJobListItemTag(tags);
   const mappedOrg = dtoToJobListItemOrg(organization);
   const projects = dtoToJobListItemProjects(jobItemDto);
+  const timestampText = prettyTimestamp(timestamp);
 
   return {
     id: shortUUID,
     title,
     url,
-    timestamp,
+    timestampText,
     access,
     infoTags,
     tags: mappedTags,
