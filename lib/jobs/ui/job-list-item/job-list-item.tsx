@@ -5,7 +5,7 @@ import { InfoTags } from '@/lib/shared/ui/info-tags';
 import { jobInfoTagsMap } from '@/lib/jobs/ui/tag-icon-map';
 
 import { JobListItemOrg } from './job-list-item-org';
-import { JobListItemProjects } from './job-list-item-projects';
+// import { JobListItemProjects } from './job-list-item-projects';
 import { JobListItemTags } from './job-list-item-tags';
 interface Props {
   job: JobListItemSchema;
@@ -17,7 +17,7 @@ export const JobListItem = ({ job }: Props) => {
     infoTags,
     tags,
     organization,
-    projects,
+    // projects,
     promotion: { isFeatured },
   } = job;
 
@@ -27,7 +27,7 @@ export const JobListItem = ({ job }: Props) => {
       <InfoTags iconMap={jobInfoTagsMap} infoTags={infoTags} />
       <JobListItemOrg org={organization} />
       <JobListItemTags tags={tags} />
-      <JobListItemProjects projects={projects} />
+      {/* <JobListItemProjects projects={projects} /> */}
       {isFeatured && <BorderBeam size={320} duration={12} delay={9} />}
     </article>
   );
