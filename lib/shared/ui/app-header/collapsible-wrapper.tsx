@@ -5,7 +5,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 /**
  * The scroll position threshold (in pixels) below which the header is always expanded
  */
-const SCROLL_TOP_THRESHOLD = 20;
+const SCROLL_TOP_THRESHOLD = 10;
 
 /**
  * The scroll distance threshold (in pixels) that triggers a collapse or expand action
