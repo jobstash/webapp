@@ -2,6 +2,7 @@ import { AuditIcon } from '@/lib/shared/ui/svgs/audit-icon';
 import { BankIcon } from '@/lib/shared/ui/svgs/bank-icon';
 import { CategoryIcon } from '@/lib/shared/ui/svgs/category-icon';
 import { CommitmentIcon } from '@/lib/shared/ui/svgs/commitment-icon';
+import { GlassesIcon } from '@/lib/shared/ui/svgs/glasses-icon';
 import { HackIcon } from '@/lib/shared/ui/svgs/hack-icon';
 import { LocationIcon } from '@/lib/shared/ui/svgs/location-icon';
 import { MonthlyVolumeIcon } from '@/lib/shared/ui/svgs/monthly-volume-icon';
@@ -12,6 +13,7 @@ import { TokenAllocationIcon } from '@/lib/shared/ui/svgs/token-allocation-icon'
 import { TokenIcon } from '@/lib/shared/ui/svgs/token-icon';
 import { TvlIcon } from '@/lib/shared/ui/svgs/tvl-icon';
 import { UsersIcon } from '@/lib/shared/ui/svgs/users-icon';
+import { WizardHatIcon } from '@/lib/shared/ui/svgs/wizard-hat-icon';
 import { WorkModeIcon } from '@/lib/shared/ui/svgs/work-mode-icon';
 
 type IconMap = Record<string, React.ReactNode>;
@@ -43,4 +45,10 @@ export const jobProjectInfoTagsIconMap: IconMap = {
   monthlyRevenue: <MonthlyVolumeIcon />,
   audit: <AuditIcon />,
   hack: <HackIcon />,
+};
+
+export const jobBadgeIconMap: IconMap = {
+  featured: null,
+  expert: <GlassesIcon />,
+  beginner: <WizardHatIcon />,
 };
