@@ -68,8 +68,10 @@ export const CollapsibleWrapper = ({ children, header }: Props) => {
       </div>
 
       <div
-        className='sticky top-0 z-20 hidden h-16 bg-gradient-to-t from-transparent to-background lg:block'
-        style={{ transform: `translateY(${height + 22}px)` }}
+        className='sticky top-0 z-20 hidden h-16 bg-gradient-to-t from-transparent to-background transition-all duration-400 ease-linear lg:block'
+        style={{
+          top: height + 22,
+        }}
       />
     </>
   );
