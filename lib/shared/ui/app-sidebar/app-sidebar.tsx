@@ -8,7 +8,7 @@ import { ProfileSidebar } from './profile-sidebar';
  */
 export const AppSidebar = () => {
   return (
-    <div className='flex flex-col gap-8'>
+    <div className='flex flex-col gap-6'>
       <Brand />
       <DiscoverSidebar />
       <ProfileSidebar />
