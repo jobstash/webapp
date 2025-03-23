@@ -121,6 +121,26 @@
       offset-distance: 100%;
     }
   }
+
+  --animate-accordion-up: accordion-up 300ms ease-out;
+  @keyframes accordion-up {
+    0% {
+      height: var(--radix-accordion-content-height);
+    }
+    100% {
+      height: 0;
+    }
+  }
+
+  --animate-accordion-down: accordion-down 300ms ease-out;
+  @keyframes accordion-down {
+    0% {
+      height: 0;
+    }
+    100% {
+      height: var(--radix-accordion-content-height);
+    }
+  }
 }
 
 @layer base {
