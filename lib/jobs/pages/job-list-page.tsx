@@ -22,9 +22,9 @@ export const JobListPage = ({ ssrData }: Props) => {
         <div className='sticky top-0 z-30 hidden h-screen w-72 p-6 lg:block'>
           <AppSidebar />
         </div>
-        <div className='relative flex flex-1 flex-col bg-background'>
+        <div className='relative flex flex-1 flex-col gap-4 bg-background'>
           <AppHeader />
-          <div className='relative -mt-12 w-full space-y-8 p-4'>
+          <div className='relative w-full space-y-8 p-4'>
             <SsrJobList jobs={ssrData} />
             {showClientJobList && (
               <Suspense fallback={<p>LOADING ...</p>}>
