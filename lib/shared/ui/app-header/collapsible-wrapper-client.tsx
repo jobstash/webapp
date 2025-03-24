@@ -5,26 +5,33 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 const SCROLL_TOP_THRESHOLD = 10;
 const SCROLL_DELTA_THRESHOLD = 15;
 
-interface Props extends React.PropsWithChildren {
-  header: React.ReactNode;
-}
-
-export const CollapsibleWrapper = ({ children, header }: Props) => {
+export const CollapsibleWrapperClient = () => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const lastScrollY = useRef(0); // Using ref instead of state for scroll position
+  const lastScrollY = useRef(0);
 
-  const headerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
 
   const updateHeights = useCallback(() => {
     if (headerRef.current) setHeaderHeight(headerRef.current.offsetHeight);
-    if (contentRef.current) setContentHeight(contentRef.current.offsetHeight);
+    if (contentRef.current) setContentHeight(contentRef.current.offsetHeight + 2);
   }, []);
 
+  // Find DOM elements on mount
+  useEffect(() => {
+    wrapperRef.current = document.querySelector('[data-collapsible-wrapper]');
+    headerRef.current = document.querySelector('[data-collapsible-header]');
+    contentRef.current = document.querySelector('[data-collapsible-content]');
+
+    updateHeights();
+  }, [updateHeights]);
+
   useLayoutEffect(() => updateHeights(), [updateHeights]);
+
   useEffect(() => {
     const observer = new ResizeObserver(updateHeights);
     if (headerRef.current) observer.observe(headerRef.current);
@@ -32,8 +39,17 @@ export const CollapsibleWrapper = ({ children, header }: Props) => {
     return () => observer.disconnect();
   }, [updateHeights]);
 
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+
+    const height = isExpanded ? headerHeight + contentHeight : headerHeight;
+
+    wrapperRef.current.style.height = `${height}px`;
+  }, [isExpanded, headerHeight, contentHeight]);
+
   const handleScroll = useCallback(() => {
     const currentScrollY = window.scrollY;
+    console.log({ currentScrollY });
 
     if (currentScrollY < SCROLL_TOP_THRESHOLD) {
       setIsExpanded(true);
@@ -53,26 +69,5 @@ export const CollapsibleWrapper = ({ children, header }: Props) => {
     return () => window.removeEventListener('scroll', scrollListener);
   }, [handleScroll]);
 
-  const height = isExpanded ? headerHeight + contentHeight : headerHeight;
-
-  return (
-    <>
-      <div
-        className='sticky top-0 z-30 w-full overflow-hidden border border-neutral-800/50 bg-sidebar/30 backdrop-blur-md transition-all duration-400 ease-linear lg:top-6 lg:mt-6 lg:rounded-2xl'
-        style={{ height }}
-      >
-        <div ref={headerRef}>{header}</div>
-        <div ref={contentRef} className='pb-8'>
-          {children}
-        </div>
-      </div>
-
-      <div
-        className='sticky top-0 z-20 hidden h-16 bg-gradient-to-t from-transparent to-background transition-all duration-400 ease-linear lg:block'
-        style={{
-          top: height + 22,
-        }}
-      />
-    </>
-  );
+  return null;
 };
