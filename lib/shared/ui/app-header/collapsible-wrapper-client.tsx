@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-const SCROLL_TOP_THRESHOLD = 10;
-const SCROLL_DELTA_THRESHOLD = 15;
+const SCROLL_TOP_THRESHOLD = 20;
+const SCROLL_DELTA_THRESHOLD = 30;
 
 export const CollapsibleWrapperClient = () => {
   const [isExpanded, setIsExpanded] = useState(true);
