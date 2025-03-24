@@ -6,20 +6,20 @@ import { Input } from '@/lib/shared/ui/base/input';
 import { CollapsibleWrapper } from './collapsible-wrapper';
 
 const dummyItems = [
-  'Blockchain Dev',
-  'Smart Contracts',
-  'DeFi',
-  'Frontend',
-  'Backend',
-  'DevOps',
-  'Community',
+  'Remote Jobs',
+  'Jobs for Experts',
+  'Junior Roles',
+  'Frontend Developer',
+  'LLM',
+  'Web3 Beginners',
+  'Ethereum',
+  'Rust',
+  'Backend Engineer',
+  'Coinbase',
   'Marketing',
-  'Product',
-  'Research',
-  'Security',
-  'NFT',
-  'Data Analytics',
-  'Trading',
+  'Internship',
+  'Onsite',
+  'Europe',
 ];
 
 /**
@@ -49,10 +49,10 @@ export const AppHeader = () => {
       }
     >
       <div className='flex shrink-0 flex-col gap-4 px-4 pt-4'>
-        <h1 className='text-2xl font-bold'>Remote Jobs in Crypto</h1>
+        <h1 className='text-2xl font-bold'>Crypto Native Jobs</h1>
         <p>
-          Discover remote blockchain opportunities from leading crypto companies. Find
-          roles across various Web3 projects and protocols.
+          Explore crypto native jobs across the entire crypto ecosystem, powered by AI and
+          enhanced by unique data insights as a public good.
         </p>
         <div className='flex flex-wrap gap-4'>
           {dummyItems.map((category) => (
