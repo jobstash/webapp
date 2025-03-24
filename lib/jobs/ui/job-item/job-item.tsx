@@ -4,6 +4,7 @@ import { cn } from '@/lib/shared/utils';
 
 import { BorderBeam } from '@/lib/shared/ui/base/border-beam';
 import { InfoTags } from '@/lib/shared/ui/info-tags';
+import { BookmarkButton } from '@/lib/bookmarks/ui/bookmark-button';
 import { jobInfoTagsIconMap } from '@/lib/jobs/ui/job-icon-map';
 import { JobItemBadge } from '@/lib/jobs/ui/job-item/job-item-badge';
 
@@ -35,13 +36,16 @@ export const JobItem = ({ job }: Props) => {
           <JobItemBadge badge={badge} />
           <h2 className='text-xl font-bold'>{title}</h2>
         </div>
-        <span
-          className={cn('text-xs text-neutral-400', {
-            'font-semibold text-white': isUrgentlyHiring,
-          })}
-        >
-          {timestampText}
-        </span>
+        <div className='flex items-center gap-2'>
+          <span
+            className={cn('text-xs text-neutral-400', {
+              'font-semibold text-white': isUrgentlyHiring,
+            })}
+          >
+            {timestampText}
+          </span>
+          <BookmarkButton />
+        </div>
       </div>
       <InfoTags iconMap={jobInfoTagsIconMap} infoTags={infoTags} />
       <JobItemOrg org={organization} />
