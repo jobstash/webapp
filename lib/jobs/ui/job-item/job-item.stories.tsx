@@ -23,6 +23,7 @@ export const Default: Story = {
       title: 'Product Manager',
       url: 'https://p2porg.global.huntflow.io/vacancy/product-manager-re-staking-sol-ton-btc',
       timestampText: 'last month',
+      summary: 'We are looking for a Product Manager to join our team.',
       access: 'public',
       infoTags: [
         {

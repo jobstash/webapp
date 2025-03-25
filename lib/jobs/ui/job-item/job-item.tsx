@@ -7,6 +7,7 @@ import { InfoTags } from '@/lib/shared/ui/info-tags';
 import { BookmarkButton } from '@/lib/bookmarks/ui/bookmark-button';
 import { jobInfoTagsIconMap } from '@/lib/jobs/ui/job-icon-map';
 import { JobItemBadge } from '@/lib/jobs/ui/job-item/job-item-badge';
+import { JobItemSummary } from '@/lib/jobs/ui/job-item/job-item-summary';
 
 import { JobItemOrg } from './job-item-org';
 // import { JobItemProjects } from './job-list-item-projects';
@@ -20,6 +21,7 @@ export const JobItem = ({ job }: Props) => {
     title,
     infoTags,
     tags,
+    summary,
     organization,
     badge,
     hasGradientBorder,
@@ -49,6 +51,7 @@ export const JobItem = ({ job }: Props) => {
       </div>
       <InfoTags iconMap={jobInfoTagsIconMap} infoTags={infoTags} />
       <JobItemOrg org={organization} />
+      <JobItemSummary summary={summary} />
       <JobItemTags tags={tags} />
       {/* <JobItemProjects projects={projects} /> */}
       {hasGradientBorder && <BorderBeam size={320} duration={12} delay={9} />}

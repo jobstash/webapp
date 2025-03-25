@@ -23,6 +23,7 @@ export const jobItemDto = v.object({
   url: nullableStringSchema,
   shortUUID: nonEmptyStringSchema,
   timestamp: v.number(),
+  summary: nullableStringSchema,
   access: v.picklist(['public', 'protected']),
   featured: v.boolean(),
   featureStartDate: nullableNumberSchema,
