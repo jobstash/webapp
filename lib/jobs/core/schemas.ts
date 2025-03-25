@@ -49,8 +49,17 @@ export const jobItemSchema = v.object({
   isUrgentlyHiring: v.boolean(),
   timestampText: nonEmptyStringSchema,
 });
-
 export type JobItemSchema = v.InferOutput<typeof jobItemSchema>;
 
 export const jobListPageSchema = infiniteListPageSchema(jobItemSchema);
 export type JobListPageSchema = v.InferOutput<typeof jobListPageSchema>;
+
+export const jobDetailsSchema = v.object({
+  ...jobItemSchema.entries,
+  description: nullableStringSchema,
+  requirements: v.nullable(v.array(nonEmptyStringSchema)),
+  responsibilities: v.nullable(v.array(nonEmptyStringSchema)),
+  benefits: v.nullable(v.array(nonEmptyStringSchema)),
+  culture: v.nullable(v.array(nonEmptyStringSchema)),
+});
+export type JobDetailsSchema = v.InferOutput<typeof jobDetailsSchema>;
