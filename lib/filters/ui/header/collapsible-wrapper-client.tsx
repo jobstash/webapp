@@ -49,7 +49,6 @@ export const CollapsibleWrapperClient = () => {
 
   const handleScroll = useCallback(() => {
     const currentScrollY = window.scrollY;
-    console.log({ currentScrollY });
 
     if (currentScrollY < SCROLL_TOP_THRESHOLD) {
       setIsExpanded(true);
