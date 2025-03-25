@@ -4,19 +4,28 @@ import { createMock } from 'storybook-addon-module-mock';
 
 import * as fetchJobListPageModule from '@/lib/jobs/server/data';
 
-import JobsPage from './page';
+import Layout from './layout';
+import HomePage from './page';
 
 import { fakeJobListQueryPage } from '@/lib/jobs/test-utils/fake-job-list-query-page';
 
-const meta: Meta<typeof JobsPage> = {
-  component: JobsPage,
+const meta: Meta<typeof HomePage> = {
+  title: 'Home Page',
+  component: HomePage,
   parameters: {
     nextjs: {
       navigation: {
-        pathname: '/jobs',
+        pathname: '/',
       },
     },
   },
+  decorators: [
+    (Story) => (
+      <Layout>
+        <Story />
+      </Layout>
+    ),
+  ],
 };
 
 export default meta;
