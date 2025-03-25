@@ -46,9 +46,7 @@ const preview: Preview = {
                   provider: () => new Map(),
                 }}
               >
-                <div className='h-[100vh] overflow-auto'>
-                  <Story />
-                </div>
+                <Story />
               </SWRConfig>
             </NuqsAdapter>
           </ThemeProvider>
