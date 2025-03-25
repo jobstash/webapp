@@ -29,7 +29,7 @@ const config: StorybookConfig = {
 
   env: (config) => ({
     ...config,
-    NEXT_PUBLIC_PAGE_SIZE: '3',
+    NEXT_PUBLIC_PAGE_SIZE: '20',
   }),
 
   docs: {},
