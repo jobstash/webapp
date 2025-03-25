@@ -11,7 +11,7 @@ import { createJobOrgInfoTags } from '@/lib/jobs/utils/create-job-org-info-tags'
 import { createProjectInfoTags } from '@/lib/jobs/utils/create-project-info-tags';
 import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
 
-import { JobItemDto } from './job-list-dtos';
+import { JobItemDto } from './job-item-dto';
 
 const dtoToJobItemTag = (dto: JobItemDto['tags']): JobItemSchema['tags'] => {
   return dto.map((tag) => ({

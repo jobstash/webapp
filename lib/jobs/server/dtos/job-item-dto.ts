@@ -9,7 +9,6 @@ import {
   projectAllInfoDto,
   tagDto,
 } from '@/lib/shared/core/dtos';
-import { envs } from '@/lib/shared/core/envs';
 import {
   nonEmptyStringSchema,
   nullableBooleanSchema,
@@ -70,17 +69,3 @@ export const jobItemDto = v.object({
   onboardIntoWeb3: v.boolean(),
 });
 export type JobItemDto = v.InferOutput<typeof jobItemDto>;
-
-export const jobListPageDto = v.object({
-  page: v.number(),
-  count: v.number(),
-  total: v.number(),
-  data: v.array(jobItemDto),
-});
-export type JobListPageDto = v.InferOutput<typeof jobListPageDto>;
-
-export const jobListPageParamsDto = v.object({
-  page: v.pipe(v.number(), v.minValue(1)),
-  limit: v.optional(v.pipe(v.number(), v.minValue(1)), envs.PAGE_SIZE),
-});
-export type JobListPageParamsDto = v.InferOutput<typeof jobListPageParamsDto>;
