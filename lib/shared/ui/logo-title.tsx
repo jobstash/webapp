@@ -150,7 +150,9 @@ export const LogoTitle = (props: Props) => {
   const isStringSubtitle = typeof subtitle === 'string';
 
   return (
-    <div className={cn('pr-4', logoTitleVariants({ size }), classNames?.container)}>
+    <div
+      className={cn('shrink-0 pr-4', logoTitleVariants({ size }), classNames?.container)}
+    >
       <Avatar className={cn(avatarVariants({ size }), classNames?.avatar)}>
         <AvatarImage src={src} alt={titleText} />
         {!isIdenticonFallback && (
