@@ -1,4 +1,4 @@
-import { AppSidebar } from '@/lib/shared/ui/app-sidebar';
+import { Sidebar } from '@/lib/shared/ui/sidebar';
 
 interface Props extends React.PropsWithChildren {
   aside?: React.ReactNode;
@@ -9,7 +9,7 @@ export const SidebarAsideLayout = ({ children, aside = null }: Props) => {
     <div className='flex min-h-screen justify-center'>
       <div className='relative flex w-full xl:container'>
         <div className='sticky top-0 z-30 hidden h-screen w-72 p-6 lg:block'>
-          <AppSidebar />
+          <Sidebar />
         </div>
 
         <div className='fixed top-0 z-20 h-10 w-full bg-background' />
