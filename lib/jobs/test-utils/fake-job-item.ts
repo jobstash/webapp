@@ -18,6 +18,7 @@ export const fakeJobItem = () // overrides?: Partial<JobItemSchema>,
 
   return {
     id: faker.string.nanoid(6),
+    href: faker.internet.url(),
     title: faker.company.catchPhrase(),
     url: faker.internet.url(),
     timestampText: prettyTimestamp(faker.date.recent().getTime()),

@@ -11,6 +11,5 @@ export const slugify = (str: string | null | undefined): string => {
     remove: /[*+~.()'"!:@]/g,
     strict: true,
   });
-  if (slug === '') return str.trim().toLowerCase();
   return slug;
 };
