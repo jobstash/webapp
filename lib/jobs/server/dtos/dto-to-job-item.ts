@@ -16,6 +16,7 @@ import { JobItemDto } from './job-item-dto';
 
 const dtoToJobItemTag = (dto: JobItemDto['tags']): JobItemSchema['tags'] => {
   return dto.map((tag) => ({
+    id: tag.id,
     name: tag.name,
     normalizedName: tag.normalizedName,
     colorIndex: getJobTechColorIndex(tag.id),

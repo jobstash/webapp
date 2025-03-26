@@ -10,6 +10,7 @@ import {
 import { jobBadgeLabels } from '@/lib/jobs/core/constants';
 
 export const jobTagSchema = v.object({
+  id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   normalizedName: nonEmptyStringSchema,
   colorIndex: v.pipe(v.number(), v.minValue(1), v.maxValue(12)),
