@@ -28,6 +28,7 @@ export type JobItemProjectSchema = v.InferOutput<typeof jobItemProjectSchema>;
 export const jobItemSchema = v.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
+  href: nonEmptyStringSchema,
   url: nullableStringSchema,
   access: v.picklist(['public', 'protected']),
   summary: nullableStringSchema,

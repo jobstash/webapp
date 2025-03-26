@@ -7,6 +7,7 @@ import { JobItemSchema } from '@/lib/jobs/core/schemas';
 import { getLogoUrl } from '@/lib/shared/utils/get-logo-url';
 import { prettyTimestamp } from '@/lib/shared/utils/pretty-timestamp';
 import { createJobInfoTags } from '@/lib/jobs/utils/create-job-info-tags';
+import { createJobItemHref } from '@/lib/jobs/utils/create-job-item-href';
 import { createJobOrgInfoTags } from '@/lib/jobs/utils/create-job-org-info-tags';
 import { createProjectInfoTags } from '@/lib/jobs/utils/create-project-info-tags';
 import { getJobTechColorIndex } from '@/lib/jobs/utils/get-job-tech-color-index';
@@ -80,6 +81,7 @@ export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
     onboardIntoWeb3,
   } = jobItemDto;
 
+  const href = createJobItemHref(jobItemDto);
   const infoTags = createJobInfoTags(jobItemDto);
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemOrg(organization);
@@ -92,6 +94,7 @@ export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
   return {
     id: shortUUID,
     title,
+    href,
     url,
     access,
     summary,

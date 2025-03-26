@@ -20,6 +20,7 @@ export const Default: Story = {
   args: {
     job: {
       id: 'n61Cgw',
+      href: '/product-manager-re-staking-sol-ton-btc/abc123',
       title: 'Product Manager',
       url: 'https://p2porg.global.huntflow.io/vacancy/product-manager-re-staking-sol-ton-btc',
       timestampText: 'last month',

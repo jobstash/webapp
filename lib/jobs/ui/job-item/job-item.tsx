@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { cn } from '@/lib/shared/utils';
@@ -19,6 +21,7 @@ interface Props {
 export const JobItem = ({ job }: Props) => {
   const {
     title,
+    href,
     infoTags,
     tags,
     summary,
@@ -32,7 +35,10 @@ export const JobItem = ({ job }: Props) => {
   } = job;
 
   return (
-    <article className='relative flex w-full flex-col gap-4 rounded-3xl border border-neutral-800/80 bg-sidebar p-6'>
+    <Link
+      href={href}
+      className='relative flex w-full flex-col gap-4 rounded-3xl border border-neutral-800/80 bg-sidebar p-6'
+    >
       <div className='flex items-baseline justify-between'>
         <div className='flex flex-col gap-0'>
           <JobItemBadge badge={badge} />
@@ -55,6 +61,6 @@ export const JobItem = ({ job }: Props) => {
       <JobItemTags tags={tags} />
       {/* <JobItemProjects projects={projects} /> */}
       {hasGradientBorder && <BorderBeam size={320} duration={12} delay={9} />}
-    </article>
+    </Link>
   );
 };
