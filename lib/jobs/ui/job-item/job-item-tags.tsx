@@ -16,7 +16,7 @@ export const JobItemTags = ({ tags }: Props) => {
       <div className='flex flex-wrap items-center gap-2'>
         {tags.map((tag) => (
           <Button
-            key={tag.name}
+            key={tag.id}
             size='xs'
             variant='secondary'
             className='rounded-sm border-muted text-xs text-foreground/80 uppercase'

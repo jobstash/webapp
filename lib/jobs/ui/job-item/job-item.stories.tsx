@@ -50,41 +50,49 @@ export const Default: Story = {
       ],
       tags: [
         {
+          id: 'project-management',
           name: 'project management',
           normalizedName: 'project-management',
           colorIndex: 10,
         },
         {
+          id: 'marketing',
           name: 'marketing',
           normalizedName: 'marketing',
           colorIndex: 2,
         },
         {
+          id: 'b2b',
           name: 'B2B',
           normalizedName: 'b2b',
           colorIndex: 2,
         },
         {
+          id: 'finance',
           name: 'finance',
           normalizedName: 'finance',
           colorIndex: 7,
         },
         {
+          id: 'planning',
           name: 'planning',
           normalizedName: 'planning',
           colorIndex: 9,
         },
         {
+          id: 'analytics',
           name: 'analytics',
           normalizedName: 'analytics',
           colorIndex: 10,
         },
         {
+          id: 'product-management',
           name: 'product management',
           normalizedName: 'product-management',
           colorIndex: 4,
         },
         {
+          id: 'decentralized-technology',
           name: 'Decentralized Technology',
           normalizedName: 'decentralized-technology',
           colorIndex: 6,
