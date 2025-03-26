@@ -1,6 +1,8 @@
 import { fetchJobDetails } from '@/lib/jobs/server/data/fetch-job-details';
 import { fetchJobDetailsStaticParams } from '@/lib/jobs/server/data/fetch-job-details-static-params';
 
+import { BackButton } from './back-button';
+
 export const generateStaticParams = async () => {
   return fetchJobDetailsStaticParams();
 };
@@ -17,7 +19,8 @@ const Page = async (props: Props) => {
   const job = await fetchJobDetails(id);
   return (
     <>
-      <div className='pt-10'>
+      <div className='flex flex-col gap-4 pt-10'>
+        <BackButton />
         <h1>{title}</h1>
         <pre>{JSON.stringify({ id, title, org: job.organization?.name }, null, 2)}</pre>
       </div>
