@@ -16,7 +16,7 @@ const Page = async (props: Props) => {
   const { id, title } = await props.params;
   const job = await fetchJobDetails(id);
   return (
-    <div>
+    <div className='pt-10'>
       <h1>{title}</h1>
       <pre>{JSON.stringify(job, null, 2)}</pre>
     </div>
