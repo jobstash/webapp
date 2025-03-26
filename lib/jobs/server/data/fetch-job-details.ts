@@ -9,7 +9,7 @@ import { dtoToJobDetails, jobDetailsDto } from '@/lib/jobs/server/dtos';
 
 export const fetchJobDetails = async (id: string) => {
   const url = jobEndpoints.details(id);
-  const response = await kyFetch(url).json();
+  const response = await kyFetch(url, { cache: 'force-cache' }).json();
 
   const parsed = safeParse('jobDetailsDto', jobDetailsDto, response);
   if (!parsed.success) {

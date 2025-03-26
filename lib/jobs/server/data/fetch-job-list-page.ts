@@ -26,7 +26,7 @@ export const fetchJobListPage = async (input: Input) => {
   const { page, limit } = parsedParams.output;
 
   const url = jobEndpoints.list({ page, limit });
-  const response = await kyFetch(url).json();
+  const response = await kyFetch(url, { cache: 'force-cache' }).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);
   if (!parsed.success) {
