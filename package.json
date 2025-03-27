@@ -42,7 +42,8 @@
     "tailwindcss-animate": "^1.0.7",
     "transliteration": "^2.3.5",
     "valibot": "1.0.0-beta.11",
-    "webapp": "link:"
+    "webapp": "link:",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.4",
