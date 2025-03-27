@@ -70,7 +70,7 @@ export const dtoToJobItemBadge = (dto: JobItemDto): JobItemSchema['badge'] => {
 export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
   const {
     title,
-    url,
+    url: applyUrl,
     shortUUID,
     timestamp,
     access,
@@ -96,7 +96,7 @@ export const dtoToJobItem = (jobItemDto: JobItemDto): JobItemSchema => {
     id: shortUUID,
     title,
     href,
-    url,
+    applyUrl,
     access,
     summary,
     infoTags,

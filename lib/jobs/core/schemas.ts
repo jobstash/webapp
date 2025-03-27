@@ -30,7 +30,7 @@ export const jobItemSchema = v.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
-  url: nullableStringSchema,
+  applyUrl: nullableStringSchema,
   access: v.picklist(['public', 'protected']),
   summary: nullableStringSchema,
   infoTags: v.array(mappedInfoTagSchema),
