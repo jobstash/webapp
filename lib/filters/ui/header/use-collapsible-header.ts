@@ -1,12 +1,13 @@
-'use client';
-
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+import { useHeaderStore } from '@/lib/filters/ui/header/store';
 
 const SCROLL_TOP_THRESHOLD = 20;
 const SCROLL_DELTA_THRESHOLD = 30;
 
-export const CollapsibleWrapperClient = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+export const useCollapsibleHeader = () => {
+  const isExpanded = useHeaderStore((state) => state.isExpanded);
+  const setIsExpanded = useHeaderStore((state) => state.setIsExpanded);
   const lastScrollY = useRef(0);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -60,7 +61,7 @@ export const CollapsibleWrapperClient = () => {
     }
 
     lastScrollY.current = currentScrollY;
-  }, []);
+  }, [setIsExpanded]);
 
   useEffect(() => {
     const scrollListener = () => window.requestAnimationFrame(handleScroll);
