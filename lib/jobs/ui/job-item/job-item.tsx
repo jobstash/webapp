@@ -35,32 +35,36 @@ export const JobItem = ({ job }: Props) => {
   } = job;
 
   return (
-    <Link
-      href={href}
-      className='relative flex w-full flex-col gap-4 rounded-3xl border border-neutral-800/80 bg-sidebar p-6'
-    >
-      <div className='flex items-baseline justify-between'>
-        <div className='flex flex-col gap-0'>
-          <JobItemBadge badge={badge} />
-          <h2 className='text-xl font-bold'>{title}</h2>
+    <div className='relative'>
+      <Link
+        href={href}
+        aria-label='View job details'
+        className='absolute top-0 left-0 z-10 h-full w-full'
+      />
+      <div className='selectable-text pointer-events-none relative z-20 flex w-full flex-col gap-4 rounded-3xl border border-neutral-800/80 bg-sidebar p-6 select-text'>
+        <div className='flex items-baseline justify-between'>
+          <div className='flex flex-col gap-0'>
+            <JobItemBadge badge={badge} />
+            <h2 className='text-xl font-bold'>{title}</h2>
+          </div>
+          <div className='flex items-center gap-2'>
+            <span
+              className={cn('text-xs text-neutral-400', {
+                'font-semibold text-white': isUrgentlyHiring,
+              })}
+            >
+              {timestampText}
+            </span>
+            <BookmarkButton />
+          </div>
         </div>
-        <div className='flex items-center gap-2'>
-          <span
-            className={cn('text-xs text-neutral-400', {
-              'font-semibold text-white': isUrgentlyHiring,
-            })}
-          >
-            {timestampText}
-          </span>
-          <BookmarkButton />
-        </div>
+        <InfoTags iconMap={jobInfoTagsIconMap} infoTags={infoTags} />
+        <JobItemOrg org={organization} />
+        <JobItemSummary summary={summary} />
+        <JobItemTags tags={tags} />
+        {/* <JobItemProjects projects={projects} /> */}
+        {hasGradientBorder && <BorderBeam size={320} duration={12} delay={9} />}
       </div>
-      <InfoTags iconMap={jobInfoTagsIconMap} infoTags={infoTags} />
-      <JobItemOrg org={organization} />
-      <JobItemSummary summary={summary} />
-      <JobItemTags tags={tags} />
-      {/* <JobItemProjects projects={projects} /> */}
-      {hasGradientBorder && <BorderBeam size={320} duration={12} delay={9} />}
-    </Link>
+    </div>
   );
 };

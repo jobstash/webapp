@@ -186,3 +186,37 @@ Make sure disabled buttons don't get the pointer cursor.
     background-position: 0% 50%;
   }
 }
+
+.selectable-text
+  :where(
+    span,
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    a,
+    em,
+    strong,
+    i,
+    b,
+    small,
+    mark,
+    del,
+    ins,
+    sub,
+    sup,
+    time,
+    code,
+    q,
+    blockquote,
+    abbr,
+    dfn,
+    label,
+    legend,
+    caption
+  ) {
+  pointer-events: auto;
+}
