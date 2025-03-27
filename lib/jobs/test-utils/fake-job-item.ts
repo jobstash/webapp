@@ -33,7 +33,7 @@ export const fakeJobItem = () // overrides?: Partial<JobItemSchema>,
     organization: faker.datatype.boolean()
       ? {
           name: faker.company.name(),
-          website: faker.internet.url(),
+          href: faker.internet.url(),
           location: faker.location.country(),
           logo: faker.image.url(),
           infoTags: [],

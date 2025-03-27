@@ -38,7 +38,7 @@ export const jobItemSchema = v.object({
   organization: v.nullable(
     v.object({
       name: nonEmptyStringSchema,
-      website: nullableStringSchema,
+      href: nonEmptyStringSchema,
       location: nullableStringSchema,
       logo: nullableStringSchema,
       infoTags: v.array(mappedInfoTagSchema),

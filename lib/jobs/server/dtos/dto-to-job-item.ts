@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
+import { envs } from '@/lib/shared/core/envs';
 import { jobBadgeLabels } from '@/lib/jobs/core/constants';
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
@@ -48,9 +49,11 @@ const dtoToJobItemOrg = (
 ): JobItemSchema['organization'] => {
   if (!dto) return null;
 
+  const href = `${envs.VERI_URL}/organizations/info/${dto.normalizedName}`;
+
   return {
     name: dto.name,
-    website: dto.website,
+    href,
     logo: dto.logoUrl,
     location: dto.location,
     infoTags: createJobOrgInfoTags(dto),

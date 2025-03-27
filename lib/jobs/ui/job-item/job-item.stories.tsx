@@ -101,7 +101,7 @@ export const Default: Story = {
       ],
       organization: {
         name: 'P2P.org',
-        website: 'https://p2p.org',
+        href: 'https://p2p.org',
         logo: 'https://www.google.com/s2/favicons?domain=p2p.org&sz=64',
         infoTags: [],
         location: 'Remote',
