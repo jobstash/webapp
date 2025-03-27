@@ -21,7 +21,7 @@ export const JobItemTags = ({ tags }: Props) => {
             variant='secondary'
             className='rounded-sm border-muted text-xs text-foreground/80 uppercase'
           >
-            {tag.name}
+            <span>{tag.name}</span>
           </Button>
         ))}
       </div>
