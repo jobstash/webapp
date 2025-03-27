@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
+import { envs } from '@/lib/shared/core/envs';
+
 import { JobstashLogo } from '@/lib/shared/ui/svgs/jobstash-logo';
 
 const BRAND_NAME = 'JobStash';
-const VERI_URL = 'https://ecosystem.vision';
-const VERI_NAME = 'veri.xyz';
+const VERI_LABEL = 'veri.xyz';
 
 export const Brand = () => {
   return (
@@ -15,12 +16,12 @@ export const Brand = () => {
         <span className='pl-0.5 text-xs leading-snug text-white/40'>
           by
           <Link
-            href={VERI_URL}
+            href={envs.VERI_URL}
             target='_blank'
             rel='noopener noreferrer'
             className='pl-1 hover:underline'
           >
-            {VERI_NAME}
+            {VERI_LABEL}
           </Link>
         </span>
       </div>
