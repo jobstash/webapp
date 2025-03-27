@@ -3,9 +3,12 @@ import { fetchJobDetailsStaticParams } from '@/lib/jobs/server/data/fetch-job-de
 
 import { BackButton } from './back-button';
 
-export const generateStaticParams = async () => {
-  return fetchJobDetailsStaticParams();
-};
+export const generateStaticParams =
+  process.env.DISABLE_STATIC_GENERATION === 'true'
+    ? undefined
+    : async () => {
+        return fetchJobDetailsStaticParams();
+      };
 
 interface Props {
   params: Promise<{
