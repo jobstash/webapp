@@ -6,6 +6,7 @@
     "dev": "next dev",
     "prebuild": "pnpm format && pnpm lint",
     "build": "next build",
+    "build:disable-static": "DISABLE_STATIC_GENERATION=true next build",
     "start": "next start",
     "format": "prettier --check './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "format:fix": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
