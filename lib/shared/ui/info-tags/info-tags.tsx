@@ -15,11 +15,8 @@ export const InfoTags = ({ iconMap, infoTags }: Props) => {
         const icon = iconMap[iconKey];
 
         return (
-          <div
-            key={iconKey}
-            className={'flex h-6 shrink-0 items-center gap-x-2 py-1 pr-2'}
-          >
-            <div className='shrink-0'>{icon}</div>
+          <div key={iconKey} className={'flex h-6 shrink-0 gap-x-2 py-1 pr-2'}>
+            {icon}
             <span className='max-w-[32ch] truncate text-sm md:max-w-[44ch] lg:text-xs'>
               {label}
             </span>
