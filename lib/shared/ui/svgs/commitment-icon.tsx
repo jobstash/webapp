@@ -6,6 +6,7 @@ export const CommitmentIcon = () => {
       viewBox='0 0 13 13'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
+      className='mt-0.75 md:mt-0'
     >
       <path
         fillRule='evenodd'

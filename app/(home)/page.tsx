@@ -13,7 +13,7 @@ const Page = async () => {
   return (
     <>
       <AppHeader />
-      <div className='relative w-full space-y-8 p-4'>
+      <div className='relative w-full space-y-8 overflow-x-hidden px-2.5 md:p-4'>
         <SsrJobList jobs={data} />
         {showClientJobList && <JobList />}
       </div>

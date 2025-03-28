@@ -47,7 +47,7 @@ export const JobItem = ({ job }: Props) => {
             <JobItemBadge badge={badge} />
             <h2 className='text-xl font-bold'>{title}</h2>
           </div>
-          <div className='flex items-center gap-2'>
+          <div className='hidden items-center gap-2 md:flex'>
             <span
               className={cn('text-xs text-neutral-400', {
                 'font-semibold text-white': isUrgentlyHiring,
