@@ -8,18 +8,9 @@ import { CollapsibleWrapperClient } from './collapsible-wrapper.client';
 const dummyItems = [
   'Remote Jobs',
   'Jobs for Experts',
-  'Junior Roles',
   'Frontend Developer',
-  'LLM',
-  'Web3 Beginners',
   'Ethereum',
-  'Rust',
-  'Backend Engineer',
-  'Coinbase',
-  'Marketing',
-  'Internship',
-  'Onsite',
-  'Europe',
+  'Web3 Beginners',
 ];
 
 export const AppHeader = () => {
@@ -45,10 +36,7 @@ export const AppHeader = () => {
           </Button>
         </div>
       </div>
-      <div
-        data-collapsible-content
-        className='flex shrink-0 flex-col gap-4 px-4 pt-4 pb-8'
-      >
+      <div data-collapsible-content className='flex shrink-0 flex-col gap-4 p-4'>
         <h1 className='text-2xl font-bold'>Crypto Native Jobs</h1>
         <p>
           Explore crypto native jobs across the entire crypto ecosystem, powered by AI and
