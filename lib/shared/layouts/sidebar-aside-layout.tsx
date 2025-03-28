@@ -13,7 +13,7 @@ export const SidebarAsideLayout = ({ children, aside = null }: Props) => {
           <Sidebar />
         </div>
 
-        <div className='fixed top-0 z-30 h-10 w-full bg-background' />
+        <div className='fixed top-0 z-30 hidden h-10 w-full bg-background md:block' />
 
         <div className='relative flex max-w-4xl flex-1 flex-col gap-4'>{children}</div>
 

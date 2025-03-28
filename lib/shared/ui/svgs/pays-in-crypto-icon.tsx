@@ -7,7 +7,7 @@ export const PaysInCryptoIcon = () => {
       viewBox='0 0 64 64'
       fill='none'
       stroke='white'
-      className='stroke-2'
+      className='mt-0.75 stroke-2 md:mt-0'
     >
       <path d='M32 56 16 32 32 8l16 24-16 24z' />
       <path d='m16 32 16 8 16-8' />

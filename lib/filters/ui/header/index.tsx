@@ -27,7 +27,7 @@ export const AppHeader = () => {
             placeholder='Search 3129 jobs'
           />
         </div>
-        <div className='flex items-center'>
+        <div className='hidden items-center md:flex'>
           <Button variant='ghost' size='sm'>
             Get Listed
           </Button>

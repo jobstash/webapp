@@ -18,11 +18,12 @@ export const JobItemOrg = ({ org }: Props) => {
   if (!org) return null;
 
   const { name, href, location, logo, infoTags } = org;
+  const hasInfoTags = infoTags && infoTags.length > 0;
 
   return (
     <>
       <Divider />
-      <div className='flex items-center gap-4'>
+      <div className='flex flex-col gap-4 md:flex-row md:items-center'>
         <LogoTitle
           size='sm'
           title={
@@ -38,7 +39,7 @@ export const JobItemOrg = ({ org }: Props) => {
           subtitle={location}
           src={logo ?? ''}
         />
-        {infoTags && <InfoTags iconMap={jobOrgInfoTagsIconMap} infoTags={infoTags} />}
+        {hasInfoTags && <InfoTags iconMap={jobOrgInfoTagsIconMap} infoTags={infoTags} />}
       </div>
     </>
   );
