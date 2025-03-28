@@ -1,3 +1,5 @@
+import { fetchFilterConfigs } from '@/lib/filters/data/fetch-filter-configs';
+
 import { Divider } from '@/lib/shared/ui/divider';
 
 import { AdvancedFiltersToggle } from './advanced-filters-toggle';
@@ -19,7 +21,10 @@ import { FiltersContent } from './filters-content';
 //   projectFilters: ['Names', 'Chains', 'TVL', 'Audits', 'Hacks'],
 // };
 
-export const FiltersAside = () => {
+export const FiltersAside = async () => {
+  // TODO: Filter Configs
+  await fetchFilterConfigs();
+
   return (
     <FiltersProvider>
       <div className='flex w-full flex-1 flex-col overflow-hidden rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>

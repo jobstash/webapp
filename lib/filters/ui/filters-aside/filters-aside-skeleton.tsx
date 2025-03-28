@@ -1,3 +1,7 @@
 export const FiltersAsideSkeleton = () => {
-  return <div>FiltersAsideSkeleton</div>;
+  return (
+    <div className='grid h-[624px] place-items-center rounded-2xl bg-sidebar'>
+      <span>{'<FiltersSkeleton />'}</span>
+    </div>
+  );
 };
