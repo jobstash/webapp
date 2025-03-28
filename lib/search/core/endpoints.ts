@@ -5,4 +5,6 @@ const BASE_PILLAR_URL = `${BASE_URL}/pillar` as const;
 
 export const searchEndpoints = {
   staticPillarSlugs: () => `${BASE_PILLAR_URL}/slugs` as const,
+  pillarDeets: (slug: string) =>
+    `${BASE_PILLAR_URL}/details?nav=jobs&slug=${slug}` as const,
 };
