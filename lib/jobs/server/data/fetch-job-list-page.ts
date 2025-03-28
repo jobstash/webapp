@@ -1,7 +1,7 @@
 'use server';
 
 import { MwSchemaError } from '@/lib/shared/core/errors';
-import { jobEndpoints } from '@/lib/jobs/core/job-endpoints';
+import { JOB_ENDPOINTS } from '@/lib/jobs/core/endpoints';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
 
@@ -25,7 +25,7 @@ export const fetchJobListPage = async (input: Input) => {
   }
   const { page, limit } = parsedParams.output;
 
-  const url = jobEndpoints.list({ page, limit });
+  const url = JOB_ENDPOINTS.list({ page, limit });
   const response = await kyFetch(url, { cache: 'force-cache' }).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);

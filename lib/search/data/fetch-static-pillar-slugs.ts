@@ -1,5 +1,5 @@
 import { MwSchemaError } from '@/lib/shared/core/errors';
-import { searchEndpoints } from '@/lib/search/core/endpoints';
+import { SEARCH_ENDPOINTS } from '@/lib/search/core/endpoints';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
 
@@ -9,7 +9,7 @@ import { pillarSlugsDto } from '@/lib/search/server/dtos';
 import { dtoToStaticPillarSlugs } from '@/lib/search/server/dtos/dto-to-static-pillar-slugs';
 
 export const fetchStaticPillarSlugs = async () => {
-  const url = searchEndpoints.staticPillarSlugs();
+  const url = SEARCH_ENDPOINTS.staticPillarSlugs();
   const response = await kyFetch(url).json();
 
   const parsed = safeParse('pillarSlugsDto', pillarSlugsDto, response);

@@ -1,8 +1,8 @@
 import 'server-only';
 
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
-import { envs } from '@/lib/shared/core/envs';
-import { jobBadgeLabels } from '@/lib/jobs/core/constants';
+import { ENV } from '@/lib/shared/core/envs';
+import { JOB_ITEM_BADGE } from '@/lib/jobs/core/constants';
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
 import { getLogoUrl } from '@/lib/shared/utils/get-logo-url';
@@ -49,7 +49,7 @@ const dtoToJobItemOrg = (
 ): JobItemSchema['organization'] => {
   if (!dto) return null;
 
-  const href = `${envs.VERI_URL}/organizations/info/${dto.normalizedName}`;
+  const href = `${ENV.VERI_URL}/organizations/info/${dto.normalizedName}`;
 
   return {
     name: dto.name,
@@ -63,9 +63,9 @@ const dtoToJobItemOrg = (
 export const dtoToJobItemBadge = (dto: JobItemDto): JobItemSchema['badge'] => {
   const { featured, access, onboardIntoWeb3 } = dto;
 
-  if (featured) return jobBadgeLabels.FEATURED;
-  if (access === 'protected') return jobBadgeLabels.EXPERT;
-  if (onboardIntoWeb3) return jobBadgeLabels.BEGINNER;
+  if (featured) return JOB_ITEM_BADGE.FEATURED;
+  if (access === 'protected') return JOB_ITEM_BADGE.EXPERT;
+  if (onboardIntoWeb3) return JOB_ITEM_BADGE.BEGINNER;
 
   return null;
 };
