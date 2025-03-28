@@ -10,7 +10,7 @@ const envSchema = v.object({
   ),
 });
 
-export const envs = (() => {
+export const ENV = (() => {
   const envValues = {
     FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
     MW_URL: process.env.NEXT_PUBLIC_MW_URL,

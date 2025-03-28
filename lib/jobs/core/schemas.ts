@@ -7,7 +7,7 @@ import {
   nullableNumberSchema,
   nullableStringSchema,
 } from '@/lib/shared/core/schemas';
-import { jobBadgeLabels } from '@/lib/jobs/core/constants';
+import { JOB_ITEM_BADGE } from '@/lib/jobs/core/constants';
 
 export const jobTagSchema = v.object({
   id: nonEmptyStringSchema,
@@ -47,7 +47,7 @@ export const jobItemSchema = v.object({
   projects: v.array(jobItemProjectSchema),
   promotionEndDate: nullableNumberSchema,
   hasGradientBorder: v.boolean(),
-  badge: v.nullable(v.picklist(Object.values(jobBadgeLabels))),
+  badge: v.nullable(v.picklist(Object.values(JOB_ITEM_BADGE))),
   isUrgentlyHiring: v.boolean(),
   timestampText: nonEmptyStringSchema,
 });

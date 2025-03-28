@@ -1,4 +1,4 @@
-import { jobBadgeLabels } from '@/lib/jobs/core/constants';
+import { JOB_ITEM_BADGE } from '@/lib/jobs/core/constants';
 
 import { AuditIcon } from '@/lib/shared/ui/svgs/audit-icon';
 import { BankIcon } from '@/lib/shared/ui/svgs/bank-icon';
@@ -50,12 +50,12 @@ export const jobProjectInfoTagsIconMap: IconMap = {
 };
 
 type JobBadgeIconMap = Record<
-  (typeof jobBadgeLabels)[keyof typeof jobBadgeLabels],
+  (typeof JOB_ITEM_BADGE)[keyof typeof JOB_ITEM_BADGE],
   React.ReactNode
 >;
 
 export const jobBadgeIconMap: JobBadgeIconMap = {
-  [jobBadgeLabels.FEATURED]: null,
-  [jobBadgeLabels.EXPERT]: <GlassesIcon />,
-  [jobBadgeLabels.BEGINNER]: <WizardHatIcon />,
+  [JOB_ITEM_BADGE.FEATURED]: null,
+  [JOB_ITEM_BADGE.EXPERT]: <GlassesIcon />,
+  [JOB_ITEM_BADGE.BEGINNER]: <WizardHatIcon />,
 } as const;

@@ -6,7 +6,7 @@ export const jobSeniorityMapping = {
   '5': 'Head',
 };
 
-export const jobBadgeLabels = {
+export const JOB_ITEM_BADGE = {
   FEATURED: 'Featured',
   EXPERT: 'Job for Experts',
   BEGINNER: 'Job for Web3 Beginners',

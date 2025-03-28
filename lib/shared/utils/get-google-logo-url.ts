@@ -1,4 +1,4 @@
-import { envs } from '@/lib/shared/core/envs';
+import { ENV } from '@/lib/shared/core/envs';
 
 import { getWebsiteText } from './get-website-text';
 
@@ -10,7 +10,7 @@ export const getGoogleLogoUrl = (url: string | null) =>
 
 export const getLogoUrlHttpsAlternative = (googleString: string) => {
   const url = new URL(
-    `${googleString.startsWith('http') ? '' : envs.FRONTEND_URL}${googleString}`,
+    `${googleString.startsWith('http') ? '' : ENV.FRONTEND_URL}${googleString}`,
   );
   const domain = url.searchParams.get('domain');
 
