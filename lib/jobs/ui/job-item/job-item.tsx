@@ -2,15 +2,14 @@ import Link from 'next/link';
 
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
-import { cn } from '@/lib/shared/utils';
-
 import { BorderBeam } from '@/lib/shared/ui/base/border-beam';
 import { InfoTags } from '@/lib/shared/ui/info-tags';
-import { BookmarkButton } from '@/lib/bookmarks/ui/bookmark-button';
 import { jobInfoTagsIconMap } from '@/lib/jobs/ui/job-icon-map';
 import { JobItemBadge } from '@/lib/jobs/ui/job-item/job-item-badge';
 import { JobItemSummary } from '@/lib/jobs/ui/job-item/job-item-summary';
 
+import { JobItemDesktopTopRight } from './job-item-desktop-top-right';
+import { JobItemMobileFooter } from './job-item-mobile-footer';
 import { JobItemOrg } from './job-item-org';
 // import { JobItemProjects } from './job-list-item-projects';
 import { JobItemTags } from './job-item-tags';
@@ -47,16 +46,10 @@ export const JobItem = ({ job }: Props) => {
             <JobItemBadge badge={badge} />
             <h2 className='text-xl font-bold'>{title}</h2>
           </div>
-          <div className='hidden items-center gap-2 md:flex'>
-            <span
-              className={cn('text-xs text-neutral-400', {
-                'font-semibold text-white': isUrgentlyHiring,
-              })}
-            >
-              {timestampText}
-            </span>
-            <BookmarkButton />
-          </div>
+          <JobItemDesktopTopRight
+            timestampText={timestampText}
+            isUrgentlyHiring={isUrgentlyHiring}
+          />
         </div>
         <InfoTags iconMap={jobInfoTagsIconMap} infoTags={infoTags} />
         <JobItemOrg org={organization} />
@@ -64,6 +57,10 @@ export const JobItem = ({ job }: Props) => {
         <JobItemTags tags={tags} />
         {/* <JobItemProjects projects={projects} /> */}
         {hasGradientBorder && <BorderBeam size={320} duration={12} delay={9} />}
+        <JobItemMobileFooter
+          timestampText={timestampText}
+          isUrgentlyHiring={isUrgentlyHiring}
+        />
       </div>
     </div>
   );
