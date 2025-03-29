@@ -40,7 +40,7 @@ export const JobItem = ({ job }: Props) => {
         aria-label='View job details'
         className='absolute top-0 left-0 z-10 h-full w-full'
       />
-      <div className='selectable-text pointer-events-none relative z-20 flex w-full flex-col gap-4 rounded-3xl border border-neutral-800/80 bg-sidebar p-6 select-text'>
+      <div className='selectable-text pointer-events-none relative z-20 flex w-full flex-col gap-4 rounded-2xl border border-neutral-800/80 bg-sidebar p-6 select-text'>
         <div className='flex items-baseline justify-between'>
           <div className='flex flex-col gap-0'>
             <JobItemBadge badge={badge} />

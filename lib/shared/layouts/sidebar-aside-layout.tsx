@@ -15,10 +15,10 @@ export const SidebarAsideLayout = ({ children, aside = null }: Props) => {
 
         <div className='fixed top-0 z-30 hidden h-10 w-full bg-background md:block' />
 
-        <div className='relative flex max-w-4xl flex-1 flex-col gap-4'>{children}</div>
+        <div className='relative flex max-w-4xl flex-1 flex-col gap-6'>{children}</div>
 
         <div className='sticky top-0 z-40 hidden h-screen w-96 p-6 lg:block'>
-          <div className='flex flex-col gap-8'>
+          <div className='flex flex-col gap-6'>
             <AuthButton />
             {aside}
           </div>
