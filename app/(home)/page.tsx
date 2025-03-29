@@ -10,7 +10,7 @@ const Page = async () => {
   const showClientJobList = data.length >= ENV.PAGE_SIZE;
 
   return (
-    <div className='relative w-full space-y-8 overflow-x-hidden px-2.5 md:p-4'>
+    <div className='relative w-full space-y-6 overflow-x-hidden px-2.5 md:px-4'>
       <SsrJobList jobs={data} />
       {showClientJobList && <JobList />}
     </div>
