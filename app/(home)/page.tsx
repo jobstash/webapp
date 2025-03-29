@@ -2,7 +2,6 @@ import { ENV } from '@/lib/shared/core/envs';
 
 import { fetchJobListPage } from '@/lib/jobs/server/data';
 
-import { AppHeader } from '@/lib/filters/ui/header';
 import { JobList } from '@/lib/jobs/ui/job-list';
 import { SsrJobList } from '@/lib/jobs/ui/ssr-job-list';
 
@@ -11,13 +10,10 @@ const Page = async () => {
   const showClientJobList = data.length >= ENV.PAGE_SIZE;
 
   return (
-    <>
-      <AppHeader />
-      <div className='relative w-full space-y-8 overflow-x-hidden px-2.5 md:p-4'>
-        <SsrJobList jobs={data} />
-        {showClientJobList && <JobList />}
-      </div>
-    </>
+    <div className='relative w-full space-y-8 overflow-x-hidden px-2.5 md:p-4'>
+      <SsrJobList jobs={data} />
+      {showClientJobList && <JobList />}
+    </div>
   );
 };
 export default Page;
