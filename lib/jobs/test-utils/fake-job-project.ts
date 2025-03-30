@@ -122,13 +122,17 @@ const fakeProjectAuditTags = () => {
   return tags;
 };
 
+const MIN_CHAIN_COUNT = 1;
+const MAX_CHAIN_COUNT = 5;
+
 export const fakeJobProject = (): JobItemProjectSchema => {
   return {
     name: faker.commerce.productName(),
     website: faker.internet.url(),
     logo: faker.image.url(),
-    chains: Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, () =>
-      faker.image.url(),
+    chains: Array.from(
+      { length: faker.number.int({ min: MIN_CHAIN_COUNT, max: MAX_CHAIN_COUNT }) }, // Use constants
+      () => faker.image.url(),
     ),
     infoTags: [
       ...fakeProjectInfoTags(),
