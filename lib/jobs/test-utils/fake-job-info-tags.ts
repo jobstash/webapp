@@ -8,10 +8,17 @@ import { jobInfoTagIcons } from '@/lib/jobs/ui/job-info-tag-icons';
 
 const infoTagKeys = Object.keys(jobInfoTagIcons);
 
+const MIN_SALARY = 20_000;
+const MAX_SALARY = 200_000;
+const SALARY_RANGE_INCREMENT = 20_000;
+
+const MIN_TAG_COUNT = 1;
+const MAX_TAG_COUNT = 12;
+
 export const fakeJobInfoTags = () => {
   const selectedKeys = faker.helpers.arrayElements(infoTagKeys, {
-    min: 1,
-    max: infoTagKeys.length,
+    min: MIN_TAG_COUNT,
+    max: MAX_TAG_COUNT,
   });
 
   return selectedKeys.map((key) => ({
@@ -32,12 +39,18 @@ const createFakeLabel = (key: string) => {
     const currency = faker.finance.currencyCode();
     const isRange = faker.datatype.boolean();
     if (isRange) {
-      const min = faker.number.int({ min: 20_000, max: 100_000 });
-      const max = faker.number.int({ min: min + 20_000, max: 200_000 });
+      const min = faker.number.int({
+        min: MIN_SALARY,
+        max: MAX_SALARY - SALARY_RANGE_INCREMENT,
+      });
+      const max = faker.number.int({
+        min: min + SALARY_RANGE_INCREMENT,
+        max: MAX_SALARY,
+      });
       return `Salary: ${currency} ${formatNumber(min)} - ${formatNumber(max)}`;
     }
 
-    const salary = faker.number.int({ min: 20_000, max: 200_000 });
+    const salary = faker.number.int({ min: MIN_SALARY, max: MAX_SALARY });
     return `Salary: ${currency} ${formatNumber(salary)}`;
   }
 
