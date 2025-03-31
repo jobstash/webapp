@@ -126,11 +126,7 @@ const dtoToMultiSelectFilterConfig = (
   };
 };
 
-const BASIC_FILTER_PARAM_KEYS = [
-  'publicationDate',
-  'locations', // Work mode
-  'tags',
-];
+const BASIC_FILTER_PARAM_KEYS = ['publicationDate', 'locations', 'tags'];
 
 const isBasicFilterParam = (paramKey: string): boolean =>
   BASIC_FILTER_PARAM_KEYS.includes(paramKey);
@@ -161,8 +157,12 @@ const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | nu
     filterDto.kind === FILTER_KIND.MULTI_SELECT ||
     filterDto.kind === FILTER_KIND.MULTI_SELECT_WITH_SEARCH
   ) {
+    const filter = dtoToMultiSelectFilterConfig(filterDto);
+    if (filterDto.paramKey === 'locations') {
+      filter.label = 'Work Mode';
+    }
     return {
-      filter: dtoToMultiSelectFilterConfig(filterDto),
+      filter,
       isBasic: isBasicFilterParam(filterDto.paramKey),
     };
   }
