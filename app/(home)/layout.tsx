@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 
+import { FullPageMenuOverlay } from '@/lib/shared/ui/full-page-menu-overlay';
 import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside } from '@/lib/filters/ui/filters-aside';
 import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
@@ -25,6 +26,7 @@ const Layout = ({ children }: React.PropsWithChildren) => {
     >
       <Header />
       {children}
+      <FullPageMenuOverlay />
       <FullPageSearchOverlay />
     </SidebarAsideLayout>
   );
