@@ -2,7 +2,7 @@ import * as v from 'valibot';
 
 import { nonEmptyStringSchema } from '@/lib/shared/core/schemas';
 
-import { FILTER_KIND } from './constants';
+import { FILTER_KIND } from '../../core/constants';
 
 export const filterConfigSharedPropertiesDto = v.object({
   position: v.number(),
@@ -11,11 +11,15 @@ export const filterConfigSharedPropertiesDto = v.object({
   googleAnalyticsEventId: v.nullish(nonEmptyStringSchema),
   googleAnalyticsEventName: v.nullish(nonEmptyStringSchema),
 });
+export type FilterConfigSharedPropertiesDto = v.InferOutput<
+  typeof filterConfigSharedPropertiesDto
+>;
 
 const rangeFilterConfigValueDto = v.object({
   value: v.pipe(v.number(), v.minValue(0)),
   paramKey: nonEmptyStringSchema,
 });
+export type RangeFilterConfigValueDto = v.InferOutput<typeof rangeFilterConfigValueDto>;
 
 export const rangeFilterConfigDto = v.object({
   ...filterConfigSharedPropertiesDto.entries,
@@ -28,19 +32,21 @@ export const rangeFilterConfigDto = v.object({
 });
 export type RangeFilterConfigDto = v.InferOutput<typeof rangeFilterConfigDto>;
 
-export const selectOptionsDto = v.array(
-  v.object({
-    label: nonEmptyStringSchema,
-    value: v.union([nonEmptyStringSchema, v.boolean()]),
-  }),
-);
+export const selectOptionDto = v.object({
+  label: nonEmptyStringSchema,
+  value: v.union([nonEmptyStringSchema, v.boolean()]),
+});
+export type SelectOptionDto = v.InferOutput<typeof selectOptionDto>;
 
 export const singleSelectFilterConfigDto = v.object({
   ...filterConfigSharedPropertiesDto.entries,
   kind: v.literal(FILTER_KIND.SINGLE_SELECT),
   paramKey: nonEmptyStringSchema,
-  options: selectOptionsDto,
+  options: v.array(selectOptionDto),
 });
+export type SingleSelectFilterConfigDto = v.InferOutput<
+  typeof singleSelectFilterConfigDto
+>;
 
 export const multiSelectFilterConfigDto = v.object({
   ...filterConfigSharedPropertiesDto.entries,
@@ -49,10 +55,11 @@ export const multiSelectFilterConfigDto = v.object({
     v.literal(FILTER_KIND.MULTI_SELECT_WITH_SEARCH),
   ]),
   paramKey: nonEmptyStringSchema,
-  options: selectOptionsDto,
+  options: v.array(selectOptionDto),
 });
+export type MultiSelectFilterConfigDto = v.InferOutput<typeof multiSelectFilterConfigDto>;
 
-export const filterConfigSchema = v.record(
+export const filterConfigDto = v.record(
   v.string(),
   v.union([
     rangeFilterConfigDto,
@@ -60,3 +67,4 @@ export const filterConfigSchema = v.record(
     multiSelectFilterConfigDto,
   ]),
 );
+export type FilterConfigDto = v.InferOutput<typeof filterConfigDto>;

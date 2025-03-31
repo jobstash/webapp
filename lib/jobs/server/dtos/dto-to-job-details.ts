@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { JobDetailsSchema } from '@/lib/jobs/core/schemas';
 
 import { dtoToJobItem } from '@/lib/jobs/server/dtos/dto-to-job-item';
