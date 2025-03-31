@@ -2,7 +2,7 @@ import { ENV } from '@/lib/shared/core/envs';
 
 import { fetchJobListPage } from '@/lib/jobs/server/data';
 
-import { JobList } from '@/lib/jobs/ui/job-list';
+import { LazyJobList } from '@/lib/jobs/ui/lazy-job-list';
 import { SsrJobList } from '@/lib/jobs/ui/ssr-job-list';
 
 const Page = async () => {
@@ -12,7 +12,7 @@ const Page = async () => {
   return (
     <div className='relative w-full space-y-6 overflow-x-hidden px-2.5 md:px-4'>
       <SsrJobList jobs={data} />
-      {showClientJobList && <JobList />}
+      {showClientJobList && <LazyJobList />}
     </div>
   );
 };
