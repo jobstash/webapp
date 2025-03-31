@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { MwSchemaError } from '@/lib/shared/core/errors';
 import { SEARCH_ENDPOINTS } from '@/lib/search/core/endpoints';
 

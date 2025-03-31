@@ -1,3 +1,5 @@
+'use server';
+
 import { MwSchemaError } from '@/lib/shared/core/errors';
 import { JOB_ENDPOINTS } from '@/lib/jobs/core/endpoints';
 
