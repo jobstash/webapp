@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside } from '@/lib/filters/ui/filters-aside';
 import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
+import { FullPageSearchOverlay } from '@/lib/search/ui/full-page-search-overlay';
 
 import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
 
@@ -24,6 +25,7 @@ const Layout = ({ children }: React.PropsWithChildren) => {
     >
       <Header />
       {children}
+      <FullPageSearchOverlay />
     </SidebarAsideLayout>
   );
 };
