@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 
+import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside } from '@/lib/filters/ui/filters-aside';
 import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
-import { Header } from '@/lib/filters/ui/header';
 
 import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
 
