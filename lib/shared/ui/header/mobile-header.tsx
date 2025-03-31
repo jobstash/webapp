@@ -1,8 +1,6 @@
-import { MenuIcon } from 'lucide-react';
-
-import { Button } from '@/lib/shared/ui/base/button';
 import { Brand } from '@/lib/shared/ui/brand';
 
+import { FullPageMenuOverlayTrigger } from './full-page-menu-trigger';
 import { FullPageSearchOverlayTrigger } from './full-page-search-trigger';
 
 export const MobileHeader = () => {
@@ -11,9 +9,7 @@ export const MobileHeader = () => {
       <Brand />
       <div className='flex items-center justify-end gap-2'>
         <FullPageSearchOverlayTrigger />
-        <Button variant='secondary' size='icon'>
-          <MenuIcon className='size-6' />
-        </Button>
+        <FullPageMenuOverlayTrigger />
       </div>
     </div>
   );
