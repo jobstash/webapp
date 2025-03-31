@@ -5,6 +5,7 @@ import { FullPageMenuOverlay } from '@/lib/shared/ui/full-page-menu-overlay';
 import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside } from '@/lib/filters/ui/filters-aside';
 import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
+import { FullPageFiltersOverlay } from '@/lib/filters/ui/full-page-filters-overlay';
 import { FullPageSearchOverlay } from '@/lib/search/ui/full-page-search-overlay';
 
 import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
@@ -28,6 +29,7 @@ const Layout = ({ children }: React.PropsWithChildren) => {
       {children}
       <FullPageMenuOverlay />
       <FullPageSearchOverlay />
+      <FullPageFiltersOverlay />
     </SidebarAsideLayout>
   );
 };
