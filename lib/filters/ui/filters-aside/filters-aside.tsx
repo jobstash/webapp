@@ -1,29 +1,16 @@
 import { fetchFilterConfigs } from '@/lib/filters/data/fetch-filter-configs';
 
 import { Divider } from '@/lib/shared/ui/divider';
+import { AdvancedFilters } from '@/lib/filters/ui/advanced-filters';
+import { BasicFilters } from '@/lib/filters/ui/basic-filters';
 
 import { AdvancedFiltersToggle } from './advanced-filters-toggle';
 import { ApplyButton } from './apply-button';
 import { FiltersProvider } from './context';
 import { FiltersContent } from './filters-content';
 
-// const dummyData = {
-//   basicFilters: ['Publish Date', 'Work Mode', 'Salary'],
-//   jobFilters: [
-//     'Commitment',
-//     'Seniority',
-//     'Web3 Beginner',
-//     'Salary',
-//     'Skills',
-//     'Category',
-//   ],
-//   orgFilters: ['Names', 'Employee Count', 'Investors', 'Funding Rounds'],
-//   projectFilters: ['Names', 'Chains', 'TVL', 'Audits', 'Hacks'],
-// };
-
 export const FiltersAside = async () => {
-  // TODO: Filter Configs
-  await fetchFilterConfigs();
+  const { basicFilters, advancedFilters } = await fetchFilterConfigs();
 
   return (
     <FiltersProvider>
@@ -32,7 +19,10 @@ export const FiltersAside = async () => {
           <span className='font-medium'>Filters</span>
           <AdvancedFiltersToggle />
         </div>
-        <FiltersContent />
+        <FiltersContent
+          basicFilters={<BasicFilters filters={basicFilters} />}
+          advancedFilters={<AdvancedFilters filters={advancedFilters} />}
+        />
         <Divider />
         <ApplyButton />
       </div>
