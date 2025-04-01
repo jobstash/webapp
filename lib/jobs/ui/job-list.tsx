@@ -1,5 +1,6 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 
 import useSWRInfinite from 'swr/infinite';
@@ -11,12 +12,19 @@ import { JobListSkeleton } from '@/lib/jobs/ui/job-list-skeleton';
 
 import { jobListAction } from '@/lib/jobs/server/actions';
 
-export const JobList = () => {
+// Start from page 2 because the first page is SSR'd
+const DEFAULT_START_PAGE = 2;
+
+interface Props {
+  startPage?: number;
+}
+
+export const JobList = ({ startPage = DEFAULT_START_PAGE }: Props) => {
+  const searchParams = useSearchParams();
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     (pageIndex) => {
-      // Start from page 2 because the first page is SSR'd
-      const page = pageIndex + 2;
-      return { page };
+      const page = pageIndex + startPage;
+      return { page, searchParams: Object.fromEntries(searchParams.entries()) };
     },
     async (args) => jobListAction(args),
     {
@@ -35,7 +43,7 @@ export const JobList = () => {
     },
   });
 
-  if (isLoading) return <p>TODO: JobList Loading UI</p>;
+  if (isLoading) return <JobListSkeleton />;
   if (error) return <p>TODO: JobList Error UI</p>;
 
   const jobItems = flattenJobItems(data);

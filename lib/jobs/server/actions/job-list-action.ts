@@ -11,6 +11,7 @@ import { fetchJobListPage } from '@/lib/jobs/server/data';
 const schema = v.object({
   page: v.number(),
   limit: v.optional(v.number()),
+  searchParams: v.optional(v.record(v.string(), v.string())),
 });
 
 export const jobListAction = actionClient
@@ -18,8 +19,8 @@ export const jobListAction = actionClient
   .schema(schema, {
     handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve).fieldErrors,
   })
-  .action(async ({ parsedInput: { page, limit } }) => {
-    return fetchJobListPage({ page, limit });
+  .action(async ({ parsedInput: { page, limit, searchParams } }) => {
+    return fetchJobListPage({ page, limit, searchParams });
   });
 
 export type JobListActionResult = InferSafeActionFnResult<typeof jobListAction>;
