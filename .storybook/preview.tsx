@@ -6,9 +6,9 @@ import type { Preview } from '@storybook/react';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { SWRConfig } from 'swr';
 
 import { grotesk, interTight } from '../lib/shared/core/fonts';
+import { ReactQueryProvider } from '../lib/shared/providers/react-query-provider';
 import { ThemeProvider } from '../lib/shared/providers/theme-provider';
 
 // MSW
@@ -41,13 +41,9 @@ const preview: Preview = {
         <div className={`${interTight.variable} ${grotesk.variable} antialiased`}>
           <ThemeProvider attribute='class' defaultTheme='dark' disableTransitionOnChange>
             <NuqsAdapter>
-              <SWRConfig
-                value={{
-                  provider: () => new Map(),
-                }}
-              >
+              <ReactQueryProvider>
                 <Story />
-              </SWRConfig>
+              </ReactQueryProvider>
             </NuqsAdapter>
           </ThemeProvider>
         </div>
