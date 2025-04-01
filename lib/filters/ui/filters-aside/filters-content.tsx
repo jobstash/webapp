@@ -1,11 +1,18 @@
 'use client';
 
-import { AdvancedFilters } from './advanced-filters';
-import { BasicFilters } from './basic-filters';
 import { useFiltersContext } from './context';
 
-export const FiltersContent = () => {
+interface Props {
+  basicFilters: React.ReactNode;
+  advancedFilters: React.ReactNode;
+}
+
+export const FiltersContent = ({ basicFilters, advancedFilters }: Props) => {
   const { isAdvancedFiltersOpen } = useFiltersContext();
-  const content = isAdvancedFiltersOpen ? <AdvancedFilters /> : <BasicFilters />;
-  return <div className='relative w-full overflow-x-hidden'>{content}</div>;
+  const content = isAdvancedFiltersOpen ? advancedFilters : basicFilters;
+  return (
+    <div className='relative max-h-[640px] w-full overflow-x-hidden overflow-y-auto'>
+      {content}
+    </div>
+  );
 };
