@@ -26,7 +26,7 @@ export const useJobListQuery = (startPage = DEFAULT_START_PAGE) => {
     queryKey,
     queryFn: ({ pageParam = startPage }) =>
       fetchJobListPage({ page: pageParam, searchParams }),
-    getNextPageParam: ({ page }) => (page > 0 ? page + 1 : undefined),
+    getNextPageParam: ({ page, hasNextPage }) => (hasNextPage ? page + 1 : undefined),
     initialPageParam: startPage,
   });
 };
