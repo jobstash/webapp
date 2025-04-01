@@ -5,8 +5,13 @@ import { fetchJobListPage } from '@/lib/jobs/server/data';
 import { LazyJobList } from '@/lib/jobs/ui/lazy-job-list';
 import { SsrJobList } from '@/lib/jobs/ui/ssr-job-list';
 
-const Page = async () => {
-  const { data } = await fetchJobListPage({ page: 1 });
+interface Props {
+  searchParams: Promise<Record<string, string>>;
+}
+
+const Page = async (props: Props) => {
+  const searchParams = await props.searchParams;
+  const { data } = await fetchJobListPage({ page: 1, searchParams });
   const showClientJobList = data.length >= ENV.PAGE_SIZE;
 
   return (
