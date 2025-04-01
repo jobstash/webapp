@@ -13,6 +13,7 @@ import {
   SingleSelectFilterConfigSchema,
   SwitchFilterConfigSchema,
 } from '@/lib/filters/core/schemas';
+import { jobSeniorityMapping } from '@/lib/jobs/core/constants';
 
 import {
   FilterConfigDto,
@@ -126,10 +127,15 @@ const dtoToMultiSelectFilterConfig = (
   };
 };
 
-const BASIC_FILTER_PARAM_KEYS = ['publicationDate', 'locations', 'tags'];
+const BASIC_FILTERS_POSITION = {
+  locations: 1,
+  seniority: 2,
+  tags: 3,
+};
+type BasicFilterConfigKeys = keyof typeof BASIC_FILTERS_POSITION;
 
 const isBasicFilterParam = (paramKey: string): boolean =>
-  BASIC_FILTER_PARAM_KEYS.includes(paramKey);
+  paramKey in BASIC_FILTERS_POSITION;
 
 type ProcessedFilter = {
   filter: FilterConfigItemSchema;
@@ -138,18 +144,25 @@ type ProcessedFilter = {
 
 const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | null => {
   if (filterDto.kind === FILTER_KIND.RANGE) {
-    const minParamKey = filterDto.value.lowest.paramKey;
-    const maxParamKey = filterDto.value.highest.paramKey;
+    const filter = dtoToRangeFilterConfig(filterDto);
     return {
-      filter: dtoToRangeFilterConfig(filterDto),
-      isBasic: isBasicFilterParam(minParamKey) || isBasicFilterParam(maxParamKey),
+      filter,
+      isBasic: false, // We won't show range filters as basic (for now)
     };
   }
 
   if (filterDto.kind === FILTER_KIND.SINGLE_SELECT) {
+    const filter = dtoToSingleSelectFilterConfig(filterDto);
+    const isBasic = isBasicFilterParam(filterDto.paramKey);
+
+    if (isBasic) {
+      filter.position =
+        BASIC_FILTERS_POSITION[filterDto.paramKey as BasicFilterConfigKeys];
+    }
+
     return {
-      filter: dtoToSingleSelectFilterConfig(filterDto),
-      isBasic: isBasicFilterParam(filterDto.paramKey),
+      filter,
+      isBasic,
     };
   }
 
@@ -158,12 +171,31 @@ const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | nu
     filterDto.kind === FILTER_KIND.MULTI_SELECT_WITH_SEARCH
   ) {
     const filter = dtoToMultiSelectFilterConfig(filterDto);
+    const isBasic = isBasicFilterParam(filterDto.paramKey);
+
+    if (isBasic) {
+      filter.position =
+        BASIC_FILTERS_POSITION[filterDto.paramKey as BasicFilterConfigKeys];
+    }
+
+    // Manual relabel locations
+    // TODO: Move this op to mw
     if (filterDto.paramKey === 'locations') {
       filter.label = 'Work Mode';
     }
+
+    // Manual seniority label mapping
+    if (filterDto.paramKey === 'seniority') {
+      const mappedOptions = Object.keys(jobSeniorityMapping).map((key) => ({
+        label: jobSeniorityMapping[key as keyof typeof jobSeniorityMapping],
+        value: key,
+      }));
+      filter.options = mappedOptions;
+    }
+
     return {
       filter,
-      isBasic: isBasicFilterParam(filterDto.paramKey),
+      isBasic,
     };
   }
 
@@ -177,6 +209,7 @@ export const dtoToFilterConfig = (dto: FilterConfigDto): FilterConfigSchema => {
   Object.values(dto)
     .map(processFilter)
     .filter((result): result is ProcessedFilter => result !== null)
+    .sort((a, b) => a.filter.position - b.filter.position)
     .forEach(({ filter, isBasic }) => {
       const group = isBasic ? basicFilters : advancedFilters;
       group.push(filter);
