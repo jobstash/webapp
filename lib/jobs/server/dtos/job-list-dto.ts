@@ -17,5 +17,6 @@ export type JobListPageDto = v.InferOutput<typeof jobListPageDto>;
 export const jobListPageParamsDto = v.object({
   page: v.pipe(v.number(), v.minValue(1)),
   limit: v.optional(v.pipe(v.number(), v.minValue(1)), ENV.PAGE_SIZE),
+  searchParams: v.optional(v.record(v.string(), v.string())),
 });
 export type JobListPageParamsDto = v.InferOutput<typeof jobListPageParamsDto>;

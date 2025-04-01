@@ -16,6 +16,7 @@ import {
 interface Input {
   page: number;
   limit?: number;
+  searchParams?: Record<string, string>;
 }
 
 export const fetchJobListPage = async (input: Input) => {
@@ -23,9 +24,9 @@ export const fetchJobListPage = async (input: Input) => {
   if (!parsedParams.success) {
     throw new MwSchemaError('fetchJobListPage', JSON.stringify(parsedParams.issues[0]));
   }
-  const { page, limit } = parsedParams.output;
+  const { page, limit, searchParams } = parsedParams.output;
 
-  const url = JOB_ENDPOINTS.list({ page, limit });
+  const url = JOB_ENDPOINTS.list({ page, limit, searchParams });
   const response = await kyFetch(url, { cache: 'force-cache' }).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);
