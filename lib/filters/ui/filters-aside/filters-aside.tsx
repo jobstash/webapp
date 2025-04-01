@@ -1,11 +1,9 @@
 import { fetchFilterConfigs } from '@/lib/filters/data/fetch-filter-configs';
 
-import { Divider } from '@/lib/shared/ui/divider';
 import { AdvancedFilters } from '@/lib/filters/ui/advanced-filters';
 import { BasicFilters } from '@/lib/filters/ui/basic-filters';
 
 import { AdvancedFiltersToggle } from './advanced-filters-toggle';
-import { ApplyButton } from './apply-button';
 import { FiltersProvider } from './context';
 import { FiltersContent } from './filters-content';
 
@@ -23,8 +21,6 @@ export const FiltersAside = async () => {
           basicFilters={<BasicFilters filters={basicFilters} />}
           advancedFilters={<AdvancedFilters filters={advancedFilters} />}
         />
-        <Divider />
-        <ApplyButton />
       </div>
     </FiltersProvider>
   );
