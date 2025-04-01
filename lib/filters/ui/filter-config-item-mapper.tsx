@@ -1,8 +1,7 @@
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
-import { CheckboxFilter } from '@/lib/filters/ui/checkbox-filter';
-
+import { CheckboxFilter } from './checkbox-filter';
 import { MultiSelectFilter } from './multi-select-filter';
 import { RadioFilter } from './radio-filter';
 import { RangeFilter } from './range-filter';
