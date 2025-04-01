@@ -10,10 +10,14 @@ const JobList = dynamic(() => import('./job-list').then((mod) => mod.JobList), {
   loading: () => <JobListSkeleton />,
 });
 
-export const LazyJobList = () => {
+interface Props {
+  startPage?: number;
+}
+
+export const LazyJobList = ({ startPage }: Props) => {
   return (
-    <Suspense fallback={<JobListSkeleton />}>
-      <JobList />
+    <Suspense fallback={<JobListSkeleton className='py-20' />}>
+      <JobList startPage={startPage} />
     </Suspense>
   );
 };

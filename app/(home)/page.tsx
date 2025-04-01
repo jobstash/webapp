@@ -1,4 +1,5 @@
 import { ENV } from '@/lib/shared/core/envs';
+import { JobItemSchema, JobListPageSchema } from '@/lib/jobs/core/schemas';
 
 import { fetchJobListPage } from '@/lib/jobs/server/data';
 
@@ -11,13 +12,25 @@ interface Props {
 
 const Page = async (props: Props) => {
   const searchParams = await props.searchParams;
-  const { data } = await fetchJobListPage({ page: 1, searchParams });
-  const showClientJobList = data.length >= ENV.PAGE_SIZE;
+  const hasSearchParams = Object.keys(searchParams).length > 0;
+
+  let data: JobItemSchema[] = [];
+  let hasSsrNextPage = false;
+
+  if (!hasSearchParams) {
+    // Fetch data only if there are no search params
+    const result: JobListPageSchema = await fetchJobListPage({ page: 1, searchParams });
+    data = result.data;
+    hasSsrNextPage = data.length >= ENV.PAGE_SIZE;
+  }
+
+  const showLazyJobList = hasSsrNextPage || hasSearchParams;
+  const startPage = hasSsrNextPage ? 2 : 1;
 
   return (
     <div className='relative w-full space-y-6 overflow-x-hidden px-2.5 md:px-4'>
-      <SsrJobList jobs={data} />
-      {showClientJobList && <LazyJobList />}
+      {!hasSearchParams && <SsrJobList jobs={data} />}
+      {showLazyJobList && <LazyJobList startPage={startPage} />}
     </div>
   );
 };
