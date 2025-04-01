@@ -17,7 +17,7 @@ const eslintConfig = [
       'prettier',
       'plugin:storybook/recommended',
     ],
-    plugins: ['prefer-arrow', 'simple-import-sort'],
+    plugins: ['prefer-arrow', 'simple-import-sort', '@tanstack/eslint-plugin-query'],
     overrides: [
       {
         files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
