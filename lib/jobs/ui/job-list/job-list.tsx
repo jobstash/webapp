@@ -8,7 +8,7 @@ import useSWRInfinite from 'swr/infinite';
 import { flattenJobItems } from '@/lib/jobs/utils/flatten-job-items';
 
 import { JobItem } from '@/lib/jobs/ui/job-item/job-item';
-import { JobListSkeleton } from '@/lib/jobs/ui/job-list-skeleton';
+import { JobListSkeleton } from '@/lib/jobs/ui/job-list/job-list-skeleton';
 
 import { jobListAction } from '@/lib/jobs/server/actions';
 
