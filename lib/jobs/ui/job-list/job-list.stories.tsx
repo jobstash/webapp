@@ -4,7 +4,7 @@ import { createMock } from 'storybook-addon-module-mock';
 
 import * as fetchJobListPageModule from '@/lib/jobs/server/data';
 
-import { JobList } from '@/lib/jobs/ui/job-list';
+import { JobList } from '@/lib/jobs/ui/job-list/job-list';
 
 import { fakeJobListQueryPage } from '@/lib/jobs/test-utils/fake-job-list-query-page';
 

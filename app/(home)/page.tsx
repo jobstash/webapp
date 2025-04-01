@@ -3,7 +3,7 @@ import { JobItemSchema, JobListPageSchema } from '@/lib/jobs/core/schemas';
 
 import { fetchJobListPage } from '@/lib/jobs/server/data';
 
-import { LazyJobList } from '@/lib/jobs/ui/lazy-job-list';
+import { LazyJobList } from '@/lib/jobs/ui/job-list';
 import { SsrJobList } from '@/lib/jobs/ui/ssr-job-list';
 
 interface Props {
