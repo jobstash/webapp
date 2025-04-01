@@ -6,7 +6,7 @@ interface Props {
   jobs: JobItemSchema[];
 }
 
-export const SsrJobList = ({ jobs }: Props) => {
+export const JobListSSR = ({ jobs }: Props) => {
   if (!jobs.length) return <p>TODO: Empty SSR UI</p>;
   return (
     <>

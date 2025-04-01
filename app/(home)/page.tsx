@@ -3,8 +3,7 @@ import { JobItemSchema, JobListPageSchema } from '@/lib/jobs/core/schemas';
 
 import { fetchJobListPage } from '@/lib/jobs/server/data';
 
-import { LazyJobList } from '@/lib/jobs/ui/job-list';
-import { SsrJobList } from '@/lib/jobs/ui/ssr-job-list';
+import { JobListSSR, JobListSsrClientWrapper, LazyJobList } from '@/lib/jobs/ui/job-list';
 
 interface Props {
   searchParams: Promise<Record<string, string>>;
@@ -29,7 +28,10 @@ const Page = async (props: Props) => {
 
   return (
     <div className='relative w-full space-y-6 overflow-x-hidden px-2.5 md:px-4'>
-      {!hasSearchParams && <SsrJobList jobs={data} />}
+      <JobListSsrClientWrapper>
+        <JobListSSR jobs={data} />
+      </JobListSsrClientWrapper>
+
       {showLazyJobList && <LazyJobList startPage={startPage} />}
     </div>
   );
