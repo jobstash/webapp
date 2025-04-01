@@ -18,5 +18,6 @@ export const infiniteListPageSchema = <T>(itemSchema: v.GenericSchema<T>) =>
     page: v.number(),
     total: v.number(),
     data: v.array(itemSchema),
+    hasNextPage: v.boolean(),
   });
 export type InfiniteListPageSchema<T> = ReturnType<typeof infiniteListPageSchema<T>>;
