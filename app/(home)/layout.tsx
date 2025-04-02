@@ -1,12 +1,11 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 
-import { FullPageMenuOverlay } from '@/lib/shared/ui/full-page-menu-overlay';
 import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside } from '@/lib/filters/ui/filters-aside';
 import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
-import { FullPageFiltersOverlay } from '@/lib/filters/ui/full-page-filters-overlay';
-import { FullPageSearchOverlay } from '@/lib/search/ui/full-page-search-overlay';
+
+import { LazyMobileOverlays } from './lazy-mobile-overlays';
 
 import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
 
@@ -27,9 +26,7 @@ const Layout = ({ children }: React.PropsWithChildren) => {
     >
       <Header />
       {children}
-      <FullPageMenuOverlay />
-      <FullPageSearchOverlay />
-      <FullPageFiltersOverlay />
+      <LazyMobileOverlays />
     </SidebarAsideLayout>
   );
 };
