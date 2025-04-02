@@ -2,11 +2,10 @@
 
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
+import { useFilterStore } from '@/lib/filters/core/store';
 
 import { Button } from '@/lib/shared/ui/base/button';
 import { filterIconMap } from '@/lib/filters/ui/filter-icon-map';
-
-import { useFilterStore } from './store';
 
 const getIconKey = (config: FilterConfigItemSchema) => {
   const isRange = config.kind === FILTER_KIND.RANGE;
