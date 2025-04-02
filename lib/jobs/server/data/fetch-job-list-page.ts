@@ -26,8 +26,12 @@ export const fetchJobListPage = async (input: Input) => {
   }
   const { page, limit, searchParams } = parsedParams.output;
 
+  // Do not cache if there are search params
+  const hasSearchParams = !!searchParams && Object.keys(searchParams).length > 0;
+  const cache: RequestCache = hasSearchParams ? 'no-store' : 'force-cache';
+
   const url = JOB_ENDPOINTS.list({ page, limit, searchParams });
-  const response = await kyFetch(url, { cache: 'force-cache' }).json();
+  const response = await kyFetch(url, { cache }).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);
   if (!parsed.success) {
