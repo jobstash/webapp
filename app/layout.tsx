@@ -30,6 +30,8 @@ export default function RootLayout({ children }: Props) {
         <link rel='shortcut icon' href='/favicon.ico' />
         <link rel='apple-touch-icon' href='/apple-touch-icon.png' sizes='180x180' />
         <link rel='manifest' href='/site.webmanifest' />
+        <link rel='preconnect' href='https://fonts.googleapis.com' />
+        <link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />
       </Head>
       <body className={`${interTight.variable} ${grotesk.variable} antialiased`}>
         <RootProviders>{children}</RootProviders>
