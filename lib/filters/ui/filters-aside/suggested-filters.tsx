@@ -5,7 +5,8 @@ import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
 import { Button } from '@/lib/shared/ui/base/button';
 import { filterIconMap } from '@/lib/filters/ui/filter-icon-map';
-import { useFilterStore } from '@/lib/filters/ui/filters-aside-x/store';
+
+import { useFilterStore } from './store';
 
 const getIconKey = (config: FilterConfigItemSchema) => {
   const isRange = config.kind === FILTER_KIND.RANGE;

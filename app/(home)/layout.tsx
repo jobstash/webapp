@@ -2,8 +2,7 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import { Header } from '@/lib/shared/ui/header';
-import { FiltersAside } from '@/lib/filters/ui/filters-aside';
-import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
+import { FiltersAside, FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
 
 import { LazyMobileOverlays } from './lazy-mobile-overlays';
 
