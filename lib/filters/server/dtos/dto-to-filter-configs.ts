@@ -4,7 +4,6 @@ import { FILTER_KIND } from '@/lib/filters/core/constants';
 import {
   CheckboxFilterConfigSchema,
   FilterConfigItemSchema,
-  FilterConfigSchema,
   FilterConfigSharedPropertiesSchema,
   MultiSelectFilterConfigSchema,
   RadioFilterConfigSchema,
@@ -23,6 +22,15 @@ import {
   SelectOptionDto,
   SingleSelectFilterConfigDto,
 } from '@/lib/filters/server/dtos/filter-config-dtos';
+
+const SUGGESTED_FILTERS = new Set([
+  'locations',
+  'seniority',
+  'tags',
+  'organizations',
+  'publicationDate',
+  'investors',
+]);
 
 const dtoToFilterConfigSharedProps = (
   dto: FilterConfigSharedPropertiesDto,
@@ -61,6 +69,7 @@ const dtoToSwitchFilterConfig = (
     ...dtoToFilterConfigSharedProps(dto),
     kind: FILTER_KIND.SWITCH,
     paramKey: dto.paramKey,
+    isSuggested: SUGGESTED_FILTERS.has(dto.paramKey),
   };
 };
 const dtoToRadioFilterConfig = (
@@ -71,6 +80,7 @@ const dtoToRadioFilterConfig = (
     kind: FILTER_KIND.RADIO,
     options: dto.options.map(dtoToSelectOptions),
     paramKey: dto.paramKey,
+    isSuggested: SUGGESTED_FILTERS.has(dto.paramKey),
   };
 };
 
@@ -96,6 +106,7 @@ const dtoToSingleSelectFilterConfig = (
     kind: FILTER_KIND.SINGLE_SELECT,
     options: dto.options.map(dtoToSelectOptions),
     paramKey: dto.paramKey,
+    isSuggested: SUGGESTED_FILTERS.has(dto.paramKey),
   };
 };
 
@@ -107,6 +118,7 @@ const dtoToCheckboxFilterConfig = (
     kind: FILTER_KIND.CHECKBOX,
     options: dto.options.map(dtoToSelectOptions),
     paramKey: dto.paramKey,
+    isSuggested: SUGGESTED_FILTERS.has(dto.paramKey),
   };
 };
 
@@ -124,51 +136,24 @@ const dtoToMultiSelectFilterConfig = (
     kind: FILTER_KIND.MULTI_SELECT,
     options: dto.options.map(dtoToSelectOptions),
     paramKey: dto.paramKey,
+    isSuggested: SUGGESTED_FILTERS.has(dto.paramKey),
   };
-};
-
-const BASIC_FILTERS_POSITION = {
-  locations: 1,
-  seniority: 2,
-  tags: 3,
-};
-type BasicFilterConfigKeys = keyof typeof BASIC_FILTERS_POSITION;
-
-const isBasicFilterParam = (paramKey: string): boolean =>
-  paramKey in BASIC_FILTERS_POSITION;
-
-type ProcessedFilter = {
-  filter: FilterConfigItemSchema;
-  isBasic: boolean;
 };
 
 const SELECT_OPTION_THRESHOLD = 2;
 
-const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | null => {
+const processFilter = (
+  filterDto: FilterConfigDto[string],
+): FilterConfigItemSchema | null => {
   if (filterDto.kind === FILTER_KIND.RANGE) {
-    const filter = dtoToRangeFilterConfig(filterDto);
-    return {
-      filter,
-      isBasic: false, // We won't show range filters as basic (for now)
-    };
+    return dtoToRangeFilterConfig(filterDto);
   }
 
   if (filterDto.kind === FILTER_KIND.SINGLE_SELECT) {
     const hasNoOptions = filterDto.options.length < SELECT_OPTION_THRESHOLD;
     if (hasNoOptions) return null;
 
-    const filter = dtoToSingleSelectFilterConfig(filterDto);
-    const isBasic = isBasicFilterParam(filterDto.paramKey);
-
-    if (isBasic) {
-      filter.position =
-        BASIC_FILTERS_POSITION[filterDto.paramKey as BasicFilterConfigKeys];
-    }
-
-    return {
-      filter,
-      isBasic,
-    };
+    return dtoToSingleSelectFilterConfig(filterDto);
   }
 
   if (
@@ -179,12 +164,6 @@ const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | nu
     if (hasNoOptions) return null;
 
     const filter = dtoToMultiSelectFilterConfig(filterDto);
-    const isBasic = isBasicFilterParam(filterDto.paramKey);
-
-    if (isBasic) {
-      filter.position =
-        BASIC_FILTERS_POSITION[filterDto.paramKey as BasicFilterConfigKeys];
-    }
 
     // Manual relabel locations
     // TODO: Move this op to mw
@@ -201,30 +180,15 @@ const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | nu
       filter.options = mappedOptions;
     }
 
-    return {
-      filter,
-      isBasic,
-    };
+    return filter;
   }
 
   return null;
 };
 
-export const dtoToFilterConfig = (dto: FilterConfigDto): FilterConfigSchema => {
-  const basicFilters: FilterConfigItemSchema[] = [];
-  const advancedFilters: FilterConfigItemSchema[] = [];
-
-  Object.values(dto)
+export const dtoToFilterConfig = (dto: FilterConfigDto): FilterConfigItemSchema[] => {
+  return Object.values(dto)
     .map(processFilter)
-    .filter((result): result is ProcessedFilter => result !== null)
-    .sort((a, b) => a.filter.position - b.filter.position)
-    .forEach(({ filter, isBasic }) => {
-      const group = isBasic ? basicFilters : advancedFilters;
-      group.push(filter);
-    });
-
-  return {
-    basicFilters,
-    advancedFilters,
-  };
+    .filter((result): result is FilterConfigItemSchema => result !== null)
+    .sort((a, b) => a.position - b.position);
 };

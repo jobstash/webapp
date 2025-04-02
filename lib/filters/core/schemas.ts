@@ -10,6 +10,7 @@ export const filterConfigSharedPropertiesSchema = v.object({
     id: v.nullish(nonEmptyStringSchema),
     name: v.nullish(nonEmptyStringSchema),
   }),
+  isSuggested: v.optional(v.boolean()), // Appears suggested in filters aside section
 });
 export type FilterConfigSharedPropertiesSchema = v.InferOutput<
   typeof filterConfigSharedPropertiesSchema
@@ -87,9 +88,3 @@ export const filterConfigItemSchema = v.union([
   multiSelectFilterConfigSchema,
 ]);
 export type FilterConfigItemSchema = v.InferOutput<typeof filterConfigItemSchema>;
-
-export const filterConfigSchema = v.object({
-  basicFilters: v.array(filterConfigItemSchema),
-  advancedFilters: v.array(filterConfigItemSchema),
-});
-export type FilterConfigSchema = v.InferOutput<typeof filterConfigSchema>;
