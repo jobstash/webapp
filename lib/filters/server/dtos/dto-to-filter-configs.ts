@@ -142,6 +142,8 @@ type ProcessedFilter = {
   isBasic: boolean;
 };
 
+const SELECT_OPTION_THRESHOLD = 2;
+
 const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | null => {
   if (filterDto.kind === FILTER_KIND.RANGE) {
     const filter = dtoToRangeFilterConfig(filterDto);
@@ -152,6 +154,9 @@ const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | nu
   }
 
   if (filterDto.kind === FILTER_KIND.SINGLE_SELECT) {
+    const hasNoOptions = filterDto.options.length < SELECT_OPTION_THRESHOLD;
+    if (hasNoOptions) return null;
+
     const filter = dtoToSingleSelectFilterConfig(filterDto);
     const isBasic = isBasicFilterParam(filterDto.paramKey);
 
@@ -170,6 +175,9 @@ const processFilter = (filterDto: FilterConfigDto[string]): ProcessedFilter | nu
     filterDto.kind === FILTER_KIND.MULTI_SELECT ||
     filterDto.kind === FILTER_KIND.MULTI_SELECT_WITH_SEARCH
   ) {
+    const hasNoOptions = filterDto.options.length < SELECT_OPTION_THRESHOLD;
+    if (hasNoOptions) return null;
+
     const filter = dtoToMultiSelectFilterConfig(filterDto);
     const isBasic = isBasicFilterParam(filterDto.paramKey);
 
