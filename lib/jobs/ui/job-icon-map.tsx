@@ -1,3 +1,4 @@
+import { IconMap } from '@/lib/shared/core/types';
 import { JOB_ITEM_BADGE } from '@/lib/jobs/core/constants';
 
 import { AuditIcon } from '@/lib/shared/ui/svgs/audit-icon';
@@ -17,8 +18,6 @@ import { TvlIcon } from '@/lib/shared/ui/svgs/tvl-icon';
 import { UsersIcon } from '@/lib/shared/ui/svgs/users-icon';
 import { WizardHatIcon } from '@/lib/shared/ui/svgs/wizard-hat-icon';
 import { WorkModeIcon } from '@/lib/shared/ui/svgs/work-mode-icon';
-
-type IconMap = Record<string, React.ReactNode>;
 
 export const jobInfoTagsIconMap: IconMap = {
   seniority: <SeniorityIcon />,
