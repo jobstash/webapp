@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
 interface FilterStore {
+  initialized: boolean;
+  setInitialized: (initialized: boolean) => void;
   activeFilters: FilterConfigItemSchema[];
   activeLabels: Set<string>;
   addActiveFilter: (filter: FilterConfigItemSchema) => void;
@@ -10,6 +12,8 @@ interface FilterStore {
 }
 
 export const useFilterStore = create<FilterStore>((set) => ({
+  initialized: false,
+  setInitialized: (initialized) => set({ initialized }),
   activeFilters: [],
   activeLabels: new Set<string>(),
   addActiveFilter: (filter) =>
