@@ -33,7 +33,7 @@ export const filterIconMap: IconMap = {
   tags: <CodeXmlIcon className='mt-0.25 size-4' />,
   publicationDate: <CalendarDaysIcon />,
   classifications: <CategoryIcon />,
-  commitment: <CommitmentIcon />,
+  commitments: <CommitmentIcon />,
   minSalaryRange: <SalaryIcon />,
   minHeadCount: <UsersIcon />,
   fundingRounds: <BankIcon className='size-3.5' />,
