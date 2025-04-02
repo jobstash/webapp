@@ -1,6 +1,6 @@
 import { fetchFilterConfigs } from '@/lib/filters/data/fetch-filter-configs';
 
-import { FiltersInitWrapper } from '@/lib/filters/ui/filters-aside/filters-init-wrapper';
+import { FiltersInitWrapper } from '@/lib/filters/ui/filters-init-wrapper';
 
 import { ActiveFilters } from './active-filters';
 import { MoreFilters } from './more-filters';
