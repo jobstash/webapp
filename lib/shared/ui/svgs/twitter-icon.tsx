@@ -1,10 +1,13 @@
-export const TwitterIcon = (props: React.SVGProps<SVGSVGElement>) => {
+import { cn } from '@/lib/shared/utils';
+
+export const TwitterIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 24 24'
       width='1em'
       height='1em'
+      className={cn('fill-current', className)}
       {...props}
     >
       <path
