@@ -1,15 +1,17 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
+
 import { JobItem } from '@/lib/jobs/ui/job-item/job-item';
 import { JobListSkeleton } from '@/lib/jobs/ui/job-list/job-list-skeleton';
 
 import { useJobList } from './use-job-list';
 
-interface Props {
-  startPage?: number;
-}
+export const JobList = () => {
+  const searchParams = useSearchParams();
+  const hasSearchParams = Array.from(searchParams.entries()).length > 0;
+  const startPage = hasSearchParams ? 1 : 2;
 
-export const JobList = ({ startPage }: Props) => {
   const {
     isLoading,
     isLoadingNextPage,

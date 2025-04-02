@@ -1,12 +1,9 @@
-import { JobItemSchema } from '@/lib/jobs/core/schemas';
+import { fetchJobListPage } from '@/lib/jobs/server/data';
 
 import { JobItem } from '@/lib/jobs/ui/job-item/job-item';
 
-interface Props {
-  jobs: JobItemSchema[];
-}
-
-export const JobListSSR = ({ jobs }: Props) => {
+export const JobListSSR = async () => {
+  const { data: jobs } = await fetchJobListPage({ page: 1 });
   if (!jobs.length) return <p>TODO: Empty SSR UI</p>;
   return (
     <>

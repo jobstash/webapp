@@ -7,5 +7,9 @@ interface Props {
 }
 
 export const JobListSkeleton = ({ className }: Props) => {
-  return <div className={cn(className)}>{'TODO: <JobListSkeleton />'}</div>;
+  return (
+    <div className={cn('h-[600px] w-full bg-sidebar', className)}>
+      {'TODO: <JobListSkeleton />'}
+    </div>
+  );
 };
