@@ -90,6 +90,7 @@ export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
   };
 
   return {
+    searchValue,
     filteredOptions,
     focusedIndex,
     setFocusedIndex,
