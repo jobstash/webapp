@@ -37,6 +37,7 @@ export const VirtualizedCommand = ({
   classNames,
 }: VirtualizedCommandProps) => {
   const {
+    searchValue,
     filteredOptions,
     focusedIndex,
     setFocusedIndex,
@@ -56,7 +57,7 @@ export const VirtualizedCommand = ({
       className={cn(classNames?.command)}
     >
       <CommandInput onValueChange={handleSearch} placeholder={placeholder} />
-      {beforeItems}
+      {!searchValue && beforeItems}
       <CommandList
         ref={parentRef}
         style={{
