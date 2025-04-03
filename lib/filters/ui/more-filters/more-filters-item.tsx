@@ -6,13 +6,15 @@ import { useFilterStore } from '@/lib/filters/core/store';
 import { getFilterItemIcon } from '@/lib/filters/utils/get-filter-item-icon';
 
 import { CommandItem } from '@/lib/shared/ui/base/command';
+import { useFilterItemPopoverContext } from '@/lib/filters/ui/filter-item-popover';
 
 interface Props {
   config: FilterConfigItemSchema;
-  onClose: () => void;
 }
 
-export const MoreFiltersItem = ({ config, onClose }: Props) => {
+export const MoreFiltersItem = ({ config }: Props) => {
+  const { onClose } = useFilterItemPopoverContext();
+
   const { icon } = getFilterItemIcon(config);
   const addActiveFilter = useFilterStore((state) => state.addActiveFilter);
   return (
