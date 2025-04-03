@@ -10,11 +10,11 @@ const Popover = ({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Root
   <PopoverPrimitive.Root data-slot='popover' {...props} />
 );
 
-const PopoverTrigger = ({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) => (
-  <PopoverPrimitive.Trigger data-slot='popover-trigger' {...props} />
-);
+const PopoverTrigger = React.forwardRef<
+  React.ComponentRef<typeof PopoverPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger>
+>((props, ref) => <PopoverPrimitive.Trigger ref={ref} {...props} />);
+PopoverTrigger.displayName = PopoverPrimitive.Trigger.displayName;
 
 const PopoverContent = ({
   className,
