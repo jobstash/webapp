@@ -53,6 +53,11 @@ export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
     setSearchValue(search);
   };
 
+  const handleSelect = (value: string) => {
+    onSelect?.(value);
+    setSearchValue('');
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
       case 'ArrowDown': {
@@ -80,7 +85,7 @@ export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
       case 'Enter': {
         event.preventDefault();
         if (filteredOptions[focusedIndex]) {
-          onSelect?.(filteredOptions[focusedIndex].value);
+          handleSelect(filteredOptions[focusedIndex].value);
         }
         break;
       }
@@ -101,5 +106,6 @@ export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
     virtualOptions,
     handleSearch,
     handleKeyDown,
+    handleSelect,
   };
 };
