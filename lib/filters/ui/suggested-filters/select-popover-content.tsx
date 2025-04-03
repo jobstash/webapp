@@ -10,14 +10,8 @@ import {
 } from '@/lib/filters/core/schemas';
 import { useFilterStore } from '@/lib/filters/core/store';
 
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/lib/shared/ui/base/command';
+import { SimpleCommand } from '@/lib/shared/ui/simple-command';
+import { VirtualizedCommand } from '@/lib/shared/ui/virtualized-command';
 
 type SelectConfig =
   | SingleSelectFilterConfigSchema
@@ -31,7 +25,7 @@ interface Props {
 
 export const SelectPopoverContent = ({ config }: Props) => {
   const { label, options } = config;
-  const showSearchInput = options.length > 6;
+  const hasFewItems = options.length <= 6;
 
   const [, setFilterParam] = useQueryState(config.paramKey);
 
@@ -41,21 +35,16 @@ export const SelectPopoverContent = ({ config }: Props) => {
     setFilterParam(value);
   };
 
+  if (hasFewItems) {
+    return <SimpleCommand options={options} onSelect={onSelect} />;
+  }
+
   return (
-    <Command>
-      {showSearchInput && (
-        <CommandInput placeholder={`Search ${label.toLowerCase()} ...`} />
-      )}
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup>
-          {options.map((option) => (
-            <CommandItem key={option.label} value={option.value} onSelect={onSelect}>
-              {option.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
+    <VirtualizedCommand
+      height='400px'
+      options={options}
+      placeholder={`Search ${label.toLowerCase()}...`}
+      onSelectOption={onSelect}
+    />
   );
 };
