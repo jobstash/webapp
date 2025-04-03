@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
-import { useActiveFilterItemParams } from './use-active-filter-item-params';
+import { useActiveFilterItemParams } from '@/lib/filters/ui/active-filter-item/use-active-filter-item-params';
 
 export const useInitFilterParams = (config: FilterConfigItemSchema) => {
   const { filterParam, setFilterParam, setRangeFilterParams } =
@@ -31,4 +31,6 @@ export const useInitFilterParams = (config: FilterConfigItemSchema) => {
       }
     }
   }, [filterParam, setFilterParam, config, setRangeFilterParams]);
+
+  return { filterParamValue: filterParam };
 };
