@@ -1,21 +1,17 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { ChevronDownIcon, SearchCheckIcon } from 'lucide-react';
 
 import { MultiSelectFilterConfigSchema } from '@/lib/filters/core/schemas';
 
+import { cn } from '@/lib/shared/utils';
+
 import { Button } from '@/lib/shared/ui/base/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/lib/shared/ui/base/command';
+import { CommandGroup, CommandItem } from '@/lib/shared/ui/base/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/lib/shared/ui/base/popover';
+import { VirtualizedCommand } from '@/lib/shared/ui/virtualized-command';
 
 import { getActiveFilterValueLabel } from './get-active-filter-value-label';
 import { useCsvFilterParams } from './use-csv-filter-params';
@@ -39,11 +35,10 @@ export const MultiselectFilterDropdown = ({ config, filterParamValue }: Props) =
     return config.options.filter((option) => isActiveParam(option.value));
   }, [config.options, isActiveParam]);
 
-  const [searchInput, setSearchInput] = useState('');
   const onToggleItem = (value: string, nextState: boolean) => {
     toggleItem(value, nextState);
-    setSearchInput('');
   };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -61,31 +56,25 @@ export const MultiselectFilterDropdown = ({ config, filterParamValue }: Props) =
         align='start'
         className='relative flex w-52 flex-col gap-2 bg-muted p-0'
       >
-        <Command className='bg-muted'>
-          <CommandInput
-            placeholder={`Search ${config.label.toLowerCase()} ...`}
-            value={searchInput}
-            onValueChange={setSearchInput}
-          />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+        <VirtualizedCommand
+          options={options}
+          placeholder={`Search ${config.label.toLowerCase()} ...`}
+          onSelect={(value) => onToggleItem(value, true)}
+          beforeItems={
             <CommandGroup heading='Selected'>
-              {selectedOptions.map(({ label, value }) => (
-                <CommandItem key={label} onSelect={() => onToggleItem(value, false)}>
+              {selectedOptions.map(({ label, value }, index) => (
+                <CommandItem
+                  key={label}
+                  onSelect={() => onToggleItem(value, false)}
+                  className={cn({ 'aria-selected:bg-transparent': index === 0 })}
+                >
                   <SearchCheckIcon className='size-3.5 text-primary' />
                   {label}
                 </CommandItem>
               ))}
             </CommandGroup>
-            <CommandGroup heading='Options'>
-              {options.map(({ label, value }) => (
-                <CommandItem key={label} onSelect={() => onToggleItem(value, true)}>
-                  {label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+          }
+        />
       </PopoverContent>
     </Popover>
   );

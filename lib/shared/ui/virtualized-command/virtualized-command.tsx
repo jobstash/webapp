@@ -56,6 +56,7 @@ export const VirtualizedCommand = ({
       className={cn(classNames?.command)}
     >
       <CommandInput onValueChange={handleSearch} placeholder={placeholder} />
+      {beforeItems}
       <CommandList
         ref={parentRef}
         style={{
@@ -67,7 +68,6 @@ export const VirtualizedCommand = ({
         onMouseMove={disableKeyboardNav}
       >
         <CommandEmpty>No item found.</CommandEmpty>
-        {beforeItems}
         <CommandGroup>
           <div
             style={{
