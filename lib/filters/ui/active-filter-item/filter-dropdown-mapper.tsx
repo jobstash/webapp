@@ -6,6 +6,7 @@ import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 import { Button } from '@/lib/shared/ui/base/button';
 import { CheckboxFilterDropdown } from '@/lib/filters/ui/active-filter-item/checkbox-filter-dropdown';
 import { MultiselectFilterDropdown } from '@/lib/filters/ui/active-filter-item/multiselect-filter-dropdown';
+import { RadioFilterDropdown } from '@/lib/filters/ui/active-filter-item/radio-filter-dropdown';
 
 interface Props {
   filterParamValue: string | null;
@@ -14,14 +15,21 @@ interface Props {
 
 export const FilterDropdownMapper = ({ filterParamValue, config }: Props) => {
   if (!filterParamValue) return null;
+
   if (config.kind === FILTER_KIND.CHECKBOX) {
     return <CheckboxFilterDropdown filterParamValue={filterParamValue} config={config} />;
   }
+
   if (config.kind === FILTER_KIND.MULTI_SELECT) {
     return (
       <MultiselectFilterDropdown filterParamValue={filterParamValue} config={config} />
     );
   }
+
+  if (config.kind === FILTER_KIND.RADIO) {
+    return <RadioFilterDropdown filterParamValue={filterParamValue} config={config} />;
+  }
+
   return (
     <Button
       size='xs'
