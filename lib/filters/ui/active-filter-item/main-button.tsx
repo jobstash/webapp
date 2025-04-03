@@ -12,6 +12,7 @@ import { Button } from '@/lib/shared/ui/base/button';
 import { filterIconMap } from '@/lib/filters/ui/filter-icon-map';
 
 import { useActiveFilterItemParams } from './use-active-filter-item-params';
+
 interface Props {
   config: FilterConfigItemSchema;
 }

@@ -7,7 +7,7 @@ import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 import { useFilterStore } from '@/lib/filters/core/store';
 
-import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside-skeleton';
+import { FiltersAsideSkeleton } from './filters-aside-skeleton';
 
 interface Props extends React.PropsWithChildren {
   filters: FilterConfigItemSchema[];

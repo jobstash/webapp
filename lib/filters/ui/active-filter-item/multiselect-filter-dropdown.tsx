@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, useState } from 'react';
 
 import { ChevronDownIcon, SearchCheckIcon } from 'lucide-react';
@@ -14,9 +16,10 @@ import {
   CommandList,
 } from '@/lib/shared/ui/base/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/lib/shared/ui/base/popover';
-import { useCsvFilterParams } from '@/lib/filters/ui/active-filter-item/use-csv-filter-params';
 
 import { getActiveFilterValueLabel } from './get-active-filter-value-label';
+import { useCsvFilterParams } from './use-csv-filter-params';
+
 interface Props {
   config: MultiSelectFilterConfigSchema;
   filterParamValue: string;

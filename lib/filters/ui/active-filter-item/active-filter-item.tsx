@@ -3,8 +3,7 @@
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
-import { FilterDropdownMapper } from '@/lib/filters/ui/active-filter-item/filter-dropdown-mapper';
-
+import { FilterDropdownMapper } from './filter-dropdown-mapper';
 import { MainButton } from './main-button';
 import { useInitFilterParams } from './use-init-filter-params';
 
