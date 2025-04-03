@@ -5,10 +5,8 @@ import { ClassValue } from 'clsx';
 import { cn } from '@/lib/shared/utils/cn';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/lib/shared/ui/base/popover';
-import {
-  FilterItemPopoverProvider,
-  useFilterItemPopoverContext,
-} from '@/lib/filters/ui/filter-item-popover/context';
+
+import { FilterItemPopoverProvider, useFilterItemPopoverContext } from './context';
 
 interface Props extends React.PropsWithChildren {
   trigger: React.ReactNode;

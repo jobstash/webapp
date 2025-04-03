@@ -2,7 +2,7 @@
 
 import { useFilterStore } from '@/lib/filters/core/store';
 
-import { ActiveFilterItem } from '@/lib/filters/ui/active-filter-item';
+import { ActiveFilterItem } from './active-filter-item';
 
 export const ActiveFilters = () => {
   const activeFilters = useFilterStore((state) => state.activeFilters);

@@ -1,12 +1,15 @@
+'use client';
+
 import { ChevronDownIcon } from 'lucide-react';
 
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
 import { Button } from '@/lib/shared/ui/base/button';
-import { CheckboxFilterDropdown } from '@/lib/filters/ui/active-filter-item/checkbox-filter-dropdown';
-import { MultiselectFilterDropdown } from '@/lib/filters/ui/active-filter-item/multiselect-filter-dropdown';
-import { RadioFilterDropdown } from '@/lib/filters/ui/active-filter-item/radio-filter-dropdown';
+
+import { CheckboxFilterDropdown } from './checkbox-filter-dropdown';
+import { MultiselectFilterDropdown } from './multiselect-filter-dropdown';
+import { RadioFilterDropdown } from './radio-filter-dropdown';
 
 interface Props {
   filterParamValue: string | null;

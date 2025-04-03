@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useState, useTransition } from 'react';
 
 interface FilterItemPopoverCtx {
