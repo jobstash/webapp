@@ -1,4 +1,4 @@
-import { KeyboardEvent, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 import { useVirtualizer } from '@tanstack/react-virtual';
 
@@ -16,9 +16,23 @@ export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>(options);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [isKeyboardNavActive, setIsKeyboardNavActive] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const disableKeyboardNav = () => setIsKeyboardNavActive(false);
 
   const parentRef = useRef(null);
+
+  useEffect(() => {
+    if (searchValue) {
+      setFilteredOptions(
+        options.filter((option) =>
+          option.value.toLowerCase().includes(searchValue.toLowerCase()),
+        ),
+      );
+    } else {
+      setFilteredOptions(options);
+    }
+    setFocusedIndex(0);
+  }, [options, searchValue]);
 
   const virtualizer = useVirtualizer({
     count: filteredOptions.length,
@@ -36,11 +50,7 @@ export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
 
   const handleSearch = (search: string) => {
     setIsKeyboardNavActive(false);
-    setFilteredOptions(
-      options.filter((option) =>
-        option.value.toLowerCase().includes(search.toLowerCase() ?? []),
-      ),
-    );
+    setSearchValue(search);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
