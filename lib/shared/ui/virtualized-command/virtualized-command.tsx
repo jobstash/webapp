@@ -48,6 +48,7 @@ export const VirtualizedCommand = ({
     virtualOptions,
     handleSearch,
     handleKeyDown,
+    handleSelect,
   } = useVirtualizedCommand({ options, onSelect });
 
   return (
@@ -56,7 +57,12 @@ export const VirtualizedCommand = ({
       onKeyDown={handleKeyDown}
       className={cn(classNames?.command)}
     >
-      <CommandInput onValueChange={handleSearch} placeholder={placeholder} />
+      <CommandInput
+        autoFocus
+        value={searchValue}
+        onValueChange={handleSearch}
+        placeholder={placeholder}
+      />
       {!searchValue && beforeItems}
       <CommandList
         ref={parentRef}
@@ -80,7 +86,6 @@ export const VirtualizedCommand = ({
             {virtualOptions.map((virtualOption) => (
               <CommandItem
                 key={filteredOptions[virtualOption.index].value}
-                // disabled={isKeyboardNavActive}
                 className={cn(
                   'absolute top-0 left-0 w-full bg-transparent',
                   focusedIndex === virtualOption.index &&
@@ -98,7 +103,7 @@ export const VirtualizedCommand = ({
                   !isKeyboardNavActive && setFocusedIndex(virtualOption.index)
                 }
                 onMouseLeave={() => !isKeyboardNavActive && setFocusedIndex(-1)}
-                onSelect={onSelect}
+                onSelect={handleSelect}
               >
                 {filteredOptions[virtualOption.index].label}
               </CommandItem>
