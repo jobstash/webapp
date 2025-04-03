@@ -1,3 +1,5 @@
+import { ClassValue } from 'clsx';
+
 import { cn } from '@/lib/shared/utils';
 
 import {
@@ -16,17 +18,23 @@ type Option = {
 };
 
 interface VirtualizedCommandProps {
-  height: string;
   options: Option[];
-  placeholder: string;
-  onSelectOption?: (option: string) => void;
+  height?: string;
+  placeholder?: string;
+  onSelect?: (value: string) => void;
+  beforeItems?: React.ReactNode;
+  classNames?: {
+    command?: ClassValue;
+  };
 }
 
 export const VirtualizedCommand = ({
-  height,
   options,
-  placeholder,
-  onSelectOption,
+  height = '400px',
+  placeholder = 'Search...',
+  onSelect,
+  beforeItems,
+  classNames,
 }: VirtualizedCommandProps) => {
   const {
     filteredOptions,
@@ -39,10 +47,14 @@ export const VirtualizedCommand = ({
     virtualOptions,
     handleSearch,
     handleKeyDown,
-  } = useVirtualizedCommand({ options, onSelectOption });
+  } = useVirtualizedCommand({ options, onSelect });
 
   return (
-    <Command shouldFilter={false} onKeyDown={handleKeyDown}>
+    <Command
+      shouldFilter={false}
+      onKeyDown={handleKeyDown}
+      className={cn(classNames?.command)}
+    >
       <CommandInput onValueChange={handleSearch} placeholder={placeholder} />
       <CommandList
         ref={parentRef}
@@ -55,6 +67,7 @@ export const VirtualizedCommand = ({
         onMouseMove={disableKeyboardNav}
       >
         <CommandEmpty>No item found.</CommandEmpty>
+        {beforeItems}
         <CommandGroup>
           <div
             style={{
@@ -84,7 +97,7 @@ export const VirtualizedCommand = ({
                   !isKeyboardNavActive && setFocusedIndex(virtualOption.index)
                 }
                 onMouseLeave={() => !isKeyboardNavActive && setFocusedIndex(-1)}
-                onSelect={onSelectOption}
+                onSelect={onSelect}
               >
                 {filteredOptions[virtualOption.index].label}
               </CommandItem>

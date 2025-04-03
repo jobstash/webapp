@@ -41,10 +41,9 @@ export const SelectPopoverContent = ({ config }: Props) => {
 
   return (
     <VirtualizedCommand
-      height='400px'
       options={options}
       placeholder={`Search ${label.toLowerCase()}...`}
-      onSelectOption={onSelect}
+      onSelect={onSelect}
     />
   );
 };

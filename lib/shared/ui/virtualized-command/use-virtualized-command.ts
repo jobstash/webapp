@@ -9,10 +9,10 @@ type Option = {
 
 interface Props {
   options: Option[];
-  onSelectOption?: (option: string) => void;
+  onSelect?: (option: string) => void;
 }
 
-export const useVirtualizedCommand = ({ options, onSelectOption }: Props) => {
+export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>(options);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [isKeyboardNavActive, setIsKeyboardNavActive] = useState(false);
@@ -70,7 +70,7 @@ export const useVirtualizedCommand = ({ options, onSelectOption }: Props) => {
       case 'Enter': {
         event.preventDefault();
         if (filteredOptions[focusedIndex]) {
-          onSelectOption?.(filteredOptions[focusedIndex].value);
+          onSelect?.(filteredOptions[focusedIndex].value);
         }
         break;
       }
