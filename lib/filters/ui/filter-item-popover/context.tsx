@@ -2,12 +2,14 @@ import { createContext, useContext, useState, useTransition } from 'react';
 
 interface FilterItemPopoverCtx {
   open: boolean;
+  onClose: () => void;
   toggleOpen: () => void;
   isPending: boolean;
 }
 
 export const FilterItemPopoverContext = createContext<FilterItemPopoverCtx>({
   open: false,
+  onClose: () => null,
   toggleOpen: () => null,
   isPending: false,
 });
@@ -23,6 +25,8 @@ export const useFilterItemPopoverContext = () => {
 
 export const FilterItemPopoverProvider = ({ children }: React.PropsWithChildren) => {
   const [open, setOpen] = useState(false);
+  const onClose = () => setOpen(false);
+
   const [isPending, startTransition] = useTransition();
 
   const toggleOpen = () => {
@@ -32,7 +36,7 @@ export const FilterItemPopoverProvider = ({ children }: React.PropsWithChildren)
   };
 
   return (
-    <FilterItemPopoverContext.Provider value={{ open, toggleOpen, isPending }}>
+    <FilterItemPopoverContext.Provider value={{ open, onClose, toggleOpen, isPending }}>
       {children}
     </FilterItemPopoverContext.Provider>
   );
