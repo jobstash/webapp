@@ -1,5 +1,7 @@
 import { ClassValue } from 'clsx';
 
+import { Option } from '@/lib/shared/core/types';
+
 import { cn } from '@/lib/shared/utils';
 
 import {
@@ -11,11 +13,6 @@ import {
   CommandList,
 } from '@/lib/shared/ui/base/command';
 import { useVirtualizedCommand } from '@/lib/shared/ui/virtualized-command/use-virtualized-command';
-
-type Option = {
-  value: string;
-  label: string;
-};
 
 interface VirtualizedCommandProps {
   options: Option[];
