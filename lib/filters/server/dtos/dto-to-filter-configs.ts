@@ -86,7 +86,6 @@ const dtoToRadioFilterConfig = (
   };
 };
 
-const SWITCH_FILTER_OPTION_COUNT = 2;
 const RADIO_FILTER_OPTION_THRESHOLD = 6;
 
 const dtoToSingleSelectFilterConfig = (
@@ -95,7 +94,7 @@ const dtoToSingleSelectFilterConfig = (
   | SwitchFilterConfigSchema
   | RadioFilterConfigSchema
   | SingleSelectFilterConfigSchema => {
-  if (dto.options.length === SWITCH_FILTER_OPTION_COUNT) {
+  if (dto.options.every((option) => typeof option.value === 'boolean')) {
     return dtoToSwitchFilterConfig(dto);
   }
 
