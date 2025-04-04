@@ -23,7 +23,10 @@ interface Props {
 
 export const MoreFilters = ({ filters }: Props) => {
   const activeLabels = useFilterStore((state) => state.activeLabels);
-  const options = filters.filter((config) => !activeLabels.has(config.label));
+  const options = filters.filter(
+    (config) =>
+      !activeLabels.has(config.label) && !config.label.toLowerCase().includes('order'),
+  );
 
   return (
     <FilterItemPopover
