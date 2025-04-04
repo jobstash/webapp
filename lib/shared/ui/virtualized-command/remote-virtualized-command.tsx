@@ -71,8 +71,9 @@ export const RemoteVirtualizedCommand = <T,>({
 
   const filteredOptions = useMemo(() => {
     if (data) return data;
+    if (isLoading) return [];
     return initialOptions;
-  }, [data, initialOptions]);
+  }, [data, initialOptions, isLoading]);
 
   const { parentRef, virtualizer, virtualOptions, scrollToIndex } =
     useCommandVirtualization({ filteredOptions });
@@ -116,7 +117,7 @@ export const RemoteVirtualizedCommand = <T,>({
         placeholder={placeholder}
       />
       {!searchValue && beforeItems}
-      <CommandEmpty>No item found.</CommandEmpty>
+      {!isLoading && <CommandEmpty>No item found.</CommandEmpty>}
       <CommandList
         ref={parentRef}
         style={{
