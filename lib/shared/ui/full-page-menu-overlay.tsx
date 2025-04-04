@@ -1,9 +1,12 @@
 'use client';
 
+import { X } from 'lucide-react';
+
 import { FULL_PAGE_OVERLAYS } from '@/lib/shared/core/constants';
 import { useFullPageOverlayStore } from '@/lib/shared/core/store';
 
-import { FullPageOverlay } from '@/lib/shared/ui/full-page-overlay';
+import { Button } from '@/lib/shared/ui/base/button';
+import { FullPageOverlay } from '@/lib/shared/ui/full-page-overlay/full-page-overlay';
 
 export const FullPageMenuOverlay = () => {
   const active = useFullPageOverlayStore((state) => state.active);
@@ -12,8 +15,16 @@ export const FullPageMenuOverlay = () => {
 
   return (
     <FullPageOverlay isOpen={isOpen} onClose={close}>
-      <div className='grid size-full place-items-center'>
-        <p>TODO</p>
+      <div className='relative grid size-full place-items-center'>
+        <Button
+          variant='ghost'
+          size='icon'
+          className='absolute top-4 right-4'
+          onClick={close}
+        >
+          <X className='size-5' />
+        </Button>
+        <p>TODO: mobile full page menu</p>
       </div>
     </FullPageOverlay>
   );
