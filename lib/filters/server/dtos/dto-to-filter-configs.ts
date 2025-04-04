@@ -147,6 +147,9 @@ const SELECT_OPTION_THRESHOLD = 2;
 const processFilter = (
   filterDto: FilterConfigDto[string],
 ): FilterConfigItemSchema | null => {
+  if (filterDto.label === 'Order') filterDto.position = -2;
+  if (filterDto.label === 'Order By') filterDto.position = -1;
+
   if (filterDto.kind === FILTER_KIND.RANGE) {
     return dtoToRangeFilterConfig(filterDto);
   }
