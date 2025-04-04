@@ -1,5 +1,6 @@
 'use client';
 
+import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
 import { FilterItemPopover } from '@/lib/filters/ui/filter-item-popover';
@@ -12,8 +13,12 @@ interface Props {
 }
 
 export const SuggestedFiltersItem = ({ config }: Props) => {
+  const isPopover = config.kind !== FILTER_KIND.SWITCH;
+
   return (
-    <FilterItemPopover trigger={<SuggestedFiltersTrigger config={config} />}>
+    <FilterItemPopover
+      trigger={<SuggestedFiltersTrigger config={config} isPopover={isPopover} />}
+    >
       <SuggestedFiltersContentMapper config={config} />
     </FilterItemPopover>
   );
