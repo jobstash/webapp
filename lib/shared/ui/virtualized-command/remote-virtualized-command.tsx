@@ -50,6 +50,7 @@ export const RemoteVirtualizedCommand = <T,>({
 }: Props<T>) => {
   const {
     searchValue,
+    debouncedSearchValue,
     disableKeyboardNav,
     setSearchValue,
     focusedIndex,
@@ -59,13 +60,13 @@ export const RemoteVirtualizedCommand = <T,>({
   } = useCommandState();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['remote-virtualized-command', ...queryKey, searchValue],
+    queryKey: ['remote-virtualized-command', ...queryKey, debouncedSearchValue],
     queryFn: async () => {
-      const res = await fetch(endpoint(searchValue));
+      const res = await fetch(endpoint(debouncedSearchValue));
       const result = await res.json();
       return result;
     },
-    enabled: !!searchValue,
+    enabled: !!debouncedSearchValue,
     select: transformResponse,
   });
 
