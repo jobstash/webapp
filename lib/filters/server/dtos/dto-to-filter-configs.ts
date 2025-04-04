@@ -24,6 +24,8 @@ import {
 } from '@/lib/filters/server/dtos/filter-config-dtos';
 
 const SUGGESTED_FILTERS = new Set([
+  'order',
+  'orderBy',
   'locations',
   'seniority',
   'tags',
