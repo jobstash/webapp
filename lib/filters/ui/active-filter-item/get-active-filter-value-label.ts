@@ -1,6 +1,9 @@
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 
+import { capitalizeSlug } from '@/lib/shared/utils/capitalize';
+import { checkIsRemoteFilter } from '@/lib/filters/utils/check-is-remote-filter';
+
 export const getActiveFilterValueLabel = (
   config: FilterConfigItemSchema,
   initValue: string | null,
@@ -14,6 +17,15 @@ export const getActiveFilterValueLabel = (
     case FILTER_KIND.RADIO:
       // Handle comma-separated values for select-like filters
       const values = initValue.split(',');
+
+      // Remote filters can have values outside of the options
+      const isRemoteFilter = checkIsRemoteFilter(config);
+      if (isRemoteFilter) {
+        if (values.length > 1) {
+          return `${values.length} items`;
+        }
+        return capitalizeSlug(initValue);
+      }
 
       // Filter out invalid values
       const validValues = values.filter((value) =>
