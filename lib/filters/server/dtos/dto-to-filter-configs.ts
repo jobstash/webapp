@@ -71,6 +71,7 @@ const dtoToSwitchFilterConfig = (
     ...dtoToFilterConfigSharedProps(dto),
     kind: FILTER_KIND.SWITCH,
     paramKey: dto.paramKey,
+    label: dto.options.find((option) => option.value === true)?.label ?? dto.label,
     isSuggested: SUGGESTED_FILTERS.has(dto.paramKey),
   };
 };
