@@ -1,12 +1,13 @@
 import { FILTER_KIND } from '@/lib/filters/core/constants';
+import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
+
+import { getFilterParamKey } from '@/lib/filters/utils/get-filter-param-key';
 
 import { filterIconMap } from '@/lib/filters/ui/filter-icon-map';
 
-import { FilterConfigItemSchema } from '../core/schemas';
-
 export const getFilterItemIcon = (config: FilterConfigItemSchema) => {
   const isRange = config.kind === FILTER_KIND.RANGE;
-  const iconKey = isRange ? config.min.paramKey : config.paramKey;
+  const iconKey = getFilterParamKey(config);
   const icon = filterIconMap[iconKey];
   return { icon, iconKey, isRange };
 };
