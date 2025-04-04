@@ -49,6 +49,7 @@ export const useCsvFilterParams = (paramKey: string, label: string) => {
   );
 
   return {
+    filterParam,
     selectedValues,
     isActiveParam,
     toggleItem,
