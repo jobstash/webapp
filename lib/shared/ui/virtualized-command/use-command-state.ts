@@ -1,5 +1,9 @@
 import { useState } from 'react';
 
+import { useDebounce } from 'ahooks';
+
+const DEBOUNCE_TIME = 500;
+
 export const useCommandState = () => {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [isKeyboardNavActive, setIsKeyboardNavActive] = useState(false);
@@ -7,6 +11,8 @@ export const useCommandState = () => {
 
   const disableKeyboardNav = () => setIsKeyboardNavActive(false);
   const enableKeyboardNav = () => setIsKeyboardNavActive(true);
+
+  const debouncedSearchValue = useDebounce(searchValue, { wait: DEBOUNCE_TIME });
 
   return {
     focusedIndex,
@@ -16,6 +22,7 @@ export const useCommandState = () => {
     disableKeyboardNav,
     enableKeyboardNav,
     searchValue,
+    debouncedSearchValue,
     setSearchValue,
   };
 };
