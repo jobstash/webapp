@@ -6,3 +6,18 @@ export const capitalize = (str: string, lowercase = false) => {
 
   return s1 + s2;
 };
+
+export const capitalizeSlug = (slug: string, capitalizeAllWords = true) => {
+  if (!slug) return '';
+
+  const spacedString = slug.replace(/-/g, ' ');
+
+  if (capitalizeAllWords) {
+    return spacedString
+      .split(' ')
+      .map((word) => capitalize(word))
+      .join(' ');
+  }
+
+  return capitalize(spacedString);
+};
