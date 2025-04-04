@@ -1,11 +1,10 @@
-import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useVirtualizer } from '@tanstack/react-virtual';
 
-type Option = {
-  value: string;
-  label: string;
-};
+import { Option } from '@/lib/shared/core/types';
+
+import { fuzzySearch } from '@/lib/shared/utils/fuzzy-search';
 
 interface Props {
   options: Option[];
@@ -20,19 +19,20 @@ export const useVirtualizedCommand = ({ options, onSelect }: Props) => {
   const disableKeyboardNav = () => setIsKeyboardNavActive(false);
 
   const parentRef = useRef(null);
+  const searchSpace = useMemo(
+    () => options.map((option) => option.label.replaceAll(' ', '')),
+    [options],
+  );
 
   useEffect(() => {
     if (searchValue) {
-      setFilteredOptions(
-        options.filter((option) =>
-          option.value.toLowerCase().includes(searchValue.toLowerCase()),
-        ),
-      );
+      const results = fuzzySearch(searchSpace, searchValue, options);
+      setFilteredOptions(results);
     } else {
       setFilteredOptions(options);
     }
     setFocusedIndex(0);
-  }, [options, searchValue]);
+  }, [options, searchSpace, searchValue]);
 
   const virtualizer = useVirtualizer({
     count: filteredOptions.length,
