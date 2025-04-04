@@ -12,7 +12,8 @@ import {
   CommandItem,
   CommandList,
 } from '@/lib/shared/ui/base/command';
-import { useVirtualizedCommand } from '@/lib/shared/ui/virtualized-command/use-virtualized-command';
+
+import { useVirtualizedCommand } from './use-virtualized-command';
 
 interface VirtualizedCommandProps {
   options: Option[];
