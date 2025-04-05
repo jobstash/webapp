@@ -19,5 +19,7 @@ export const fetchStaticPillarSlugs = async () => {
     throw new MwSchemaError('fetchStaticPillarSlugs', JSON.stringify(parsed.issues[0]));
   }
 
-  return dtoToStaticPillarSlugs(parsed.output);
+  return dtoToStaticPillarSlugs(parsed.output).map((slug) => ({
+    title: slug,
+  }));
 };
