@@ -7,13 +7,13 @@ export const generateStaticParams =
     : async () => fetchStaticPillarSlugs();
 
 interface Props {
-  params: Promise<{ title: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 const Page = async (props: Props) => {
-  const { title } = await props.params;
+  const { slug } = await props.params;
   // const deets = await fetchPillarDeets(title);
-  return <p>{JSON.stringify({ title }, null, 2)}</p>;
+  return <p>{JSON.stringify({ slug }, null, 2)}</p>;
 };
 
 export default Page;

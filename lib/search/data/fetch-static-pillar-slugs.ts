@@ -20,6 +20,6 @@ export const fetchStaticPillarSlugs = async () => {
   }
 
   return dtoToStaticPillarSlugs(parsed.output).map((slug) => ({
-    title: slug,
+    slug,
   }));
 };
