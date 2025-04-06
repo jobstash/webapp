@@ -12,20 +12,20 @@ export const generateStaticParams =
 
 interface Props {
   params: Promise<{
-    title: string;
+    slug: string;
     id: string;
   }>;
 }
 
 const Page = async (props: Props) => {
-  const { id, title } = await props.params;
+  const { id, slug } = await props.params;
   const job = await fetchJobDetails(id);
   return (
     <>
       <div className='flex flex-col gap-4 pt-10'>
         <BackButton />
-        <h1>{title}</h1>
-        <pre>{JSON.stringify({ id, title, org: job.organization?.name }, null, 2)}</pre>
+        <h1>{slug}</h1>
+        <pre>{JSON.stringify({ id, slug, org: job.organization?.name }, null, 2)}</pre>
       </div>
     </>
   );
