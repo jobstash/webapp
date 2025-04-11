@@ -108,9 +108,7 @@ export const RemoteVirtualizedCommand = <T,>({
     >
       <CommandInput
         icon={
-          isLoading ? (
-            <LoaderIcon className='size-4 shrink-0 animate-spin opacity-50' />
-          ) : undefined
+          isLoading ? <LoaderIcon className='size-4 shrink-0 animate-spin' /> : undefined
         }
         autoFocus
         value={searchValue}
