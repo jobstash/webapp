@@ -31,7 +31,7 @@ export const MoreFilters = ({ filters }: Props) => {
   return (
     <FilterItemPopover
       trigger={
-        <Button size='xs' variant='ghost' className='h-7 text-muted-foreground'>
+        <Button disabled size='xs' variant='ghost' className='h-7 text-muted-foreground'>
           <ListFilterPlusIcon className='size-4' />
           More Filters
         </Button>
