@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside } from '@/lib/filters/ui/filters-aside';
 import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside-skeleton';
+import { SearchInput } from '@/lib/search/ui/search-input';
 
 import { LazyMobileOverlays } from './lazy-mobile-overlays';
 
@@ -24,7 +25,7 @@ const Layout = ({ children }: React.PropsWithChildren) => {
         </Suspense>
       }
     >
-      <Header />
+      <Header searchInput={<SearchInput />} />
       {children}
       <LazyMobileOverlays />
     </SidebarAsideLayout>
