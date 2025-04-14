@@ -2,12 +2,14 @@
 
 interface Props {
   searchInput: React.ReactNode;
+  filterItems: React.ReactNode;
 }
 
-export const DesktopHeader = ({ searchInput }: Props) => {
+export const DesktopHeader = ({ searchInput, filterItems }: Props) => {
   return (
-    <div className='hidden h-16 w-full items-center justify-between p-4 md:flex'>
+    <div className='hidden min-h-16 w-full flex-col items-center gap-4 p-4 md:flex'>
       {searchInput}
+      {filterItems}
       {/* <div className='hidden items-center md:flex'>
         <Button variant='ghost' size='sm'>
           Get Listed
