@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
@@ -6,10 +6,15 @@ import { FilterConfigItemSchema } from '@/lib/filters/core/schemas';
 import { useActiveFilterItemParams } from '@/lib/filters/ui/active-filter-item/use-active-filter-item-params';
 
 export const useInitFilterParams = (config: FilterConfigItemSchema) => {
+  const [initialized, setInitialized] = useState(false);
   const { filterParam, setFilterParam, setRangeFilterParams } =
     useActiveFilterItemParams(config);
 
   useEffect(() => {
+    if (!initialized) {
+      setInitialized(true);
+      return;
+    }
     if (!filterParam) {
       switch (config.kind) {
         case FILTER_KIND.RANGE:
@@ -24,13 +29,13 @@ export const useInitFilterParams = (config: FilterConfigItemSchema) => {
         case FILTER_KIND.CHECKBOX:
         case FILTER_KIND.SINGLE_SELECT:
         case FILTER_KIND.MULTI_SELECT:
-          setFilterParam(config.options[0].value);
+          if (!initialized) setFilterParam(config.options[0].value);
           break;
         default:
           break;
       }
     }
-  }, [filterParam, setFilterParam, config, setRangeFilterParams]);
+  }, [initialized, filterParam, setFilterParam, config, setRangeFilterParams]);
 
   return { filterParamValue: filterParam };
 };
