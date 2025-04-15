@@ -2,9 +2,7 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import { Header } from '@/lib/shared/ui/header';
-import { FiltersAside } from '@/lib/filters/ui/filters-aside';
-import { FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside-skeleton';
-import { HeaderFilterItems } from '@/lib/filters/ui/header-filter-items';
+import { FiltersAside, FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
 import { SearchInput } from '@/lib/search/ui/search-input';
 
 import { LazyMobileOverlays } from './lazy-mobile-overlays';
@@ -25,7 +23,7 @@ const Layout = ({ children }: React.PropsWithChildren) => {
         </Suspense>
       }
     >
-      <Header searchInput={<SearchInput />} filterItems={<HeaderFilterItems />} />
+      <Header searchInput={<SearchInput />} filterItems={null} />
       {children}
       <LazyMobileOverlays />
     </SidebarAsideLayout>

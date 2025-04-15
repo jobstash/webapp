@@ -10,25 +10,12 @@ export const filterConfigSharedPropertiesSchema = v.object({
     id: v.nullish(nonEmptyStringSchema),
     name: v.nullish(nonEmptyStringSchema),
   }),
-  isSuggested: v.optional(v.boolean()), // Appears suggested in filters aside section
+  isSuggested: v.optional(v.boolean()),
 });
+
 export type FilterConfigSharedPropertiesSchema = v.InferOutput<
   typeof filterConfigSharedPropertiesSchema
 >;
-
-export const rangeValueSchema = v.object({
-  value: v.pipe(v.number(), v.minValue(0)),
-  paramKey: nonEmptyStringSchema,
-});
-export type RangeValueSchema = v.InferOutput<typeof rangeValueSchema>;
-export const rangeFilterConfigSchema = v.object({
-  ...filterConfigSharedPropertiesSchema.entries,
-  kind: v.literal(FILTER_KIND.RANGE),
-  min: rangeValueSchema,
-  max: rangeValueSchema,
-  unit: v.nullish(nonEmptyStringSchema),
-});
-export type RangeFilterConfigSchema = v.InferOutput<typeof rangeFilterConfigSchema>;
 
 export const selectOptionsSchema = v.object({
   label: nonEmptyStringSchema,
@@ -79,12 +66,11 @@ export type MultiSelectFilterConfigSchema = v.InferOutput<
   typeof multiSelectFilterConfigSchema
 >;
 
-export const filterConfigItemSchema = v.union([
-  rangeFilterConfigSchema,
+export const filterConfigSchema = v.union([
   switchFilterConfigSchema,
   radioFilterConfigSchema,
   singleSelectFilterConfigSchema,
   checkboxFilterConfigSchema,
   multiSelectFilterConfigSchema,
 ]);
-export type FilterConfigItemSchema = v.InferOutput<typeof filterConfigItemSchema>;
+export type FilterConfigSchema = v.InferOutput<typeof filterConfigSchema>;
