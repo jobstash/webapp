@@ -41,6 +41,10 @@ export const RemoteSearchDropdown = ({ config }: Props) => {
     }));
   }, [filterParam]);
 
+  const selectedValues = useMemo(() => {
+    return selectedOptions.map((option) => option.value);
+  }, [selectedOptions]);
+
   return (
     <FilterDropdown
       label={label}
@@ -54,6 +58,7 @@ export const RemoteSearchDropdown = ({ config }: Props) => {
         options={options}
         onSelect={(value) => toggleItem(value, true)}
         endpoint={endpoint}
+        selectedValues={selectedValues}
         transformResponse={(data) =>
           data.map((d) => ({ label: d.name, value: d.normalizedName }))
         }
