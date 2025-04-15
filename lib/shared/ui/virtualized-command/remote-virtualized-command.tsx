@@ -32,6 +32,7 @@ interface Props<T> {
   placeholder?: string;
   onSelect?: (value: string) => void;
   beforeItems?: React.ReactNode;
+  selectedValues?: string[];
   classNames?: {
     command?: ClassValue;
   };
@@ -46,6 +47,7 @@ export const RemoteVirtualizedCommand = <T,>({
   placeholder = 'Search...',
   onSelect,
   beforeItems,
+  selectedValues,
   classNames,
 }: Props<T>) => {
   const {
@@ -71,10 +73,15 @@ export const RemoteVirtualizedCommand = <T,>({
   });
 
   const filteredOptions = useMemo(() => {
-    if (data) return data;
+    if (data) {
+      const dedupedData = data.filter(
+        (option) => !selectedValues?.includes(option.value),
+      );
+      return dedupedData;
+    }
     if (isLoading) return [];
     return initialOptions;
-  }, [data, initialOptions, isLoading]);
+  }, [data, initialOptions, isLoading, selectedValues]);
 
   const { parentRef, virtualizer, virtualOptions, scrollToIndex } =
     useCommandVirtualization({ filteredOptions });
