@@ -139,7 +139,7 @@ export const RemoteVirtualizedCommand = <T,>({
               <CommandItem
                 key={`${filteredOptions[virtualOption.index].value}-${index}`}
                 className={cn(
-                  'absolute top-0 left-0 w-full bg-transparent data-[selected=true]:bg-white/10',
+                  'absolute top-0 left-0 w-full bg-transparent data-[selected=true]:bg-white/5',
                   focusedIndex === virtualOption.index &&
                     'bg-white/10 text-accent-foreground',
                   isKeyboardNavActive &&

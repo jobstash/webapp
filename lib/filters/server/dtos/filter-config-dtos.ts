@@ -1,8 +1,8 @@
+import 'server-only';
+
 import * as v from 'valibot';
 
 import { nonEmptyStringSchema } from '@/lib/shared/core/schemas';
-
-import { FILTER_KIND } from '../../core/constants';
 
 export const filterConfigSharedPropertiesDto = v.object({
   position: v.number(),
@@ -23,7 +23,7 @@ export type RangeFilterConfigValueDto = v.InferOutput<typeof rangeFilterConfigVa
 
 export const rangeFilterConfigDto = v.object({
   ...filterConfigSharedPropertiesDto.entries,
-  kind: v.literal(FILTER_KIND.RANGE),
+  kind: v.literal('RANGE'),
   value: v.object({
     lowest: rangeFilterConfigValueDto,
     highest: rangeFilterConfigValueDto,
@@ -40,7 +40,7 @@ export type SelectOptionDto = v.InferOutput<typeof selectOptionDto>;
 
 export const singleSelectFilterConfigDto = v.object({
   ...filterConfigSharedPropertiesDto.entries,
-  kind: v.literal(FILTER_KIND.SINGLE_SELECT),
+  kind: v.literal('SINGLE_SELECT'),
   paramKey: nonEmptyStringSchema,
   options: v.array(selectOptionDto),
 });
@@ -50,10 +50,7 @@ export type SingleSelectFilterConfigDto = v.InferOutput<
 
 export const multiSelectFilterConfigDto = v.object({
   ...filterConfigSharedPropertiesDto.entries,
-  kind: v.union([
-    v.literal(FILTER_KIND.MULTI_SELECT),
-    v.literal(FILTER_KIND.MULTI_SELECT_WITH_SEARCH),
-  ]),
+  kind: v.union([v.literal('MULTI_SELECT'), v.literal('MULTI_SELECT_WITH_SEARCH')]),
   paramKey: nonEmptyStringSchema,
   options: v.array(selectOptionDto),
 });

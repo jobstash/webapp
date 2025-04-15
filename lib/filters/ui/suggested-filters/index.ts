@@ -1,1 +1,1 @@
-export * from './suggested-filters';
+export { SuggestedFilters } from './suggested-filters';

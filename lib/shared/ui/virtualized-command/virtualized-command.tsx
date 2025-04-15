@@ -85,7 +85,7 @@ export const VirtualizedCommand = ({
               <CommandItem
                 key={filteredOptions[virtualOption.index].value}
                 className={cn(
-                  'absolute top-0 left-0 w-full bg-transparent',
+                  'absolute top-0 left-0 w-full bg-transparent data-[selected=true]:bg-white/5',
                   focusedIndex === virtualOption.index &&
                     'bg-accent text-accent-foreground',
                   isKeyboardNavActive &&

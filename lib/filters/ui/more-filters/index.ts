@@ -1,1 +1,1 @@
-export * from './more-filters';
+export { MoreFilters } from './more-filters';
