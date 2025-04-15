@@ -1,5 +1,9 @@
 'use client';
 
+import { ClassValue } from 'clsx';
+
+import { cn } from '@/lib/shared/utils';
+
 import {
   Command,
   CommandGroup,
@@ -10,15 +14,24 @@ import {
 interface Props {
   options: { label: string; value: string }[];
   onSelect: (value: string) => void;
+  classNames?: {
+    base?: ClassValue;
+    item?: ClassValue;
+  };
 }
 
-export const SimpleCommand = ({ options, onSelect }: Props) => {
+export const SimpleCommand = ({ options, onSelect, classNames }: Props) => {
   return (
-    <Command>
+    <Command className={cn(classNames?.base)}>
       <CommandList>
         <CommandGroup>
           {options.map((option) => (
-            <CommandItem key={option.label} value={option.value} onSelect={onSelect}>
+            <CommandItem
+              key={option.label}
+              value={option.value}
+              onSelect={onSelect}
+              className={cn(classNames?.item)}
+            >
               {option.label}
             </CommandItem>
           ))}
