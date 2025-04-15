@@ -45,7 +45,6 @@ export const VirtualMultiselectDropdown = ({ config }: Props) => {
     }
     return config.options.filter((option) => isActiveParam(option.value));
   }, [config.options, filterParam, isActiveParam, isRemoteFilter]);
-  console.log({ selectedOptions });
 
   const onToggleItem = (value: string, nextState: boolean) => {
     toggleItem(value, nextState);
