@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useState } from 'react';
 
 const PLACEHOLDER_TEXT = 'Search 3129 jobs';
@@ -5,6 +7,8 @@ const MIN_INPUT_SIZE = PLACEHOLDER_TEXT.length;
 
 export const useSearchInput = () => {
   const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSize = Math.max(MIN_INPUT_SIZE, e.target.value.length);
@@ -12,10 +16,10 @@ export const useSearchInput = () => {
     setInputValue(e.target.value);
   };
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleContainerClick = () => {
-    inputRef.current?.focus();
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === containerRef.current || e.target === inputRef.current) {
+      inputRef.current?.focus();
+    }
   };
 
   return {
@@ -24,6 +28,7 @@ export const useSearchInput = () => {
     placeholder: PLACEHOLDER_TEXT,
     size: MIN_INPUT_SIZE,
     inputRef,
+    containerRef,
     handleContainerClick,
   };
 };
