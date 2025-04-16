@@ -7,11 +7,11 @@ import {
   SingleSelectFilterConfigSchema,
 } from '@/lib/filters/core/schemas';
 
+import { useDropdownLabel } from '@/lib/filters/hooks/use-dropdown-label';
+
 import { Label } from '@/lib/shared/ui/base/label';
 import { RadioGroup, RadioGroupItem } from '@/lib/shared/ui/base/radio-group';
 import { FilterDropdown } from '@/lib/filters/ui/filter-dropdown';
-
-import { useDropdownLabel } from './use-dropdown-label';
 
 interface Props {
   config: RadioFilterConfigSchema | SingleSelectFilterConfigSchema;

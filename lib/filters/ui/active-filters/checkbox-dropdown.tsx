@@ -2,12 +2,13 @@
 
 import { CheckboxFilterConfigSchema } from '@/lib/filters/core/schemas';
 
+import { useDropdownLabel } from '@/lib/filters/hooks/use-dropdown-label';
+
 import { Checkbox } from '@/lib/shared/ui/base/checkbox';
 import { Label } from '@/lib/shared/ui/base/label';
 import { FilterDropdown } from '@/lib/filters/ui/filter-dropdown';
 
 import { useCsvParam } from './use-csv-param';
-import { useDropdownLabel } from './use-dropdown-label';
 
 interface Props {
   config: CheckboxFilterConfigSchema;

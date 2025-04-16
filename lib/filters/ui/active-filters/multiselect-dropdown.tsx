@@ -4,12 +4,13 @@ import { MultiSelectFilterConfigSchema } from '@/lib/filters/core/schemas';
 
 import { capitalizeSlug } from '@/lib/shared/utils/capitalize';
 
+import { useDropdownLabel } from '@/lib/filters/hooks/use-dropdown-label';
+
 import { VirtualizedCommand } from '@/lib/shared/ui/virtualized-command';
 import { FilterDropdown } from '@/lib/filters/ui/filter-dropdown';
 
 import { SearchBeforeItems } from './search-before-items';
 import { useCsvParam } from './use-csv-param';
-import { useDropdownLabel } from './use-dropdown-label';
 
 interface Props {
   config: MultiSelectFilterConfigSchema;

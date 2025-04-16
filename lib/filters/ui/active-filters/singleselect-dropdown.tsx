@@ -4,10 +4,10 @@ import { useQueryState } from 'nuqs';
 
 import { SingleSelectFilterConfigSchema } from '@/lib/filters/core/schemas';
 
+import { useDropdownLabel } from '@/lib/filters/hooks/use-dropdown-label';
+
 import { SimpleCommand } from '@/lib/shared/ui/simple-command';
 import { FilterDropdown } from '@/lib/filters/ui/filter-dropdown';
-
-import { useDropdownLabel } from './use-dropdown-label';
 
 interface Props {
   config: SingleSelectFilterConfigSchema;

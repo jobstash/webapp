@@ -10,12 +10,13 @@ import {
 
 import { capitalizeSlug } from '@/lib/shared/utils/capitalize';
 
+import { useDropdownLabel } from '@/lib/filters/hooks/use-dropdown-label';
+
 import { RemoteVirtualizedCommand } from '@/lib/shared/ui/virtualized-command/remote-virtualized-command';
 import { SearchBeforeItems } from '@/lib/filters/ui/active-filters/search-before-items';
 import { FilterDropdown } from '@/lib/filters/ui/filter-dropdown';
 
 import { useCsvParam } from './use-csv-param';
-import { useDropdownLabel } from './use-dropdown-label';
 
 interface Props {
   config: SingleSelectFilterConfigSchema | MultiSelectFilterConfigSchema;
@@ -23,7 +24,6 @@ interface Props {
 
 export const RemoteSearchDropdown = ({ config }: Props) => {
   const label = useDropdownLabel(config);
-
   const endpointUrl = REMOTE_FILTERS[config.paramKey as keyof typeof REMOTE_FILTERS];
   const endpoint = (query: string) => `${endpointUrl}?query=${query}`;
 
