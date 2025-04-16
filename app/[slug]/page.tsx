@@ -1,11 +1,10 @@
-// import { fetchPillarDeets } from '@/lib/search/data/fetch-pillar-deets';
 import { fetchPillarDeets } from '@/lib/search/data/fetch-pillar-deets';
-import { fetchStaticPillarSlugs } from '@/lib/search/data/fetch-static-pillar-slugs';
+// import { fetchStaticPillarSlugs } from '@/lib/search/data/fetch-static-pillar-slugs';
 
-export const generateStaticParams =
-  process.env.DISABLE_STATIC_GENERATION === 'true'
-    ? undefined
-    : async () => fetchStaticPillarSlugs();
+// export const generateStaticParams =
+//   process.env.DISABLE_STATIC_GENERATION === 'true'
+//     ? undefined
+//     : async () => fetchStaticPillarSlugs();
 
 interface Props {
   params: Promise<{ slug: string }>;
