@@ -17,24 +17,26 @@ export const SearchInput = ({ actions }: Props) => {
     placeholder,
     size,
     inputRef,
+    containerRef,
     handleContainerClick,
   } = useSearchInput();
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         'group min-h-10 w-full rounded-lg border border-input/50 bg-sidebar/40 px-3 py-2 text-sm',
         'ring-offset-background focus-within:ring-1 focus-within:ring-ring/50 focus-within:ring-offset-1 focus-within:outline-none',
-        'flex flex-wrap items-center justify-between',
+        'flex flex-wrap items-center justify-between gap-x-4 gap-y-1',
         'cursor-text',
       )}
       onClick={handleContainerClick}
     >
-      <div className='flex items-center gap-2'>
+      <div className='flex min-w-0 items-center gap-2'>
         <SearchIcon className='h-5 w-5 shrink-0 text-zinc-500' />
         <input
           ref={inputRef}
-          className='peer h-full w-auto max-w-[28ch] min-w-[120px] flex-grow-0 border-none bg-transparent p-0 shadow-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+          className='peer h-full w-auto max-w-[28ch] min-w-[120px] flex-grow-0 border-none bg-transparent p-0 shadow-none outline-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
           placeholder={placeholder}
           value={inputValue}
           onChange={handleInputChange}
