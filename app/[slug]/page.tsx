@@ -1,4 +1,5 @@
 // import { fetchPillarDeets } from '@/lib/search/data/fetch-pillar-deets';
+import { fetchPillarDeets } from '@/lib/search/data/fetch-pillar-deets';
 import { fetchStaticPillarSlugs } from '@/lib/search/data/fetch-static-pillar-slugs';
 
 export const generateStaticParams =
@@ -12,8 +13,13 @@ interface Props {
 
 const Page = async (props: Props) => {
   const { slug } = await props.params;
-  // const deets = await fetchPillarDeets(title);
-  return <p>{JSON.stringify({ slug }, null, 2)}</p>;
+  const deets = await fetchPillarDeets(slug);
+  return (
+    <div className='max-w-xl space-y-4'>
+      <h1>{deets.title}</h1>
+      <p>{deets.description}</p>
+    </div>
+  );
 };
 
 export default Page;
