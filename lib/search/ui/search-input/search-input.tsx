@@ -1,14 +1,16 @@
 'use client';
 
-import { ChevronDownIcon, SearchIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 
 import { cn } from '@/lib/shared/utils';
 
-import { Button } from '@/lib/shared/ui/base/button';
-
 import { useSearchInput } from './use-search-input';
 
-export const SearchInput = () => {
+interface Props {
+  actions?: React.ReactNode;
+}
+
+export const SearchInput = ({ actions }: Props) => {
   const {
     inputValue,
     handleInputChange,
@@ -51,7 +53,8 @@ export const SearchInput = () => {
         </div> */}
       </div>
 
-      <div className='flex items-center gap-2'>
+      {actions}
+      {/* <div className='flex items-center gap-2'>
         <Button
           size='sm'
           variant='ghost'
@@ -60,7 +63,6 @@ export const SearchInput = () => {
             e.stopPropagation();
           }}
         >
-          {/* <FunnelIcon className='size-3.5' /> */}
           Order
           <ChevronDownIcon className='mt-0.25 h-4 w-4' />
         </Button>
@@ -72,11 +74,10 @@ export const SearchInput = () => {
             e.stopPropagation();
           }}
         >
-          {/* <FunnelPlusIcon className='size-3.5' /> */}
           Order by
           <ChevronDownIcon className='mt-0.25 h-4 w-4' />
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };
