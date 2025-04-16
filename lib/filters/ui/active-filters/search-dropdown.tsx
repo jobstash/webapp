@@ -7,10 +7,10 @@ import {
   SingleSelectFilterConfigSchema,
 } from '@/lib/filters/core/schemas';
 
+import { useDropdownLabel } from '@/lib/filters/hooks/use-dropdown-label';
+
 import { VirtualizedCommand } from '@/lib/shared/ui/virtualized-command';
 import { FilterDropdown } from '@/lib/filters/ui/filter-dropdown';
-
-import { useDropdownLabel } from './use-dropdown-label';
 
 interface Props {
   config: SingleSelectFilterConfigSchema | MultiSelectFilterConfigSchema;
