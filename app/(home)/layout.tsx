@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 
 import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside, FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
+import { SortFilters, SortFiltersSkeleton } from '@/lib/filters/ui/sort-filters';
 import { SearchInput } from '@/lib/search/ui/search-input';
 
 import { LazyMobileOverlays } from './lazy-mobile-overlays';
@@ -23,7 +24,18 @@ const Layout = ({ children }: React.PropsWithChildren) => {
         </Suspense>
       }
     >
-      <Header searchInput={<SearchInput />} filterItems={null} />
+      <Header
+        searchInput={
+          <SearchInput
+            actions={
+              <Suspense fallback={<SortFiltersSkeleton />}>
+                <SortFilters />
+              </Suspense>
+            }
+          />
+        }
+        filterItems={null}
+      />
       {children}
       <LazyMobileOverlays />
     </SidebarAsideLayout>
