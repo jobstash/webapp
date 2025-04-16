@@ -23,6 +23,14 @@ export const selectOptionsSchema = v.object({
 });
 export type SelectOptionsSchema = v.InferOutput<typeof selectOptionsSchema>;
 
+export const selectConfigSharedPropertiesSchema = v.object({
+  options: v.array(selectOptionsSchema),
+  paramKey: nonEmptyStringSchema,
+});
+export type SelectConfigSharedPropertiesSchema = v.InferOutput<
+  typeof selectConfigSharedPropertiesSchema
+>;
+
 export const switchFilterConfigSchema = v.object({
   ...filterConfigSharedPropertiesSchema.entries,
   kind: v.literal(FILTER_KIND.SWITCH),
@@ -32,25 +40,22 @@ export type SwitchFilterConfigSchema = v.InferOutput<typeof switchFilterConfigSc
 
 export const radioFilterConfigSchema = v.object({
   ...filterConfigSharedPropertiesSchema.entries,
+  ...selectConfigSharedPropertiesSchema.entries,
   kind: v.literal(FILTER_KIND.RADIO),
-  options: v.array(selectOptionsSchema),
-  paramKey: nonEmptyStringSchema,
 });
 export type RadioFilterConfigSchema = v.InferOutput<typeof radioFilterConfigSchema>;
 
 export const sortFilterConfigSchema = v.object({
   ...filterConfigSharedPropertiesSchema.entries,
+  ...selectConfigSharedPropertiesSchema.entries,
   kind: v.literal(FILTER_KIND.SORT),
-  options: v.array(selectOptionsSchema),
-  paramKey: nonEmptyStringSchema,
 });
 export type SortFilterConfigSchema = v.InferOutput<typeof sortFilterConfigSchema>;
 
 export const singleSelectFilterConfigSchema = v.object({
   ...filterConfigSharedPropertiesSchema.entries,
+  ...selectConfigSharedPropertiesSchema.entries,
   kind: v.literal(FILTER_KIND.SINGLE_SELECT),
-  options: v.array(selectOptionsSchema),
-  paramKey: nonEmptyStringSchema,
 });
 export type SingleSelectFilterConfigSchema = v.InferOutput<
   typeof singleSelectFilterConfigSchema
@@ -58,17 +63,15 @@ export type SingleSelectFilterConfigSchema = v.InferOutput<
 
 export const checkboxFilterConfigSchema = v.object({
   ...filterConfigSharedPropertiesSchema.entries,
+  ...selectConfigSharedPropertiesSchema.entries,
   kind: v.literal(FILTER_KIND.CHECKBOX),
-  options: v.array(selectOptionsSchema),
-  paramKey: nonEmptyStringSchema,
 });
 export type CheckboxFilterConfigSchema = v.InferOutput<typeof checkboxFilterConfigSchema>;
 
 export const multiSelectFilterConfigSchema = v.object({
   ...filterConfigSharedPropertiesSchema.entries,
+  ...selectConfigSharedPropertiesSchema.entries,
   kind: v.literal(FILTER_KIND.MULTI_SELECT),
-  options: v.array(selectOptionsSchema),
-  paramKey: nonEmptyStringSchema,
 });
 export type MultiSelectFilterConfigSchema = v.InferOutput<
   typeof multiSelectFilterConfigSchema
