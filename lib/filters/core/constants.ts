@@ -1,6 +1,7 @@
 import { ENV } from '@/lib/shared/core/envs';
 
 export const FILTER_KIND = {
+  SORT: 'SORT',
   RANGE: 'RANGE',
   SINGLE_SELECT: 'SINGLE_SELECT',
   MULTI_SELECT: 'MULTI_SELECT',

@@ -9,6 +9,7 @@ import {
   RadioFilterConfigSchema,
   SelectOptionsSchema,
   SingleSelectFilterConfigSchema,
+  SortFilterConfigSchema,
   SwitchFilterConfigSchema,
 } from '@/lib/filters/core/schemas';
 import { jobSeniorityMapping } from '@/lib/jobs/core/constants';
@@ -22,8 +23,6 @@ import {
 } from './filter-config-dtos';
 
 const PARAM_KEYS = {
-  ORDER: 'order',
-  ORDER_BY: 'orderBy',
   LOCATIONS: 'locations',
   SENIORITY: 'seniority',
   TAGS: 'tags',
@@ -41,8 +40,6 @@ const LABELS = {
 } as const;
 
 const SUGGESTED_FILTERS = new Set<ParamKey>([
-  PARAM_KEYS.ORDER,
-  PARAM_KEYS.ORDER_BY,
   PARAM_KEYS.LOCATIONS,
   PARAM_KEYS.SENIORITY,
   PARAM_KEYS.TAGS,
@@ -83,6 +80,17 @@ const dtoToSwitchFilterConfig = (
     kind: FILTER_KIND.SWITCH,
     paramKey: dto.paramKey,
     label: dto.options.find((option) => option.value === true)?.label ?? dto.label,
+  };
+};
+
+const dtoToSortFilterConfig = (
+  dto: SingleSelectFilterConfigDto,
+): SortFilterConfigSchema => {
+  return {
+    ...dtoToFilterConfigSharedProps(dto),
+    kind: FILTER_KIND.SORT,
+    options: dto.options.map(dtoToSelectOptions),
+    paramKey: dto.paramKey,
   };
 };
 
@@ -143,6 +151,10 @@ const handleSingleSelect = (
 
   if (dto.options.every((option) => typeof option.value === 'boolean')) {
     return dtoToSwitchFilterConfig(dto);
+  }
+
+  if (dto.paramKey.includes('order')) {
+    return dtoToSortFilterConfig(dto);
   }
 
   if (dto.options.length <= RADIO_FILTER_OPTION_THRESHOLD) {
