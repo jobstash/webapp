@@ -1,6 +1,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
+import { FILTER_KIND } from '@/lib/filters/core/constants';
 import { FilterConfigSchema } from '@/lib/filters/core/schemas';
 
 export const useActiveFilters = (filterConfigs: FilterConfigSchema[]) => {
@@ -8,7 +9,7 @@ export const useActiveFilters = (filterConfigs: FilterConfigSchema[]) => {
 
   const activeFilters = useMemo(() => {
     return filterConfigs.filter((filter) => {
-      return searchParams.get(filter.paramKey);
+      return searchParams.get(filter.paramKey) && filter.kind !== FILTER_KIND.SORT;
     });
   }, [filterConfigs, searchParams]);
 
