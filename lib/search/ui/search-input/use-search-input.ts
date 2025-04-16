@@ -22,6 +22,28 @@ export const useSearchInput = () => {
     }
   };
 
+  const [isFocused, setIsFocused] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    // Delay blur check to allow clicks within CTA or suggestions
+    setTimeout(() => {
+      const activeElement = document.activeElement;
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(activeElement) &&
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(activeElement)
+      ) {
+        setIsFocused(false);
+      }
+    }, 200);
+  };
+
   return {
     inputValue,
     handleInputChange,
@@ -30,5 +52,9 @@ export const useSearchInput = () => {
     inputRef,
     containerRef,
     handleContainerClick,
+    isFocused,
+    suggestionsRef,
+    handleFocus,
+    handleBlur,
   };
 };

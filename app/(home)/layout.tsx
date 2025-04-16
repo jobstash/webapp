@@ -1,14 +1,15 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 
-import { Header } from '@/lib/shared/ui/header';
 import { FiltersAside, FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
 import { SortFilters, SortFiltersSkeleton } from '@/lib/filters/ui/sort-filters';
-import { CVUploadCTA, SearchInput } from '@/lib/search/ui/search-input';
+import { Header } from '@/lib/search/ui/header';
+import { SearchInput } from '@/lib/search/ui/search-input';
 
 import { LazyMobileOverlays } from './lazy-mobile-overlays';
 
 import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
+
 export const metadata: Metadata = {
   title: 'Crypto Native Jobs',
   description:
@@ -26,18 +27,14 @@ const Layout = ({ children }: React.PropsWithChildren) => {
     >
       <Header
         searchInput={
-          <div className='w-full'>
-            <SearchInput
-              actions={
-                <Suspense fallback={<SortFiltersSkeleton />}>
-                  <SortFilters />
-                </Suspense>
-              }
-            />
-            <CVUploadCTA />
-          </div>
+          <SearchInput
+            actions={
+              <Suspense fallback={<SortFiltersSkeleton />}>
+                <SortFilters />
+              </Suspense>
+            }
+          />
         }
-        filterItems={null}
       />
       {children}
       <LazyMobileOverlays />

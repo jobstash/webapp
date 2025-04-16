@@ -24,8 +24,8 @@ export const CVUploadCTA = () => {
   };
 
   return (
-    <div className='mt-2 ml-0.5 flex items-center text-xs text-muted-foreground'>
-      <span>Get personalized job matches. </span>
+    <div className='ml-1 flex items-center text-xs text-muted-foreground'>
+      <span> Get personalized job matches. </span>
       <button
         type='button'
         onClick={handleCTAClick}
