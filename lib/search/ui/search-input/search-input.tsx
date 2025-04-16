@@ -4,6 +4,8 @@ import { SearchIcon } from 'lucide-react';
 
 import { cn } from '@/lib/shared/utils';
 
+import { CVUploadCTA } from './cv-upload-cta';
+import { SearchSuggestions } from './search-suggestions';
 import { useSearchInput } from './use-search-input';
 
 interface Props {
@@ -19,67 +21,50 @@ export const SearchInput = ({ actions }: Props) => {
     inputRef,
     containerRef,
     handleContainerClick,
+    isFocused,
+    suggestionsRef,
+    handleFocus,
+    handleBlur,
   } = useSearchInput();
 
   return (
-    <div
-      ref={containerRef}
-      className={cn(
-        'group min-h-10 w-full rounded-lg border border-input/50 bg-sidebar/40 px-3 py-2 text-sm',
-        'ring-offset-background focus-within:ring-1 focus-within:ring-ring/50 focus-within:ring-offset-1 focus-within:outline-none',
-        'flex flex-wrap items-center justify-between gap-x-4 gap-y-1',
-        'cursor-text',
-      )}
-      onClick={handleContainerClick}
-    >
-      <div className='flex min-w-0 items-center gap-2'>
-        <SearchIcon className='h-5 w-5 shrink-0 text-zinc-500' />
-        <input
-          ref={inputRef}
-          className='peer h-full w-auto max-w-[28ch] min-w-[120px] flex-grow-0 border-none bg-transparent p-0 shadow-none outline-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-          placeholder={placeholder}
-          value={inputValue}
-          onChange={handleInputChange}
-          size={size}
-        />
-        {/* <div className='ml-2'>
-          <Button
-            variant='secondary'
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            React Jobs in Crypto
-            <XIcon />
-          </Button>
-        </div> */}
+    <div className='w-full'>
+      <div
+        ref={containerRef}
+        className={cn(
+          'group min-h-10 w-full rounded-lg border border-input/50 bg-sidebar/40 px-3 py-2 text-sm',
+          'flex flex-wrap items-center justify-between gap-x-4 gap-y-1',
+          'cursor-text',
+          isFocused &&
+            'ring-1 ring-ring/50 ring-offset-1 ring-offset-background outline-none',
+        )}
+        onClick={handleContainerClick}
+      >
+        <div className='flex min-w-0 flex-grow items-center gap-2'>
+          <SearchIcon className='h-5 w-5 shrink-0 text-zinc-500' />
+          <input
+            ref={inputRef}
+            className='peer h-full w-full flex-grow border-none bg-transparent p-0 shadow-none outline-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+            placeholder={placeholder}
+            value={inputValue}
+            onChange={handleInputChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            size={size}
+          />
+        </div>
+        {actions}
       </div>
-
-      {actions}
-      {/* <div className='flex items-center gap-2'>
-        <Button
-          size='sm'
-          variant='ghost'
-          className='bg-white/3.5'
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          Order
-          <ChevronDownIcon className='mt-0.25 h-4 w-4' />
-        </Button>
-        <Button
-          size='sm'
-          variant='ghost'
-          className='bg-white/3.5'
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          Order by
-          <ChevronDownIcon className='mt-0.25 h-4 w-4' />
-        </Button>
-      </div> */}
+      <div
+        ref={suggestionsRef}
+        className={cn(
+          'space-y-1 overflow-hidden transition-all duration-300 ease-in-out',
+          isFocused ? 'max-h-[700px] opacity-100' : 'max-h-0 opacity-0',
+        )}
+      >
+        <SearchSuggestions />
+        <CVUploadCTA />
+      </div>
     </div>
   );
 };
