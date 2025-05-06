@@ -85,7 +85,6 @@ export const orgInfoDto = v.object({
   docs: nullableStringSchema,
   twitter: nullableStringSchema,
   aliases: v.array(nonEmptyStringSchema),
-  community: v.array(nonEmptyStringSchema),
   ecosystems: v.array(nonEmptyStringSchema),
 });
 export type OrgInfoDto = v.InferOutput<typeof orgInfoDto>;
