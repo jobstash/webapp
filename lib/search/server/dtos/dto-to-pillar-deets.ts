@@ -5,6 +5,7 @@ import { PillarDeetsSchema } from '@/lib/search/core/schemas';
 import { PillarDeetsDto } from '@/lib/search/server/dtos/pillar-dtos';
 
 export const dtoToPillarDeets = (dto: PillarDeetsDto): PillarDeetsSchema => {
-  if (!dto.data) throw new Error('Error dto transform: Empty pillar data');
+  if (!dto.data)
+    throw new Error(`Error dto transform: Empty pillar data: "${dto.message}"`);
   return dto.data;
 };
