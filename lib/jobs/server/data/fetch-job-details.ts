@@ -15,8 +15,8 @@ export const fetchJobDetails = async (id: string) => {
 
   const parsed = safeParse('jobDetailsDto', jobDetailsDto, response);
   if (!parsed.success) {
-    throw new MwSchemaError('fetchJobDetails', JSON.stringify(parsed.issues[0]));
+    throw new MwSchemaError('fetchJobDetails', JSON.stringify(parsed.error.issues[0]));
   }
 
-  return dtoToJobDetails(parsed.output);
+  return dtoToJobDetails(parsed.data);
 };

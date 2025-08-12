@@ -1,16 +1,16 @@
-import * as v from 'valibot';
+import * as z from 'zod';
 
-export const pillarSlugsDto = v.array(v.string());
-export type PillarSlugsDto = v.InferOutput<typeof pillarSlugsDto>;
+export const pillarSlugsDto = z.array(z.string());
+export type PillarSlugsDto = z.infer<typeof pillarSlugsDto>;
 
-export const pillarDeetsDto = v.object({
-  success: v.boolean(),
-  message: v.string(),
-  data: v.optional(
-    v.object({
-      title: v.string(),
-      description: v.string(),
+export const pillarDeetsDto = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.optional(
+    z.object({
+      title: z.string(),
+      description: z.string(),
     }),
   ),
 });
-export type PillarDeetsDto = v.InferOutput<typeof pillarDeetsDto>;
+export type PillarDeetsDto = z.infer<typeof pillarDeetsDto>;

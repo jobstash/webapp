@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "prebuild": "pnpm format && pnpm lint",
     "build": "next build",
     "build:disable-static": "DISABLE_STATIC_GENERATION=true next build",
@@ -48,8 +48,8 @@
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
     "transliteration": "^2.3.5",
-    "valibot": "1.0.0-beta.11",
     "webapp": "link:",
+    "zod": "^4.0.17",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

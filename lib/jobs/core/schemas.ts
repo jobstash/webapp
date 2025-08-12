@@ -1,4 +1,4 @@
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import {
   infiniteListPageSchema,
@@ -9,59 +9,59 @@ import {
 } from '@/lib/shared/core/schemas';
 import { JOB_ITEM_BADGE } from '@/lib/jobs/core/constants';
 
-export const jobTagSchema = v.object({
+export const jobTagSchema = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   normalizedName: nonEmptyStringSchema,
-  colorIndex: v.pipe(v.number(), v.minValue(1), v.maxValue(12)),
+  colorIndex: z.number().min(1).max(12),
 });
-export type JobTagSchema = v.InferOutput<typeof jobTagSchema>;
+export type JobTagSchema = z.infer<typeof jobTagSchema>;
 
-export const jobItemProjectSchema = v.object({
+export const jobItemProjectSchema = z.object({
   name: nonEmptyStringSchema,
   website: nullableStringSchema,
   logo: nullableStringSchema,
-  chains: v.array(nonEmptyStringSchema),
-  infoTags: v.array(mappedInfoTagSchema),
+  chains: z.array(nonEmptyStringSchema),
+  infoTags: z.array(mappedInfoTagSchema),
 });
-export type JobItemProjectSchema = v.InferOutput<typeof jobItemProjectSchema>;
+export type JobItemProjectSchema = z.infer<typeof jobItemProjectSchema>;
 
-export const jobItemSchema = v.object({
+export const jobItemSchema = z.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
   applyUrl: nullableStringSchema,
-  access: v.picklist(['public', 'protected']),
+  access: z.enum(['public', 'protected']),
   summary: nullableStringSchema,
-  infoTags: v.array(mappedInfoTagSchema),
-  tags: v.array(jobTagSchema),
-  organization: v.nullable(
-    v.object({
+  infoTags: z.array(mappedInfoTagSchema),
+  tags: z.array(jobTagSchema),
+  organization: z.nullable(
+    z.object({
       name: nonEmptyStringSchema,
       href: nonEmptyStringSchema,
       location: nullableStringSchema,
       logo: nullableStringSchema,
-      infoTags: v.array(mappedInfoTagSchema),
+      infoTags: z.array(mappedInfoTagSchema),
     }),
   ),
-  projects: v.array(jobItemProjectSchema),
+  projects: z.array(jobItemProjectSchema),
   promotionEndDate: nullableNumberSchema,
-  hasGradientBorder: v.boolean(),
-  badge: v.nullable(v.picklist(Object.values(JOB_ITEM_BADGE))),
-  isUrgentlyHiring: v.boolean(),
+  hasGradientBorder: z.boolean(),
+  badge: z.nullable(z.enum(Object.values(JOB_ITEM_BADGE) as [string, ...string[]])),
+  isUrgentlyHiring: z.boolean(),
   timestampText: nonEmptyStringSchema,
 });
-export type JobItemSchema = v.InferOutput<typeof jobItemSchema>;
+export type JobItemSchema = z.infer<typeof jobItemSchema>;
 
 export const jobListPageSchema = infiniteListPageSchema(jobItemSchema);
-export type JobListPageSchema = v.InferOutput<typeof jobListPageSchema>;
+export type JobListPageSchema = z.infer<typeof jobListPageSchema>;
 
-export const jobDetailsSchema = v.object({
-  ...jobItemSchema.entries,
+export const jobDetailsSchema = z.object({
+  ...jobItemSchema.shape,
   description: nullableStringSchema,
-  requirements: v.nullable(v.array(nonEmptyStringSchema)),
-  responsibilities: v.nullable(v.array(nonEmptyStringSchema)),
-  benefits: v.nullable(v.array(nonEmptyStringSchema)),
-  culture: v.nullable(v.array(nonEmptyStringSchema)),
+  requirements: z.nullable(z.array(nonEmptyStringSchema)),
+  responsibilities: z.nullable(z.array(nonEmptyStringSchema)),
+  benefits: z.nullable(z.array(nonEmptyStringSchema)),
+  culture: z.nullable(z.array(nonEmptyStringSchema)),
 });
-export type JobDetailsSchema = v.InferOutput<typeof jobDetailsSchema>;
+export type JobDetailsSchema = z.infer<typeof jobDetailsSchema>;

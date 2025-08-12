@@ -1,15 +1,15 @@
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import { nonEmptyStringSchema, nullableStringSchema } from '@/lib/shared/core/schemas';
 
 import { jobItemDto } from './job-item-dto';
 
-export const jobDetailsDto = v.object({
-  ...jobItemDto.entries,
+export const jobDetailsDto = z.object({
+  ...jobItemDto.shape,
   description: nullableStringSchema,
-  requirements: v.nullable(v.array(nonEmptyStringSchema)),
-  responsibilities: v.nullable(v.array(nonEmptyStringSchema)),
-  benefits: v.nullable(v.array(nonEmptyStringSchema)),
-  culture: v.nullable(v.array(nonEmptyStringSchema)),
+  requirements: z.nullable(z.array(nonEmptyStringSchema)),
+  responsibilities: z.nullable(z.array(nonEmptyStringSchema)),
+  benefits: z.nullable(z.array(nonEmptyStringSchema)),
+  culture: z.nullable(z.array(nonEmptyStringSchema)),
 });
-export type JobDetailsDto = v.InferOutput<typeof jobDetailsDto>;
+export type JobDetailsDto = z.infer<typeof jobDetailsDto>;

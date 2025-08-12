@@ -2,16 +2,16 @@
 
 import { flattenValidationErrors, InferSafeActionFnResult } from 'next-safe-action';
 
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import { actionClient } from '@/lib/shared/utils/safe-action';
 
 import { fetchJobListPage } from '@/lib/jobs/server/data';
 
-const schema = v.object({
-  page: v.number(),
-  limit: v.optional(v.number()),
-  searchParams: v.optional(v.record(v.string(), v.string())),
+const schema = z.object({
+  page: z.number(),
+  limit: z.optional(z.number()),
+  searchParams: z.optional(z.record(z.string(), z.string())),
 });
 
 export const jobListAction = actionClient

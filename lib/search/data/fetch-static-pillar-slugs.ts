@@ -16,10 +16,13 @@ export const fetchStaticPillarSlugs = async () => {
 
   const parsed = safeParse('pillarSlugsDto', pillarSlugsDto, response);
   if (!parsed.success) {
-    throw new MwSchemaError('fetchStaticPillarSlugs', JSON.stringify(parsed.issues[0]));
+    throw new MwSchemaError(
+      'fetchStaticPillarSlugs',
+      JSON.stringify(parsed.error.issues[0]),
+    );
   }
 
-  return dtoToStaticPillarSlugs(parsed.output).map((slug) => ({
+  return dtoToStaticPillarSlugs(parsed.data).map((slug) => ({
     slug,
   }));
 };
