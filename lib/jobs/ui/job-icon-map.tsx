@@ -48,10 +48,9 @@ export const jobProjectInfoTagsIconMap: IconMap = {
   hack: <HackIcon />,
 };
 
-type JobBadgeIconMap = Record<
-  (typeof JOB_ITEM_BADGE)[keyof typeof JOB_ITEM_BADGE],
-  React.ReactNode
->;
+export type JobBadgeKey = (typeof JOB_ITEM_BADGE)[keyof typeof JOB_ITEM_BADGE];
+
+export type JobBadgeIconMap = Record<JobBadgeKey, React.ReactNode>;
 
 export const jobBadgeIconMap: JobBadgeIconMap = {
   [JOB_ITEM_BADGE.FEATURED]: null,
