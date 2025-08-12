@@ -1,6 +1,6 @@
 import 'server-only';
 
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import {
   fundingRoundDto,
@@ -16,15 +16,15 @@ import {
   nullableStringSchema,
 } from '@/lib/shared/core/schemas';
 
-export const jobItemDto = v.object({
+export const jobItemDto = z.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   url: nullableStringSchema,
   shortUUID: nonEmptyStringSchema,
-  timestamp: v.number(),
+  timestamp: z.number(),
   summary: nullableStringSchema,
-  access: v.picklist(['public', 'protected']),
-  featured: v.boolean(),
+  access: z.enum(['public', 'protected']),
+  featured: z.boolean(),
   featureStartDate: nullableNumberSchema,
   featureEndDate: nullableNumberSchema,
 
@@ -40,32 +40,30 @@ export const jobItemDto = v.object({
   salaryCurrency: nullableStringSchema,
   classification: nullableStringSchema,
 
-  tags: v.array(tagDto),
+  tags: z.array(tagDto),
 
-  organization: v.nullable(
-    v.object({
-      ...orgInfoDto.entries,
-      ...v.object({
-        fundingRounds: v.array(fundingRoundDto),
-        investors: v.array(investorDto),
-        projects: v.array(projectAllInfoDto),
-        aggregateRating: v.pipe(v.number(), v.minValue(0), v.maxValue(5)),
-        reviewCount: v.number(),
-        hasUser: v.boolean(),
-        atsClient: v.nullable(
-          v.picklist(['jobstash', 'greenhouse', 'lever', 'workable']),
-        ),
-      }).entries,
+  organization: z.nullable(
+    z.object({
+      ...orgInfoDto.shape,
+      ...z.object({
+        fundingRounds: z.array(fundingRoundDto),
+        investors: z.array(investorDto),
+        projects: z.array(projectAllInfoDto),
+        aggregateRating: z.number().min(0).max(5),
+        reviewCount: z.number(),
+        hasUser: z.boolean(),
+        atsClient: z.nullable(z.enum(['jobstash', 'greenhouse', 'lever', 'workable'])),
+      }).shape,
     }),
   ),
 
-  project: v.nullable(
-    v.object({
-      ...projectAllInfoDto.entries,
-      hasUser: v.boolean(),
+  project: z.nullable(
+    z.object({
+      ...projectAllInfoDto.shape,
+      hasUser: z.boolean(),
     }),
   ),
 
-  onboardIntoWeb3: v.boolean(),
+  onboardIntoWeb3: z.boolean(),
 });
-export type JobItemDto = v.InferOutput<typeof jobItemDto>;
+export type JobItemDto = z.infer<typeof jobItemDto>;

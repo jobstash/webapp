@@ -1,22 +1,19 @@
 import { addBreadcrumb } from '@sentry/nextjs';
-import * as v from 'valibot';
+import * as z from 'zod';
 
-export const safeParse = <
-  TSchema extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
->(
+export const safeParse = <TSchema extends z.ZodTypeAny>(
   label: string,
   schema: TSchema,
   input: unknown,
-): v.SafeParseResult<TSchema> => {
-  const result = v.safeParse(schema, input);
+) => {
+  const result = schema.safeParse(input);
 
   addBreadcrumb({
     type: 'info',
     message: `safeParse::${label}`,
     data: {
-      typed: result.typed,
       success: result.success,
-      issues: result.issues ? v.flatten<typeof schema>(result.issues) : [],
+      issues: result.success ? [] : result.error.issues,
     },
   });
 

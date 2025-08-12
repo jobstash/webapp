@@ -16,8 +16,8 @@ export const fetchPillarDeets = async (slug: string) => {
 
   const parsed = safeParse('pillarDeetsDto', pillarDeetsDto, response);
   if (!parsed.success) {
-    throw new MwSchemaError('fetchPillarDeets', JSON.stringify(parsed.issues[0]));
+    throw new MwSchemaError('fetchPillarDeets', JSON.stringify(parsed.error.issues[0]));
   }
 
-  return dtoToPillarDeets(parsed.output);
+  return dtoToPillarDeets(parsed.data);
 };

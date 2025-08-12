@@ -17,8 +17,8 @@ export const fetchFilterConfigs = async (): Promise<FilterConfigSchema[]> => {
   const parsed = safeParse('filterConfigSchema', filterConfigDto, response);
 
   if (!parsed.success) {
-    throw new MwSchemaError('fetchFilterConfigs', JSON.stringify(parsed.issues[0]));
+    throw new MwSchemaError('fetchFilterConfigs', JSON.stringify(parsed.error.issues[0]));
   }
 
-  return dtoToFilterConfig(parsed.output);
+  return dtoToFilterConfig(parsed.data);
 };

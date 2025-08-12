@@ -1,23 +1,23 @@
-import * as v from 'valibot';
+import * as z from 'zod';
 
-export const nonEmptyStringSchema = v.pipe(v.string(), v.nonEmpty());
-export const nullableStringSchema = v.nullable(nonEmptyStringSchema);
-export const optionalStringSchema = v.optional(nonEmptyStringSchema);
-export const nullableNumberSchema = v.nullable(v.number());
-export const nullableBooleanSchema = v.nullable(v.boolean());
+export const nonEmptyStringSchema = z.string().min(1);
+export const nullableStringSchema = z.nullable(nonEmptyStringSchema);
+export const optionalStringSchema = z.optional(nonEmptyStringSchema);
+export const nullableNumberSchema = z.nullable(z.number());
+export const nullableBooleanSchema = z.nullable(z.boolean());
 
-export const mappedInfoTagSchema = v.object({
+export const mappedInfoTagSchema = z.object({
   iconKey: nonEmptyStringSchema,
   label: nonEmptyStringSchema,
   href: optionalStringSchema,
 });
-export type MappedInfoTagSchema = v.InferOutput<typeof mappedInfoTagSchema>;
+export type MappedInfoTagSchema = z.infer<typeof mappedInfoTagSchema>;
 
-export const infiniteListPageSchema = <T>(itemSchema: v.GenericSchema<T>) =>
-  v.object({
-    page: v.number(),
-    total: v.number(),
-    data: v.array(itemSchema),
-    hasNextPage: v.boolean(),
+export const infiniteListPageSchema = <T>(itemSchema: z.ZodSchema<T>) =>
+  z.object({
+    page: z.number(),
+    total: z.number(),
+    data: z.array(itemSchema),
+    hasNextPage: z.boolean(),
   });
 export type InfiniteListPageSchema<T> = ReturnType<typeof infiniteListPageSchema<T>>;

@@ -1,10 +1,10 @@
-import * as v from 'valibot';
+import * as z from 'zod';
 
-export const staticPillarSlugsSchema = v.array(v.string());
-export type StaticPillarSlugsSchema = v.InferOutput<typeof staticPillarSlugsSchema>;
+export const staticPillarSlugsSchema = z.array(z.string());
+export type StaticPillarSlugsSchema = z.infer<typeof staticPillarSlugsSchema>;
 
-export const pillarDeetsSchema = v.object({
-  title: v.string(),
-  description: v.string(),
+export const pillarDeetsSchema = z.object({
+  title: z.string(),
+  description: z.string(),
 });
-export type PillarDeetsSchema = v.InferOutput<typeof pillarDeetsSchema>;
+export type PillarDeetsSchema = z.infer<typeof pillarDeetsSchema>;

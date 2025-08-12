@@ -1,17 +1,17 @@
 import { createSafeActionClient } from 'next-safe-action';
-import { valibotAdapter } from 'next-safe-action/adapters/valibot';
+import { zodAdapter } from 'next-safe-action/adapters/zod';
 
 import * as Sentry from '@sentry/nextjs';
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import { ERROR_MESSAGE } from '@/lib/shared/core/errors';
 
-const metadataSchema = v.object({
-  actionName: v.string(),
+const metadataSchema = z.object({
+  actionName: z.string(),
 });
 
 export const actionClient = createSafeActionClient({
-  validationAdapter: valibotAdapter(),
+  validationAdapter: zodAdapter(),
   defineMetadataSchema: () => metadataSchema,
   handleServerError: (e, utils) => {
     const { clientInput, metadata } = utils;

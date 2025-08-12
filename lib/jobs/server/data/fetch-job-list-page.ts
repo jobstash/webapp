@@ -22,9 +22,12 @@ interface Input {
 export const fetchJobListPage = async (input: Input) => {
   const parsedParams = safeParse('jobListPageParams', jobListPageParamsDto, input);
   if (!parsedParams.success) {
-    throw new MwSchemaError('fetchJobListPage', JSON.stringify(parsedParams.issues[0]));
+    throw new MwSchemaError(
+      'fetchJobListPage',
+      JSON.stringify(parsedParams.error.issues[0]),
+    );
   }
-  const { page, limit, searchParams } = parsedParams.output;
+  const { page, limit, searchParams } = parsedParams.data;
 
   // Do not cache if there are search params
   const hasSearchParams = !!searchParams && Object.keys(searchParams).length > 0;
@@ -35,8 +38,8 @@ export const fetchJobListPage = async (input: Input) => {
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);
   if (!parsed.success) {
-    throw new MwSchemaError('fetchJobListPage', JSON.stringify(parsed.issues[0]));
+    throw new MwSchemaError('fetchJobListPage', JSON.stringify(parsed.error.issues[0]));
   }
 
-  return dtoToJobListPage(parsed.output);
+  return dtoToJobListPage(parsed.data);
 };

@@ -1,83 +1,81 @@
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import { nonEmptyStringSchema } from '@/lib/shared/core/schemas';
 import { FILTER_KIND } from '@/lib/filters/core/constants';
 
-export const filterConfigSharedPropertiesSchema = v.object({
-  position: v.number(),
+export const filterConfigSharedPropertiesSchema = z.object({
+  position: z.number(),
   label: nonEmptyStringSchema,
-  analytics: v.object({
-    id: v.nullish(nonEmptyStringSchema),
-    name: v.nullish(nonEmptyStringSchema),
+  analytics: z.object({
+    id: z.nullish(nonEmptyStringSchema),
+    name: z.nullish(nonEmptyStringSchema),
   }),
-  isSuggested: v.optional(v.boolean()),
+  isSuggested: z.optional(z.boolean()),
 });
 
-export type FilterConfigSharedPropertiesSchema = v.InferOutput<
+export type FilterConfigSharedPropertiesSchema = z.infer<
   typeof filterConfigSharedPropertiesSchema
 >;
 
-export const selectOptionsSchema = v.object({
+export const selectOptionsSchema = z.object({
   label: nonEmptyStringSchema,
   value: nonEmptyStringSchema,
 });
-export type SelectOptionsSchema = v.InferOutput<typeof selectOptionsSchema>;
+export type SelectOptionsSchema = z.infer<typeof selectOptionsSchema>;
 
-export const selectConfigSharedPropertiesSchema = v.object({
-  options: v.array(selectOptionsSchema),
+export const selectConfigSharedPropertiesSchema = z.object({
+  options: z.array(selectOptionsSchema),
   paramKey: nonEmptyStringSchema,
 });
-export type SelectConfigSharedPropertiesSchema = v.InferOutput<
+export type SelectConfigSharedPropertiesSchema = z.infer<
   typeof selectConfigSharedPropertiesSchema
 >;
 
-export const switchFilterConfigSchema = v.object({
-  ...filterConfigSharedPropertiesSchema.entries,
-  kind: v.literal(FILTER_KIND.SWITCH),
+export const switchFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.SWITCH),
   paramKey: nonEmptyStringSchema,
 });
-export type SwitchFilterConfigSchema = v.InferOutput<typeof switchFilterConfigSchema>;
+export type SwitchFilterConfigSchema = z.infer<typeof switchFilterConfigSchema>;
 
-export const radioFilterConfigSchema = v.object({
-  ...filterConfigSharedPropertiesSchema.entries,
-  ...selectConfigSharedPropertiesSchema.entries,
-  kind: v.literal(FILTER_KIND.RADIO),
+export const radioFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  ...selectConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.RADIO),
 });
-export type RadioFilterConfigSchema = v.InferOutput<typeof radioFilterConfigSchema>;
+export type RadioFilterConfigSchema = z.infer<typeof radioFilterConfigSchema>;
 
-export const sortFilterConfigSchema = v.object({
-  ...filterConfigSharedPropertiesSchema.entries,
-  ...selectConfigSharedPropertiesSchema.entries,
-  kind: v.literal(FILTER_KIND.SORT),
+export const sortFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  ...selectConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.SORT),
 });
-export type SortFilterConfigSchema = v.InferOutput<typeof sortFilterConfigSchema>;
+export type SortFilterConfigSchema = z.infer<typeof sortFilterConfigSchema>;
 
-export const singleSelectFilterConfigSchema = v.object({
-  ...filterConfigSharedPropertiesSchema.entries,
-  ...selectConfigSharedPropertiesSchema.entries,
-  kind: v.literal(FILTER_KIND.SINGLE_SELECT),
+export const singleSelectFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  ...selectConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.SINGLE_SELECT),
 });
-export type SingleSelectFilterConfigSchema = v.InferOutput<
+export type SingleSelectFilterConfigSchema = z.infer<
   typeof singleSelectFilterConfigSchema
 >;
 
-export const checkboxFilterConfigSchema = v.object({
-  ...filterConfigSharedPropertiesSchema.entries,
-  ...selectConfigSharedPropertiesSchema.entries,
-  kind: v.literal(FILTER_KIND.CHECKBOX),
+export const checkboxFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  ...selectConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.CHECKBOX),
 });
-export type CheckboxFilterConfigSchema = v.InferOutput<typeof checkboxFilterConfigSchema>;
+export type CheckboxFilterConfigSchema = z.infer<typeof checkboxFilterConfigSchema>;
 
-export const multiSelectFilterConfigSchema = v.object({
-  ...filterConfigSharedPropertiesSchema.entries,
-  ...selectConfigSharedPropertiesSchema.entries,
-  kind: v.literal(FILTER_KIND.MULTI_SELECT),
+export const multiSelectFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  ...selectConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.MULTI_SELECT),
 });
-export type MultiSelectFilterConfigSchema = v.InferOutput<
-  typeof multiSelectFilterConfigSchema
->;
+export type MultiSelectFilterConfigSchema = z.infer<typeof multiSelectFilterConfigSchema>;
 
-export const filterConfigSchema = v.union([
+export const filterConfigSchema = z.union([
   switchFilterConfigSchema,
   radioFilterConfigSchema,
   sortFilterConfigSchema,
@@ -85,4 +83,4 @@ export const filterConfigSchema = v.union([
   checkboxFilterConfigSchema,
   multiSelectFilterConfigSchema,
 ]);
-export type FilterConfigSchema = v.InferOutput<typeof filterConfigSchema>;
+export type FilterConfigSchema = z.infer<typeof filterConfigSchema>;

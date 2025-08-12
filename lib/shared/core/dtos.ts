@@ -1,6 +1,6 @@
 import 'server-only';
 
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import {
   nonEmptyStringSchema,
@@ -9,64 +9,64 @@ import {
   nullableStringSchema,
 } from './schemas';
 
-export const investorDto = v.object({
+export const investorDto = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   normalizedName: nonEmptyStringSchema,
 });
-export type InvestorDto = v.InferOutput<typeof investorDto>;
+export type InvestorDto = z.infer<typeof investorDto>;
 
-export const fundingRoundDto = v.object({
+export const fundingRoundDto = z.object({
   id: nonEmptyStringSchema,
-  date: v.number(),
+  date: z.number(),
   roundName: nullableStringSchema,
   raisedAmount: nullableNumberSchema,
 });
-export type FundingRoundDto = v.InferOutput<typeof fundingRoundDto>;
+export type FundingRoundDto = z.infer<typeof fundingRoundDto>;
 
-export const categoryDto = v.object({
+export const categoryDto = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
 });
-export type CategoryDto = v.InferOutput<typeof categoryDto>;
+export type CategoryDto = z.infer<typeof categoryDto>;
 
-export const chainDto = v.object({
+export const chainDto = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   logo: nullableStringSchema,
   normalizedName: nonEmptyStringSchema,
 });
-export type ChainDto = v.InferOutput<typeof chainDto>;
+export type ChainDto = z.infer<typeof chainDto>;
 
-export const hackDto = v.object({
+export const hackDto = z.object({
   id: nonEmptyStringSchema,
-  defiId: v.string(),
+  defiId: z.string(),
   category: nullableStringSchema,
   fundsLost: nullableNumberSchema,
   issueType: nullableStringSchema,
   date: nullableNumberSchema,
   fundsReturned: nullableNumberSchema,
 });
-export type HackDto = v.InferOutput<typeof hackDto>;
+export type HackDto = z.infer<typeof hackDto>;
 
-export const auditDto = v.object({
+export const auditDto = z.object({
   id: nonEmptyStringSchema,
-  defiId: v.string(),
+  defiId: z.string(),
   name: nullableStringSchema,
   date: nullableNumberSchema,
   link: nullableStringSchema,
-  techIssues: v.optional(v.nullable(v.number())),
+  techIssues: z.optional(z.nullable(z.number())),
 });
-export type AuditDto = v.InferOutput<typeof auditDto>;
+export type AuditDto = z.infer<typeof auditDto>;
 
-export const tagDto = v.object({
+export const tagDto = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   normalizedName: nonEmptyStringSchema,
 });
-export type TagDto = v.InferOutput<typeof tagDto>;
+export type TagDto = z.infer<typeof tagDto>;
 
-export const orgInfoDto = v.object({
+export const orgInfoDto = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   normalizedName: nonEmptyStringSchema,
@@ -84,12 +84,12 @@ export const orgInfoDto = v.object({
   github: nullableStringSchema,
   docs: nullableStringSchema,
   twitter: nullableStringSchema,
-  aliases: v.array(nonEmptyStringSchema),
-  ecosystems: v.array(nonEmptyStringSchema),
+  aliases: z.array(nonEmptyStringSchema),
+  ecosystems: z.array(nonEmptyStringSchema),
 });
-export type OrgInfoDto = v.InferOutput<typeof orgInfoDto>;
+export type OrgInfoDto = z.infer<typeof orgInfoDto>;
 
-export const projectInfoDto = v.object({
+export const projectInfoDto = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   normalizedName: nonEmptyStringSchema,
@@ -97,7 +97,7 @@ export const projectInfoDto = v.object({
   logo: nullableStringSchema,
 
   category: nullableStringSchema,
-  isMainnet: v.optional(nullableBooleanSchema),
+  isMainnet: z.optional(nullableBooleanSchema),
   tokenSymbol: nullableStringSchema,
 
   tvl: nullableNumberSchema,
@@ -106,16 +106,16 @@ export const projectInfoDto = v.object({
   monthlyFees: nullableNumberSchema,
   monthlyActiveUsers: nullableNumberSchema,
 
-  chains: v.array(chainDto),
-  hacks: v.array(hackDto),
-  audits: v.array(auditDto),
+  chains: z.array(chainDto),
+  hacks: z.array(hackDto),
+  audits: z.array(auditDto),
 
-  ecosystems: v.array(nonEmptyStringSchema),
-  orgIds: v.array(nonEmptyStringSchema),
+  ecosystems: z.array(nonEmptyStringSchema),
+  orgIds: z.array(nonEmptyStringSchema),
 });
-export type ProjectInfoDto = v.InferOutput<typeof projectInfoDto>;
+export type ProjectInfoDto = z.infer<typeof projectInfoDto>;
 
-export const projectMoreInfoDto = v.object({
+export const projectMoreInfoDto = z.object({
   description: nullableStringSchema,
   github: nullableStringSchema,
   twitter: nullableStringSchema,
@@ -127,10 +127,10 @@ export const projectMoreInfoDto = v.object({
   defiLlamaSlug: nullableStringSchema,
   defiLlamaParent: nullableStringSchema,
 });
-export type ProjectMoreInfoDto = v.InferOutput<typeof projectMoreInfoDto>;
+export type ProjectMoreInfoDto = z.infer<typeof projectMoreInfoDto>;
 
-export const projectAllInfoDto = v.object({
-  ...projectInfoDto.entries,
-  ...projectMoreInfoDto.entries,
+export const projectAllInfoDto = z.object({
+  ...projectInfoDto.shape,
+  ...projectMoreInfoDto.shape,
 });
-export type ProjectAllInfoDto = v.InferOutput<typeof projectAllInfoDto>;
+export type ProjectAllInfoDto = z.infer<typeof projectAllInfoDto>;

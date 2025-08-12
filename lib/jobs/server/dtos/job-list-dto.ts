@@ -1,22 +1,22 @@
 import 'server-only';
 
-import * as v from 'valibot';
+import * as z from 'zod';
 
 import { ENV } from '@/lib/shared/core/envs';
 
 import { jobItemDto } from './job-item-dto';
 
-export const jobListPageDto = v.object({
-  page: v.number(),
-  count: v.number(),
-  total: v.number(),
-  data: v.array(jobItemDto),
+export const jobListPageDto = z.object({
+  page: z.number(),
+  count: z.number(),
+  total: z.number(),
+  data: z.array(jobItemDto),
 });
-export type JobListPageDto = v.InferOutput<typeof jobListPageDto>;
+export type JobListPageDto = z.infer<typeof jobListPageDto>;
 
-export const jobListPageParamsDto = v.object({
-  page: v.pipe(v.number(), v.minValue(1)),
-  limit: v.optional(v.pipe(v.number(), v.minValue(1)), ENV.PAGE_SIZE),
-  searchParams: v.optional(v.record(v.string(), v.string())),
+export const jobListPageParamsDto = z.object({
+  page: z.number().min(1),
+  limit: z.number().min(1).optional().default(ENV.PAGE_SIZE),
+  searchParams: z.record(z.string(), z.string()).optional(),
 });
-export type JobListPageParamsDto = v.InferOutput<typeof jobListPageParamsDto>;
+export type JobListPageParamsDto = z.infer<typeof jobListPageParamsDto>;
