@@ -1,7 +1,7 @@
 'use server';
 
+import { ENV } from '@/lib/shared/core/envs';
 import { MwSchemaError } from '@/lib/shared/core/errors';
-import { FILTER_ENDPOINTS } from '@/lib/filters/core/constants';
 import { FilterConfigSchema } from '@/lib/filters/core/schemas';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
@@ -12,7 +12,7 @@ import { filterConfigDto } from '@/lib/filters/server/dtos';
 import { dtoToFilterConfig } from '@/lib/filters/server/dtos/dto-to-filter-config';
 
 export const fetchFilterConfigs = async (): Promise<FilterConfigSchema[]> => {
-  const url = FILTER_ENDPOINTS.filterConfigs();
+  const url = `${ENV.MW_URL}/jobs/filters`;
   const response = await kyFetch(url).json();
   const parsed = safeParse('filterConfigSchema', filterConfigDto, response);
 
