@@ -1,7 +1,7 @@
 'use server';
 
+import { ENV } from '@/lib/shared/core/envs';
 import { MwSchemaError } from '@/lib/shared/core/errors';
-import { JOB_ENDPOINTS } from '@/lib/jobs/core/endpoints';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
 
@@ -33,7 +33,17 @@ export const fetchJobListPage = async (input: Input) => {
   const hasSearchParams = !!searchParams && Object.keys(searchParams).length > 0;
   const cache: RequestCache = hasSearchParams ? 'no-store' : 'force-cache';
 
-  const url = JOB_ENDPOINTS.list({ page, limit, searchParams });
+  // Construct URL inline
+  const query = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (searchParams) {
+    Object.entries(searchParams).forEach(([key, value]) => {
+      query.append(key, value);
+    });
+  }
+  const url = `${ENV.MW_URL}/jobs/list?${query.toString()}`;
   const response = await kyFetch(url, { cache }).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);

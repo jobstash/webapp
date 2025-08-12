@@ -16,7 +16,3 @@ export const REMOTE_FILTERS = {
 };
 
 export const REMOTE_FILTERS_SET = new Set(Object.keys(REMOTE_FILTERS));
-
-export const FILTER_ENDPOINTS = {
-  filterConfigs: () => `${ENV.MW_URL}/jobs/filters` as const,
-};
