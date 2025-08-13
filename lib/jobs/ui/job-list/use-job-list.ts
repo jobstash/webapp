@@ -15,7 +15,7 @@ export const useJobList = (startPage?: number) => {
   const { ref: inViewRef } = useInView({
     threshold: 1,
     onChange: (inView) => {
-      if (inView && !isLoading && hasNextPage) {
+      if (inView && !isLoading && hasNextPage && !isLoadingNextPage) {
         fetchNextPage();
       }
     },
