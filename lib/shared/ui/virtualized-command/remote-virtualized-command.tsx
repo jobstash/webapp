@@ -117,7 +117,6 @@ export const RemoteVirtualizedCommand = <T,>({
         icon={
           isLoading ? <LoaderIcon className='size-4 shrink-0 animate-spin' /> : undefined
         }
-        autoFocus
         value={searchValue}
         onValueChange={handleSearch}
         placeholder={placeholder}

@@ -56,7 +56,6 @@ export const VirtualizedCommand = ({
       className={cn(classNames?.command)}
     >
       <CommandInput
-        autoFocus
         value={searchValue}
         onValueChange={handleSearch}
         placeholder={placeholder}

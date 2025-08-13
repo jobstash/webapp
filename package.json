@@ -10,7 +10,7 @@
     "start": "next start",
     "format": "prettier --check './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "format:fix": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "lint": "next lint",
+    "lint": "next lint && oxlint --fix --fix-suggestions",
     "test": "echo \"Skipping tests ...\" && exit 0",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -81,6 +81,7 @@
     "lint-staged": "^15.3.0",
     "msw": "^2.7.0",
     "msw-storybook-addon": "^2.0.4",
+    "oxlint": "^1.11.2",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
@@ -97,7 +98,10 @@
   "simple-git-hooks": {
     "commit-msg": "pnpm dlx commitlint --edit $1",
     "pre-commit": "pnpm lint-staged",
-    "pre-push": "pnpm build && pnpm test"
+    "pre-push": "pnpm lint &&pnpm build:disable-static && pnpm test"
+  },
+  "lint-staged": {
+    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint --fix --fix-suggestions"
   },
   "msw": {
     "workerDirectory": [

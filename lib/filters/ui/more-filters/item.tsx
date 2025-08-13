@@ -25,7 +25,6 @@ export const Item = ({ config, closeDropdown }: Props) => {
       case FILTER_KIND.SWITCH:
         return 'true';
       case FILTER_KIND.RADIO:
-      case FILTER_KIND.RADIO:
       case FILTER_KIND.CHECKBOX:
       case FILTER_KIND.SINGLE_SELECT:
       case FILTER_KIND.MULTI_SELECT:
