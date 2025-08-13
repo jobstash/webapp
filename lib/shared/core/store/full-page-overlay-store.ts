@@ -1,17 +1,25 @@
-import { create } from 'zustand';
+import { createStore } from '@xstate/store';
 
 import { FULL_PAGE_OVERLAYS } from '@/lib/shared/core/constants';
 
 type FullPageOverlay = (typeof FULL_PAGE_OVERLAYS)[keyof typeof FULL_PAGE_OVERLAYS];
 
-interface FullPageOverlayState {
+interface FullPageOverlayContext {
   active: FullPageOverlay | null;
-  open: (overlay: FullPageOverlay) => void;
-  close: () => void;
 }
 
-export const useFullPageOverlayStore = create<FullPageOverlayState>((set) => ({
-  active: null,
-  open: (overlay) => set({ active: overlay }),
-  close: () => set({ active: null }),
-}));
+export const fullPageOverlayStore = createStore({
+  context: {
+    active: null,
+  } as FullPageOverlayContext,
+  on: {
+    open: (context, event: { overlay: FullPageOverlay }) => ({
+      ...context,
+      active: event.overlay,
+    }),
+    close: (context) => ({
+      ...context,
+      active: null,
+    }),
+  },
+});

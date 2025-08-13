@@ -1,17 +1,18 @@
 'use client';
 
+import { useSelector } from '@xstate/store/react';
 import { X } from 'lucide-react';
 
 import { FULL_PAGE_OVERLAYS } from '@/lib/shared/core/constants';
-import { useFullPageOverlayStore } from '@/lib/shared/core/store';
+import { fullPageOverlayStore } from '@/lib/shared/core/store/full-page-overlay-store';
 
 import { Button } from '@/lib/shared/ui/base/button';
 import { FullPageOverlay } from '@/lib/shared/ui/full-page-overlay/full-page-overlay';
 
 export const FullPageMenuOverlay = () => {
-  const active = useFullPageOverlayStore((state) => state.active);
+  const active = useSelector(fullPageOverlayStore, (state) => state.context.active);
   const isOpen = active === FULL_PAGE_OVERLAYS.MENU;
-  const close = useFullPageOverlayStore((state) => state.close);
+  const close = () => fullPageOverlayStore.trigger.close();
 
   return (
     <FullPageOverlay isOpen={isOpen} onClose={close}>
