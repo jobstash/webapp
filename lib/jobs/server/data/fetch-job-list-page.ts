@@ -1,4 +1,4 @@
-'use server';
+import 'server-only';
 
 import { ENV } from '@/lib/shared/core/envs';
 import { MwSchemaError } from '@/lib/shared/core/errors';

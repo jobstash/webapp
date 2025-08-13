@@ -7,7 +7,7 @@ import { JobListPageSchema } from '@/lib/jobs/core/schemas';
 
 import { createParamsQueryKey } from '@/lib/shared/utils/create-params-query-key';
 
-import { fetchJobListPage } from '@/lib/jobs/server/data';
+import { kyFetch } from '@/lib/shared/data/ky-fetch';
 
 // Start from page 2 because the first page is SSR'd and hooks are client side
 const DEFAULT_START_PAGE = 2;
@@ -22,10 +22,20 @@ export const useJobListQuery = (startPage = DEFAULT_START_PAGE) => {
   const readOnlySearchParams = useSearchParams();
   const searchParams = Object.fromEntries(readOnlySearchParams.entries());
   const queryKey = JOBS_QUERY_KEYS.list(createParamsQueryKey(searchParams));
+
   return useInfiniteQuery<TQueryFnData, TError, TData, TQueryKey, TPageParam>({
     queryKey,
-    queryFn: ({ pageParam = startPage }) =>
-      fetchJobListPage({ page: pageParam, searchParams }),
+    queryFn: async ({ pageParam = startPage }) => {
+      // Construct URL with query parameters
+      const query = new URLSearchParams({
+        page: pageParam.toString(),
+        ...searchParams,
+      });
+
+      const url = `/api/jobs/list?${query.toString()}`;
+      const response = await kyFetch(url).json<JobListPageSchema>();
+      return response;
+    },
     getNextPageParam: ({ page, hasNextPage }) => (hasNextPage ? page + 1 : undefined),
     initialPageParam: startPage,
   });

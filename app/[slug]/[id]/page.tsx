@@ -1,5 +1,5 @@
+import { fetchJobDetailsStaticParams } from '@/lib/jobs/server/data';
 import { fetchJobDetails } from '@/lib/jobs/server/data/fetch-job-details';
-import { fetchJobDetailsStaticParams } from '@/lib/jobs/server/data/fetch-job-details-static-params';
 
 import { BackButton } from './back-button';
 
