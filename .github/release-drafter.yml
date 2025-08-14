@@ -1,0 +1,18 @@
+categories:
+  - title: "✨🔥 Features 🔥✨"
+    labels: ["feat", "feature", "enhancement"]
+  - title: "🐛🪓 Bug Fixes 🐛🪓"
+    labels: ["fix", "bug"]
+  - title: "💻 Code Changes 💻"
+    labels: ["refactor", "style"]
+  - title: "🛡 Tests 🛡"
+    labels: ["test"]
+  - title: "🧰 Maintenance 🧰"
+    labels: ["chore", "ci", "docs"]
+
+change-template: "- $TITLE ([#$NUMBER]($URL))"
+version-template: $MAJOR.$MINOR.$PATCH
+
+template: |
+  ## Changes
+  $CHANGES
