@@ -13,7 +13,12 @@
     "lint": "next lint && oxlint --fix --fix-suggestions",
     "test": "echo \"Skipping tests ...\" && exit 0",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "postinstall": "simple-git-hooks",
+    "push": "git push origin $(git rev-parse --abbrev-ref HEAD)",
+    "validate-version": "node scripts/validate-version.js",
+    "bump:patch": "node scripts/bump-version.js patch",
+    "bump:minor": "node scripts/bump-version.js minor"
   },
   "dependencies": {
     "@leeoniya/ufuzzy": "^1.0.18",
@@ -85,6 +90,7 @@
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "semver": "^7.7.2",
     "simple-git-hooks": "^2.11.1",
     "storybook": "^8.5.0",
     "tailwindcss": "^4.0.14",
@@ -98,7 +104,7 @@
   "simple-git-hooks": {
     "commit-msg": "pnpm dlx commitlint --edit $1",
     "pre-commit": "pnpm lint-staged",
-    "pre-push": "pnpm lint &&pnpm build:disable-static && pnpm test"
+    "pre-push": "pnpm lint && pnpm validate-version && pnpm build:disable-static && pnpm test"
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint --fix --fix-suggestions"

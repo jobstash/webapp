@@ -1,0 +1,62 @@
+name: Publish Release from main
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  publish_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from package.json (main)
+        id: ver
+        run: |
+          VERSION="v$(jq -r .version package.json)"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected version on main: $VERSION"
+
+      - name: Check if tag already exists
+        id: check
+        run: |
+          git fetch --tags --quiet
+          if git rev-parse -q --verify "refs/tags/${{ steps.ver.outputs.version }}" >/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            echo "Tag ${{ steps.ver.outputs.version }} already exists. Skipping publish."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+            echo "Tag ${{ steps.ver.outputs.version }} does not exist. Will publish."
+          fi
+
+      - name: Publish accumulated draft release
+        if: steps.check.outputs.should_publish == 'true'
+        run: |
+          # Check if draft release exists
+          if gh release view "next-release" >/dev/null 2>&1; then
+            echo "Found existing draft release. Publishing with proper version tag..."
+            # Edit the existing draft to change name, tag, and publish it
+            gh release edit "next-release" \
+              --title "${{ steps.ver.outputs.version }}" \
+              --tag "${{ steps.ver.outputs.version }}" \
+              --draft=false
+            echo "✅ Published accumulated draft release as ${{ steps.ver.outputs.version }}"
+          else
+            echo "No draft release found. Creating new release..."
+            # Fallback: create new release if no draft exists
+            gh release create "${{ steps.ver.outputs.version }}" \
+              --title "${{ steps.ver.outputs.version }}" \
+              --generate-notes
+            echo "✅ Created new release ${{ steps.ver.outputs.version }}"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
