@@ -21,3 +21,9 @@ export const infiniteListPageSchema = <T>(itemSchema: z.ZodSchema<T>) =>
     hasNextPage: z.boolean(),
   });
 export type InfiniteListPageSchema<T> = ReturnType<typeof infiniteListPageSchema<T>>;
+
+export const genericResponseSchema = z.object({
+  success: z.boolean(),
+  message: nonEmptyStringSchema,
+});
+export type GenericResponseSchema = z.infer<typeof genericResponseSchema>;
