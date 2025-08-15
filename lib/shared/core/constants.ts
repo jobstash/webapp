@@ -18,15 +18,3 @@ export const VERSION_CLIENT_ACTION = {
 } as const;
 export type AppStatusKind =
   (typeof VERSION_CLIENT_ACTION)[keyof typeof VERSION_CLIENT_ACTION];
-
-export const VERSION_CLIENT_ACTION_MESSAGE = {
-  [VERSION_CLIENT_ACTION.NO_OP]: 'No version change',
-  [VERSION_CLIENT_ACTION.MAINTENANCE]:
-    'We are currently performing maintenance on the app. Please check back later.',
-  [VERSION_CLIENT_ACTION.UPDATE_NUDGE]: 'A new version of the app is available.',
-  [VERSION_CLIENT_ACTION.FORCE_RELOAD]:
-    'A new version of the app is available. Please reload to continue.',
-  [VERSION_CLIENT_ACTION.FORCE_LOGOUT]: 'We have updated the app. Please log in again.',
-} as const;
-export type AppStatusMessage =
-  (typeof VERSION_CLIENT_ACTION_MESSAGE)[keyof typeof VERSION_CLIENT_ACTION_MESSAGE];
