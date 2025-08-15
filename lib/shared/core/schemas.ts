@@ -31,10 +31,17 @@ export const genericResponseSchema = z.object({
 export type GenericResponseSchema = z.infer<typeof genericResponseSchema>;
 
 export const optionalDataResponseSchema = <T>(itemSchema: z.ZodSchema<T>) =>
-  z.object({
-    ...genericResponseSchema.shape,
-    data: z.optional(itemSchema),
-  });
+  z.discriminatedUnion('success', [
+    z.object({
+      success: z.literal(false),
+      message: nonEmptyStringSchema,
+    }),
+    z.object({
+      success: z.literal(true),
+      message: nonEmptyStringSchema,
+      data: itemSchema,
+    }),
+  ]);
 export type OptionalDataResponseSchema<T> = ReturnType<
   typeof optionalDataResponseSchema<T>
 >;
