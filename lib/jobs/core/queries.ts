@@ -1,6 +1,6 @@
 import { infiniteQueryOptions } from '@tanstack/react-query';
 
-import { SHARED_QUERY_KEYS } from '@/lib/shared/core/query-keys';
+import { SHARED_QUERIES } from '@/lib/shared/core/query-keys';
 import { JobListPageSchema } from '@/lib/jobs/core/schemas';
 
 import { createParamsQueryKey } from '@/lib/shared/utils/create-params-query-key';
@@ -8,7 +8,7 @@ import { createParamsQueryKey } from '@/lib/shared/utils/create-params-query-key
 import { kyFetch } from '@/lib/shared/data/ky-fetch';
 
 export const JOBS_QUERIES = {
-  all: [...SHARED_QUERY_KEYS.all, 'jobs'],
+  all: [...SHARED_QUERIES.all, 'jobs'],
   list: (searchParams: Record<string, string>, startPage: number) =>
     infiniteQueryOptions({
       queryKey: [
