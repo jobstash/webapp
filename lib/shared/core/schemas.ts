@@ -27,3 +27,12 @@ export const genericResponseSchema = z.object({
   message: nonEmptyStringSchema,
 });
 export type GenericResponseSchema = z.infer<typeof genericResponseSchema>;
+
+export const optionalDataResponseSchema = <T>(itemSchema: z.ZodSchema<T>) =>
+  z.object({
+    ...genericResponseSchema.shape,
+    data: z.optional(itemSchema),
+  });
+export type OptionalDataResponseSchema<T> = ReturnType<
+  typeof optionalDataResponseSchema<T>
+>;
