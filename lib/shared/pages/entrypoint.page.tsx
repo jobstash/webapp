@@ -1,10 +1,10 @@
 'use client';
 import { useMachine } from '@xstate/react';
 
-import { rootMachine } from '@/lib/shared/machines/root.machine';
+import { entrypointMachine } from '@/lib/shared/machines';
 
 export const EntrypointPage = ({ children }: React.PropsWithChildren) => {
-  const [state] = useMachine(rootMachine);
+  const [state] = useMachine(entrypointMachine);
 
   if (state.matches('checkingNetwork') || state.matches('checkingVersion')) {
     return <p>TODO: Loading Page</p>;

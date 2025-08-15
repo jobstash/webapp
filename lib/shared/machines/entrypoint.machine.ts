@@ -4,20 +4,20 @@ import { VERSION_CLIENT_ACTION } from '@/lib/shared/core/constants';
 
 import { checkNetworkActor, checkVersionActor } from '@/lib/shared/actors';
 
-interface RootMachineContext {
+interface EntrypointMachineContext {
   showUpdateNudge: boolean;
 }
 
-export const rootMachine = setup({
+export const entrypointMachine = setup({
   types: {
-    context: {} as RootMachineContext,
+    context: {} as EntrypointMachineContext,
   },
   actors: {
     checkNetworkActor,
     checkVersionActor,
   },
 }).createMachine({
-  id: 'root',
+  id: 'entrypoint',
   context: {
     showUpdateNudge: false,
   },
