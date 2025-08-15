@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { APP_STATUS_KIND } from '@/lib/shared/core/constants';
+import { VERSION_CLIENT_ACTION } from '@/lib/shared/core/constants';
 
 export const nonEmptyStringSchema = z.string().min(1);
 export const nullableStringSchema = z.nullable(nonEmptyStringSchema);
@@ -48,8 +48,8 @@ export type OptionalDataResponseSchema<T> = ReturnType<
 
 export const checkAppStatusResponseSchema = optionalDataResponseSchema(
   z.object({
-    kind: z.enum(APP_STATUS_KIND),
-    serverVersion: z.string(),
+    version: z.string(),
+    clientAction: z.enum(VERSION_CLIENT_ACTION),
   }),
 );
 export type CheckAppStatusResponseSchema = z.infer<typeof checkAppStatusResponseSchema>;

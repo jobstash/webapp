@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server';
 
 import { z } from 'zod';
 
-import { APP_STATUS_KIND } from '@/lib/shared/core/constants';
+import {
+  VERSION_CLIENT_ACTION,
+  VERSION_CLIENT_ACTION_MESSAGE,
+} from '@/lib/shared/core/constants';
 
-import packageJson from '../../../../package.json';
+import packageJson from '../../../package.json';
 
 const semverSchema = z
   .string('Version is required')
@@ -16,7 +19,6 @@ const parseVersion = (version: string) => {
   return { major, minor, patch };
 };
 
-const SUCCESS_MESSAGE = 'App status checked';
 const FORCE_LOGOUT_VERSIONS = new Set<string>([]);
 const MAINTENANCE_VERSIONS = new Set<string>([]);
 
@@ -47,23 +49,26 @@ export async function GET(request: Request) {
   const client = parseVersion(currentVersionResult.data);
   const server = parseVersion(serverVersionResult.data);
 
-  const isDiff = currentVersionResult.data !== serverVersionResult.data;
+  const version = serverVersionResult.data;
+  const isDiff = version !== currentVersionResult.data;
   const isMajorDiff = client.major !== server.major;
   const isMinorDiff = client.minor !== server.minor;
   const isPatchDiff = client.patch !== server.patch;
   const isPatchAhead = client.patch > server.patch; // Edge: Force reload
-  const isMaintenance = MAINTENANCE_VERSIONS.has(serverVersionResult.data);
-  const isForceLogout = isDiff && FORCE_LOGOUT_VERSIONS.has(serverVersionResult.data);
+  const isMaintenance = MAINTENANCE_VERSIONS.has(version);
+  const isForceLogout = isDiff && FORCE_LOGOUT_VERSIONS.has(version);
   const isForceReload = isMajorDiff || isMinorDiff || isPatchAhead;
 
   if (isMaintenance) {
+    const clientAction = VERSION_CLIENT_ACTION.MAINTENANCE;
+    const message = VERSION_CLIENT_ACTION_MESSAGE[clientAction];
     return NextResponse.json(
       {
         success: true,
-        message: SUCCESS_MESSAGE,
+        message,
         data: {
-          kind: APP_STATUS_KIND.MAINTENANCE,
-          serverVersion: serverVersionResult.data,
+          version,
+          clientAction,
         },
       },
       { status: 200 },
@@ -71,13 +76,15 @@ export async function GET(request: Request) {
   }
 
   if (isForceLogout) {
+    const clientAction = VERSION_CLIENT_ACTION.FORCE_LOGOUT;
+    const message = VERSION_CLIENT_ACTION_MESSAGE[clientAction];
     return NextResponse.json(
       {
         success: true,
-        message: SUCCESS_MESSAGE,
+        message,
         data: {
-          kind: APP_STATUS_KIND.FORCE_LOGOUT,
-          serverVersion: serverVersionResult.data,
+          clientAction,
+          version,
         },
       },
       { status: 200 },
@@ -85,13 +92,15 @@ export async function GET(request: Request) {
   }
 
   if (isForceReload) {
+    const clientAction = VERSION_CLIENT_ACTION.FORCE_RELOAD;
+    const message = VERSION_CLIENT_ACTION_MESSAGE[clientAction];
     return NextResponse.json(
       {
         success: true,
-        message: SUCCESS_MESSAGE,
+        message,
         data: {
-          kind: APP_STATUS_KIND.FORCE_RELOAD,
-          serverVersion: serverVersionResult.data,
+          clientAction,
+          version,
         },
       },
       { status: 200 },
@@ -99,13 +108,31 @@ export async function GET(request: Request) {
   }
 
   if (isPatchDiff) {
+    const clientAction = VERSION_CLIENT_ACTION.UPDATE_NUDGE;
+    const message = VERSION_CLIENT_ACTION_MESSAGE[clientAction];
     return NextResponse.json(
       {
         success: true,
-        message: SUCCESS_MESSAGE,
+        message,
         data: {
-          kind: APP_STATUS_KIND.UPDATE_NUDGE,
-          serverVersion: serverVersionResult.data,
+          clientAction,
+          version,
+        },
+      },
+      { status: 200 },
+    );
+  }
+
+  if (!isDiff) {
+    const clientAction = VERSION_CLIENT_ACTION.NO_OP;
+    const message = VERSION_CLIENT_ACTION_MESSAGE[clientAction];
+    return NextResponse.json(
+      {
+        success: true,
+        message,
+        data: {
+          clientAction,
+          version,
         },
       },
       { status: 200 },
@@ -115,7 +142,7 @@ export async function GET(request: Request) {
   return NextResponse.json(
     {
       success: false,
-      message: 'Invalid app status state',
+      message: 'Invalid version state',
     },
     { status: 500 },
   );

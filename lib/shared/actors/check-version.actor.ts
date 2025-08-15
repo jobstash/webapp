@@ -7,11 +7,11 @@ import { checkAppStatusResponseSchema } from '@/lib/shared/core/schemas';
 
 import { kyFetch } from '@/lib/shared/data/ky-fetch';
 
-export const syncVersionActor = fromPromise(async () => {
+export const checkVersionActor = fromPromise(async () => {
   try {
     const current = localStorage.getItem(LS_KEYS.CURRENT_VERSION) || 'v0.0.0';
 
-    const response = await kyFetch.get('/api/sync/version', {
+    const response = await kyFetch.get('/api/version', {
       cache: 'no-cache',
       searchParams: { current },
     });
