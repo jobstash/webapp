@@ -5,6 +5,7 @@ import Head from 'next/head';
 
 import { grotesk, interTight } from '@/lib/shared/core/fonts';
 
+import { EntrypointPage } from '@/lib/shared/pages/entrypoint.page';
 import { RootProviders } from '@/lib/shared/providers/root-providers';
 
 export const metadata: Metadata = {
@@ -34,7 +35,9 @@ export default function RootLayout({ children }: Props) {
         <link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />
       </Head>
       <body className={`${interTight.variable} ${grotesk.variable} antialiased`}>
-        <RootProviders>{children}</RootProviders>
+        <RootProviders>
+          <EntrypointPage>{children}</EntrypointPage>
+        </RootProviders>
       </body>
     </html>
   );
