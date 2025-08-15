@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { APP_STATUS_KIND } from '@/lib/shared/core/constants';
+
 export const nonEmptyStringSchema = z.string().min(1);
 export const nullableStringSchema = z.nullable(nonEmptyStringSchema);
 export const optionalStringSchema = z.optional(nonEmptyStringSchema);
@@ -36,3 +38,10 @@ export const optionalDataResponseSchema = <T>(itemSchema: z.ZodSchema<T>) =>
 export type OptionalDataResponseSchema<T> = ReturnType<
   typeof optionalDataResponseSchema<T>
 >;
+
+export const checkAppStatusResponseSchema = optionalDataResponseSchema(
+  z.object({
+    kind: z.enum(APP_STATUS_KIND),
+  }),
+);
+export type CheckAppStatusResponseSchema = z.infer<typeof checkAppStatusResponseSchema>;
