@@ -34,6 +34,7 @@
     "@sentry/nextjs": "^9.6.0",
     "@tanstack/react-query": "^5.71.1",
     "@tanstack/react-virtual": "^3.13.6",
+    "@xstate/react": "^6.0.0",
     "@xstate/store": "^3.8.5",
     "ahooks": "^3.8.4",
     "class-variance-authority": "^0.7.1",
@@ -54,6 +55,7 @@
     "tailwindcss-animate": "^1.0.7",
     "transliteration": "^2.3.5",
     "webapp": "link:",
+    "xstate": "^5.20.2",
     "zod": "^4.0.17"
   },
   "devDependencies": {
