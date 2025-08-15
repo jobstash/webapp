@@ -49,6 +49,7 @@ export type OptionalDataResponseSchema<T> = ReturnType<
 export const checkAppStatusResponseSchema = optionalDataResponseSchema(
   z.object({
     kind: z.enum(APP_STATUS_KIND),
+    serverVersion: z.string(),
   }),
 );
 export type CheckAppStatusResponseSchema = z.infer<typeof checkAppStatusResponseSchema>;
