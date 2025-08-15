@@ -1,17 +1,16 @@
 'use client';
 
+import { type QueryClient } from '@tanstack/react-query';
 import { fromPromise } from 'xstate';
 
-import { kyFetch } from '@/lib/shared/data/ky-fetch';
+import { SHARED_QUERIES } from '@/lib/shared/core/query-keys';
 
-export const checkNetworkActor = fromPromise(async () => {
-  if (navigator.onLine) {
-    try {
-      await kyFetch.head('/api/health', { cache: 'no-cache' });
-      return true;
-    } catch {
-      throw new Error('Server is not reachable');
-    }
-  }
-  throw new Error('No internet connection');
-});
+interface Props {
+  input: {
+    queryClient: QueryClient;
+  };
+}
+
+export const checkNetworkActor = fromPromise(async ({ input }: Props) =>
+  input.queryClient.fetchQuery(SHARED_QUERIES.checkNetwork()),
+);
