@@ -3,7 +3,7 @@
 import { fromPromise } from 'xstate';
 
 import { LS_KEYS } from '@/lib/shared/core/constants';
-import { checkAppStatusResponseSchema } from '@/lib/shared/core/schemas';
+import { checkVersionResponseSchema } from '@/lib/shared/core/schemas';
 
 import { kyFetch } from '@/lib/shared/data/ky-fetch';
 
@@ -18,7 +18,7 @@ export const checkVersionActor = fromPromise(async () => {
     const jsonData = await response.json();
 
     const { success: parseSuccess, data: parsedResponse } =
-      checkAppStatusResponseSchema.safeParse(jsonData);
+      checkVersionResponseSchema.safeParse(jsonData);
     if (!parseSuccess) {
       throw new Error('Invalid app status response');
     }

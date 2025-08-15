@@ -46,10 +46,11 @@ export type OptionalDataResponseSchema<T> = ReturnType<
   typeof optionalDataResponseSchema<T>
 >;
 
-export const checkAppStatusResponseSchema = optionalDataResponseSchema(
-  z.object({
-    version: z.string(),
-    clientAction: z.enum(VERSION_CLIENT_ACTION),
-  }),
-);
-export type CheckAppStatusResponseSchema = z.infer<typeof checkAppStatusResponseSchema>;
+export const versionDataSchema = z.object({
+  version: z.string(),
+  clientAction: z.enum(VERSION_CLIENT_ACTION),
+});
+export type VersionDataSchema = z.infer<typeof versionDataSchema>;
+
+export const checkVersionResponseSchema = optionalDataResponseSchema(versionDataSchema);
+export type CheckVersionResponseSchema = z.infer<typeof checkVersionResponseSchema>;
