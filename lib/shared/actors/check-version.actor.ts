@@ -28,6 +28,12 @@ export const checkVersionActor = fromPromise(async () => {
       throw new Error(message);
     }
 
+    // Persist the current version to local storage if different
+    const serverVersion = parsedResponse.data.version;
+    if (serverVersion !== current) {
+      localStorage.setItem(LS_KEYS.CURRENT_VERSION, serverVersion);
+    }
+
     return parsedResponse.data;
   } catch (error) {
     // TODO: log error, send to sentry
