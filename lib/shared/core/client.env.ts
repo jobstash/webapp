@@ -10,7 +10,10 @@ export const CLIENT_ENVS = (() => {
       NEXT_PUBLIC_FRONTEND_URL: z.url(),
       NEXT_PUBLIC_MW_URL: z.url(),
       NEXT_PUBLIC_VERI_URL: z.url(),
-      NEXT_PUBLIC_PAGE_SIZE: z.number().int().positive(),
+      NEXT_PUBLIC_PAGE_SIZE: z
+        .string()
+        .refine((value) => !isNaN(Number(value)), 'Must be a valid number string')
+        .transform((value) => Number(value)),
     },
     runtimeEnv: {
       NEXT_PUBLIC_FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
