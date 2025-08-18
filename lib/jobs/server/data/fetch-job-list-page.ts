@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { ENV } from '@/lib/shared/core/envs';
+import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 import { MwSchemaError } from '@/lib/shared/core/errors';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
@@ -43,7 +43,7 @@ export const fetchJobListPage = async (input: Input) => {
       query.append(key, value);
     });
   }
-  const url = `${ENV.MW_URL}/jobs/list?${query.toString()}`;
+  const url = `${CLIENT_ENVS.MW_URL}/jobs/list?${query.toString()}`;
   const response = await kyFetch(url, { cache }).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);

@@ -1,7 +1,7 @@
 import 'server-only';
 
+import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 import { ProjectAllInfoDto } from '@/lib/shared/core/dtos';
-import { ENV } from '@/lib/shared/core/envs';
 import { JOB_ITEM_BADGE } from '@/lib/jobs/core/constants';
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 
@@ -49,7 +49,7 @@ const dtoToJobItemOrg = (
 ): JobItemSchema['organization'] => {
   if (!dto) return null;
 
-  const href = `${ENV.VERI_URL}/organizations/info/${dto.normalizedName}`;
+  const href = `${CLIENT_ENVS.VERI_URL}/organizations/info/${dto.normalizedName}`;
 
   return {
     name: dto.name,
