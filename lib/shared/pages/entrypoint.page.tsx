@@ -1,10 +1,13 @@
 'use client';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMachine } from '@xstate/react';
 
 import { entrypointMachine } from '@/lib/shared/machines';
 
 export const EntrypointPage = ({ children }: React.PropsWithChildren) => {
-  const [state] = useMachine(entrypointMachine);
+  const queryClient = useQueryClient();
+
+  const [state] = useMachine(entrypointMachine, { input: { queryClient } });
 
   if (state.matches('checkingNetwork') || state.matches('checkingVersion')) {
     return <p>TODO: Loading Page</p>;
