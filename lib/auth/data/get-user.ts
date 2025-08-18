@@ -8,6 +8,7 @@ export const getUser = async () => {
 
   const { success: parseSuccess, data: parsedResponse } =
     getUserResponseSchema.safeParse(jsonData);
+
   if (!parseSuccess) {
     throw new Error('Invalid user response');
   }

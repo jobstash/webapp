@@ -1,16 +1,22 @@
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-import { PERMISSIONS } from '@/lib/shared/core/constants';
+import { getIronSession } from 'iron-session';
 
-// TODO: Implement actual user fetching w/ session
+import { SESSION_OPTIONS } from '@/lib/shared/core/constants.server';
+import { SessionSchema } from '@/lib/auth/core/schemas';
+
 export const GET = async () => {
+  const reqCookies = await cookies();
+  const session = await getIronSession<SessionSchema>(reqCookies, SESSION_OPTIONS);
+
   return NextResponse.json({
     success: true,
     message: 'User fetched successfully',
     data: {
-      name: 'John Doe',
-      token: 'todo-implement-actual',
-      permissions: [PERMISSIONS.USER],
+      name: 'TODO: Name',
+      token: session.user.token,
+      permissions: session.user.permissions,
     },
   });
 };

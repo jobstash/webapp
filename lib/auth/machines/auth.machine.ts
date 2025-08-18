@@ -1,22 +1,20 @@
 import { QueryClient } from '@tanstack/react-query';
 import { assign, setup } from 'xstate';
 
-import { PermissionsSchema } from '@/lib/shared/core/schemas';
+import { PERMISSIONS } from '@/lib/shared/core/constants';
 import { UserSchema } from '@/lib/auth/core/schemas';
 
 import {
   getPrivyTokenActor,
   getUserActor,
-  getUserCredentialsActor,
   logoutActor,
+  syncSessionActor,
 } from '@/lib/auth/actors';
 
 interface LoginMachineContext {
   user: UserSchema | null;
   queryClient: QueryClient;
   privyToken: string | null;
-  token: string | null;
-  permissions: PermissionsSchema | null;
   privyLogout: () => Promise<void>;
 }
 
@@ -30,24 +28,37 @@ export const authMachine = setup({
     context: {} as LoginMachineContext,
     input: {} as LoginMachineInput,
   },
-  actors: { getPrivyTokenActor, getUserActor, getUserCredentialsActor, logoutActor },
+  actors: {
+    getPrivyTokenActor,
+    getUserActor,
+    syncSessionActor,
+    logoutActor,
+  },
 }).createMachine({
   id: 'login',
-  initial: 'checkingUser',
+  initial: 'gettingUser',
   context: ({ input }) => ({
     user: null,
     queryClient: input.queryClient,
     privyToken: null,
-    token: null,
-    permissions: null,
     privyLogout: input.privyLogout,
   }),
   states: {
-    checkingUser: {
+    gettingUser: {
       invoke: {
         src: 'getUserActor',
         input: ({ context }) => ({ queryClient: context.queryClient }),
-        onDone: 'authenticated',
+        onDone: [
+          {
+            guard: ({ event }) =>
+              !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
+            actions: assign({ user: ({ event }) => event.output }),
+            target: 'authenticated',
+          },
+          {
+            target: 'unauthenticated',
+          },
+        ],
         onError: 'unauthenticated',
       },
     },
@@ -62,25 +73,19 @@ export const authMachine = setup({
         onDone: {
           actions: assign({ privyToken: ({ event }) => event.output }),
           guard: ({ context }) => context.privyToken !== null,
-          target: 'gettingUserCredentials',
+          target: 'syncingSession',
         },
         onError: 'unauthenticated',
       },
     },
-    gettingUserCredentials: {
+    syncingSession: {
       invoke: {
-        src: 'getUserCredentialsActor',
+        src: 'syncSessionActor',
         input: ({ context }) => ({
           queryClient: context.queryClient,
           privyToken: context.privyToken!,
         }),
-        onDone: {
-          target: 'authenticated',
-          actions: assign({
-            token: ({ event }) => event.output.token,
-            permissions: ({ event }) => event.output.permissions,
-          }),
-        },
+        onDone: 'gettingUser',
         onError: 'unauthenticated',
       },
     },
@@ -103,8 +108,6 @@ export const authMachine = setup({
           actions: assign({
             user: null,
             privyToken: null,
-            token: null,
-            permissions: [],
           }),
         },
       },
