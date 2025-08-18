@@ -10,6 +10,13 @@ export const GET = async () => {
   const reqCookies = await cookies();
   const session = await getIronSession<SessionSchema>(reqCookies, SESSION_OPTIONS);
 
+  if (!session.user) {
+    return NextResponse.json(
+      { success: true, message: 'No active session', data: null },
+      { status: 200 },
+    );
+  }
+
   return NextResponse.json({
     success: true,
     message: 'User fetched successfully',
