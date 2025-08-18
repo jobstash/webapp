@@ -1,7 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { fromPromise } from 'xstate';
 
-import { AUTH_QUERIES } from '@/lib/auth/core/queries';
+import { SHARED_QUERIES } from '@/lib/shared/core/query-keys';
+
+import { syncSession } from '@/lib/auth/data';
 
 interface Props {
   input: {
@@ -10,12 +12,12 @@ interface Props {
   };
 }
 
-export const getUserCredentialsActor = fromPromise(async ({ input }: Props) => {
+export const syncSessionActor = fromPromise(async ({ input }: Props) => {
   try {
-    const userCredentials = await input.queryClient.fetchQuery(
-      AUTH_QUERIES.getUserCredentials(input.privyToken),
-    );
-    return userCredentials;
+    await syncSession(input.privyToken);
+    await input.queryClient.invalidateQueries({
+      queryKey: SHARED_QUERIES.all,
+    });
   } catch (error) {
     // TODO: add logs, sentry
     throw new Error(
