@@ -1,4 +1,4 @@
-import { ENV } from '@/lib/shared/core/envs';
+import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 import { JobItemSchema } from '@/lib/jobs/core/schemas';
 import { MOCK_RESPONSE_RESULT } from '@/lib/shared/testutils/core';
 
@@ -15,7 +15,7 @@ type Option = { result: MOCK_RESPONSE_RESULT } & Partial<
 
 export const mockJobListResponse = (options: Option) => {
   return mockInfiniteListResponse({
-    baseURL: `${ENV.MW_URL}/jobs`,
+    baseURL: `${CLIENT_ENVS.MW_URL}/jobs`,
     itemFakeFn: () => fakeJobItem(),
     ...options,
   });

@@ -2,7 +2,7 @@ import 'server-only';
 
 import * as z from 'zod';
 
-import { ENV } from '@/lib/shared/core/envs';
+import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 
 import { jobItemDto } from './job-item-dto';
 
@@ -16,7 +16,7 @@ export type JobListPageDto = z.infer<typeof jobListPageDto>;
 
 export const jobListPageParamsDto = z.object({
   page: z.number().min(1),
-  limit: z.number().min(1).optional().default(ENV.PAGE_SIZE),
+  limit: z.number().min(1).optional().default(CLIENT_ENVS.PAGE_SIZE),
   searchParams: z.record(z.string(), z.string()).optional(),
 });
 export type JobListPageParamsDto = z.infer<typeof jobListPageParamsDto>;

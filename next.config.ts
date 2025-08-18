@@ -5,6 +5,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   logging: {
     fetches: {
       fullUrl: true,
