@@ -48,12 +48,17 @@ export const authMachine = setup({
       invoke: {
         src: 'getUserActor',
         input: ({ context }) => ({ queryClient: context.queryClient }),
-        onDone: {
-          guard: ({ event }) =>
-            !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
-          actions: assign({ user: ({ event }) => event.output }),
-          target: 'authenticated',
-        },
+        onDone: [
+          {
+            guard: ({ event }) =>
+              !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
+            actions: assign({ user: ({ event }) => event.output }),
+            target: 'authenticated',
+          },
+          {
+            target: 'unauthenticated',
+          },
+        ],
         onError: 'unauthenticated',
       },
     },
