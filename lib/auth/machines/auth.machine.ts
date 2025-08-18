@@ -1,6 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { assign, setup } from 'xstate';
 
+import { PERMISSIONS } from '@/lib/shared/core/constants';
 import { UserSchema } from '@/lib/auth/core/schemas';
 
 import {
@@ -48,6 +49,8 @@ export const authMachine = setup({
         src: 'getUserActor',
         input: ({ context }) => ({ queryClient: context.queryClient }),
         onDone: {
+          guard: ({ event }) =>
+            !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
           actions: assign({ user: ({ event }) => event.output }),
           target: 'authenticated',
         },
