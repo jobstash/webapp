@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { createEnv } from '@t3-oss/env-nextjs';
 import * as z from 'zod';
 
