@@ -23,3 +23,13 @@ export type UserSchema = z.infer<typeof userSchema>;
 
 export const getUserResponseSchema = optionalDataResponseSchema(userSchema);
 export type GetUserResponseSchema = z.infer<typeof getUserResponseSchema>;
+
+export const sessionSchema = z.object({
+  user: userSchema,
+});
+export type SessionSchema = z.infer<typeof sessionSchema>;
+
+export const syncSessionPayloadSchema = z.object({
+  privyToken: z.string(),
+});
+export type SyncSessionPayloadSchema = z.infer<typeof syncSessionPayloadSchema>;
