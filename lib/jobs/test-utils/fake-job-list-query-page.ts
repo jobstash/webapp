@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { ENV } from '@/lib/shared/core/envs';
+import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 import { JobListPageSchema } from '@/lib/jobs/core/schemas';
 
 import { fakeJobItem } from '@/lib/jobs/test-utils/fake-job-item';
@@ -12,7 +12,7 @@ export const fakeJobListQueryPage = (override?: Partial<JobListPageSchema>) => {
   return {
     page,
     total: faker.number.int({ min: 1, max: 5000 }),
-    data: Array.from({ length: ENV.PAGE_SIZE }, fakeJobItem),
+    data: Array.from({ length: CLIENT_ENVS.PAGE_SIZE }, fakeJobItem),
     hasNextPage: hasNextPage ?? true,
     ...rest,
   };

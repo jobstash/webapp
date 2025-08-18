@@ -1,4 +1,4 @@
-import { ENV } from '@/lib/shared/core/envs';
+import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 
 export const FILTER_KIND = {
   SORT: 'SORT',
@@ -12,7 +12,7 @@ export const FILTER_KIND = {
 export type FilterKind = (typeof FILTER_KIND)[keyof typeof FILTER_KIND];
 
 export const REMOTE_FILTERS = {
-  tags: `${ENV.MW_URL}/tags/search`,
+  tags: `${CLIENT_ENVS.MW_URL}/tags/search`,
 };
 
 export const REMOTE_FILTERS_SET = new Set(Object.keys(REMOTE_FILTERS));

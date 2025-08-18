@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { ENV } from '@/lib/shared/core/envs';
+import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 import { MwSchemaError } from '@/lib/shared/core/errors';
 
 import { safeParse } from '@/lib/shared/utils/safe-parse';
@@ -11,7 +11,7 @@ import { pillarSlugsDto } from '@/lib/search/server/dtos';
 import { dtoToStaticPillarSlugs } from '@/lib/search/server/dtos/dto-to-static-pillar-slugs';
 
 export const fetchStaticPillarSlugs = async () => {
-  const url = `${ENV.MW_URL}/search/pillar/slugs?nav=jobs`;
+  const url = `${CLIENT_ENVS.MW_URL}/search/pillar/slugs?nav=jobs`;
   const response = await kyFetch(url).json();
 
   const parsed = safeParse('pillarSlugsDto', pillarSlugsDto, response);
