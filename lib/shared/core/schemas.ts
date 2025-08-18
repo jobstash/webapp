@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { VERSION_CLIENT_ACTION } from '@/lib/shared/core/constants';
+import { PERMISSIONS, VERSION_CLIENT_ACTION } from '@/lib/shared/core/constants';
 
 export const nonEmptyStringSchema = z.string().min(1);
 export const nullableStringSchema = z.nullable(nonEmptyStringSchema);
@@ -54,3 +54,6 @@ export type VersionDataSchema = z.infer<typeof versionDataSchema>;
 
 export const checkVersionResponseSchema = optionalDataResponseSchema(versionDataSchema);
 export type CheckVersionResponseSchema = z.infer<typeof checkVersionResponseSchema>;
+
+export const permissionsSchema = z.array(z.literal(Object.values(PERMISSIONS)));
+export type PermissionsSchema = z.infer<typeof permissionsSchema>;
