@@ -18,3 +18,14 @@ export const VERSION_CLIENT_ACTION = {
 } as const;
 export type AppStatusKind =
   (typeof VERSION_CLIENT_ACTION)[keyof typeof VERSION_CLIENT_ACTION];
+
+export const PERMISSIONS = {
+  USER: 'USER',
+  ORG_OWNER: 'ORG_OWNER',
+  ORG_MEMBER: 'ORG_MEMBER',
+  ECOSYSTEM_MANAGER: 'ECOSYSTEM_MANAGER',
+  // Data compatibility
+  ADMIN: 'ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  PROJECT_MANAGER: 'PROJECT_MANAGER',
+} as const;
