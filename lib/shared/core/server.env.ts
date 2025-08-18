@@ -4,7 +4,7 @@ import * as z from 'zod';
 export const SERVER_ENVS = (() => {
   const envs = createEnv({
     server: {
-      SESSION_PWD: z.string().length(32),
+      SESSION_PWD: z.string(),
     },
     runtimeEnv: {
       SESSION_PWD: process.env.SESSION_PWD,

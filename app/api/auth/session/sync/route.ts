@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 
 import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
-import { SESSION_OPTIONS } from '@/lib/shared/core/constants';
+import { SESSION_OPTIONS } from '@/lib/shared/core/constants.server';
 import {
   getUserCredentialsResponseSchema,
   SessionSchema,
