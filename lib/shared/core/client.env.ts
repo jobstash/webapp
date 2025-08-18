@@ -1,8 +1,5 @@
 import { createEnv } from '@t3-oss/env-nextjs';
-import * as dotenv from 'dotenv';
 import * as z from 'zod';
-
-dotenv.config();
 
 export const CLIENT_ENVS = (() => {
   const envs = createEnv({
@@ -14,12 +11,16 @@ export const CLIENT_ENVS = (() => {
         .string()
         .refine((value) => !isNaN(Number(value)), 'Must be a valid number string')
         .transform((value) => Number(value)),
+      NEXT_PUBLIC_PRIVY_APP_ID: z.string(),
+      NEXT_PUBLIC_PRIVY_CLIENT_ID: z.string(),
     },
     runtimeEnv: {
       NEXT_PUBLIC_FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
       NEXT_PUBLIC_MW_URL: process.env.NEXT_PUBLIC_MW_URL,
       NEXT_PUBLIC_VERI_URL: process.env.NEXT_PUBLIC_VERI_URL,
       NEXT_PUBLIC_PAGE_SIZE: process.env.NEXT_PUBLIC_PAGE_SIZE,
+      NEXT_PUBLIC_PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID,
+      NEXT_PUBLIC_PRIVY_CLIENT_ID: process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID,
     },
   });
 
@@ -28,5 +29,7 @@ export const CLIENT_ENVS = (() => {
     MW_URL: envs.NEXT_PUBLIC_MW_URL,
     VERI_URL: envs.NEXT_PUBLIC_VERI_URL,
     PAGE_SIZE: envs.NEXT_PUBLIC_PAGE_SIZE,
+    PRIVY_APP_ID: envs.NEXT_PUBLIC_PRIVY_APP_ID,
+    PRIVY_CLIENT_ID: envs.NEXT_PUBLIC_PRIVY_CLIENT_ID,
   };
 })();
