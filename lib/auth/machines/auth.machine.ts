@@ -13,7 +13,7 @@ export const authMachine = setup({
     context: {} as AuthMachineContext,
   },
   actors: {
-    getUser: {} as PromiseActorLogic<UserSchema>,
+    getUser: {} as PromiseActorLogic<UserSchema | null>,
     getPrivyToken: {} as PromiseActorLogic<string>,
     logoutPrivy: {} as PromiseActorLogic<void>,
     logoutSession: {} as PromiseActorLogic<void>,
@@ -27,9 +27,6 @@ export const authMachine = setup({
   guards: {
     hasPrivyToken: ({ context }) => !!context.privyToken,
     hasPermission: ({ context }) => context.hasPermission,
-    hasPermissionOutput: (_, params: { permissions: string[] }) => {
-      return params.permissions.includes(PERMISSIONS.USER);
-    },
   },
 }).createMachine({
   id: 'auth',
@@ -45,10 +42,9 @@ export const authMachine = setup({
         onDone: [
           {
             target: 'authenticated',
-            guard: {
-              type: 'hasPermissionOutput',
-              params: ({ event }) => ({ permissions: event.output.permissions }),
-            },
+            guard: ({ event }) =>
+              !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
+
             actions: [{ type: 'setHasPermission', params: { value: true } }],
           },
           { target: 'initiatingLogout' },
@@ -116,10 +112,16 @@ export const authMachine = setup({
         input: ({ context }) => ({
           privyToken: context.privyToken!,
         }),
-        onDone: 'gettingUser',
+        onDone: {
+          target: 'gettingUser',
+          actions: ({ event }) =>
+            console.log('syncingSession done', { output: event.output }),
+        },
         onError: {
           target: 'initiatingLogout',
           // TODO: add logs, sentry
+          actions: ({ event }) =>
+            console.error('syncingSession error', { error: event.error }),
         },
       },
     },
