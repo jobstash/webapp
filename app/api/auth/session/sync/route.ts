@@ -6,9 +6,9 @@ import { getIronSession } from 'iron-session';
 import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 import { SESSION_OPTIONS } from '@/lib/shared/core/constants.server';
 import {
-  getUserCredentialsResponseSchema,
   SessionSchema,
   syncSessionPayloadSchema,
+  userCredentialsSchema,
 } from '@/lib/auth/core/schemas';
 
 import { kyFetch } from '@/lib/shared/data/ky-fetch';
@@ -46,24 +46,19 @@ export const POST = async (req: NextRequest) => {
   });
   const jsonData = await response.json();
 
-  const parsedResponse = getUserCredentialsResponseSchema.safeParse(jsonData);
+  const parsedResponse = userCredentialsSchema.safeParse(jsonData);
 
   if (!parsedResponse.success) {
     // TODO: add logs, sentry
     throw new Error('Failed to parse user credentials');
   }
 
-  if (!parsedResponse.data?.success) {
-    // TODO: add logs, sentry
-    throw new Error('Failed to get user credentials');
-  }
-
   const reqCookies = await cookies();
   const session = await getIronSession<SessionSchema>(reqCookies, SESSION_OPTIONS);
   session.user = {
     name: 'TODO: Session Name',
-    token: parsedResponse.data.data.token,
-    permissions: parsedResponse.data.data.permissions,
+    token: parsedResponse.data.token,
+    permissions: parsedResponse.data.permissions,
   };
   await session.save();
 
