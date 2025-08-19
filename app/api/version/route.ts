@@ -49,13 +49,14 @@ export async function GET(request: Request) {
 
   const version = serverVersionResult.data;
   const isDiff = version !== currentVersionResult.data;
+  const isFirstVisit = currentVersionResult.data === '0.0.0';
   const isMajorDiff = client.major !== server.major;
   const isMinorDiff = client.minor !== server.minor;
   const isPatchDiff = client.patch !== server.patch;
   const isPatchAhead = client.patch > server.patch; // Edge: Force reload
   const isMaintenance = MAINTENANCE_VERSIONS.has(version);
   const isForceLogout = isDiff && FORCE_LOGOUT_VERSIONS.has(version);
-  const isForceReload = isMajorDiff || isMinorDiff || isPatchAhead;
+  const isForceReload = !isFirstVisit && (isMajorDiff || isMinorDiff || isPatchAhead);
 
   if (isMaintenance) {
     return NextResponse.json(
@@ -65,6 +66,20 @@ export async function GET(request: Request) {
         data: {
           version,
           clientAction: VERSION_CLIENT_ACTION.MAINTENANCE,
+        },
+      },
+      { status: 200 },
+    );
+  }
+
+  if (isFirstVisit) {
+    return NextResponse.json(
+      {
+        success: true,
+        message: SUCCESS_MESSAGE,
+        data: {
+          version,
+          clientAction: VERSION_CLIENT_ACTION.NO_OP,
         },
       },
       { status: 200 },
