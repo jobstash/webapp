@@ -22,10 +22,12 @@ const LOADING_STATES = [
 const AuthButtonInner = () => {
   const { ready } = usePrivy();
   const authActorRef = useAuthActorRef();
-  const { isLoading, isAuthenticated } = useAuthSelector((snapshot) => ({
-    isAuthenticated: snapshot.matches('authenticated'),
-    isLoading: !ready || LOADING_STATES.some(snapshot.matches),
-  }));
+  const { isLoading, isAuthenticated } = useAuthSelector((snapshot) => {
+    return {
+      isAuthenticated: snapshot.matches('authenticated'),
+      isLoading: !ready || LOADING_STATES.some((state) => snapshot.matches(state)),
+    };
+  });
 
   const { login: openPrivyModal } = usePrivyLogin({
     onComplete: () => {
