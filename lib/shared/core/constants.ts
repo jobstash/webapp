@@ -16,7 +16,7 @@ export const VERSION_CLIENT_ACTION = {
   FORCE_RELOAD: 'FORCE_RELOAD',
   FORCE_LOGOUT: 'FORCE_LOGOUT',
 } as const;
-export type AppStatusKind =
+export type VersionClientAction =
   (typeof VERSION_CLIENT_ACTION)[keyof typeof VERSION_CLIENT_ACTION];
 
 export const PERMISSIONS = {
