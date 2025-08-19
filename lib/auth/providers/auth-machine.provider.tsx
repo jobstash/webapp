@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
 import { usePrivy } from '@privy-io/react-auth';
@@ -76,6 +77,14 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
     [queryClient],
   );
 
+  const router = useRouter();
+  const navigateFn = useCallback(
+    async ({ input }: { input: { path: string } }) => {
+      router.push(input.path);
+    },
+    [router],
+  );
+
   const configuredMachine = useMemo(() => {
     return authMachine.provide({
       actors: {
@@ -84,9 +93,17 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
         logoutPrivy: fromPromise(logoutPrivyFn),
         logoutSession: fromPromise(logoutSessionFn),
         syncSession: fromPromise(syncSessionFn),
+        navigate: fromPromise(navigateFn),
       },
     });
-  }, [getPrivyTokenFn, getUserFn, logoutPrivyFn, logoutSessionFn, syncSessionFn]);
+  }, [
+    getPrivyTokenFn,
+    getUserFn,
+    logoutPrivyFn,
+    logoutSessionFn,
+    syncSessionFn,
+    navigateFn,
+  ]);
 
   return (
     <AuthMachineContext.Provider logic={configuredMachine}>
