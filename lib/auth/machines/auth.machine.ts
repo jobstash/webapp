@@ -114,14 +114,10 @@ export const authMachine = setup({
         }),
         onDone: {
           target: 'gettingUser',
-          actions: ({ event }) =>
-            console.log('syncingSession done', { output: event.output }),
         },
         onError: {
           target: 'initiatingLogout',
           // TODO: add logs, sentry
-          actions: ({ event }) =>
-            console.error('syncingSession error', { error: event.error }),
         },
       },
     },
