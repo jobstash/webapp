@@ -1,5 +1,10 @@
 import { useLogin as usePrivyLogin, usePrivy } from '@privy-io/react-auth';
 
+import { AUTH_QUERIES } from '@/lib/auth/core/queries';
+
+import { WithQueryErrorBoundary } from '@/lib/shared/ui/with-query-error-boundary';
+
+import { AuthButtonFallback } from './auth-button.fallback';
 import { AuthButtonView } from './auth-button.view';
 
 import { AuthProvider, useAuthActorRef, useAuthSelector } from '@/lib/auth/providers';
@@ -43,7 +48,9 @@ export const AuthButton = () => {
   return (
     <PrivyProvider>
       <AuthProvider>
-        <AuthButtonInner />
+        <WithQueryErrorBoundary queryKey={AUTH_QUERIES.all} fallback={AuthButtonFallback}>
+          <AuthButtonInner />
+        </WithQueryErrorBoundary>
       </AuthProvider>
     </PrivyProvider>
   );
