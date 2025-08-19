@@ -68,3 +68,6 @@ export const ProfileEntrypointMachineProvider = ({
     </ProfileEntrypointMachineContext.Provider>
   );
 };
+
+export const useProfileEntrypointSelector = ProfileEntrypointMachineContext.useSelector;
+export const useProfileEntrypointActorRef = ProfileEntrypointMachineContext.useActorRef;
