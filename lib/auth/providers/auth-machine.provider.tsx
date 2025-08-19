@@ -16,7 +16,7 @@ import { authMachine } from '@/lib/auth/machines/auth.machine';
 
 const AuthMachineContext = createActorContext(authMachine);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthMachineProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
   const {
     logout: logoutPrivy,
