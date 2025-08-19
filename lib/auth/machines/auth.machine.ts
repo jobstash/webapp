@@ -47,15 +47,18 @@ export const authMachine = setup({
 
             actions: [{ type: 'setHasPermission', params: { value: true } }],
           },
-          { target: 'initiatingLogout' },
+          {
+            target: 'clearingAuth',
+          },
         ],
         onError: {
-          target: 'initiatingLogout',
+          target: 'clearingAuth',
           // TODO: add logs, sentry
         },
       },
     },
-    initiatingLogout: {
+    clearingAuth: {
+      entry: [({ context }) => console.log('clearingAuth', { context })],
       always: [
         { target: 'loggingOutPrivy', guard: { type: 'hasPrivyToken' } },
         { target: 'loggingOutSession', guard: { type: 'hasPermission' } },
@@ -116,7 +119,7 @@ export const authMachine = setup({
           target: 'gettingUser',
         },
         onError: {
-          target: 'initiatingLogout',
+          target: 'clearingAuth',
           // TODO: add logs, sentry
         },
       },
@@ -129,7 +132,7 @@ export const authMachine = setup({
     },
     authenticated: {
       on: {
-        LOGOUT: 'initiatingLogout',
+        LOGOUT: 'clearingAuth',
       },
     },
   },
