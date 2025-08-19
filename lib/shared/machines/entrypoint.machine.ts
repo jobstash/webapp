@@ -1,48 +1,37 @@
-import { type QueryClient } from '@tanstack/react-query';
-import { assign, setup } from 'xstate';
+import { assign, PromiseActorLogic, setup } from 'xstate';
 
 import { VERSION_CLIENT_ACTION } from '@/lib/shared/core/constants';
-
-import { checkNetworkActor, checkVersionActor } from '@/lib/shared/actors';
+import { VersionDataSchema } from '@/lib/shared/core/schemas';
 
 interface EntrypointMachineContext {
   showUpdateNudge: boolean;
-  queryClient: QueryClient;
-}
-
-interface EntrypointMachineInput {
-  queryClient: QueryClient;
 }
 
 export const entrypointMachine = setup({
   types: {
     context: {} as EntrypointMachineContext,
-    input: {} as EntrypointMachineInput,
   },
   actors: {
-    checkNetworkActor,
-    checkVersionActor,
+    checkNetwork: {} as PromiseActorLogic<void>,
+    checkVersion: {} as PromiseActorLogic<VersionDataSchema>,
   },
 }).createMachine({
   id: 'entrypoint',
-  context: ({ input }) => ({
+  context: () => ({
     showUpdateNudge: false,
-    queryClient: input.queryClient,
   }),
   initial: 'checkingNetwork',
   states: {
     checkingNetwork: {
       invoke: {
-        src: 'checkNetworkActor',
-        input: ({ context }) => ({ queryClient: context.queryClient }),
+        src: 'checkNetwork',
         onDone: 'checkingVersion',
         onError: 'offline',
       },
     },
     checkingVersion: {
       invoke: {
-        src: 'checkVersionActor',
-        input: ({ context }) => ({ queryClient: context.queryClient }),
+        src: 'checkVersion',
         onDone: [
           {
             target: 'maintenance',

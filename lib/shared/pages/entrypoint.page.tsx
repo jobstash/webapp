@@ -1,46 +1,77 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMachine } from '@xstate/react';
+import { fromPromise } from 'xstate';
+
+import { LS_KEYS } from '@/lib/shared/core/constants';
+import { SHARED_QUERIES } from '@/lib/shared/core/query-keys';
 
 import { entrypointMachine } from '@/lib/shared/machines';
 
 export const EntrypointPage = ({ children }: React.PropsWithChildren) => {
   const queryClient = useQueryClient();
 
-  const [state] = useMachine(entrypointMachine, { input: { queryClient } });
+  const checkNetworkFn = async () => {
+    await queryClient.fetchQuery(SHARED_QUERIES.checkNetwork());
+  };
 
-  if (state.matches('checkingNetwork') || state.matches('checkingVersion')) {
+  const checkVersionFn = async () => {
+    try {
+      const current = localStorage.getItem(LS_KEYS.CURRENT_VERSION) || '0.0.0';
+      const result = await queryClient.fetchQuery(SHARED_QUERIES.checkVersion(current));
+      const serverVersion = result.version;
+      if (serverVersion !== current) {
+        localStorage.setItem(LS_KEYS.CURRENT_VERSION, serverVersion);
+      }
+      return result;
+    } catch (error) {
+      // TODO: log error, send to sentry
+      console.error('Failed to check version', error);
+      throw error;
+    }
+  };
+
+  const [snapshot] = useMachine(
+    entrypointMachine.provide({
+      actors: {
+        checkNetwork: fromPromise(checkNetworkFn),
+        checkVersion: fromPromise(checkVersionFn),
+      },
+    }),
+  );
+
+  if (snapshot.matches('checkingNetwork') || snapshot.matches('checkingVersion')) {
     return <p>TODO: Loading Page</p>;
   }
 
-  if (state.matches('offline')) {
+  if (snapshot.matches('offline')) {
     return <p>TODO: Offline Page</p>;
   }
 
-  if (state.matches('maintenance')) {
+  if (snapshot.matches('maintenance')) {
     return <p>TODO: Maintenance Page</p>;
   }
 
-  if (state.matches('forceReload')) {
+  if (snapshot.matches('forceReload')) {
     return <p>TODO: Force Reload Page</p>;
   }
 
-  if (state.matches('forceLogout')) {
+  if (snapshot.matches('forceLogout')) {
     return <p>TODO: Force Logout Page</p>;
   }
 
-  if (state.matches('updateNudge')) {
+  if (snapshot.matches('updateNudge')) {
     return <p>TODO: Update Nudge Page</p>;
   }
 
-  if (state.matches('error')) {
+  if (snapshot.matches('error')) {
     return <p>TODO: Error Page</p>;
   }
 
-  if (state.matches('ready')) {
+  if (snapshot.matches('ready')) {
     return (
       <>
-        {state.context.showUpdateNudge && <p>TODO: Update Nudge Page</p>}
+        {snapshot.context.showUpdateNudge && <p>TODO: Update Nudge Page</p>}
         {children}
       </>
     );
