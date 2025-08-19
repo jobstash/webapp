@@ -2,7 +2,7 @@ import { genericResponseSchema } from '@/lib/shared/core/schemas';
 
 import { kyFetch } from '@/lib/shared/data/ky-fetch';
 
-export const logout = async () => {
+export const logoutSession = async () => {
   const response = await kyFetch.post('/api/auth/logout');
   const jsonData = await response.json();
 
