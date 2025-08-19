@@ -15,6 +15,7 @@ const LOADING_STATES = [
   'syncingSession',
   'loggingOutPrivy',
   'loggingOutSession',
+  'redirecting',
 ] as const;
 
 const AuthButtonInner = () => {
@@ -28,8 +29,9 @@ const AuthButtonInner = () => {
   });
 
   const { login: openPrivyModal } = usePrivyLogin({
-    onComplete: () => {
-      authActorRef.send({ type: 'LOGIN' });
+    onComplete: ({ wasAlreadyAuthenticated }) => {
+      const redirectTo = wasAlreadyAuthenticated ? undefined : '/profile';
+      authActorRef.send({ type: 'LOGIN', redirectTo });
     },
   });
 
