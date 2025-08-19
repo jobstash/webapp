@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { useAuthSelector } from '@/lib/auth/providers';
 import { ProfileEntrypointPage } from '@/lib/profile/pages/profile-entrypoint.page';
+import { ProfileEntrypointMachineProvider } from '@/lib/profile/providers';
 
 export const ProfilePage = () => {
   const hasPermission = useAuthSelector((snapshot) => {
@@ -14,5 +15,9 @@ export const ProfilePage = () => {
     return notFound();
   }
 
-  return <ProfileEntrypointPage />;
+  return (
+    <ProfileEntrypointMachineProvider>
+      <ProfileEntrypointPage />
+    </ProfileEntrypointMachineProvider>
+  );
 };
