@@ -16,7 +16,7 @@ export const AuthButtonView = ({ text, isLoading, onClick }: Props) => {
       disabled={isLoading}
       onClick={onClick}
     >
-      {text}
+      {isLoading ? 'Loading...' : text}
       {isLoading && <Spinner className='size-4' />}
     </Button>
   );

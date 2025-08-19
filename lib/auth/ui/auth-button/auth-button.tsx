@@ -14,7 +14,6 @@ const LOADING_STATES = [
   'gettingUser',
   'gettingPrivyToken',
   'syncingSession',
-  'clearingAuth',
   'loggingOutPrivy',
   'loggingOutSession',
 ] as const;
