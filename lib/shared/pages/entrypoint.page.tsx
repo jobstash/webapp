@@ -1,10 +1,14 @@
 'use client';
+
 import { useQueryClient } from '@tanstack/react-query';
 import { useMachine } from '@xstate/react';
+import { useDebounce } from 'ahooks';
 import { fromPromise } from 'xstate';
 
 import { LS_KEYS } from '@/lib/shared/core/constants';
 import { SHARED_QUERIES } from '@/lib/shared/core/query-keys';
+
+import { LoadingPage } from './loading.page';
 
 import { entrypointMachine } from '@/lib/shared/machines';
 
@@ -40,8 +44,12 @@ export const EntrypointPage = ({ children }: React.PropsWithChildren) => {
     }),
   );
 
-  if (snapshot.matches('checkingNetwork') || snapshot.matches('checkingVersion')) {
-    return <p>TODO: Loading Page</p>;
+  const isLoadingMachine =
+    snapshot.matches('checkingNetwork') || snapshot.matches('checkingVersion');
+  const isLoading = useDebounce(isLoadingMachine, { wait: 300, leading: true });
+
+  if (isLoading) {
+    return <LoadingPage />;
   }
 
   if (snapshot.matches('offline')) {
