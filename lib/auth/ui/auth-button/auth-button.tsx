@@ -43,7 +43,9 @@ const AuthButtonInner = () => {
     }
   };
 
-  return <AuthButtonView isLoading={isLoading} onClick={handleClick} />;
+  const text = isAuthenticated ? 'Logout' : 'Login / Signup';
+
+  return <AuthButtonView text={text} isLoading={isLoading} onClick={handleClick} />;
 };
 
 export const AuthButton = () => {

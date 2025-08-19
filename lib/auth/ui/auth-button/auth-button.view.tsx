@@ -2,11 +2,12 @@ import { Button } from '@/lib/shared/ui/base/button';
 import { Spinner } from '@/lib/shared/ui/spinner';
 
 interface Props {
+  text: string;
   isLoading: boolean;
   onClick?: () => void;
 }
 
-export const AuthButtonView = ({ isLoading, onClick }: Props) => {
+export const AuthButtonView = ({ text, isLoading, onClick }: Props) => {
   return (
     <Button
       size='lg'
@@ -15,7 +16,7 @@ export const AuthButtonView = ({ isLoading, onClick }: Props) => {
       disabled={isLoading}
       onClick={onClick}
     >
-      Login / Signup
+      {text}
       {isLoading && <Spinner className='size-4' />}
     </Button>
   );
