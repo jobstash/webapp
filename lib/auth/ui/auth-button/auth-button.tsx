@@ -7,8 +7,7 @@ import { WithQueryErrorBoundary } from '@/lib/shared/ui/with-query-error-boundar
 import { AuthButtonFallback } from './auth-button.fallback';
 import { AuthButtonView } from './auth-button.view';
 
-import { AuthProvider, useAuthActorRef, useAuthSelector } from '@/lib/auth/providers';
-import { PrivyProvider } from '@/lib/shared/providers/privy-provider';
+import { useAuthActorRef, useAuthSelector } from '@/lib/auth/providers';
 
 const LOADING_STATES = [
   'gettingUser',
@@ -49,12 +48,8 @@ const AuthButtonInner = () => {
 
 export const AuthButton = () => {
   return (
-    <PrivyProvider>
-      <AuthProvider>
-        <WithQueryErrorBoundary queryKey={AUTH_QUERIES.all} fallback={AuthButtonFallback}>
-          <AuthButtonInner />
-        </WithQueryErrorBoundary>
-      </AuthProvider>
-    </PrivyProvider>
+    <WithQueryErrorBoundary queryKey={AUTH_QUERIES.all} fallback={AuthButtonFallback}>
+      <AuthButtonInner />
+    </WithQueryErrorBoundary>
   );
 };
