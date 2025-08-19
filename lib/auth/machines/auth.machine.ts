@@ -1,115 +1,137 @@
-import { QueryClient } from '@tanstack/react-query';
-import { assign, setup } from 'xstate';
+import { assign, PromiseActorLogic, setup } from 'xstate';
 
 import { PERMISSIONS } from '@/lib/shared/core/constants';
-import { UserSchema } from '@/lib/auth/core/schemas';
+import type { UserSchema } from '@/lib/auth/core/schemas';
 
-import {
-  getPrivyTokenActor,
-  getUserActor,
-  logoutActor,
-  syncSessionActor,
-} from '@/lib/auth/actors';
-
-interface LoginMachineContext {
-  user: UserSchema | null;
-  queryClient: QueryClient;
+interface AuthMachineContext {
   privyToken: string | null;
-  privyLogout: () => Promise<void>;
-}
-
-interface LoginMachineInput {
-  queryClient: QueryClient;
-  privyLogout: () => Promise<void>;
+  hasPermission: boolean;
 }
 
 export const authMachine = setup({
   types: {
-    context: {} as LoginMachineContext,
-    input: {} as LoginMachineInput,
+    context: {} as AuthMachineContext,
   },
   actors: {
-    getPrivyTokenActor,
-    getUserActor,
-    syncSessionActor,
-    logoutActor,
+    getUser: {} as PromiseActorLogic<UserSchema>,
+    getPrivyToken: {} as PromiseActorLogic<string>,
+    logoutPrivy: {} as PromiseActorLogic<void>,
+    logoutSession: {} as PromiseActorLogic<void>,
+    syncSession: {} as PromiseActorLogic<void, { privyToken: string }>,
+  },
+  actions: {
+    clearContext: assign({ privyToken: null, hasPermission: false }),
+    setHasPermission: (_, params: { value: boolean }) =>
+      assign({ hasPermission: params.value }),
+  },
+  guards: {
+    hasPrivyToken: ({ context }) => !!context.privyToken,
+    hasPermission: ({ context }) => context.hasPermission,
+    hasPermissionOutput: (_, params: { permissions: string[] }) => {
+      return params.permissions.includes(PERMISSIONS.USER);
+    },
   },
 }).createMachine({
-  id: 'login',
-  initial: 'gettingUser',
-  context: ({ input }) => ({
-    user: null,
-    queryClient: input.queryClient,
+  id: 'auth',
+  context: {
     privyToken: null,
-    privyLogout: input.privyLogout,
-  }),
+    hasPermission: false,
+  },
+  initial: 'gettingUser',
   states: {
     gettingUser: {
       invoke: {
-        src: 'getUserActor',
-        input: ({ context }) => ({ queryClient: context.queryClient }),
+        src: 'getUser',
         onDone: [
           {
-            guard: ({ event }) =>
-              !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
-            actions: assign({ user: ({ event }) => event.output }),
             target: 'authenticated',
+            guard: {
+              type: 'hasPermissionOutput',
+              params: ({ event }) => ({ permissions: event.output.permissions }),
+            },
+            actions: [{ type: 'setHasPermission', params: { value: true } }],
+          },
+          { target: 'initiatingLogout' },
+        ],
+        onError: {
+          target: 'initiatingLogout',
+          // TODO: add logs, sentry
+        },
+      },
+    },
+    initiatingLogout: {
+      always: [
+        { target: 'loggingOutPrivy', guard: { type: 'hasPrivyToken' } },
+        { target: 'loggingOutSession', guard: { type: 'hasPermission' } },
+        { target: 'unauthenticated' },
+      ],
+    },
+    loggingOutPrivy: {
+      invoke: {
+        src: 'logoutPrivy',
+        onDone: [
+          { target: 'loggingOutSession', guard: { type: 'hasPermission' } },
+          { target: 'unauthenticated' },
+        ],
+        onError: [
+          {
+            target: 'loggingOutSession',
+            guard: { type: 'hasPermission' },
+            // TODO: add logs, sentry
           },
           {
             target: 'unauthenticated',
+            // TODO: add logs, sentry
           },
         ],
-        onError: 'unauthenticated',
       },
     },
-    unauthenticated: {
-      on: {
-        LOGIN: 'gettingPrivyToken',
+    loggingOutSession: {
+      invoke: {
+        src: 'logoutSession',
+        onDone: { target: 'unauthenticated' },
+        onError: {
+          target: 'unauthenticated',
+          // TODO: add logs, sentry
+        },
       },
     },
     gettingPrivyToken: {
       invoke: {
-        src: 'getPrivyTokenActor',
+        src: 'getPrivyToken',
         onDone: {
-          actions: assign({ privyToken: ({ event }) => event.output }),
-          guard: ({ context }) => context.privyToken !== null,
           target: 'syncingSession',
+          guard: ({ event }) => !!event.output,
+          actions: assign({ privyToken: ({ event }) => event.output }),
         },
-        onError: 'unauthenticated',
+        onError: {
+          target: 'unauthenticated',
+          // TODO: add logs, sentry
+        },
       },
     },
     syncingSession: {
       invoke: {
-        src: 'syncSessionActor',
+        src: 'syncSession',
         input: ({ context }) => ({
-          queryClient: context.queryClient,
           privyToken: context.privyToken!,
         }),
         onDone: 'gettingUser',
-        onError: 'unauthenticated',
+        onError: {
+          target: 'initiatingLogout',
+          // TODO: add logs, sentry
+        },
+      },
+    },
+    unauthenticated: {
+      entry: ['clearContext'],
+      on: {
+        LOGIN: 'gettingPrivyToken',
       },
     },
     authenticated: {
       on: {
-        LOGOUT: {
-          target: 'loggingOut',
-        },
-      },
-    },
-    loggingOut: {
-      invoke: {
-        src: 'logoutActor',
-        input: ({ context }) => ({
-          queryClient: context.queryClient,
-          privyLogout: context.privyLogout,
-        }),
-        onDone: {
-          target: 'unauthenticated',
-          actions: assign({
-            user: null,
-            privyToken: null,
-          }),
-        },
+        LOGOUT: 'initiatingLogout',
       },
     },
   },
