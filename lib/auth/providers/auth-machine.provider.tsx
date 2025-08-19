@@ -50,7 +50,6 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
   const logoutSessionFn = useCallback(async () => {
     try {
       await logoutSession();
-      queryClient.clear();
       await queryClient.invalidateQueries({
         queryKey: SHARED_QUERIES.all,
       });
