@@ -1,18 +1,12 @@
 import { z } from 'zod';
 
-import { optionalDataResponseSchema, permissionsSchema } from '@/lib/shared/core/schemas';
+import { genericResponseSchema, permissionsSchema } from '@/lib/shared/core/schemas';
 
 export const userCredentialsSchema = z.object({
   token: z.string(),
   permissions: permissionsSchema,
 });
 export type UserCredentialsSchema = z.infer<typeof userCredentialsSchema>;
-
-export const getUserCredentialsResponseSchema =
-  optionalDataResponseSchema(userCredentialsSchema);
-export type GetUserCredentialsResponseSchema = z.infer<
-  typeof getUserCredentialsResponseSchema
->;
 
 // TODO: Implement actual user schema
 export const userSchema = z.object({
@@ -21,7 +15,10 @@ export const userSchema = z.object({
 });
 export type UserSchema = z.infer<typeof userSchema>;
 
-export const getUserResponseSchema = optionalDataResponseSchema(userSchema);
+export const getUserResponseSchema = z.object({
+  ...genericResponseSchema.shape,
+  data: userSchema.nullable(),
+});
 export type GetUserResponseSchema = z.infer<typeof getUserResponseSchema>;
 
 export const sessionSchema = z.object({

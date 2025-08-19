@@ -10,16 +10,16 @@ export const getUser = async () => {
     getUserResponseSchema.safeParse(jsonData);
 
   if (!parseSuccess) {
+    // TODO: add logs, sentry
+    console.error('Invalid user response', jsonData);
     throw new Error('Invalid user response');
   }
 
   const { success, message } = parsedResponse;
   if (!success) {
+    // TODO: add logs, sentry
+    console.error('Invalid user response', { parsedResponse });
     throw new Error(message);
-  }
-
-  if (!parsedResponse.data) {
-    throw new Error('User not found');
   }
 
   return parsedResponse.data;

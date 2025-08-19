@@ -1,3 +1,3 @@
 export * from './get-user';
-export * from './logout';
+export * from './logout-session';
 export * from './sync-session';

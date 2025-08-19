@@ -12,6 +12,8 @@ interface Props {
 
 const Page = async (props: Props) => {
   const { slug } = await props.params;
+  if (slug.startsWith('__nextjs')) return null;
+
   const deets = await fetchPillarDeets(slug);
 
   const result = await fetchStaticPillarSlugs();
