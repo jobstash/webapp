@@ -51,6 +51,7 @@
     "nuqs": "^2.4.1",
     "react": "19.1.1",
     "react-dom": "19.1.1",
+    "react-error-boundary": "^6.0.0",
     "react-intersection-observer": "^9.14.1",
     "server-only": "^0.0.1",
     "slugify": "^1.6.6",
