@@ -18,7 +18,11 @@ const AuthMachineContext = createActorContext(authMachine);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
-  const { logout: logoutPrivy, getAccessToken } = usePrivy();
+  const {
+    logout: logoutPrivy,
+    getAccessToken,
+    authenticated: isPrivyAuthenticated,
+  } = usePrivy();
 
   const getUserFn = useCallback(async () => {
     try {
@@ -38,8 +42,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [getAccessToken]);
 
   const logoutPrivyFn = useCallback(async () => {
+    if (!isPrivyAuthenticated) return;
     await logoutPrivy();
-  }, [logoutPrivy]);
+  }, [isPrivyAuthenticated, logoutPrivy]);
 
   const logoutSessionFn = useCallback(async () => {
     try {

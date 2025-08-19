@@ -5,7 +5,6 @@ import type { UserSchema } from '@/lib/auth/core/schemas';
 
 interface AuthMachineContext {
   privyToken: string | null;
-  hasPermission: boolean;
 }
 
 export const authMachine = setup({
@@ -20,19 +19,12 @@ export const authMachine = setup({
     syncSession: {} as PromiseActorLogic<void, { privyToken: string }>,
   },
   actions: {
-    clearContext: assign({ privyToken: null, hasPermission: false }),
-    setHasPermission: (_, params: { value: boolean }) =>
-      assign({ hasPermission: params.value }),
-  },
-  guards: {
-    hasPrivyToken: ({ context }) => !!context.privyToken,
-    hasPermission: ({ context }) => context.hasPermission,
+    clearContext: assign({ privyToken: null }),
   },
 }).createMachine({
   id: 'auth',
   context: {
     privyToken: null,
-    hasPermission: false,
   },
   initial: 'gettingUser',
   states: {
@@ -44,45 +36,25 @@ export const authMachine = setup({
             target: 'authenticated',
             guard: ({ event }) =>
               !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
-
-            actions: [{ type: 'setHasPermission', params: { value: true } }],
           },
           {
-            target: 'clearingAuth',
+            target: 'loggingOutPrivy',
           },
         ],
         onError: {
-          target: 'clearingAuth',
+          target: 'loggingOutPrivy',
           // TODO: add logs, sentry
         },
       },
     },
-    clearingAuth: {
-      entry: [({ context }) => console.log('clearingAuth', { context })],
-      always: [
-        { target: 'loggingOutPrivy', guard: { type: 'hasPrivyToken' } },
-        { target: 'loggingOutSession', guard: { type: 'hasPermission' } },
-        { target: 'unauthenticated' },
-      ],
-    },
     loggingOutPrivy: {
       invoke: {
         src: 'logoutPrivy',
-        onDone: [
-          { target: 'loggingOutSession', guard: { type: 'hasPermission' } },
-          { target: 'unauthenticated' },
-        ],
-        onError: [
-          {
-            target: 'loggingOutSession',
-            guard: { type: 'hasPermission' },
-            // TODO: add logs, sentry
-          },
-          {
-            target: 'unauthenticated',
-            // TODO: add logs, sentry
-          },
-        ],
+        onDone: [{ target: 'loggingOutSession' }],
+        onError: {
+          target: 'loggingOutSession',
+          // TODO: add logs, sentry
+        },
       },
     },
     loggingOutSession: {
@@ -119,7 +91,7 @@ export const authMachine = setup({
           target: 'gettingUser',
         },
         onError: {
-          target: 'clearingAuth',
+          target: 'loggingOutPrivy',
           // TODO: add logs, sentry
         },
       },
@@ -132,7 +104,7 @@ export const authMachine = setup({
     },
     authenticated: {
       on: {
-        LOGOUT: 'clearingAuth',
+        LOGOUT: 'loggingOutPrivy',
       },
     },
   },
