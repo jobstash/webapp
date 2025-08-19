@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -71,22 +71,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     [queryClient],
   );
 
+  const configuredMachine = useMemo(() => {
+    return authMachine.provide({
+      actors: {
+        getUser: fromPromise(getUserFn),
+        getPrivyToken: fromPromise(getPrivyTokenFn),
+        logoutPrivy: fromPromise(logoutPrivyFn),
+        logoutSession: fromPromise(logoutSessionFn),
+        syncSession: fromPromise(syncSessionFn),
+      },
+    });
+  }, [getPrivyTokenFn, getUserFn, logoutPrivyFn, logoutSessionFn, syncSessionFn]);
+
   return (
-    <AuthMachineContext.Provider
-      options={authMachine.provide({
-        actors: {
-          getUser: fromPromise(getUserFn),
-          getPrivyToken: fromPromise(getPrivyTokenFn),
-          logoutPrivy: fromPromise(logoutPrivyFn),
-          logoutSession: fromPromise(logoutSessionFn),
-          syncSession: fromPromise(syncSessionFn),
-        },
-      })}
-    >
+    <AuthMachineContext.Provider logic={configuredMachine}>
       {children}
     </AuthMachineContext.Provider>
   );
 };
 
 export const useAuthSelector = AuthMachineContext.useSelector;
-export const useAuthActorRef = () => AuthMachineContext.useActorRef;
+export const useAuthActorRef = AuthMachineContext.useActorRef;
