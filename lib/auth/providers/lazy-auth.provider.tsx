@@ -1,24 +1,16 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
 
-import { AuthFallbackProvider } from './auth-fallback.provider';
+import { LoadingPage } from '@/lib/shared/pages';
 
-const DynamicAuthProvider = dynamic(
+export const LazyAuthProvider = dynamic(
   () =>
     import('./auth.provider').then((mod) => ({
       default: mod.AuthProvider,
     })),
   {
+    loading: () => <LoadingPage />,
     ssr: false,
   },
 );
-
-export const LazyAuthProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <Suspense fallback={<AuthFallbackProvider>{children}</AuthFallbackProvider>}>
-      <DynamicAuthProvider>{children}</DynamicAuthProvider>
-    </Suspense>
-  );
-};
