@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,6 +12,8 @@ import { SHARED_QUERIES } from '@/lib/shared/core/query-keys';
 import { AUTH_QUERIES } from '@/lib/auth/core/queries';
 
 import { logoutSession, syncSession } from '@/lib/auth/data';
+
+import { AuthLoadingWrapper } from './auth-loading-wrapper';
 
 import { authMachine } from '@/lib/auth/machines/auth.machine';
 
@@ -106,7 +108,7 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
 
   return (
     <AuthMachineContext.Provider logic={configuredMachine}>
-      {children}
+      <AuthLoadingWrapper>{children}</AuthLoadingWrapper>
     </AuthMachineContext.Provider>
   );
 };

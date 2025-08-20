@@ -1,4 +1,4 @@
-import { useLogin as usePrivyLogin, usePrivy } from '@privy-io/react-auth';
+import { useLogin as usePrivyLogin } from '@privy-io/react-auth';
 
 import { AUTH_QUERIES } from '@/lib/auth/core/queries';
 
@@ -9,22 +9,11 @@ import { AuthButtonView } from './auth-button.view';
 
 import { useAuthActorRef, useAuthSelector } from '@/lib/auth/providers';
 
-const LOADING_STATES = [
-  'gettingUser',
-  'gettingPrivyToken',
-  'syncingSession',
-  'loggingOutPrivy',
-  'loggingOutSession',
-  'redirecting',
-] as const;
-
 const AuthButtonInner = () => {
-  const { ready } = usePrivy();
   const authActorRef = useAuthActorRef();
-  const { isLoading, isAuthenticated } = useAuthSelector((snapshot) => {
+  const { isAuthenticated } = useAuthSelector((snapshot) => {
     return {
       isAuthenticated: snapshot.matches('authenticated'),
-      isLoading: !ready || LOADING_STATES.some((state) => snapshot.matches(state)),
     };
   });
 
@@ -45,7 +34,7 @@ const AuthButtonInner = () => {
 
   const text = isAuthenticated ? 'Logout' : 'Login / Signup';
 
-  return <AuthButtonView text={text} isLoading={isLoading} onClick={handleClick} />;
+  return <AuthButtonView text={text} isLoading={false} onClick={handleClick} />;
 };
 
 export const AuthButton = () => {
