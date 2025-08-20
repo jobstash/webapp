@@ -6,6 +6,7 @@ import type { UserSchema } from '@/lib/auth/core/schemas';
 interface AuthMachineContext {
   privyToken: string | null;
   redirectTo: string | null;
+  isLoggedIn: boolean;
 }
 
 type AuthMachineEvents =
@@ -40,11 +41,15 @@ export const authMachine = setup({
     }),
     clearRedirectTo: assign({ redirectTo: null }),
   },
+  delays: {
+    redirectDelay: 200,
+  },
 }).createMachine({
   id: 'auth',
   context: {
     privyToken: null,
     redirectTo: null,
+    isLoggedIn: false,
   },
   initial: 'gettingUser',
   states: {
@@ -58,10 +63,15 @@ export const authMachine = setup({
               !!event.output &&
               event.output.permissions.includes(PERMISSIONS.USER) &&
               !context.redirectTo,
+            actions: assign({ isLoggedIn: true }),
           },
           {
             target: 'redirecting',
-            guard: ({ context }) => !!context.redirectTo,
+            guard: ({ event, context }) =>
+              !!event.output &&
+              event.output.permissions.includes(PERMISSIONS.USER) &&
+              !!context.redirectTo,
+            actions: assign({ isLoggedIn: true }),
           },
           {
             target: 'loggingOutPrivy',
@@ -69,6 +79,7 @@ export const authMachine = setup({
         ],
         onError: {
           target: 'loggingOutPrivy',
+          actions: ({ event }) => console.log('getting user error', event.error),
           // TODO: add logs, sentry
         },
       },
@@ -136,13 +147,19 @@ export const authMachine = setup({
         src: 'navigate',
         input: ({ context }) => ({ path: context.redirectTo! }),
         onDone: {
-          target: 'authenticated',
-          actions: ['clearRedirectTo'],
+          target: 'waitingRedirect',
         },
         onError: {
+          target: 'waitingRedirect',
+          // TODO: add logs, sentry
+        },
+      },
+    },
+    waitingRedirect: {
+      after: {
+        redirectDelay: {
           target: 'authenticated',
           actions: ['clearRedirectTo'],
-          // TODO: add logs, sentry
         },
       },
     },
