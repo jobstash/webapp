@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useMemo } from 'react';
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,6 +13,8 @@ import { AUTH_QUERIES } from '@/lib/auth/core/queries';
 
 import { logoutSession, syncSession } from '@/lib/auth/data';
 
+import { AuthLoadingWrapper } from './auth-loading-wrapper';
+
 import { authMachine } from '@/lib/auth/machines/auth.machine';
 
 export const AuthMachineContext = createActorContext(authMachine);
@@ -22,6 +25,7 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
     logout: logoutPrivy,
     getAccessToken,
     authenticated: isPrivyAuthenticated,
+    ready: isReadyPrivy,
   } = usePrivy();
 
   const getUserFn = useCallback(async () => {
@@ -49,7 +53,6 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
   const logoutSessionFn = useCallback(async () => {
     try {
       await logoutSession();
-      queryClient.clear();
       await queryClient.invalidateQueries({
         queryKey: SHARED_QUERIES.all,
       });
@@ -76,6 +79,14 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
     [queryClient],
   );
 
+  const router = useRouter();
+  const navigateFn = useCallback(
+    async ({ input }: { input: { path: string } }) => {
+      router.push(input.path);
+    },
+    [router],
+  );
+
   const configuredMachine = useMemo(() => {
     return authMachine.provide({
       actors: {
@@ -84,13 +95,21 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
         logoutPrivy: fromPromise(logoutPrivyFn),
         logoutSession: fromPromise(logoutSessionFn),
         syncSession: fromPromise(syncSessionFn),
+        navigate: fromPromise(navigateFn),
       },
     });
-  }, [getPrivyTokenFn, getUserFn, logoutPrivyFn, logoutSessionFn, syncSessionFn]);
+  }, [
+    getPrivyTokenFn,
+    getUserFn,
+    logoutPrivyFn,
+    logoutSessionFn,
+    syncSessionFn,
+    navigateFn,
+  ]);
 
   return (
     <AuthMachineContext.Provider logic={configuredMachine}>
-      {children}
+      <AuthLoadingWrapper isReadyPrivy={isReadyPrivy}>{children}</AuthLoadingWrapper>
     </AuthMachineContext.Provider>
   );
 };
