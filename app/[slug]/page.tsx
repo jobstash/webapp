@@ -16,9 +16,6 @@ const Page = async (props: Props) => {
 
   const deets = await fetchPillarDeets(slug);
 
-  const result = await fetchStaticPillarSlugs();
-  console.log({ count: result.length, first10: result.slice(0, 10) });
-
   return (
     <div className='max-w-xl space-y-4'>
       <h1>{deets.title}</h1>
