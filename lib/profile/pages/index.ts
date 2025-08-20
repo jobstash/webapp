@@ -1,1 +1,1 @@
-export * from './root-profile.page';
+export * from './root-profile.page.lazy';
