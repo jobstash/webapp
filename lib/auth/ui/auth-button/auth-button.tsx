@@ -21,9 +21,6 @@ const AuthButtonInner = () => {
   });
 
   const { login: openPrivyModal } = usePrivyLogin({
-    onError: (error: unknown) => {
-      console.error('login error', { message: error });
-    },
     onComplete: ({ wasAlreadyAuthenticated }) => {
       const redirectTo = wasAlreadyAuthenticated ? undefined : '/profile';
       authActorRef.send({ type: 'LOGIN', redirectTo });
