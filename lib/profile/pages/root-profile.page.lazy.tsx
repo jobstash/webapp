@@ -4,11 +4,8 @@ import dynamic from 'next/dynamic';
 
 import { LoadingPage } from '@/lib/shared/pages';
 
-export const LazyAuthProvider = dynamic(
-  () =>
-    import('./auth.provider').then((mod) => ({
-      default: mod.AuthProvider,
-    })),
+export const LazyRootProfilePage = dynamic(
+  () => import('./root-profile.page').then((mod) => mod.RootProfilePage),
   {
     loading: () => <LoadingPage />,
     ssr: false,
