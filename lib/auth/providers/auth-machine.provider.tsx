@@ -25,6 +25,7 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
     logout: logoutPrivy,
     getAccessToken,
     authenticated: isPrivyAuthenticated,
+    ready: isReadyPrivy,
   } = usePrivy();
 
   const getUserFn = useCallback(async () => {
@@ -108,7 +109,7 @@ export const AuthMachineProvider = ({ children }: { children: React.ReactNode })
 
   return (
     <AuthMachineContext.Provider logic={configuredMachine}>
-      <AuthLoadingWrapper>{children}</AuthLoadingWrapper>
+      <AuthLoadingWrapper isReadyPrivy={isReadyPrivy}>{children}</AuthLoadingWrapper>
     </AuthMachineContext.Provider>
   );
 };

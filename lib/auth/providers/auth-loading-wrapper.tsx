@@ -1,4 +1,3 @@
-import { usePrivy } from '@privy-io/react-auth';
 import { useDebounce } from 'ahooks';
 
 import { useAuthSelector } from './auth-machine.provider';
@@ -15,10 +14,16 @@ const LOADING_STATES = [
   'waitingRedirect',
 ] as const;
 
-export const AuthLoadingWrapper = ({ children }: React.PropsWithChildren) => {
-  const { ready } = usePrivy();
+interface Props {
+  isReadyPrivy: boolean;
+}
+
+export const AuthLoadingWrapper = ({
+  children,
+  isReadyPrivy,
+}: React.PropsWithChildren<Props>) => {
   const isLoadingMachine = useAuthSelector((snapshot) => {
-    return !ready || LOADING_STATES.some((state) => snapshot.matches(state));
+    return !isReadyPrivy || LOADING_STATES.some((state) => snapshot.matches(state));
   });
 
   const isLoading = useDebounce(isLoadingMachine, { wait: 300, leading: true });
