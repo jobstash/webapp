@@ -1,4 +1,4 @@
-import { useLogin as usePrivyLogin } from '@privy-io/react-auth';
+import { useLogin as usePrivyLogin, usePrivy } from '@privy-io/react-auth';
 
 import { AUTH_QUERIES } from '@/lib/auth/core/queries';
 
@@ -27,17 +27,27 @@ const AuthButtonInner = () => {
     },
   });
 
+  const { authenticated: isAuthenticatedPrivy, ready: isReadyPrivy } = usePrivy();
+
   const handleClick = () => {
     if (isAuthenticated) {
       authActorRef.send({ type: 'LOGOUT' });
+    } else if (isAuthenticatedPrivy) {
+      authActorRef.send({ type: 'LOGIN', redirectTo: '/profile' });
     } else {
       openPrivyModal();
     }
   };
 
-  const text = isAuthenticated ? 'Logout' : 'Login / Signup';
+  const isLoading = isLoadingLogout || !isReadyPrivy;
+  const isInterruptedLogin = isAuthenticatedPrivy && !isAuthenticated;
+  const text = isAuthenticated
+    ? 'Logout'
+    : isInterruptedLogin
+      ? 'Continue Login'
+      : 'Login / Signup';
 
-  return <AuthButtonView text={text} isLoading={isLoadingLogout} onClick={handleClick} />;
+  return <AuthButtonView text={text} isLoading={isLoading} onClick={handleClick} />;
 };
 
 export const AuthButton = () => {
