@@ -135,15 +135,15 @@ export const authMachine = setup({
       invoke: {
         src: 'navigate',
         input: ({ context }) => ({ path: context.redirectTo! }),
-      },
-      onDone: {
-        target: 'authenticated',
-        actions: ['clearRedirectTo'],
-      },
-      onError: {
-        target: 'authenticated',
-        actions: ['clearRedirectTo'],
-        // TODO: add logs, sentry
+        onDone: {
+          target: 'authenticated',
+          actions: ['clearRedirectTo'],
+        },
+        onError: {
+          target: 'authenticated',
+          actions: ['clearRedirectTo'],
+          // TODO: add logs, sentry
+        },
       },
     },
     authenticated: {
