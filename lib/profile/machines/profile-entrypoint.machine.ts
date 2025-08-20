@@ -9,9 +9,24 @@ interface ProfileEntrypointMachineContext {
   requiredInfoErrorMessage: string | null;
 }
 
+type ProfileEntrypointMachineEvents =
+  | {
+      type: 'SKIP_UPLOAD';
+    }
+  | {
+      type: 'UPLOAD';
+    }
+  | {
+      type: 'SUBMIT';
+    }
+  | {
+      type: 'RETRY';
+    };
+
 export const profileEntrypointMachine = setup({
   types: {
     context: {} as ProfileEntrypointMachineContext,
+    events: {} as ProfileEntrypointMachineEvents,
   },
   actors: {
     checkProfileEntry: {} as PromiseActorLogic<ProfileCheckResultSchema>,
@@ -67,7 +82,16 @@ export const profileEntrypointMachine = setup({
     },
     uploadScreen: {
       on: {
-        SKIP_UPLOAD: 'decideNextStep',
+        SKIP_UPLOAD: {
+          target: 'decideNextStep',
+          actions: {
+            type: 'updateContext',
+            params: () => ({
+              showCvUpload: false,
+              showRequiredInfo: true,
+            }),
+          },
+        },
         UPLOAD: 'processingCV',
       },
     },

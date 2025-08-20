@@ -1,1 +1,1 @@
-export { ProfilePage as default } from '@/lib/profile/pages';
+export { RootProfilePage as default } from '@/lib/profile/pages';
