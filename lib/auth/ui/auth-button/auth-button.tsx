@@ -9,11 +9,14 @@ import { AuthButtonView } from './auth-button.view';
 
 import { useAuthActorRef, useAuthSelector } from '@/lib/auth/providers';
 
+const LOADING_LOGOUT_STATES = ['loggingOutPrivy', 'loggingOutSession'] as const;
+
 const AuthButtonInner = () => {
   const authActorRef = useAuthActorRef();
-  const { isAuthenticated } = useAuthSelector((snapshot) => {
+  const { isAuthenticated, isLoadingLogout } = useAuthSelector((snapshot) => {
     return {
       isAuthenticated: snapshot.matches('authenticated'),
+      isLoadingLogout: LOADING_LOGOUT_STATES.some((state) => snapshot.matches(state)),
     };
   });
 
@@ -34,7 +37,7 @@ const AuthButtonInner = () => {
 
   const text = isAuthenticated ? 'Logout' : 'Login / Signup';
 
-  return <AuthButtonView text={text} isLoading={false} onClick={handleClick} />;
+  return <AuthButtonView text={text} isLoading={isLoadingLogout} onClick={handleClick} />;
 };
 
 export const AuthButton = () => {
