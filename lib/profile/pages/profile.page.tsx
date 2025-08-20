@@ -1,3 +1,9 @@
+import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
+
 export const ProfilePage = () => {
-  return <div>ProfilePage</div>;
+  return (
+    <SidebarAsideLayout>
+      <div>ProfilePage</div>
+    </SidebarAsideLayout>
+  );
 };
