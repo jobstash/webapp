@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "prebuild": "pnpm format && pnpm lint",
     "build": "next build",
     "build:disable-static": "DISABLE_STATIC_GENERATION=true next build",
