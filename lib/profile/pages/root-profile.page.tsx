@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 
 import { useAuthSelector } from '@/lib/auth/providers';
 import { ProfileEntrypointPage } from '@/lib/profile/pages/profile-entrypoint.page';
-import { ProfileEntrypointMachineProvider } from '@/lib/profile/providers';
 
 export const RootProfilePage = () => {
   const { isLoggedIn } = useAuthSelector((snapshot) => {
@@ -17,9 +16,5 @@ export const RootProfilePage = () => {
     return notFound();
   }
 
-  return (
-    <ProfileEntrypointMachineProvider>
-      <ProfileEntrypointPage />
-    </ProfileEntrypointMachineProvider>
-  );
+  return <ProfileEntrypointPage />;
 };
