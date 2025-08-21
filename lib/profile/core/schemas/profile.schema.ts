@@ -12,20 +12,22 @@ export const locationSchema = z.object({
 });
 export type LocationSchema = z.infer<typeof locationSchema>;
 
-export const userInfoSchema = z.object({
+export const profileInfoSchema = z.object({
   // CV
   cvLink: z.url('Invalid cv link').nullish(),
   // Info
   name: z.string().min(1, 'Missing name').nullish(),
   avatar: z.url('Invalid avatar url').nullish(),
   location: locationSchema.nullish(),
-  preferredContact: z.object({
-    kind: z.literal(['Email', 'Phone', 'Other']),
-    value: z.string(),
-  }),
+  preferredContact: z
+    .object({
+      kind: z.literal(['Email', 'Phone', 'Other']),
+      value: z.string(),
+    })
+    .nullish(),
   // Work Preferences
-  isLookingForWork: z.boolean(),
-  preferredWorkMode: z.literal(['Remote', 'Hybrid', 'Onsite']),
+  isAvailableForWork: z.boolean(),
+  preferredWorkMode: z.literal(['Remote', 'Hybrid', 'Onsite']).nullish(),
   expectedSalary: z.object({ min: z.number(), max: z.number() }).nullish(),
   linkedAccounts: z.null(),
   // Skills
@@ -44,4 +46,4 @@ export const userInfoSchema = z.object({
     }),
   ),
 });
-export type UserInfoSchema = z.infer<typeof userInfoSchema>;
+export type ProfileInfoSchema = z.infer<typeof profileInfoSchema>;
