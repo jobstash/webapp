@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { LogOutIcon, UserIcon } from 'lucide-react';
 
@@ -25,8 +26,10 @@ export const ProfileButton = () => {
     LOADING_LOGOUT_STATES.some((state) => snapshot.matches(state)),
   );
 
+  const router = useRouter();
   const handleLogout = () => {
     authActorRef.send({ type: 'LOGOUT' });
+    router.push('/');
   };
 
   return (
