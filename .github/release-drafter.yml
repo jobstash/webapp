@@ -1,16 +1,16 @@
 categories:
-  - title: "✨🔥 Features 🔥✨"
-    labels: ["feat", "feature", "enhancement"]
-  - title: "🐛🪓 Bug Fixes 🐛🪓"
-    labels: ["fix", "bug"]
-  - title: "💻 Code Changes 💻"
-    labels: ["refactor", "style"]
-  - title: "🛡 Tests 🛡"
-    labels: ["test"]
-  - title: "🧰 Maintenance 🧰"
-    labels: ["chore", "ci", "docs"]
+  - title: '✨🔥 Features 🔥✨'
+    labels: ['feat', 'feature', 'enhancement']
+  - title: '🐛🪓 Bug Fixes 🐛🪓'
+    labels: ['fix', 'bug']
+  - title: '💻 Code Changes 💻'
+    labels: ['refactor', 'style', 'perf', 'revert', 'style']
+  - title: '🛡 Tests 🛡'
+    labels: ['test']
+  - title: '🧰 Maintenance 🧰'
+    labels: ['chore', 'ci', 'docs', 'build']
 
-change-template: "- $TITLE ([#$NUMBER]($URL))"
+change-template: '- $TITLE ([#$NUMBER]($URL))'
 version-template: $MAJOR.$MINOR.$PATCH
 
 template: |
