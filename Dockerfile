@@ -17,6 +17,8 @@ ENV NEXT_PUBLIC_MW_URL=https://middleware.dev.jobstash.xyz
 ENV NEXT_PUBLIC_FRONTEND_URL=https://jobstash.xyz
 ENV NEXT_PUBLIC_PAGE_SIZE=20
 ENV NEXT_PUBLIC_VERI_URL=https://ecosystem.vision
+ENV NEXT_PUBLIC_PRIVY_APP_ID=clyr78r8l05a16wqnojin5hbz
+ENV NEXT_PUBLIC_PRIVY_CLIENT_ID=client-WY2o8bjWEos9v51Y8kW3NYA9JG5qTVPZSbQSQZePpPRBq
 RUN pnpm build
 
 FROM base AS runner
