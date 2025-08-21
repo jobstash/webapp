@@ -1,4 +1,5 @@
 import { AuthButton } from '@/lib/auth/ui/auth-button';
+import { ProfileButton } from '@/lib/profile/ui/profile-button';
 
 import { SidebarLayout } from '@/lib/shared/layouts/sidebar-layout';
 
@@ -12,7 +13,10 @@ const DetailsAside = () => {
 
 const Layout = ({ children }: React.PropsWithChildren) => {
   return (
-    <SidebarLayout sidebar={<DetailsAside />} userAction={<AuthButton />}>
+    <SidebarLayout
+      sidebar={<DetailsAside />}
+      userAction={<AuthButton profileButton={<ProfileButton />} />}
+    >
       {children}
     </SidebarLayout>
   );
