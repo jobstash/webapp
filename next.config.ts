@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   experimental: {
     staticGenerationRetryCount: 1,
-    staticGenerationMaxConcurrency: 10,
-    staticGenerationMinPagesPerWorker: 500,
+    staticGenerationMaxConcurrency: 4,
+    staticGenerationMinPagesPerWorker: 3000,
   },
   logging: {
     fetches: {
