@@ -1,7 +1,9 @@
 import 'server-only';
 
+import { SERVER_ENVS } from '@/lib/shared/core/server.env';
+
 export const SESSION_OPTIONS = {
-  password: process.env.SESSION_PWD!,
+  password: SERVER_ENVS.SESSION_PWD!,
   cookieName: 'session',
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production',
