@@ -35,7 +35,7 @@ export const ProfileButton = () => {
         <Button
           size='lg'
           variant='secondary'
-          className='flex h-10 w-40 items-center justify-start gap-0.5 px-2'
+          className='flex h-10 w-40 items-center justify-center gap-1 px-2'
           disabled={isLoading}
         >
           {isLoading ? (
@@ -46,7 +46,7 @@ export const ProfileButton = () => {
               <AvatarFallback className='bg-neutral-700'>CN</AvatarFallback>
             </Avatar>
           )}
-          <span className='min-w-0 flex-1 truncate'>duckdegen.eth</span>
+          <span className='max-w-[13ch] min-w-0 flex-1 truncate'>duckdegen.eth</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
