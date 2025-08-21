@@ -1,6 +1,9 @@
 import 'server-only';
 
+import * as dotenv from 'dotenv';
 import { z } from 'zod';
+
+dotenv.config();
 
 const serverEnvSchema = z.object({
   SESSION_PWD: z.string().min(32, 'SESSION_PWD must be at least 32 characters long'),
