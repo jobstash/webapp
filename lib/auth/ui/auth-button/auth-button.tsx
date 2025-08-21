@@ -1,3 +1,5 @@
+import { useRouter } from 'next/navigation';
+
 import { useLogin as usePrivyLogin, usePrivy } from '@privy-io/react-auth';
 
 import { LOADING_LOGOUT_STATES } from '@/lib/auth/core/constants';
@@ -23,10 +25,13 @@ const AuthButtonInner = ({ profileButton }: Props) => {
     };
   });
 
+  const router = useRouter();
   const { login: openPrivyModal } = usePrivyLogin({
     onComplete: ({ wasAlreadyAuthenticated }) => {
-      const redirectTo = wasAlreadyAuthenticated ? undefined : '/profile';
-      authActorRef.send({ type: 'LOGIN', redirectTo });
+      if (!wasAlreadyAuthenticated) {
+        router.push('/profile');
+      }
+      authActorRef.send({ type: 'LOGIN' });
     },
   });
 
@@ -40,7 +45,7 @@ const AuthButtonInner = ({ profileButton }: Props) => {
     // Impossible state, but handle it just in case
     if (isAuthenticated) return;
     if (isAuthenticatedPrivy) {
-      authActorRef.send({ type: 'LOGIN', redirectTo: '/profile' });
+      authActorRef.send({ type: 'LOGIN' });
     } else {
       openPrivyModal();
     }
