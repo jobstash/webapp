@@ -10,11 +10,18 @@ export const GET = async () => {
   const reqCookies = await cookies();
   const session = await getIronSession<SessionSchema>(reqCookies, SESSION_OPTIONS);
 
+  // No session
   if (!session.user) {
-    // TODO: Log error, send to sentry
     return NextResponse.json(
-      { success: false, message: 'No active session' },
-      { status: 401 },
+      {
+        success: true,
+        message: 'No active session',
+        data: {
+          showCvUpload: false,
+          showRequiredInfo: false,
+        },
+      },
+      { status: 200 },
     );
   }
 
