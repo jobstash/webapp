@@ -12,7 +12,7 @@ export const AuthButtonView = ({ text, isLoading, onClick }: Props) => {
     <Button
       size='lg'
       variant='secondary'
-      className='h-10 w-32'
+      className='h-10 w-40'
       disabled={isLoading}
       onClick={onClick}
     >

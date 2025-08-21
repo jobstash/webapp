@@ -1,5 +1,6 @@
 import { Sidebar } from '@/lib/shared/ui/sidebar';
 import { AuthButton } from '@/lib/auth/ui/auth-button';
+import { ProfileButton } from '@/lib/profile/ui/profile-button';
 
 interface Props extends React.PropsWithChildren {
   aside?: React.ReactNode;
@@ -19,7 +20,7 @@ export const SidebarAsideLayout = ({ children, aside = null }: Props) => {
 
         <div className='sticky top-0 z-40 hidden h-screen w-96 p-6 lg:block'>
           <div className='flex flex-col gap-6'>
-            <AuthButton />
+            <AuthButton profileButton={<ProfileButton />} />
             {aside}
           </div>
         </div>
