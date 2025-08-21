@@ -1,13 +1,13 @@
 import { Brand } from '@/lib/shared/ui/brand';
 
-import { ProfileAction } from './profile-action';
 import { SearchHeader } from './search-header';
 
 interface Props extends React.PropsWithChildren {
   sidebar: React.ReactNode;
+  userAction: React.ReactNode;
 }
 
-export const SidebarLayout = ({ children, sidebar }: Props) => {
+export const SidebarLayout = ({ children, sidebar, userAction }: Props) => {
   return (
     <>
       {/* HEADER */}
@@ -19,9 +19,7 @@ export const SidebarLayout = ({ children, sidebar }: Props) => {
           <div className='flex grow items-center'>
             <SearchHeader />
           </div>
-          <div>
-            <ProfileAction />
-          </div>
+          <div className='grid place-items-center'>{userAction}</div>
         </div>
       </div>
       <div className='flex w-full justify-center'>
