@@ -18,7 +18,7 @@ try {
   const newVersion = pkg.version;
 
   // Stage files
-  execSync(`git add package.json package-lock.json`, { stdio: 'inherit' });
+  execSync(`git add package.json pnpm-lock.yaml`, { stdio: 'inherit' });
 
   // Commit with formatted message
   execSync(`git commit -m "chore: bump version v${newVersion} (${type})"`, {
