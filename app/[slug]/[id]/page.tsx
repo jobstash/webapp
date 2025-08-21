@@ -1,5 +1,7 @@
+import { notFound } from 'next/navigation';
+
 import { fetchJobDetailsStaticParams } from '@/lib/jobs/server/data';
-import { fetchJobDetails } from '@/lib/jobs/server/data/fetch-job-details';
+import { fetchStaticJobDetails } from '@/lib/jobs/server/data/fetch-static-job-details';
 
 import { BackButton } from './back-button';
 
@@ -19,7 +21,12 @@ interface Props {
 
 const Page = async (props: Props) => {
   const { id, slug } = await props.params;
-  const job = await fetchJobDetails(id);
+  const job = await fetchStaticJobDetails(id);
+
+  if (!job) {
+    return notFound();
+  }
+
   return (
     <>
       <div className='flex flex-col gap-4'>
