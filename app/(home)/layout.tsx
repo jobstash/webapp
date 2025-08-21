@@ -1,14 +1,9 @@
 import { Metadata } from 'next';
-import { Suspense } from 'react';
 
-import { FiltersAside, FiltersAsideSkeleton } from '@/lib/filters/ui/filters-aside';
-import { SortFilters, SortFiltersSkeleton } from '@/lib/filters/ui/sort-filters';
-import { Header } from '@/lib/search/ui/header';
-import { SearchInput } from '@/lib/search/ui/search-input';
+import { AuthButton } from '@/lib/auth/ui/auth-button';
+import { LazyFiltersAside } from '@/lib/filters/ui/filters-aside';
 
-import { LazyMobileOverlays } from './lazy-mobile-overlays';
-
-import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
+import { SidebarLayout } from '@/lib/shared/layouts/sidebar-layout';
 
 export const metadata: Metadata = {
   title: 'Crypto Native Jobs',
@@ -18,27 +13,9 @@ export const metadata: Metadata = {
 
 const Layout = ({ children }: React.PropsWithChildren) => {
   return (
-    <SidebarAsideLayout
-      aside={
-        <Suspense fallback={<FiltersAsideSkeleton />}>
-          <FiltersAside />
-        </Suspense>
-      }
-    >
-      <Header
-        searchInput={
-          <SearchInput
-            actions={
-              <Suspense fallback={<SortFiltersSkeleton />}>
-                <SortFilters />
-              </Suspense>
-            }
-          />
-        }
-      />
+    <SidebarLayout sidebar={<LazyFiltersAside />} userAction={<AuthButton />}>
       {children}
-      <LazyMobileOverlays />
-    </SidebarAsideLayout>
+    </SidebarLayout>
   );
 };
 

@@ -1,4 +1,6 @@
-import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
+import { AuthButton } from '@/lib/auth/ui/auth-button';
+
+import { SidebarLayout } from '@/lib/shared/layouts/sidebar-layout';
 
 const DetailsAside = () => {
   return (
@@ -9,6 +11,10 @@ const DetailsAside = () => {
 };
 
 const Layout = ({ children }: React.PropsWithChildren) => {
-  return <SidebarAsideLayout aside={<DetailsAside />}>{children}</SidebarAsideLayout>;
+  return (
+    <SidebarLayout sidebar={<DetailsAside />} userAction={<AuthButton />}>
+      {children}
+    </SidebarLayout>
+  );
 };
 export default Layout;
