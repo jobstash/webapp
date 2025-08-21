@@ -22,7 +22,7 @@ const Page = async (props: Props) => {
   const job = await fetchJobDetails(id);
   return (
     <>
-      <div className='flex flex-col gap-4 pt-10'>
+      <div className='flex flex-col gap-4'>
         <BackButton />
         <h1>{slug}</h1>
         <pre>{JSON.stringify({ id, slug, org: job.organization?.name }, null, 2)}</pre>

@@ -1,4 +1,4 @@
-import { SidebarAsideLayout } from '@/lib/shared/layouts/sidebar-aside-layout';
+import { SidebarLayout } from '@/lib/shared/layouts/sidebar-layout';
 
 const DetailsAside = () => {
   return (
@@ -9,6 +9,6 @@ const DetailsAside = () => {
 };
 
 const Layout = ({ children }: React.PropsWithChildren) => {
-  return <SidebarAsideLayout aside={<DetailsAside />}>{children}</SidebarAsideLayout>;
+  return <SidebarLayout sidebar={<DetailsAside />}>{children}</SidebarLayout>;
 };
 export default Layout;
