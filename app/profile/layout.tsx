@@ -1,12 +1,15 @@
 import { AuthButton } from '@/lib/auth/ui/auth-button';
 import { ProfileButton } from '@/lib/profile/ui/profile-button';
 
+import { ProfileEntrypointMachineProvider } from '@/lib/profile/providers';
 import { SidebarLayout } from '@/lib/shared/layouts/sidebar-layout';
 
-const DetailsAside = () => {
+const OnboardingSidebar = () => {
   return (
     <div className='flex flex-col gap-8 rounded-2xl bg-sidebar p-6'>
-      <div className='h-[600px] rounded-2xl bg-muted' />
+      <div className='grid h-[600px] place-items-center rounded-2xl bg-muted'>
+        <p>Onboarding progress</p>
+      </div>
     </div>
   );
 };
@@ -14,10 +17,10 @@ const DetailsAside = () => {
 const Layout = ({ children }: React.PropsWithChildren) => {
   return (
     <SidebarLayout
-      sidebar={<DetailsAside />}
+      sidebar={<OnboardingSidebar />}
       userAction={<AuthButton profileButton={<ProfileButton />} />}
     >
-      {children}
+      <ProfileEntrypointMachineProvider>{children}</ProfileEntrypointMachineProvider>
     </SidebarLayout>
   );
 };

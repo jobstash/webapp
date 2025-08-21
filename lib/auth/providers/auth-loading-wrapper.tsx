@@ -10,8 +10,6 @@ const LOADING_STATES = [
   'syncingSession',
   'loggingOutPrivy',
   'loggingOutSession',
-  'redirecting',
-  'waitingRedirect',
 ] as const;
 
 interface Props {

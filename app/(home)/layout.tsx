@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 
 import { AuthButton } from '@/lib/auth/ui/auth-button';
 import { LazyFiltersAside } from '@/lib/filters/ui/filters-aside';
+import { ProfileButton } from '@/lib/profile/ui/profile-button';
 
 import { SidebarLayout } from '@/lib/shared/layouts/sidebar-layout';
 
@@ -13,7 +14,10 @@ export const metadata: Metadata = {
 
 const Layout = ({ children }: React.PropsWithChildren) => {
   return (
-    <SidebarLayout sidebar={<LazyFiltersAside />} userAction={<AuthButton />}>
+    <SidebarLayout
+      sidebar={<LazyFiltersAside />}
+      userAction={<AuthButton profileButton={<ProfileButton />} />}
+    >
       {children}
     </SidebarLayout>
   );

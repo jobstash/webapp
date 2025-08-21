@@ -1,5 +1,8 @@
+import { useRouter } from 'next/navigation';
+
 import { useLogin as usePrivyLogin, usePrivy } from '@privy-io/react-auth';
 
+import { LOADING_LOGOUT_STATES } from '@/lib/auth/core/constants';
 import { AUTH_QUERIES } from '@/lib/auth/core/queries';
 
 import { WithQueryErrorBoundary } from '@/lib/shared/ui/with-query-error-boundary';
@@ -9,9 +12,11 @@ import { AuthButtonView } from './auth-button.view';
 
 import { useAuthActorRef, useAuthSelector } from '@/lib/auth/providers';
 
-const LOADING_LOGOUT_STATES = ['loggingOutPrivy', 'loggingOutSession'] as const;
+interface Props {
+  profileButton: React.ReactNode;
+}
 
-const AuthButtonInner = () => {
+const AuthButtonInner = ({ profileButton }: Props) => {
   const authActorRef = useAuthActorRef();
   const { isAuthenticated, isLoadingLogout } = useAuthSelector((snapshot) => {
     return {
@@ -20,20 +25,27 @@ const AuthButtonInner = () => {
     };
   });
 
+  const router = useRouter();
   const { login: openPrivyModal } = usePrivyLogin({
     onComplete: ({ wasAlreadyAuthenticated }) => {
-      const redirectTo = wasAlreadyAuthenticated ? undefined : '/profile';
-      authActorRef.send({ type: 'LOGIN', redirectTo });
+      if (!wasAlreadyAuthenticated) {
+        router.push('/profile');
+      }
+      authActorRef.send({ type: 'LOGIN' });
     },
   });
 
   const { authenticated: isAuthenticatedPrivy, ready: isReadyPrivy } = usePrivy();
 
+  if (isAuthenticated && isAuthenticatedPrivy) {
+    return <>{profileButton}</>;
+  }
+
   const handleClick = () => {
-    if (isAuthenticated) {
-      authActorRef.send({ type: 'LOGOUT' });
-    } else if (isAuthenticatedPrivy) {
-      authActorRef.send({ type: 'LOGIN', redirectTo: '/profile' });
+    // Impossible state, but handle it just in case
+    if (isAuthenticated) return;
+    if (isAuthenticatedPrivy) {
+      authActorRef.send({ type: 'LOGIN' });
     } else {
       openPrivyModal();
     }
@@ -41,19 +53,15 @@ const AuthButtonInner = () => {
 
   const isLoading = isLoadingLogout || !isReadyPrivy;
   const isInterruptedLogin = isAuthenticatedPrivy && !isAuthenticated;
-  const text = isAuthenticated
-    ? 'Logout'
-    : isInterruptedLogin
-      ? 'Continue Login'
-      : 'Login / Signup';
+  const text = isInterruptedLogin ? 'Continue Login' : 'Login / Signup';
 
   return <AuthButtonView text={text} isLoading={isLoading} onClick={handleClick} />;
 };
 
-export const AuthButton = () => {
+export const AuthButton = ({ profileButton }: Props) => {
   return (
     <WithQueryErrorBoundary queryKey={AUTH_QUERIES.all} fallback={AuthButtonFallback}>
-      <AuthButtonInner />
+      <AuthButtonInner profileButton={profileButton} />
     </WithQueryErrorBoundary>
   );
 };

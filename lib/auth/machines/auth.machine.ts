@@ -1,18 +1,16 @@
-import { assertEvent, assign, PromiseActorLogic, setup } from 'xstate';
+import { assign, PromiseActorLogic, setup } from 'xstate';
 
 import { PERMISSIONS } from '@/lib/shared/core/constants';
 import type { UserSchema } from '@/lib/auth/core/schemas';
 
 interface AuthMachineContext {
   privyToken: string | null;
-  redirectTo: string | null;
   isLoggedIn: boolean;
 }
 
 type AuthMachineEvents =
   | {
       type: 'LOGIN';
-      redirectTo?: string;
     }
   | {
       type: 'LOGOUT';
@@ -33,13 +31,6 @@ export const authMachine = setup({
   },
   actions: {
     clearContext: assign({ privyToken: null }),
-    setRedirectTo: assign({
-      redirectTo: ({ event }) => {
-        assertEvent(event, 'LOGIN');
-        return event.redirectTo || null;
-      },
-    }),
-    clearRedirectTo: assign({ redirectTo: null }),
   },
   delays: {
     redirectDelay: 200,
@@ -48,7 +39,6 @@ export const authMachine = setup({
   id: 'auth',
   context: {
     privyToken: null,
-    redirectTo: null,
     isLoggedIn: false,
   },
   initial: 'gettingUser',
@@ -59,18 +49,8 @@ export const authMachine = setup({
         onDone: [
           {
             target: 'authenticated',
-            guard: ({ event, context }) =>
-              !!event.output &&
-              event.output.permissions.includes(PERMISSIONS.USER) &&
-              !context.redirectTo,
-            actions: assign({ isLoggedIn: true }),
-          },
-          {
-            target: 'redirecting',
-            guard: ({ event, context }) =>
-              !!event.output &&
-              event.output.permissions.includes(PERMISSIONS.USER) &&
-              !!context.redirectTo,
+            guard: ({ event }) =>
+              !!event.output && event.output.permissions.includes(PERMISSIONS.USER),
             actions: assign({ isLoggedIn: true }),
           },
           {
@@ -136,31 +116,7 @@ export const authMachine = setup({
     unauthenticated: {
       entry: ['clearContext'],
       on: {
-        LOGIN: {
-          target: 'gettingPrivyToken',
-          actions: ['setRedirectTo'],
-        },
-      },
-    },
-    redirecting: {
-      invoke: {
-        src: 'navigate',
-        input: ({ context }) => ({ path: context.redirectTo! }),
-        onDone: {
-          target: 'waitingRedirect',
-        },
-        onError: {
-          target: 'waitingRedirect',
-          // TODO: add logs, sentry
-        },
-      },
-    },
-    waitingRedirect: {
-      after: {
-        redirectDelay: {
-          target: 'authenticated',
-          actions: ['clearRedirectTo'],
-        },
+        LOGIN: 'gettingPrivyToken',
       },
     },
     authenticated: {
