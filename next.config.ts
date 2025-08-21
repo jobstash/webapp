@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
+  experimental: {
+    staticGenerationRetryCount: 1,
+    staticGenerationMaxConcurrency: 10,
+    staticGenerationMinPagesPerWorker: 500,
+  },
   logging: {
     fetches: {
       fullUrl: true,
