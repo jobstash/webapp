@@ -5,7 +5,7 @@ import { JobListSkeleton } from '@/lib/jobs/ui/job-list/job-list-skeleton';
 
 const Page = async () => {
   return (
-    <div className='relative w-full space-y-6 overflow-x-hidden px-2.5 md:px-4'>
+    <div className='relative w-full space-y-6 overflow-x-hidden'>
       <Suspense fallback={<JobListSkeleton />}>
         <JobListSsrClientWrapper>
           <JobListSSR />
