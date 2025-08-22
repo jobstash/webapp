@@ -13,7 +13,7 @@ export const Brand = () => {
       <Link href={CLIENT_ENVS.FRONTEND_URL}>
         <JobstashLogo className='size-10 shrink-0 md:size-12' />
       </Link>
-      <div className='flex flex-col justify-center'>
+      <div className='hidden flex-col justify-center lg:flex'>
         <Link
           href={CLIENT_ENVS.FRONTEND_URL}
           className='mt-1 text-xl leading-5 font-bold md:mt-0'
