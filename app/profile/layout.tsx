@@ -1,7 +1,7 @@
 import { AuthButton } from '@/lib/auth/ui/auth-button';
 import { ProfileButton } from '@/lib/profile/ui/profile-button';
 
-import { ProfileEntrypointMachineProvider } from '@/lib/profile/providers';
+import { ProfileEntrypointMachineProvider } from '@/lib/profile/providers/profile-entrypoint-machine.provider';
 import { SidebarLayout } from '@/lib/shared/layouts/sidebar-layout';
 
 const OnboardingSidebar = () => {

@@ -9,9 +9,9 @@ import { UploadCvPage } from './upload-cv.page';
 import {
   useProfileEntrypointActorRef,
   useProfileEntrypointSelector,
-} from '@/lib/profile/providers';
-import { LoadingPage } from '@/lib/shared/pages';
+} from '@/lib/profile/providers/profile-entrypoint-machine.provider';
 import { InternalErrorPage } from '@/lib/shared/pages/internal-error.page';
+import { LoadingPage } from '@/lib/shared/pages/loading.page';
 
 const LOADING_STATES = ['checkingProfile', 'decideNextStep'] as const;
 
