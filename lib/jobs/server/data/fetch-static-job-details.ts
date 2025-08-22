@@ -5,6 +5,7 @@ import { KyResponse } from 'ky';
 import { CLIENT_ENVS } from '@/lib/shared/core/client.env';
 import { MwSchemaError } from '@/lib/shared/core/errors';
 
+import { rateLimitedFetch } from '@/lib/shared/utils/rate-limiter';
 import { safeParse } from '@/lib/shared/utils/safe-parse';
 
 import { kyFetch } from '@/lib/shared/data/ky-fetch';
@@ -17,7 +18,7 @@ export const fetchStaticJobDetails = async (id: string) => {
   let response: KyResponse<unknown>;
 
   try {
-    response = await kyFetch(url, { cache: 'force-cache' });
+    response = await rateLimitedFetch(() => kyFetch(url, { cache: 'force-cache' }));
   } catch (error) {
     console.error('Error fetching job details:', error);
     return null;
