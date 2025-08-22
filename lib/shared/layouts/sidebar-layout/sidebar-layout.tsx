@@ -13,7 +13,7 @@ export const SidebarLayout = ({ children, sidebar, userAction }: Props) => {
     <>
       {/* HEADER */}
       <div className='sticky top-0 z-40 flex justify-center bg-background/40 backdrop-blur-lg'>
-        <div className='flex h-20 w-full max-w-7xl items-center'>
+        <div className='flex h-20 w-full max-w-7xl items-center px-4'>
           <div className='w-72'>
             <Brand />
           </div>
@@ -24,12 +24,12 @@ export const SidebarLayout = ({ children, sidebar, userAction }: Props) => {
         </div>
       </div>
       <div className='flex w-full justify-center'>
-        <div className='relative flex w-full max-w-7xl pt-2'>
+        <div className='relative flex w-full max-w-7xl gap-6 px-4 pt-2'>
           <div className='sticky top-22 flex h-fit w-72 shrink-0 flex-col gap-6'>
             {sidebar}
             <SocialsSidebar />
           </div>
-          <main className='flex grow flex-col px-6'>{children}</main>
+          <main className='flex flex-1 grow flex-col'>{children}</main>
         </div>
       </div>
     </>
