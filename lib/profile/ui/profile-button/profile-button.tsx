@@ -7,6 +7,8 @@ import { LogOutIcon, UserIcon } from 'lucide-react';
 
 import { LOADING_LOGOUT_STATES } from '@/lib/auth/core/constants';
 
+import { useProfileInfo } from '@/lib/profile/hooks';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/lib/shared/ui/base/avatar';
 import { Button } from '@/lib/shared/ui/base/button';
 import {
@@ -22,7 +24,7 @@ import { useAuthActorRef, useAuthSelector } from '@/lib/auth/providers';
 
 export const ProfileButton = () => {
   const authActorRef = useAuthActorRef();
-  const isLoading = useAuthSelector((snapshot) =>
+  const isLoadingAuth = useAuthSelector((snapshot) =>
     LOADING_LOGOUT_STATES.some((state) => snapshot.matches(state)),
   );
 
@@ -32,24 +34,33 @@ export const ProfileButton = () => {
     router.push('/');
   };
 
+  const { data: profileInfo } = useProfileInfo();
+  const isLoading = isLoadingAuth || !profileInfo;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           size='lg'
           variant='secondary'
-          className='flex h-10 w-40 items-center justify-center gap-1 px-2'
+          className='flex h-10 w-fit max-w-40 min-w-36 items-center justify-center gap-1'
           disabled={isLoading}
         >
           {isLoading ? (
             <Spinner className='size-6' />
           ) : (
-            <Avatar className='size-7'>
-              <AvatarImage src='https://github.com/shadcn.pngx' />
-              <AvatarFallback className='bg-neutral-700'>CN</AvatarFallback>
-            </Avatar>
+            <div className='flex items-center gap-2.5'>
+              <Avatar className='size-7'>
+                <AvatarImage src={profileInfo.avatar} />
+                <AvatarFallback className='bg-neutral-700'>
+                  {profileInfo.name?.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className='max-w-[11ch] min-w-0 flex-1 truncate'>
+                {profileInfo.name}
+              </span>
+            </div>
           )}
-          <span className='max-w-[13ch] min-w-0 flex-1 truncate'>duckdegen.eth</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
