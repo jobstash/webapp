@@ -5,7 +5,7 @@ import Head from 'next/head';
 
 import { grotesk, interTight } from '@/lib/shared/core/fonts';
 
-import { EntrypointPage } from '@/lib/shared/pages';
+import { EntrypointPage } from '@/lib/shared/pages/entrypoint.page';
 import { RootProviders } from '@/lib/shared/providers/root-providers';
 
 export const metadata: Metadata = {
