@@ -2,7 +2,7 @@ import { useDebounce } from 'ahooks';
 
 import { useAuthSelector } from './auth-machine.provider';
 
-import { LoadingPage } from '@/lib/shared/pages';
+import { LoadingPage } from '@/lib/shared/pages/loading.page';
 
 const LOADING_STATES = [
   'gettingUser',
