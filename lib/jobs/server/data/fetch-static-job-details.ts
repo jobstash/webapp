@@ -17,7 +17,7 @@ export const fetchStaticJobDetails = async (id: string) => {
   let response: KyResponse<unknown>;
 
   try {
-    response = await kyFetch(url, { cache: 'force-cache' }).json();
+    response = await kyFetch(url, { cache: 'force-cache' });
   } catch (error) {
     console.error('Error fetching job details:', error);
     return null;
@@ -25,7 +25,15 @@ export const fetchStaticJobDetails = async (id: string) => {
 
   if (!response.ok) return null;
 
-  const parsed = safeParse('jobDetailsDto', jobDetailsDto, response);
+  let jsonData: unknown;
+  try {
+    jsonData = await response.json();
+  } catch (error) {
+    console.error('Error parsing job details:', error);
+    return null;
+  }
+
+  const parsed = safeParse('jobDetailsDto', jobDetailsDto, jsonData);
   if (!parsed.success) {
     throw new MwSchemaError('fetchJobDetails', JSON.stringify(parsed.error.issues[0]));
   }
