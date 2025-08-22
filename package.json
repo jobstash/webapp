@@ -1,6 +1,6 @@
 {
   "name": "webapp",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -82,7 +82,7 @@
     "@tailwindcss/postcss": "^4.0.14",
     "@tanstack/eslint-plugin-query": "^5.68.0",
     "@tanstack/react-query-devtools": "^5.71.1",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "eslint": "^9",
