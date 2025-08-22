@@ -14,7 +14,7 @@ RUN yarn global add pnpm
 ENV NODE_ENV=production
 # ENV NEXT_PUBLIC_MW_URL=https://middleware-prod-615438274260.europe-west4.run.app 
 ENV NEXT_PUBLIC_MW_URL=https://middleware.jobstash.xyz
-ENV NEXT_PUBLIC_FRONTEND_URL=https://jobstash.xyz
+ENV NEXT_PUBLIC_FRONTEND_URL=https://v2.jobstash.xyz
 ENV NEXT_PUBLIC_PAGE_SIZE=20
 ENV NEXT_PUBLIC_VERI_URL=https://ecosystem.vision
 ENV NEXT_PUBLIC_PRIVY_APP_ID=clyr78r8l05a16wqnojin5hbz
