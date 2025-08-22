@@ -21,7 +21,7 @@ export const AppHeader = ({ userAction }: Props) => {
           <Button
             size='icon'
             variant='secondary'
-            className='size-9 rounded-xl border border-neutral-800'
+            className='size-9 rounded-xl border border-neutral-800 lg:hidden'
           >
             <SlidersHorizontalIcon className='size-5 text-muted-foreground' />
           </Button>
