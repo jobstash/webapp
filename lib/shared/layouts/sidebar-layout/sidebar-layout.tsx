@@ -13,7 +13,7 @@ export const SidebarLayout = ({ children, sidebar, userAction }: Props) => {
       <AppHeader userAction={userAction} />
       <div className='flex w-full justify-center'>
         <div className='relative flex w-full max-w-7xl gap-6 px-3 pt-2 md:px-4'>
-          <div className='sticky top-22 hidden h-fit w-72 shrink-0 flex-col gap-6 lg:flex'>
+          <div className='sticky top-22 hidden h-fit w-68 shrink-0 flex-col gap-6 lg:flex'>
             {sidebar}
             <SocialsSidebar />
           </div>
