@@ -52,10 +52,14 @@ const AuthButtonInner = ({ profileButton }: Props) => {
   };
 
   const isLoading = isLoadingLogout || !isReadyPrivy;
-  const isInterruptedLogin = isAuthenticatedPrivy && !isAuthenticated;
-  const text = isInterruptedLogin ? 'Continue Login' : 'Login / Signup';
 
-  return <AuthButtonView text={text} isLoading={isLoading} onClick={handleClick} />;
+  return (
+    <AuthButtonView
+      isLoading={isLoading}
+      auth={{ privy: isAuthenticatedPrivy, session: isAuthenticated }}
+      onClick={handleClick}
+    />
+  );
 };
 
 export const AuthButton = ({ profileButton }: Props) => {
