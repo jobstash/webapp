@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { optionalDataResponseSchema } from '@/lib/shared/core/schemas';
+
 export const locationSchema = z.object({
   country: z.string().min(1, 'Missing country'),
   countryCode: z.string().min(1, 'Missing country code'),
@@ -16,8 +18,8 @@ export const profileInfoSchema = z.object({
   // CV
   cvLink: z.url('Invalid cv link').nullish(),
   // Info
-  name: z.string().min(1, 'Missing name').nullish(),
-  avatar: z.url('Invalid avatar url').nullish(),
+  name: z.string().min(1, 'Missing name'),
+  avatar: z.url('Invalid avatar url'),
   location: locationSchema.nullish(),
   preferredContact: z
     .object({
@@ -47,3 +49,6 @@ export const profileInfoSchema = z.object({
   ),
 });
 export type ProfileInfoSchema = z.infer<typeof profileInfoSchema>;
+
+export const getProfileInfoResponse = optionalDataResponseSchema(profileInfoSchema);
+export type GetProfileInfoResponse = z.infer<typeof getProfileInfoResponse>;
