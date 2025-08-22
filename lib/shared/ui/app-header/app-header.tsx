@@ -9,7 +9,7 @@ interface Props {
 export const AppHeader = ({ userAction }: Props) => {
   return (
     <div className='sticky top-0 z-40 flex justify-center bg-background/40 backdrop-blur-lg'>
-      <div className='flex h-20 w-full max-w-7xl items-center px-4'>
+      <div className='flex h-16 w-full max-w-7xl items-center px-4 lg:h-20'>
         <div className='w-72'>
           <Brand />
         </div>
