@@ -52,7 +52,7 @@ export const ProfileButton = () => {
             <div className='flex items-center gap-2.5'>
               <Avatar className='size-7'>
                 <AvatarImage src={profileInfo.avatar} />
-                <AvatarFallback className='bg-neutral-700'>
+                <AvatarFallback className='bg-neutral-700' delayMs={300}>
                   {profileInfo.name?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
