@@ -24,11 +24,15 @@ export const AuthButtonView = ({ isLoading, auth, onClick }: Props) => {
         <Button
           size='icon'
           variant='secondary'
-          className='size-10 rounded-xl'
+          className='size-9 rounded-xl'
           disabled={isLoading}
           onClick={onClick}
         >
-          {isLoading ? <Spinner className='size-4' /> : <Icon className='size-5' />}
+          {isLoading ? (
+            <Spinner className='size-4' />
+          ) : (
+            <Icon className='size-5 text-muted-foreground' />
+          )}
         </Button>
       </div>
       {/* Desktop */}
