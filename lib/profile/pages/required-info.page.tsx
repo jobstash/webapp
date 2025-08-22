@@ -1,6 +1,6 @@
 import { Button } from '@/lib/shared/ui/base/button';
 
-import { useProfileEntrypointActorRef } from '@/lib/profile/providers';
+import { useProfileEntrypointActorRef } from '@/lib/profile/providers/profile-entrypoint-machine.provider';
 
 export const RequiredInfoPage = () => {
   const profileEntrypointActorRef = useProfileEntrypointActorRef();

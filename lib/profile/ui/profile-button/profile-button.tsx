@@ -37,30 +37,22 @@ export const ProfileButton = () => {
   const { data: profileInfo } = useProfileInfo();
   const isLoading = isLoadingAuth || !profileInfo;
 
+  const content = isLoading ? (
+    <Spinner className='size-6' />
+  ) : (
+    <ProfileAvatar avatar={profileInfo.avatar} name={profileInfo.name} />
+  );
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           size='lg'
           variant='secondary'
-          className='flex h-10 w-fit max-w-40 min-w-36 items-center justify-center gap-1'
+          className='flex size-9 items-center justify-center gap-1 rounded-full bg-transparent p-0 ring-offset-1 ring-offset-neutral-800 lg:h-10 lg:w-fit lg:max-w-40 lg:min-w-36 lg:bg-secondary'
           disabled={isLoading}
         >
-          {isLoading ? (
-            <Spinner className='size-6' />
-          ) : (
-            <div className='flex items-center gap-2.5'>
-              <Avatar className='size-7'>
-                <AvatarImage src={profileInfo.avatar} />
-                <AvatarFallback className='bg-neutral-700' delayMs={300}>
-                  {profileInfo.name?.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <span className='max-w-[11ch] min-w-0 flex-1 truncate'>
-                {profileInfo.name}
-              </span>
-            </div>
-          )}
+          {content}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
@@ -77,5 +69,19 @@ export const ProfileButton = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const ProfileAvatar = ({ avatar, name }: { avatar: string; name?: string }) => {
+  return (
+    <div className='flex items-center gap-2.5'>
+      <Avatar className='size-9 lg:size-7'>
+        <AvatarImage src={avatar} />
+        <AvatarFallback className='bg-neutral-700' delayMs={300}>
+          {name?.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <span className='hidden max-w-[11ch] min-w-0 flex-1 truncate lg:block'>{name}</span>
+    </div>
   );
 };

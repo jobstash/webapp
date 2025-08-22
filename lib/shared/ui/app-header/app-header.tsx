@@ -1,3 +1,6 @@
+import { SlidersHorizontalIcon } from 'lucide-react';
+
+import { Button } from '@/lib/shared/ui/base/button';
 import { Brand } from '@/lib/shared/ui/brand';
 
 import { SearchHeader } from './search-header';
@@ -16,7 +19,16 @@ export const AppHeader = ({ userAction }: Props) => {
         <div className='flex grow items-center lg:px-6'>
           <SearchHeader />
         </div>
-        <div className='grid place-items-center'>{userAction}</div>
+        <div className='flex items-center gap-3'>
+          <Button
+            size='icon'
+            variant='secondary'
+            className='size-9 rounded-xl border border-neutral-800'
+          >
+            <SlidersHorizontalIcon className='size-5 text-muted-foreground' />
+          </Button>
+          {userAction}
+        </div>
       </div>
     </div>
   );
