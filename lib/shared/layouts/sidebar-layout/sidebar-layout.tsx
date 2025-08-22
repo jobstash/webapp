@@ -1,4 +1,5 @@
 import { Brand } from '@/lib/shared/ui/brand';
+import { SocialsSidebar } from '@/lib/shared/ui/sidebar/socials-sidebar';
 
 import { SearchHeader } from './search-header';
 
@@ -24,7 +25,10 @@ export const SidebarLayout = ({ children, sidebar, userAction }: Props) => {
       </div>
       <div className='flex w-full justify-center'>
         <div className='relative flex w-full max-w-7xl pt-2'>
-          <div className='sticky top-22 flex h-fit w-72 shrink-0 flex-col'>{sidebar}</div>
+          <div className='sticky top-22 flex h-fit w-72 shrink-0 flex-col gap-6'>
+            {sidebar}
+            <SocialsSidebar />
+          </div>
           <main className='flex grow flex-col px-6'>{children}</main>
         </div>
       </div>
