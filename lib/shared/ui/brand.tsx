@@ -9,7 +9,7 @@ const VERI_LABEL = 'veri.xyz';
 
 export const Brand = () => {
   return (
-    <div className='flex h-16 items-center gap-1 px-0 md:gap-3 md:px-4'>
+    <div className='flex h-16 items-center gap-1 px-0 md:gap-2'>
       <Link href={CLIENT_ENVS.FRONTEND_URL}>
         <JobstashLogo className='size-10 shrink-0 md:size-12' />
       </Link>
