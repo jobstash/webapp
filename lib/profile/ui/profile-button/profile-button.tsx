@@ -49,7 +49,7 @@ export const ProfileButton = () => {
         <Button
           size='lg'
           variant='secondary'
-          className='flex size-9 items-center justify-center gap-1 rounded-full bg-transparent p-0 ring-offset-1 ring-offset-neutral-800 lg:h-10 lg:w-fit lg:max-w-40 lg:min-w-36 lg:bg-secondary'
+          className='flex size-9 items-center justify-center gap-1 rounded-full bg-transparent p-0 ring-offset-1 ring-offset-neutral-800 lg:h-10 lg:w-fit lg:max-w-40 lg:min-w-36 lg:rounded-md lg:bg-secondary'
           disabled={isLoading}
         >
           {content}
