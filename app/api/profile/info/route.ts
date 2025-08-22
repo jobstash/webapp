@@ -85,8 +85,6 @@ export const GET = async () => {
     );
   }
 
-  console.log(JSON.stringify(parsedDto, null, 2));
-
   return NextResponse.json({
     success: true,
     message: 'Profile info fetched successfully',
