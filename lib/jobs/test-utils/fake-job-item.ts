@@ -36,6 +36,7 @@ export const fakeJobItem = () // overrides?: Partial<JobItemSchema>,
           href: faker.internet.url(),
           location: faker.location.country(),
           logo: faker.image.url(),
+          url: faker.internet.url(),
           infoTags: [],
         }
       : null,
