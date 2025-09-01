@@ -38,12 +38,7 @@ export const generateJobMetadata = ({
 
   const jobUrl = `${CLIENT_ENVS.FRONTEND_URL}/${slug}/${id}`;
 
-  const ogImageUrl = buildOgImageUrl({
-    title: jobTitle,
-    company: orgName,
-    location,
-    salary,
-  });
+  const ogImageUrl = `${CLIENT_ENVS.JOB_FRAME_URL}/api/jobs?id=${id}&tab=details`;
 
   const keywords = buildKeywords({
     jobTitle,
@@ -168,29 +163,6 @@ const buildJobDescription = ({
   }
 
   return description;
-};
-
-const buildOgImageUrl = ({
-  title,
-  company,
-  location,
-  salary,
-}: {
-  title: string;
-  company: string;
-  location: string;
-  salary?: string;
-}): string => {
-  const baseUrl = `${CLIENT_ENVS.FRONTEND_URL}/api/og`;
-  const params = new URLSearchParams({
-    title,
-    company,
-  });
-
-  if (location) params.set('location', location);
-  if (salary) params.set('salary', salary);
-
-  return `${baseUrl}?${params.toString()}`;
 };
 
 const buildKeywords = ({
