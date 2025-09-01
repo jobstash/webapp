@@ -38,6 +38,7 @@ export const jobItemSchema = z.object({
   organization: z.nullable(
     z.object({
       name: nonEmptyStringSchema,
+      url: nullableStringSchema,
       href: nonEmptyStringSchema,
       location: nullableStringSchema,
       logo: nullableStringSchema,
