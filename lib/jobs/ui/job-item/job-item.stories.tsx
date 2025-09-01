@@ -105,6 +105,7 @@ export const Default: Story = {
         logo: 'https://www.google.com/s2/favicons?domain=p2p.org&sz=64',
         infoTags: [],
         location: 'Remote',
+        url: 'https://p2p.org',
       },
       projects: [],
       promotionEndDate: null,
