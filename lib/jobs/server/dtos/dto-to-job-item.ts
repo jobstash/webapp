@@ -54,9 +54,10 @@ const dtoToJobItemOrg = (
   return {
     name: dto.name,
     href,
-    logo: dto.logoUrl,
+    logo: getLogoUrl(dto.website, dto.logoUrl),
     location: dto.location,
     infoTags: createJobOrgInfoTags(dto),
+    url: dto.logoUrl,
   };
 };
 
