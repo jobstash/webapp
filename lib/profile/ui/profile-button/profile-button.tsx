@@ -8,6 +8,7 @@ import { LogOutIcon, UserIcon } from 'lucide-react';
 import { LOADING_LOGOUT_STATES } from '@/lib/auth/core/constants';
 
 import { useProfileInfo } from '@/lib/profile/hooks';
+import { useEnsInfo } from '@/lib/profile/hooks/use-ens-info';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/lib/shared/ui/base/avatar';
 import { Button } from '@/lib/shared/ui/base/button';
@@ -35,12 +36,17 @@ export const ProfileButton = () => {
   };
 
   const { data: profileInfo } = useProfileInfo();
-  const isLoading = isLoadingAuth || !profileInfo;
+  const { isLoading: isLoadingEns, ensName, ensAvatar } = useEnsInfo();
+
+  const isLoading = isLoadingAuth || !profileInfo || isLoadingEns;
 
   const content = isLoading ? (
     <Spinner className='size-6' />
   ) : (
-    <ProfileAvatar avatar={profileInfo.avatar} name={profileInfo.name} />
+    <ProfileAvatar
+      avatar={ensName && ensAvatar ? ensAvatar : profileInfo.avatar}
+      name={ensName || profileInfo.name}
+    />
   );
 
   return (
@@ -49,7 +55,7 @@ export const ProfileButton = () => {
         <Button
           size='lg'
           variant='secondary'
-          className='flex size-9 items-center justify-center gap-1 rounded-full bg-transparent px-2 pr-4 ring-offset-1 ring-offset-neutral-800 lg:h-10 lg:w-fit lg:max-w-40 lg:rounded-md lg:bg-secondary'
+          className='flex size-9 items-center justify-center gap-1 rounded-full bg-transparent px-2 pr-4 ring-offset-1 ring-offset-neutral-800 lg:h-10 lg:w-fit lg:max-w-40 lg:min-w-36 lg:rounded-md lg:bg-secondary'
           disabled={isLoading}
         >
           {content}
