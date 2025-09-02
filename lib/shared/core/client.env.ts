@@ -14,6 +14,7 @@ export const CLIENT_ENVS = (() => {
       NEXT_PUBLIC_PRIVY_APP_ID: z.string(),
       NEXT_PUBLIC_PRIVY_CLIENT_ID: z.string(),
       NEXT_PUBLIC_JOB_FRAME_URL: z.string(),
+      NEXT_PUBLIC_INFURA_ID: z.string(),
     },
     runtimeEnv: {
       NEXT_PUBLIC_FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
@@ -23,6 +24,7 @@ export const CLIENT_ENVS = (() => {
       NEXT_PUBLIC_PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID,
       NEXT_PUBLIC_PRIVY_CLIENT_ID: process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID,
       NEXT_PUBLIC_JOB_FRAME_URL: process.env.NEXT_PUBLIC_JOB_FRAME_URL,
+      NEXT_PUBLIC_INFURA_ID: process.env.NEXT_PUBLIC_INFURA_ID,
     },
   });
 
@@ -34,5 +36,6 @@ export const CLIENT_ENVS = (() => {
     PRIVY_APP_ID: envs.NEXT_PUBLIC_PRIVY_APP_ID,
     PRIVY_CLIENT_ID: envs.NEXT_PUBLIC_PRIVY_CLIENT_ID,
     JOB_FRAME_URL: envs.NEXT_PUBLIC_JOB_FRAME_URL,
+    INFURA_ID: envs.NEXT_PUBLIC_INFURA_ID,
   };
 })();
