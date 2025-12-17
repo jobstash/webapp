@@ -13,6 +13,8 @@ import {
   jobListPageParamsDto,
 } from '@/lib/jobs/server/dtos';
 
+const REVALIDATE_TIME = 60 * 60 * 8; // 8 hours
+
 interface Input {
   page: number;
   limit?: number;
@@ -31,7 +33,9 @@ export const fetchJobListPage = async (input: Input) => {
 
   // Do not cache if there are search params
   const hasSearchParams = !!searchParams && Object.keys(searchParams).length > 0;
-  const cache: RequestCache = hasSearchParams ? 'no-store' : 'force-cache';
+  const fetchOptions = hasSearchParams
+    ? { cache: 'no-store' as const }
+    : { next: { revalidate: REVALIDATE_TIME } };
 
   // Construct URL inline
   const query = new URLSearchParams({
@@ -44,7 +48,7 @@ export const fetchJobListPage = async (input: Input) => {
     });
   }
   const url = `${CLIENT_ENVS.MW_URL}/jobs/list?${query.toString()}`;
-  const response = await kyFetch(url, { cache }).json();
+  const response = await kyFetch(url, fetchOptions).json();
 
   const parsed = safeParse('jobListPageDto', jobListPageDto, response);
   if (!parsed.success) {
