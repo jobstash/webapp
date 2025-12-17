@@ -6,6 +6,9 @@ export const generateStaticParams =
     ? undefined
     : async () => fetchStaticPillarSlugs();
 
+// Support verylong slugs hitting file limit during build
+export const dynamicParams = true;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
