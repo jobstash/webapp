@@ -46,3 +46,5 @@ next-env.d.ts
 *storybook.log
 
 .cursor
+
+.DS_Store
