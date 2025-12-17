@@ -24,15 +24,14 @@ export const fetchStaticPillarSlugs = async () => {
     );
   }
 
-  return dtoToStaticPillarSlugs(parsed.data).map((slug) => ({
-    slug: slug.length > LIMIT_LENGTH ? sanitizeSlug(slug) : slug,
-  }));
-};
+  // Skip slugs that are too long
+  const filteredSlugs = parsed.data.filter((slug) => {
+    const isSafe = slug.length <= LIMIT_LENGTH;
+    if (!isSafe) {
+      console.warn(`[fetchStaticPillarSlugs] Slug is too long: ${slug}`);
+    }
+    return isSafe;
+  });
 
-const sanitizeSlug = (slug: string): string => {
-  const truncated = slug.slice(0, LIMIT_LENGTH);
-  const lastSeparatorIndex = truncated.lastIndexOf('-');
-  if (lastSeparatorIndex === -1) return truncated;
-  const sanitized = truncated.slice(0, lastSeparatorIndex);
-  return sanitized || truncated;
+  return dtoToStaticPillarSlugs(filteredSlugs).map((slug) => ({ slug }));
 };
