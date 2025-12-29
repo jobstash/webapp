@@ -19,6 +19,7 @@ export interface FilterDropdownProps extends React.PropsWithChildren {
   onOpenChange?: (open: boolean) => void;
   icon?: React.ReactNode;
   withDropdownIcon?: boolean;
+  truncateLabel?: boolean;
 }
 
 export const FilterDropdown = (props: FilterDropdownProps) => {
@@ -30,6 +31,7 @@ export const FilterDropdown = (props: FilterDropdownProps) => {
     onOpenChange,
     icon = null,
     withDropdownIcon = true,
+    truncateLabel = false,
   } = props;
 
   return (
@@ -41,11 +43,12 @@ export const FilterDropdown = (props: FilterDropdownProps) => {
           className={cn(
             'flex h-7 items-center gap-1.5 px-2',
             'text-sm',
+            truncateLabel && 'max-w-32',
             classNames?.trigger,
           )}
         >
           {icon}
-          {label}
+          <span className={cn(truncateLabel && 'truncate')}>{label}</span>
           {withDropdownIcon && (
             <ChevronDownIcon
               className={cn('size-3.5 text-neutral-400', classNames?.triggerIcon)}

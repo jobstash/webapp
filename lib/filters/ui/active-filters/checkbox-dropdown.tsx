@@ -18,7 +18,7 @@ export const CheckboxDropdown = ({ config }: Props) => {
   const label = useDropdownLabel(config);
   const { checkIsActive, toggleItem } = useCsvParam(config.paramKey);
   return (
-    <FilterDropdown label={label} classNames={{ trigger: 'rounded-l-none border-l-0' }}>
+    <FilterDropdown label={label} truncateLabel classNames={{ trigger: 'rounded-l-none border-l-0' }}>
       {config.options.map(({ value, label }) => (
         <div key={label} className='flex items-center space-x-2'>
           <Checkbox

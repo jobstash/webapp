@@ -21,7 +21,7 @@ export const RadioDropdown = ({ config }: Props) => {
   const label = useDropdownLabel(config);
   const [filterParam, setFilterParam] = useQueryState(config.paramKey);
   return (
-    <FilterDropdown label={label} classNames={{ trigger: 'rounded-l-none border-l-0' }}>
+    <FilterDropdown label={label} truncateLabel classNames={{ trigger: 'rounded-l-none border-l-0' }}>
       <RadioGroup
         className='flex flex-col gap-2'
         value={filterParam ?? undefined}
