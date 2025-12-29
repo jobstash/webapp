@@ -13,7 +13,8 @@ export const safeParse = <TSchema extends z.ZodTypeAny>(
     message: `safeParse::${label}`,
     data: {
       success: result.success,
-      issues: result.success ? [] : result.error.issues,
+      issues: JSON.stringify(result.success ? [] : result.error.issues, null, 2),
+      input: JSON.stringify(input, null, 2),
     },
   });
 
