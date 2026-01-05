@@ -11,9 +11,15 @@ import { kyFetch } from '@/lib/shared/data/ky-fetch';
 import { filterConfigDto } from '@/lib/filters/server/dtos';
 import { dtoToFilterConfig } from '@/lib/filters/server/dtos/dto-to-filter-config';
 
+const REVALIDATE_TIME = 60 * 60 * 8; // 8 hours
+
 export const fetchFilterConfigs = async (): Promise<FilterConfigSchema[]> => {
   const url = `${CLIENT_ENVS.MW_URL}/jobs/filters`;
-  const response = await kyFetch(url).json();
+  const response = await kyFetch(url, {
+    next: {
+      revalidate: REVALIDATE_TIME,
+    },
+  }).json();
   const parsed = safeParse('filterConfigSchema', filterConfigDto, response);
 
   if (!parsed.success) {
