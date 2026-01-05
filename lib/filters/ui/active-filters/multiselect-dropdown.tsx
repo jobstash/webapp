@@ -36,6 +36,7 @@ export const MultiselectDropdown = ({ config }: Props) => {
   return (
     <FilterDropdown
       label={label}
+      truncateLabel
       classNames={{
         content: 'relative flex w-52 flex-col gap-2 bg-muted p-0',
         trigger: 'rounded-l-none border-l-0',

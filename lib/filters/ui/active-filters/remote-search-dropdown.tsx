@@ -48,6 +48,7 @@ export const RemoteSearchDropdown = ({ config }: Props) => {
   return (
     <FilterDropdown
       label={label}
+      truncateLabel
       classNames={{
         trigger: 'rounded-l-none border-l-0',
         content: 'relative flex w-52 flex-col gap-2 bg-muted p-0',

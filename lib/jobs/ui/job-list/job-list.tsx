@@ -24,6 +24,13 @@ export const JobList = () => {
 
   if (isLoading) return <JobListSkeleton />;
   if (isError) return <p>TODO: JobList Error UI</p>;
+  if (items.length === 0) {
+    return (
+      <div className='flex flex-col items-center justify-center py-20'>
+        <p className='text-muted-foreground'>TODO: Empty UI</p>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -19,6 +19,7 @@ export const SingleSelectDropdown = ({ config }: Props) => {
   return (
     <FilterDropdown
       label={label}
+      truncateLabel
       classNames={{ trigger: 'rounded-l-none border-l-0', content: 'bg-muted p-0' }}
     >
       <SimpleCommand
