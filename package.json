@@ -4,8 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "pnpm format && pnpm lint",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "oxlint --fix --fix-suggestions",
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "test": "echo \"Skipping tests ...\" && exit 0"
   },
   "dependencies": {
     "next": "16.1.1",
@@ -13,11 +17,15 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@prettier/plugin-oxc": "^0.1.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "oxlint": "^1.36.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
