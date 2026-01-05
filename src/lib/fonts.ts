@@ -1,8 +1,8 @@
-import { Nunito_Sans } from 'next/font/google';
+import { Inter_Tight } from 'next/font/google';
 
-export const nunitoSans = Nunito_Sans({
+export const interTight = Inter_Tight({
   subsets: ['latin'],
-  variable: '--font-nunito-sans',
+  variable: '--font-inter-tight',
   display: 'swap',
   preload: true,
 });
