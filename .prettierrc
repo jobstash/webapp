@@ -8,7 +8,7 @@
   "arrowParens": "always",
   "tabWidth": 2,
   "useTabs": false,
-  "printWidth": 90,
+  "printWidth": 80,
   "plugins": ["@prettier/plugin-oxc", "prettier-plugin-tailwindcss"],
   "tailwindStylesheet": "./src/app/globals.css",
   "tailwindFunctions": ["clsx", "cva", "cn"]

@@ -34,7 +34,11 @@ export const AppHeader = () => {
           >
             <UserIcon className='size-5 text-muted-foreground' />
           </Button>
-          <Button size='lg' variant='secondary' className='hidden h-10 w-40 lg:block'>
+          <Button
+            size='lg'
+            variant='secondary'
+            className='hidden h-10 w-40 lg:block'
+          >
             Login / Signup
           </Button>
         </div>

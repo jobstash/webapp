@@ -3,37 +3,37 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 
 import { interTight } from '@/lib/fonts';
-import Head from 'next/head';
 import { cn } from '@/lib/utils';
 import { AppHeader } from '@/components/app-header/app-header';
+import { RootProviders } from '@/components/providers/root-providers';
 
 export const metadata: Metadata = {
   title: 'Crypto Native Jobs',
   description:
     'Explore crypto native jobs across the entire crypto ecosystem, powered by AI and enhanced by unique data insights as a public good.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
 };
 
 type Props = Readonly<React.PropsWithChildren>;
 
-export default function RootLayout({ children }: Props) {
-  return (
-    <html lang='en' className='dark'>
-      <Head>
-        <link rel='shortcut icon' href='/favicon.ico' />
-        <link rel='apple-touch-icon' href='/apple-touch-icon.png' sizes='180x180' />
-        <link rel='manifest' href='/site.webmanifest' />
-      </Head>
-      <body className={cn('antialiased', interTight.className)}>
-        <AppHeader />
-        <main className='mx-auto max-w-7xl px-2 pt-4'>{children}</main>
-      </body>
-    </html>
-  );
-}
+const RootLayout = ({ children }: Props) => (
+  <html lang='en' className={cn('dark', interTight.className)}>
+    <body className='antialiased'>
+      <AppHeader />
+      <main className='mx-auto max-w-7xl px-2 pt-4'>
+        <RootProviders>{children}</RootProviders>
+      </main>
+    </body>
+  </html>
+);
+
+export default RootLayout;
