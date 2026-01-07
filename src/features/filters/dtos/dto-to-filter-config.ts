@@ -21,7 +21,7 @@ import {
   MultiSelectFilterConfigDto,
   SelectOptionDto,
   SingleSelectFilterConfigDto,
-} from './filter-config-dtos';
+} from './filter-config.dto';
 
 const PARAM_KEYS = {
   LOCATIONS: 'locations',

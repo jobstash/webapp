@@ -30,7 +30,9 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-error-boundary": "^6.0.2",
+    "slugify": "^1.6.6",
     "tailwind-merge": "^3.4.0",
+    "transliteration": "^2.6.0",
     "zod": "^4.3.5"
   },
   "devDependencies": {
