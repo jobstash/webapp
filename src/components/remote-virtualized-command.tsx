@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 
 import { type ClassValue } from 'clsx';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { SearchCheckIcon } from 'lucide-react';
+import { Loader2Icon, SearchCheckIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import {
@@ -13,14 +13,11 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { useDebounce } from '@/hooks/use-debounce';
-import { useQuery } from '@tanstack/react-query';
-import { Loader2Icon } from 'lucide-react';
+import { useDebounce, useRemoteFetch } from '@/hooks';
 
 const DEBOUNCE_MS = 500;
 
 interface Props<T> {
-  queryKey: string[];
   endpoint: (query: string) => string;
   responseToValues: (data: T) => string[];
   initialValues: string[];
@@ -33,10 +30,10 @@ interface Props<T> {
   classNames?: {
     command?: ClassValue;
   };
+  fetchOptions?: RequestInit;
 }
 
 export const RemoteVirtualizedCommand = <T,>({
-  queryKey,
   endpoint,
   responseToValues,
   initialValues,
@@ -47,21 +44,17 @@ export const RemoteVirtualizedCommand = <T,>({
   onSelect,
   onDeselect,
   classNames,
+  fetchOptions,
 }: Props<T>) => {
   const [searchValue, setSearchValue] = useState('');
   const parentRef = useRef<HTMLDivElement>(null);
 
   const debouncedSearch = useDebounce(searchValue, DEBOUNCE_MS);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['remote-virtualized-command', ...queryKey, debouncedSearch],
-    queryFn: async () => {
-      const res = await fetch(endpoint(debouncedSearch));
-      return res.json();
-    },
-    enabled: !!debouncedSearch,
-    select: responseToValues,
-  });
+  const { data, isLoading } = useRemoteFetch(
+    debouncedSearch ? endpoint(debouncedSearch) : null,
+    { transform: responseToValues, fetchOptions },
+  );
 
   const getFilteredValues = () => {
     if (isLoading) return [];

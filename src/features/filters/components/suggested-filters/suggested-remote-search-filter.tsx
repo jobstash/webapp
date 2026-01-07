@@ -30,7 +30,6 @@ export const SuggestedRemoteSearchFilter = ({
   return (
     <SuggestedFilterDropdown label={label} paramKey={paramKey}>
       <RemoteVirtualizedCommand<{ name: string; normalizedName: string }[]>
-        queryKey={[paramKey]}
         endpoint={endpoint}
         initialValues={initialValues}
         selectedValues={[]}

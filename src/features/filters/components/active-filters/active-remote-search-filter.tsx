@@ -36,7 +36,6 @@ export const ActiveRemoteSearchFilter = ({ config }: Props) => {
       }}
     >
       <RemoteVirtualizedCommand<{ name: string; normalizedName: string }[]>
-        queryKey={[config.paramKey]}
         endpoint={endpoint}
         initialValues={initialValues}
         selectedValues={selectedValues}
