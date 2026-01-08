@@ -1,8 +1,15 @@
-import { useState } from 'react';
-import { ListFilterPlusIcon } from 'lucide-react';
+'use client';
 
-import { FilterDropdown } from '@/features/filters/components/filter-dropdown';
-import { FilterConfigSchema } from '@/features/filters/schemas';
+import { useState, useTransition } from 'react';
+import { ListFilterPlusIcon, LoaderIcon } from 'lucide-react';
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -11,10 +18,10 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { FILTER_KIND } from '@/features/filters/constants';
+import { FilterConfigSchema } from '@/features/filters/schemas';
 
-import { useMoreFiltersOptions } from './use-more-filters-options';
 import { MoreFiltersItem } from './more-filters-item';
-
+import { useMoreFiltersOptions } from './use-more-filters-options';
 interface Props {
   configs: FilterConfigSchema[];
 }
@@ -23,44 +30,54 @@ export const MoreFilters = ({ configs }: Props) => {
   const options = useMoreFiltersOptions(configs);
   const [open, setOpen] = useState(false);
   const closeDropdown = () => setOpen(false);
-
-  const onOpenChange = (open: boolean) => {
-    setOpen(open);
-  };
-
+  const [isPending, startTransition] = useTransition();
   return (
-    <FilterDropdown
-      open={open}
-      onOpenChange={onOpenChange}
-      label='More Filters'
-      icon={<ListFilterPlusIcon className='size-4' />}
-      withDropdownIcon={false}
-      classNames={{
-        content: 'border-neutral-800 p-0',
-        trigger:
-          'h-7 items-center gap-1.5 border border-none bg-sidebar text-muted-foreground/80 hover:bg-muted data-[state=open]:bg-muted data-[state=open]:text-foreground',
-      }}
-    >
-      <Command>
-        <CommandInput placeholder='Search filters...' />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup>
-            {options.map((config) => {
-              return (
-                <MoreFiltersItem
-                  key={config.label}
-                  paramKey={config.paramKey}
-                  label={config.label}
-                  defaultValue={getDefaultValue(config)}
-                  closeDropdown={closeDropdown}
-                />
-              );
-            })}
-          </CommandGroup>
-        </CommandList>
-      </Command>
-    </FilterDropdown>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger disabled={isPending} asChild>
+        <Button
+          size='xs'
+          variant='secondary'
+          className='flex h-7 items-center gap-1.5 bg-sidebar text-muted-foreground/80 hover:bg-muted'
+          disabled={isPending}
+        >
+          <div className='grid size-4 place-items-center'>
+            {isPending ? (
+              <LoaderIcon className='shrink-0 animate-spin text-neutral-400' />
+            ) : (
+              <ListFilterPlusIcon className='size-4' />
+            )}
+          </div>
+          <span className='flex-1 text-left'>More Filters</span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        side='bottom'
+        align='start'
+        className='relative flex w-fit max-w-60 min-w-32 flex-col gap-2 border-neutral-800 p-0'
+      >
+        <Command>
+          <CommandInput placeholder='Search filters...' />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((config) => {
+                return (
+                  <MoreFiltersItem
+                    key={config.label}
+                    isPending={isPending}
+                    paramKey={config.paramKey}
+                    label={config.label}
+                    defaultValue={getDefaultValue(config)}
+                    closeDropdown={closeDropdown}
+                    startTransition={startTransition}
+                  />
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };
 
@@ -70,8 +87,8 @@ const getDefaultValue = (config: FilterConfigSchema) => {
       return 'true';
     case FILTER_KIND.RADIO:
     case FILTER_KIND.CHECKBOX:
-    case FILTER_KIND.SINGLE_SELECT:
-    case FILTER_KIND.MULTI_SELECT:
+    case FILTER_KIND.SEARCH:
+    case FILTER_KIND.REMOTE_SEARCH:
       return config.options[0].value;
     default:
       return null;

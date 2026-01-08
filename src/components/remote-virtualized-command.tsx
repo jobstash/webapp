@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 
 import { type ClassValue } from 'clsx';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Loader2Icon, SearchCheckIcon } from 'lucide-react';
+import { LoaderIcon, SearchCheckIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import {
@@ -88,7 +88,7 @@ export const RemoteVirtualizedCommand = <T,>({
       <CommandInput
         icon={
           isLoading ? (
-            <Loader2Icon className='size-4 shrink-0 animate-spin' />
+            <LoaderIcon className='size-4 shrink-0 animate-spin' />
           ) : undefined
         }
         value={searchValue}

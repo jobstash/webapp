@@ -7,10 +7,10 @@ import {
   CheckboxFilterConfigSchema,
   FilterConfigSchema,
   FilterConfigSharedPropertiesSchema,
-  MultiSelectFilterConfigSchema,
   RadioFilterConfigSchema,
+  RemoteSearchFilterConfigSchema,
+  SearchFilterConfigSchema,
   SelectOptionsSchema,
-  SingleSelectFilterConfigSchema,
   SortFilterConfigSchema,
   SwitchFilterConfigSchema,
 } from '@/features/filters/schemas';
@@ -22,6 +22,7 @@ import {
   SelectOptionDto,
   SingleSelectFilterConfigDto,
 } from './filter-config.dto';
+import { checkIsRemoteFilter } from '@/features/filters/utils';
 
 const PARAM_KEYS = {
   LOCATIONS: 'locations',
@@ -107,12 +108,12 @@ const dtoToRadioFilterConfig = (
   };
 };
 
-const dtoToSingleSelectFilterConfig = (
+const dtoToSearchFilterConfig = (
   dto: SingleSelectFilterConfigDto,
-): SingleSelectFilterConfigSchema => {
+): SearchFilterConfigSchema => {
   return {
     ...dtoToFilterConfigSharedProps(dto),
-    kind: FILTER_KIND.SINGLE_SELECT,
+    kind: FILTER_KIND.SEARCH,
     options: dto.options.map(dtoToSelectOptions),
     paramKey: dto.paramKey,
   };
@@ -131,10 +132,14 @@ const dtoToCheckboxFilterConfig = (
 
 const dtoToMultiSelectFilterConfig = (
   dto: MultiSelectFilterConfigDto,
-): CheckboxFilterConfigSchema | MultiSelectFilterConfigSchema => {
+):
+  | CheckboxFilterConfigSchema
+  | SearchFilterConfigSchema
+  | RemoteSearchFilterConfigSchema => {
+  const isRemote = checkIsRemoteFilter(dto.paramKey);
   return {
     ...dtoToFilterConfigSharedProps(dto),
-    kind: FILTER_KIND.MULTI_SELECT,
+    kind: isRemote ? FILTER_KIND.REMOTE_SEARCH : FILTER_KIND.SEARCH,
     options: dto.options.map(dtoToSelectOptions),
     paramKey: dto.paramKey,
   };
@@ -148,6 +153,7 @@ const adjustFilterPosition = (dto: FilterConfigDto[string]) => {
 const handleSingleSelect = (
   dto: SingleSelectFilterConfigDto,
 ): FilterConfigSchema | null => {
+  // Get rid of issues where options look borked
   const hasNoOptions = dto.options.length < SELECT_OPTION_THRESHOLD;
   if (hasNoOptions) return null;
 
@@ -163,12 +169,15 @@ const handleSingleSelect = (
     return dtoToRadioFilterConfig(dto);
   }
 
-  return dtoToSingleSelectFilterConfig(dto);
+  return dtoToSearchFilterConfig(dto);
 };
 
 const adjustLocationLabel = (
   dto: MultiSelectFilterConfigDto,
-  baseFilter: CheckboxFilterConfigSchema | MultiSelectFilterConfigSchema,
+  baseFilter:
+    | CheckboxFilterConfigSchema
+    | SearchFilterConfigSchema
+    | RemoteSearchFilterConfigSchema,
 ) => {
   if (dto.paramKey === PARAM_KEYS.LOCATIONS) {
     baseFilter.label = LABELS.WORK_MODE;
@@ -177,7 +186,10 @@ const adjustLocationLabel = (
 
 const adjustSeniorityOptions = (
   dto: MultiSelectFilterConfigDto,
-  baseFilter: CheckboxFilterConfigSchema | MultiSelectFilterConfigSchema,
+  baseFilter:
+    | CheckboxFilterConfigSchema
+    | SearchFilterConfigSchema
+    | RemoteSearchFilterConfigSchema,
 ) => {
   if (dto.paramKey === PARAM_KEYS.SENIORITY && 'options' in baseFilter) {
     baseFilter.options = Object.keys(SENIORITY_MAPPING).map((key) => ({
@@ -190,6 +202,7 @@ const adjustSeniorityOptions = (
 const handleMultiSelect = (
   dto: MultiSelectFilterConfigDto,
 ): FilterConfigSchema | null => {
+  // Get rid of issues where options look borked
   const hasNoOptions = dto.options.length < SELECT_OPTION_THRESHOLD;
   if (hasNoOptions) return null;
 
@@ -219,6 +232,8 @@ const handleFilterConfig = (
     case 'MULTI_SELECT_WITH_SEARCH':
       baseFilter = handleMultiSelect(dto);
       break;
+
+    // TODO: RANGE
   }
 
   if (!baseFilter) return null;

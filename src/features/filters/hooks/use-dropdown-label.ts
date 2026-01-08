@@ -38,7 +38,7 @@ export const useDropdownLabel = (config: FilterConfigSchema) => {
 
   if (!('options' in config)) return paramValue;
 
-  return checkIsRemoteFilter(config)
+  return checkIsRemoteFilter(config.paramKey)
     ? getLabelForRemoteFilter(values)
     : getLabelForLocalFilter(values, config.options);
 };

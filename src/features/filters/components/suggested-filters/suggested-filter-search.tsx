@@ -1,0 +1,57 @@
+'use client';
+
+import { useState, useTransition } from 'react';
+import { useQueryState } from 'nuqs';
+
+import { type Option } from '@/lib/types';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { VirtualizedCommand } from '@/components/virtualized-command';
+import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
+
+import { SuggestedFilterTrigger } from './suggested-filter-trigger';
+
+interface Props {
+  label: string;
+  paramKey: string;
+  options: Option[];
+}
+
+export const SuggestedFilterSearch = ({ label, paramKey, options }: Props) => {
+  const [, setFilterParam] = useQueryState(paramKey);
+  const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
+  const handleSelect = (value: string) => {
+    setOpen(false);
+    startTransition(() => {
+      setFilterParam(value);
+    });
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger disabled={isPending} asChild>
+        <SuggestedFilterTrigger
+          isPending={isPending}
+          label={label}
+          icon={<MappedFilterIcon paramKey={paramKey} />}
+          disabled={isPending}
+        />
+      </PopoverTrigger>
+      <PopoverContent
+        side='bottom'
+        align='start'
+        className='relative flex w-fit max-w-60 min-w-32 flex-col gap-2 border-neutral-800 p-0'
+      >
+        <VirtualizedCommand
+          options={options}
+          placeholder={`Search ${label.toLowerCase()}...`}
+          onSelect={handleSelect}
+        />
+      </PopoverContent>
+    </Popover>
+  );
+};

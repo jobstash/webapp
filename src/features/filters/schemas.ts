@@ -52,15 +52,6 @@ export const sortFilterConfigSchema = z.object({
 });
 export type SortFilterConfigSchema = z.infer<typeof sortFilterConfigSchema>;
 
-export const singleSelectFilterConfigSchema = z.object({
-  ...filterConfigSharedPropertiesSchema.shape,
-  ...selectConfigSharedPropertiesSchema.shape,
-  kind: z.literal(FILTER_KIND.SINGLE_SELECT),
-});
-export type SingleSelectFilterConfigSchema = z.infer<
-  typeof singleSelectFilterConfigSchema
->;
-
 export const checkboxFilterConfigSchema = z.object({
   ...filterConfigSharedPropertiesSchema.shape,
   ...selectConfigSharedPropertiesSchema.shape,
@@ -70,21 +61,28 @@ export type CheckboxFilterConfigSchema = z.infer<
   typeof checkboxFilterConfigSchema
 >;
 
-export const multiSelectFilterConfigSchema = z.object({
+export const searchFilterConfigSchema = z.object({
   ...filterConfigSharedPropertiesSchema.shape,
   ...selectConfigSharedPropertiesSchema.shape,
-  kind: z.literal(FILTER_KIND.MULTI_SELECT),
+  kind: z.literal(FILTER_KIND.SEARCH),
 });
-export type MultiSelectFilterConfigSchema = z.infer<
-  typeof multiSelectFilterConfigSchema
+export type SearchFilterConfigSchema = z.infer<typeof searchFilterConfigSchema>;
+
+export const remoteSearchFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  ...selectConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.REMOTE_SEARCH),
+});
+export type RemoteSearchFilterConfigSchema = z.infer<
+  typeof remoteSearchFilterConfigSchema
 >;
 
 export const filterConfigSchema = z.union([
   switchFilterConfigSchema,
   radioFilterConfigSchema,
   sortFilterConfigSchema,
-  singleSelectFilterConfigSchema,
   checkboxFilterConfigSchema,
-  multiSelectFilterConfigSchema,
+  searchFilterConfigSchema,
+  remoteSearchFilterConfigSchema,
 ]);
 export type FilterConfigSchema = z.infer<typeof filterConfigSchema>;

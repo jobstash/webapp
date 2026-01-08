@@ -1,26 +1,37 @@
 'use client';
 
+import { type TransitionStartFunction } from 'react';
 import { useQueryState } from 'nuqs';
 
 import { CommandItem } from '@/components/ui/command';
-import { filterIconMap } from '@/features/filters/components/filter-icon-map';
+import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
 interface Props {
+  isPending: boolean;
   paramKey: string;
   label: string;
   defaultValue: string | null;
   closeDropdown: () => void;
+  startTransition: TransitionStartFunction;
 }
 
 export const MoreFiltersItem = (props: Props) => {
-  const { paramKey, label, defaultValue, closeDropdown } = props;
+  const {
+    isPending,
+    paramKey,
+    label,
+    defaultValue,
+    closeDropdown,
+    startTransition,
+  } = props;
 
   const [, setFilterParam] = useQueryState(paramKey);
-  const icon = filterIconMap[paramKey];
 
   const onSelect = () => {
-    setFilterParam(defaultValue);
     closeDropdown();
+    startTransition(() => {
+      setFilterParam(defaultValue);
+    });
   };
 
   return (
@@ -28,9 +39,12 @@ export const MoreFiltersItem = (props: Props) => {
       key={label}
       className='hover:cursor-pointer'
       onSelect={onSelect}
+      disabled={isPending}
     >
       <div className='flex items-center gap-2'>
-        <div className='grid size-4 place-items-center'>{icon}</div>
+        <div className='grid size-4 place-items-center'>
+          {<MappedFilterIcon paramKey={paramKey} />}
+        </div>
         {label}
       </div>
     </CommandItem>

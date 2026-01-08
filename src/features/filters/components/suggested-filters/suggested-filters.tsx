@@ -2,12 +2,11 @@
 
 import { FILTER_KIND } from '@/features/filters/constants';
 import { type FilterConfigSchema } from '@/features/filters/schemas';
-import { checkIsRemoteFilter } from '@/features/filters/utils';
 
-import { SuggestedSwitchFilter } from './suggested-switch-filter';
-import { SuggestedSelectFilter } from './suggested-select-filter';
-import { SuggestedSearchFilter } from './suggested-search-filter';
-import { SuggestedRemoteSearchFilter } from './suggested-remote-search-filter';
+import { SuggestedFilterSelect } from './suggested-filter-select';
+import { SuggestedFilterSwitch } from './suggested-filter-switch';
+import { SuggestedFilterSearch } from './suggested-filter-search';
+import { SuggestedFilterRemoteSearch } from './suggested-filter-remote-search';
 import { useSuggestedFilters } from './use-suggested-filters';
 
 interface Props {
@@ -26,7 +25,7 @@ export const SuggestedFilters = ({ configs }: Props) => {
         switch (config.kind) {
           case FILTER_KIND.SWITCH: {
             return (
-              <SuggestedSwitchFilter
+              <SuggestedFilterSwitch
                 key={key}
                 label={config.label}
                 paramKey={config.paramKey}
@@ -34,23 +33,27 @@ export const SuggestedFilters = ({ configs }: Props) => {
             );
           }
           case FILTER_KIND.CHECKBOX:
-          case FILTER_KIND.RADIO:
-          case FILTER_KIND.SINGLE_SELECT: {
-            return <SuggestedSelectFilter key={key} config={config} />;
-          }
-          case FILTER_KIND.MULTI_SELECT: {
-            const isRemote = checkIsRemoteFilter(config);
-            if (isRemote)
-              return (
-                <SuggestedRemoteSearchFilter
-                  key={key}
-                  label={config.label}
-                  paramKey={config.paramKey}
-                  options={config.options}
-                />
-              );
+          case FILTER_KIND.RADIO: {
             return (
-              <SuggestedSearchFilter
+              <SuggestedFilterSelect
+                key={key}
+                label={config.label}
+                paramKey={config.paramKey}
+                options={config.options}
+              />
+            );
+          }
+          case FILTER_KIND.SEARCH: {
+            <SuggestedFilterSearch
+              key={key}
+              label={config.label}
+              paramKey={config.paramKey}
+              options={config.options}
+            />;
+          }
+          case FILTER_KIND.REMOTE_SEARCH: {
+            return (
+              <SuggestedFilterRemoteSearch
                 key={key}
                 label={config.label}
                 paramKey={config.paramKey}

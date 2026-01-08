@@ -28,7 +28,7 @@ import { WorkModeIcon } from '@/components/svg/work-mode-icon';
 
 export const filterIconMap: IconMap = {
   locations: <WorkModeIcon />,
-  seniority: <SeniorityIcon className='size-3 md:mt-0.75' />,
+  seniority: <SeniorityIcon className='size-3' />,
   tags: <CodeXmlIcon className='mt-0.25 size-4' />,
   publicationDate: <CalendarDaysIcon />,
   classifications: <CategoryIcon />,

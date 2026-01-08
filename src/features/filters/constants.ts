@@ -2,12 +2,13 @@ import { clientEnv } from '@/lib/env/client';
 
 export const FILTER_KIND = {
   SORT: 'SORT',
-  RANGE: 'RANGE',
-  SINGLE_SELECT: 'SINGLE_SELECT',
-  MULTI_SELECT: 'MULTI_SELECT',
+  SWITCH: 'SWITCH',
   RADIO: 'RADIO',
   CHECKBOX: 'CHECKBOX',
-  SWITCH: 'SWITCH',
+  SEARCH: 'SEARCH',
+  REMOTE_SEARCH: 'REMOTE_SEARCH',
+
+  // TODO: RANGE: 'RANGE',
 } as const;
 export type FilterKind = (typeof FILTER_KIND)[keyof typeof FILTER_KIND];
 
