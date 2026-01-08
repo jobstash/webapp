@@ -1,7 +1,5 @@
 import 'server-only';
 
-import { cacheLife } from 'next/cache';
-
 import { clientEnv } from '@/lib/env/client';
 import { JOBS_PER_PAGE } from '@/features/jobs/constants';
 import { dtoToJobListPage, jobListPageDto } from '@/features/jobs/dtos';
@@ -12,16 +10,13 @@ interface Props {
   searchParams?: Record<string, string>;
 }
 
-export const fetchJobListPage = async (props: Props) => {
-  const hasSearchParams = Object.keys(props.searchParams ?? {}).length > 0;
-  return hasSearchParams ? getJobListPage(props) : getCachedJobListPage(props);
-};
-
-const getJobListPage = async ({
+export const fetchJobListPage = async ({
   page,
   limit = JOBS_PER_PAGE,
   searchParams,
 }: Props) => {
+  const hasSearchParams = Object.keys(searchParams ?? {}).length > 0;
+
   const urlSearchParams = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -31,8 +26,11 @@ const getJobListPage = async ({
     urlSearchParams.set(key, value);
   });
 
-  const url = `${clientEnv.MW_URL}/jobs?${urlSearchParams}`;
-  const response = await fetch(url);
+  const url = `${clientEnv.MW_URL}/jobs/list?${urlSearchParams}`;
+  const response = await fetch(url, {
+    // Do not cache requests with search params (avoid cache stampede)
+    ...(!hasSearchParams && { next: { revalidate: 3600 } }),
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch job list page: ${response.status}`);
@@ -46,10 +44,4 @@ const getJobListPage = async ({
   }
 
   return dtoToJobListPage(parsed.data);
-};
-
-const getCachedJobListPage = async (props: Props) => {
-  'use cache';
-  cacheLife('hours');
-  return getJobListPage(props);
 };
