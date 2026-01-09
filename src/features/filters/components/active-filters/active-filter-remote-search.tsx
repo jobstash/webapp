@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useQueryState } from 'nuqs';
 
 import { type Option } from '@/lib/types';
 import { capitalizeSlug } from '@/lib/utils';
@@ -28,17 +27,16 @@ export const ActiveFilterRemoteSearch = ({
   paramKey,
   options,
 }: Props) => {
-  const [filterParam, setFilterParam] = useQueryState(paramKey);
   const [isPending, startTransition] = useTransition();
 
   const [open, setOpen] = useState(false);
 
-  const { values, toggleItem } = useCsvParam(paramKey);
+  const { filterParam, values, toggleItem, setFilterParam } =
+    useCsvParam(paramKey);
 
   const handleSelect = (value: string, checked: boolean) => {
     setOpen(false);
     startTransition(() => {
-      setFilterParam(value);
       toggleItem(value, checked);
     });
   };

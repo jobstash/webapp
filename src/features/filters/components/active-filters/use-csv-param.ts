@@ -1,4 +1,4 @@
-import { useQueryState } from 'nuqs';
+import { useFilterQueryState } from '@/features/filters/hooks';
 
 const getNewValues = (values: string[], value: string, checked: boolean) => {
   if (checked) {
@@ -8,7 +8,7 @@ const getNewValues = (values: string[], value: string, checked: boolean) => {
 };
 
 export const useCsvParam = (paramKey: string) => {
-  const [filterParam, setFilterParam] = useQueryState(paramKey);
+  const [filterParam, setFilterParam] = useFilterQueryState(paramKey);
   const values = filterParam ? filterParam.split(',') : [];
 
   const checkIsActive = (value: string) => values.includes(value);
@@ -21,6 +21,7 @@ export const useCsvParam = (paramKey: string) => {
 
   return {
     filterParam,
+    setFilterParam,
     values,
     checkIsActive,
     toggleItem,

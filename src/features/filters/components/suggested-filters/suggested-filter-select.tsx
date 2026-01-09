@@ -1,7 +1,6 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useQueryState } from 'nuqs';
 
 import { type Option } from '@/lib/types';
 import {
@@ -10,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
 import { SuggestedFilterTrigger } from './suggested-filter-trigger';
@@ -21,7 +21,7 @@ interface Props {
 }
 
 export const SuggestedFilterSelect = ({ label, paramKey, options }: Props) => {
-  const [, setFilterParam] = useQueryState(paramKey);
+  const [, setFilterParam] = useFilterQueryState(paramKey);
 
   const [isPending, startTransition] = useTransition();
   const handleSelect = (value: string) => {

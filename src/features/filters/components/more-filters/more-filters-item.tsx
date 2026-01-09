@@ -1,9 +1,9 @@
 'use client';
 
 import { type TransitionStartFunction } from 'react';
-import { useQueryState } from 'nuqs';
 
 import { CommandItem } from '@/components/ui/command';
+import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
 interface Props {
@@ -25,7 +25,7 @@ export const MoreFiltersItem = (props: Props) => {
     startTransition,
   } = props;
 
-  const [, setFilterParam] = useQueryState(paramKey);
+  const [, setFilterParam] = useFilterQueryState(paramKey);
 
   const onSelect = () => {
     closeDropdown();

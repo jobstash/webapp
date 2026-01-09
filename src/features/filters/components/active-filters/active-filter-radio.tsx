@@ -1,7 +1,6 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useQueryState } from 'nuqs';
 
 import { type Option } from '@/lib/types';
 import {
@@ -11,6 +10,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
 import { ActiveFilterTrigger } from './active-filter-trigger';
@@ -22,7 +22,7 @@ interface Props {
 }
 
 export const ActiveFilterRadio = ({ label, paramKey, options }: Props) => {
-  const [filterParam, setFilterParam] = useQueryState(paramKey);
+  const [filterParam, setFilterParam] = useFilterQueryState(paramKey);
 
   const [isPending, startTransition] = useTransition();
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useQueryState } from 'nuqs';
 
 import { type Option } from '@/lib/types';
 import { capitalizeSlug } from '@/lib/utils';
@@ -12,6 +11,7 @@ import {
 } from '@/components/ui/popover';
 import { REMOTE_FILTERS } from '@/features/filters/constants';
 import { RemoteVirtualizedCommand } from '@/components/remote-virtualized-command';
+import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
 import { SuggestedFilterTrigger } from './suggested-filter-trigger';
@@ -27,7 +27,7 @@ export const SuggestedFilterRemoteSearch = ({
   paramKey,
   options,
 }: Props) => {
-  const [, setFilterParam] = useQueryState(paramKey);
+  const [, setFilterParam] = useFilterQueryState(paramKey);
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const handleSelect = (value: string) => {

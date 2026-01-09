@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useQueryState } from 'nuqs';
 import { CheckIcon } from 'lucide-react';
 
 import { type Option } from '@/lib/types';
@@ -25,17 +24,16 @@ interface Props {
 }
 
 export const ActiveFiltersSearch = ({ label, paramKey, options }: Props) => {
-  const [filterParam, setFilterParam] = useQueryState(paramKey);
   const [isPending, startTransition] = useTransition();
 
   const [open, setOpen] = useState(false);
 
-  const { values, checkIsActive, toggleItem } = useCsvParam(paramKey);
+  const { filterParam, values, checkIsActive, toggleItem, setFilterParam } =
+    useCsvParam(paramKey);
 
   const handleSelect = (value: string, checked: boolean) => {
     setOpen(false);
     startTransition(() => {
-      setFilterParam(value);
       toggleItem(value, checked);
     });
   };

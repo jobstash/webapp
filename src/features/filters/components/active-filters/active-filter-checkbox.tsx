@@ -1,7 +1,6 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useQueryState } from 'nuqs';
 
 import { type Option } from '@/lib/types';
 import {
@@ -23,15 +22,13 @@ interface Props {
 }
 
 export const ActiveFilterCheckbox = ({ label, paramKey, options }: Props) => {
-  const [, setFilterParam] = useQueryState(paramKey);
-
   const [isPending, startTransition] = useTransition();
 
-  const { values, checkIsActive, toggleItem } = useCsvParam(paramKey);
+  const { values, checkIsActive, toggleItem, setFilterParam } =
+    useCsvParam(paramKey);
 
   const handleSelect = (value: string, checked: boolean) => {
     startTransition(() => {
-      setFilterParam(value);
       toggleItem(value, checked);
     });
   };
