@@ -2,7 +2,7 @@ import 'server-only';
 
 import { clientEnv } from '@/lib/env/client';
 import { JOBS_PER_PAGE } from '@/features/jobs/constants';
-import { dtoToJobListPage, jobListPageDto } from '@/features/jobs/dtos';
+import { dtoToJobListPage, jobListPageDto } from '@/features/jobs/server/dtos';
 
 interface Props {
   page: number;
@@ -36,14 +36,23 @@ export const fetchJobListPage = async ({
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch job list page: ${response.status}`);
+    const errorBody = await response.text().catch(() => '');
+    throw new Error(
+      `Failed to fetch job list page: ${response.status}${errorBody ? ` - ${errorBody}` : ''}`,
+    );
   }
 
   const json = await response.json();
   const parsed = jobListPageDto.safeParse(json);
 
   if (!parsed.success) {
-    throw new Error('Invalid job list page data');
+    console.error(
+      '[fetchJobListPage] Validation failed:',
+      parsed.error.flatten(),
+    );
+    throw new Error(
+      `Invalid job list page data: ${JSON.stringify(parsed.error.flatten().fieldErrors)}`,
+    );
   }
 
   return dtoToJobListPage(parsed.data);

@@ -1,4 +1,4 @@
-import { fetchJobListPage } from '@/features/jobs/data';
+import { fetchJobListPage } from '@/features/jobs/server/data';
 import { JOBS_PER_PAGE } from '@/features/jobs/constants';
 import { JobListPagination } from './job-list-pagination';
 

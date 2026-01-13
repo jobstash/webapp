@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { capitalize } from '@/lib/utils';
 import {
   formatNumber,
@@ -7,7 +9,7 @@ import {
   slugify,
   titleCase,
 } from '@/lib/server/utils';
-import { type JobListItemDto } from '@/features/jobs/dtos/job-list-item.dto';
+import { type JobListItemDto } from './job-list-item.dto';
 import { type JobListItemSchema } from '@/features/jobs/schemas';
 import { MappedInfoTagSchema } from '@/lib/schemas';
 import { SENIORITY_MAPPING } from '@/lib/constants';

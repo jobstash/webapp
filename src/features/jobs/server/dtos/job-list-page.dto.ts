@@ -1,6 +1,8 @@
+import 'server-only';
+
 import { z } from 'zod';
 
-import { jobListItemDto } from '@/features/jobs/dtos/job-list-item.dto';
+import { jobListItemDto } from './job-list-item.dto';
 
 export const jobListPageDto = z.object({
   page: z.number(),

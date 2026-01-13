@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { JobListPageSchema } from '@/features/jobs/schemas';
-import { dtoToJobListItem } from '@/features/jobs/dtos/dto-to-job-list-item';
+import { dtoToJobListItem } from './dto-to-job-list-item';
 
 import { JobListPageDto } from './job-list-page.dto';
 
