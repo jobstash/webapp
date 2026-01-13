@@ -43,6 +43,5 @@ export const jobListPageSchema = z.object({
   page: z.number(),
   total: z.number(),
   data: jobListItemSchema.array(),
-  hasNextPage: z.boolean(),
 });
 export type JobListPageSchema = z.infer<typeof jobListPageSchema>;

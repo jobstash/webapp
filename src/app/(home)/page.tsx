@@ -7,17 +7,19 @@ interface Props {
   searchParams: Promise<Record<string, string> & { page?: string }>;
 }
 
-const preload = (page: number) => {
+const preload = (page: number, searchParams: Record<string, string>) => {
   const pagesToPreload = [page - 2, page - 1, page + 1, page + 2].filter(
     (p) => p >= 1,
   );
-  pagesToPreload.forEach((p) => void fetchJobListPage({ page: p }));
+  pagesToPreload.forEach(
+    (p) => void fetchJobListPage({ page: p, searchParams }),
+  );
 };
 
 const HomePage = async ({ searchParams }: Props) => {
   const { page, ...restSearchParams } = await searchParams;
   const currentPage = Number(page) || 1;
-  preload(currentPage);
+  preload(currentPage, restSearchParams);
 
   return (
     <div className='flex gap-4'>
@@ -25,8 +27,8 @@ const HomePage = async ({ searchParams }: Props) => {
         <FiltersAside />
         <SocialsAside />
       </aside>
-      <section className='h-[6000px] grow'>
-        <JobList currentPage={currentPage} searchParams={restSearchParams} />;
+      <section className='grow'>
+        <JobList currentPage={currentPage} searchParams={restSearchParams} />
       </section>
     </div>
   );

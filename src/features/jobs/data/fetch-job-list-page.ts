@@ -28,8 +28,11 @@ export const fetchJobListPage = async ({
 
   const url = `${clientEnv.MW_URL}/jobs/list?${urlSearchParams}`;
   const response = await fetch(url, {
-    // Do not cache requests with search params (avoid cache stampede)
-    ...(!hasSearchParams && { next: { revalidate: 3600 } }),
+    // Only cache requests with no search params (avoid cache stampede)
+    ...(!hasSearchParams && {
+      cache: 'force-cache',
+      next: { revalidate: 3600 },
+    }),
   });
 
   if (!response.ok) {
