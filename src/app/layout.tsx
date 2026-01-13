@@ -28,10 +28,9 @@ type Props = Readonly<React.PropsWithChildren>;
 const RootLayout = ({ children }: Props) => (
   <html lang='en' className={cn('dark', interTight.className)}>
     <body className='antialiased'>
-      <AppHeader />
-      <div className='mx-auto max-w-7xl px-2 pt-4'>
-        <RootProviders>{children}</RootProviders>
-      </div>
+      <RootProviders header={<AppHeader />}>
+        <div className='mx-auto max-w-7xl px-2 pt-4'>{children}</div>
+      </RootProviders>
     </body>
   </html>
 );
