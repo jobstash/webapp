@@ -74,7 +74,7 @@
     "pre-push": "pnpm build && pnpm test"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
+    "**/*.{ts,tsx,json,md}": [
       "prettier --write",
       "oxlint --fix --fix-suggestions"
     ]

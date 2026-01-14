@@ -1,9 +1,9 @@
 import { SlidersHorizontalIcon, UserIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { SearchHeader } from '@/features/search';
 
 import { Brand } from './brand';
-import { SearchHeader } from './search-header';
 
 export const AppHeader = () => {
   return (

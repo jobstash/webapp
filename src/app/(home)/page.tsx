@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 
 import { SocialsAside } from '@/components/socials-aside';
 import { FiltersAside } from '@/features/filters/components/filters-aside';
 import { JobList } from '@/features/jobs/components/job-list/job-list';
+import { JobListBoundary } from '@/features/jobs/components/job-list/job-list-boundary.error';
 import { fetchJobListPage } from '@/features/jobs/server/data';
 
 interface Props {
@@ -30,10 +30,6 @@ const JobListError = () => (
   </div>
 );
 
-const handleJobListError = (error: Error) => {
-  console.error('[JobList] Failed to load jobs:', error);
-};
-
 const HomePage = async ({ searchParams }: Props) => {
   const { page, ...restSearchParams } = await searchParams;
   const currentPage = Number(page) || 1;
@@ -53,15 +49,12 @@ const HomePage = async ({ searchParams }: Props) => {
             </div>
           }
         >
-          <ErrorBoundary
-            fallback={<JobListError />}
-            onError={handleJobListError}
-          >
+          <JobListBoundary fallback={<JobListError />}>
             <JobList
               currentPage={currentPage}
               searchParams={restSearchParams}
             />
-          </ErrorBoundary>
+          </JobListBoundary>
         </Suspense>
       </section>
     </div>
