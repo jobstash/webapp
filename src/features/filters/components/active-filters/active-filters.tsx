@@ -2,7 +2,7 @@
 
 import { FILTER_KIND } from '@/features/filters/constants';
 import { useActiveFilters } from '@/features/filters/hooks';
-import { FilterConfigSchema } from '@/features/filters/schemas';
+import { type FilterConfigSchema } from '@/features/filters/schemas';
 
 import { ActiveFilterCheckbox } from './active-filter-checkbox';
 import { ActiveFilterRadio } from './active-filter-radio';

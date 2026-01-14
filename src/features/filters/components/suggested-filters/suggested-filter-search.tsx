@@ -38,7 +38,6 @@ export const SuggestedFilterSearch = ({ label, paramKey, options }: Props) => {
           isPending={isPending}
           label={label}
           icon={<MappedFilterIcon paramKey={paramKey} />}
-          disabled={isPending}
         />
       </PopoverTrigger>
       <PopoverContent

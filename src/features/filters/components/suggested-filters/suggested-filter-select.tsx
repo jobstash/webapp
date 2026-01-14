@@ -24,6 +24,7 @@ export const SuggestedFilterSelect = ({ label, paramKey, options }: Props) => {
   const [, setFilterParam] = useFilterQueryState(paramKey);
 
   const [isPending, startTransition] = useTransition();
+
   const handleSelect = (value: string) => {
     startTransition(() => {
       setFilterParam(value);

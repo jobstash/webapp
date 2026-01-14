@@ -1,6 +1,6 @@
 'use client';
 
-import { ClassValue } from 'clsx';
+import { type ClassValue } from 'clsx';
 import { ChevronDownIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

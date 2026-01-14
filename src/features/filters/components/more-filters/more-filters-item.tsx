@@ -36,14 +36,13 @@ export const MoreFiltersItem = (props: Props) => {
 
   return (
     <CommandItem
-      key={label}
       className='hover:cursor-pointer'
       onSelect={onSelect}
       disabled={isPending}
     >
       <div className='flex items-center gap-2'>
         <div className='grid size-4 place-items-center'>
-          {<MappedFilterIcon paramKey={paramKey} />}
+          <MappedFilterIcon paramKey={paramKey} />
         </div>
         {label}
       </div>

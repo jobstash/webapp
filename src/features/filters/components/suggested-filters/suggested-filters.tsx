@@ -44,12 +44,14 @@ export const SuggestedFilters = ({ configs }: Props) => {
             );
           }
           case FILTER_KIND.SEARCH: {
-            <SuggestedFilterSearch
-              key={key}
-              label={config.label}
-              paramKey={config.paramKey}
-              options={config.options}
-            />;
+            return (
+              <SuggestedFilterSearch
+                key={key}
+                label={config.label}
+                paramKey={config.paramKey}
+                options={config.options}
+              />
+            );
           }
           case FILTER_KIND.REMOTE_SEARCH: {
             return (

@@ -4,6 +4,6 @@ interface Props {
   paramKey: string;
 }
 
-export const MappedFilterIcon = ({ paramKey }: Props) => {
+export const MappedFilterIcon = ({ paramKey }: Props): React.ReactNode => {
   return filterIconMap[paramKey];
 };

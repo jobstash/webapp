@@ -27,7 +27,6 @@ export const SuggestedFilterSwitch = ({ label, paramKey }: Props) => {
       label={label}
       icon={<MappedFilterIcon paramKey={paramKey} />}
       onClick={toggleFilter}
-      disabled={isPending}
     />
   );
 };

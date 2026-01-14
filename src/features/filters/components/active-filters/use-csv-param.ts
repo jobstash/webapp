@@ -1,6 +1,10 @@
 import { useFilterQueryState } from '@/features/filters/hooks';
 
-const getNewValues = (values: string[], value: string, checked: boolean) => {
+const getNewValues = (
+  values: string[],
+  value: string,
+  checked: boolean,
+): string[] => {
   if (checked) {
     return values.includes(value) ? values : [...values, value];
   }

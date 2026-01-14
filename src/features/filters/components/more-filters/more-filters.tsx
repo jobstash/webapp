@@ -18,10 +18,11 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { FILTER_KIND } from '@/features/filters/constants';
-import { FilterConfigSchema } from '@/features/filters/schemas';
+import { type FilterConfigSchema } from '@/features/filters/schemas';
 
 import { MoreFiltersItem } from './more-filters-item';
 import { useMoreFiltersOptions } from './use-more-filters-options';
+
 interface Props {
   configs: FilterConfigSchema[];
 }
@@ -60,19 +61,17 @@ export const MoreFilters = ({ configs }: Props) => {
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options.map((config) => {
-                return (
-                  <MoreFiltersItem
-                    key={config.label}
-                    isPending={isPending}
-                    paramKey={config.paramKey}
-                    label={config.label}
-                    defaultValue={getDefaultValue(config)}
-                    closeDropdown={closeDropdown}
-                    startTransition={startTransition}
-                  />
-                );
-              })}
+              {options.map((config) => (
+                <MoreFiltersItem
+                  key={config.label}
+                  isPending={isPending}
+                  paramKey={config.paramKey}
+                  label={config.label}
+                  defaultValue={getDefaultValue(config)}
+                  closeDropdown={closeDropdown}
+                  startTransition={startTransition}
+                />
+              ))}
             </CommandGroup>
           </CommandList>
         </Command>
@@ -81,7 +80,7 @@ export const MoreFilters = ({ configs }: Props) => {
   );
 };
 
-const getDefaultValue = (config: FilterConfigSchema) => {
+const getDefaultValue = (config: FilterConfigSchema): string | null => {
   switch (config.kind) {
     case FILTER_KIND.SWITCH:
       return 'true';
