@@ -58,6 +58,7 @@ export const SuggestedFilterRemoteSearch = ({
         className='relative flex w-fit max-w-60 min-w-32 flex-col gap-2 border-neutral-800 p-0'
       >
         <RemoteVirtualizedCommand<{ name: string; normalizedName: string }[]>
+          queryKeyPrefix={paramKey}
           endpoint={endpoint}
           initialValues={initialValues}
           selectedValues={[]}

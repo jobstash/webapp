@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 
 import { fetchFilterConfigs } from '@/features/filters/server/data';
 
+import { FiltersAsideBoundary } from './filters-aside.error';
 import { FiltersAsideLayout } from './filters-aside.layout';
 import { FiltersAsideClient } from './filters-aside.client';
 import { FiltersAsideSkeleton } from './filters-aside.skeleton';
@@ -24,14 +24,10 @@ const FiltersAsideError = () => (
   </FiltersAsideLayout>
 );
 
-const handleFilterError = (error: Error) => {
-  console.error('[FiltersAside] Failed to load filters:', error);
-};
-
 export const FiltersAside = () => (
   <Suspense fallback={<FiltersAsideSkeleton />}>
-    <ErrorBoundary fallback={<FiltersAsideError />} onError={handleFilterError}>
+    <FiltersAsideBoundary fallback={<FiltersAsideError />}>
       <FiltersAsideRSC />
-    </ErrorBoundary>
+    </FiltersAsideBoundary>
   </Suspense>
 );
