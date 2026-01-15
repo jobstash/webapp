@@ -68,6 +68,22 @@ export const SearchList = ({ items, onSelect }) => {
 };
 ```
 
+## When to Extract Logic
+
+**Extract to hook when component has:**
+
+- `useState` (any state management)
+- `useEffect` (side effects)
+- Data fetching logic
+- Complex event handlers with side effects
+- Multiple interdependent derived values
+
+**Keep in component:**
+
+- Simple derived values from props: `const isActive = status === 'active'`
+- Single-line transformations: `const displayName = user?.name ?? 'Guest'`
+- UI-only refs: `const inputRef = useRef<HTMLInputElement>(null)`
+
 ## When NOT to Extract
 
 Keep logic in component when:

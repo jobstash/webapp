@@ -16,23 +16,6 @@ JobStash is a crypto native job board connecting talent with web3 organizations.
 - **Package Manager** - pnpm
 - **Linting** - oxlint, Prettier
 
-### React 19 & Compiler
-
-App uses React 19 with `reactCompiler: true` in Next.js config. The compiler handles memoization automatically.
-
-**Do NOT use:**
-
-- `useMemo` - compiler optimizes this
-- `useCallback` - compiler optimizes this
-- `React.memo` - compiler optimizes this
-
-### Data Fetching
-
-- **Server components** - Use `fetch()` directly (validated with Zod)
-- **Client components** - Always use `@tanstack/react-query` (never raw fetch/axios)
-
-See `react-best-practices` skill for react-query patterns.
-
 ## Commands
 
 ```bash
@@ -148,6 +131,23 @@ Any component fetching external data (server or client) MUST have an error bound
 - API route handlers → wrap critical sections
 
 This ensures graceful degradation when external services fail.
+
+### React 19 & Compiler
+
+App uses React 19 with `reactCompiler: true` in Next.js config. The compiler handles memoization automatically.
+
+**Do NOT use:**
+
+- `useMemo` - compiler optimizes this
+- `useCallback` - compiler optimizes this
+- `React.memo` - compiler optimizes this
+
+### Data Fetching
+
+- **Server components** - Use `fetch()` directly (validated with Zod)
+- **Client components** - Always use `@tanstack/react-query` (never raw fetch/axios)
+
+See `react-best-practices` skill for react-query patterns.
 
 ### Data Flow
 

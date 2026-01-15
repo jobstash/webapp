@@ -34,6 +34,23 @@ Handlers: Define in component body (React 19 compiler handles optimization)
 **Rule:** Use layout components for skeleton/error/content to prevent layout shift.
 **Details:** @react-suspense-error-boundaries.md
 
+## Route File Rules
+
+Route files (`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`) should only import and compose components.
+
+**Do:**
+
+- Import components from `@/features/` or local folders
+- Compose components with props and children
+
+**Don't:**
+
+- Declare components inline
+- Include hooks or state management
+- Write complex JSX logic
+
+**Details:** @react-route-files.md
+
 ## Component Design Rules
 
 **Single Responsibility:** One component = one reason to change. Split into utils, hooks, presentational, container.

@@ -123,3 +123,18 @@ const ActiveUsersList = () => {
   );
 };
 ```
+
+## Extraction Threshold
+
+Once a component contains state management (`useState`) or side effects (`useEffect`), ALL non-UI logic must be extracted:
+
+- State → Hook
+- Effects → Hook
+- Handlers with side effects → Hook
+- Data transformations → Hook or utility function
+
+The component keeps only:
+
+- Hook calls
+- Simple derived values from hook returns
+- JSX rendering
