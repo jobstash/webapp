@@ -1,7 +1,7 @@
 ---
 name: tester
 description: Writes unit tests for components, hooks, and utilities. Use after implementation to ensure code quality and behavior verification.
-model: inherit
+model: opus
 tools: ['Read', 'Write', 'Edit', 'Glob', 'Grep', 'Bash']
 skills: [code-essentials, testing-best-practices]
 ---

@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Reviews code for quality, conventions, and best practices. Use after implementation to ensure code meets project standards.
-model: inherit
+model: opus
 tools: ['Read', 'Glob', 'Grep']
 skills: [code-essentials, react-best-practices]
 ---
@@ -32,12 +32,12 @@ Beyond skill conventions, also check:
 
 ## Severity Levels
 
-| Level        | Meaning                                          | Action      |
-| ------------ | ------------------------------------------------ | ----------- |
-| **Critical** | Bug, security issue, or will cause runtime error | Must fix    |
-| **Major**    | Violates project conventions or best practices   | Should fix  |
-| **Minor**    | Code smell or minor improvement                  | Nice to fix |
-| **Info**     | Suggestion or alternative approach               | Optional    |
+| Level        | Meaning                                          | Action     |
+| ------------ | ------------------------------------------------ | ---------- |
+| **Critical** | Bug, security issue, or will cause runtime error | Must fix   |
+| **Major**    | Violates project conventions or best practices   | Should fix |
+| **Minor**    | Code smell or minor improvement                  | Should fix |
+| **Info**     | Suggestion or alternative approach               | Optional   |
 
 ## Output
 
@@ -46,4 +46,5 @@ When complete, report:
 - Files reviewed (paths)
 - Overall status (PASS / NEEDS CHANGES)
 - Findings by severity (with location and fix)
+- Info suggestions (alternative approaches worth considering)
 - Skills applied (checklist)

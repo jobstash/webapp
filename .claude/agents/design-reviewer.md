@@ -1,7 +1,7 @@
 ---
 name: design-reviewer
 description: Reviews UI components for design system compliance, accessibility, and UX patterns. Use after implementation to verify frontend design quality.
-model: inherit
+model: opus
 tools: ['Read', 'Glob', 'Grep']
 skills: [code-essentials, frontend-design]
 ---

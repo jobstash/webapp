@@ -1,7 +1,7 @@
 ---
 name: implementer
 description: Builds React components, hooks, and utilities following project conventions. Use when creating new features or modifying existing code.
-model: inherit
+model: opus
 tools: ['Read', 'Write', 'Edit', 'Glob', 'Grep', 'Bash']
 skills: [code-essentials, react-best-practices, frontend-design]
 ---
