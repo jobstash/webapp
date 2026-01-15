@@ -1,31 +1,31 @@
 ---
 name: brainstorm
-description: Interactive requirements gathering. Turn vague ideas into clear, actionable tasks with agent assignments. Use when discussing, clarifying, or planning a feature before implementation.
+description: Planning workflow. Enters plan mode to turn vague ideas into actionable task lists with agent assignments. Use when starting a new feature or implementation.
 ---
 
-# Brainstorm
+# Brainstorm Workflow
 
-## Purpose
+## Overview
 
-Transform a vague idea into a clear task list with agent assignments, ready for sequential execution.
+This workflow transforms a vague idea into a structured implementation plan with agent assignments, written to a plan file for approval.
 
-## Input
+**Input:** A vague idea or feature request (e.g., "we need better search" or "add salary filters")
 
-A vague idea or feature request (e.g., "we need better search" or "add salary filters").
+**Output:** A plan file (`.claude/plans/*.md`) containing:
 
-## Output
-
-A task list where each task has:
-
-- Clear description
-- Agent assignment (implementer, tester, design-reviewer, etc.)
-- Dependencies (if any)
+- Feature summary
+- Task list with agent assignments and pipelines
+- Ready for sequential execution after approval
 
 ---
 
-## Process
+## Workflow
 
-### Phase 1: Understand
+### Step 1: Enter Plan Mode
+
+If not already in plan mode, enter it now. The plan file will contain the final task list.
+
+### Step 2: Understand
 
 **Goal:** Clarify what we're building.
 
@@ -43,7 +43,7 @@ Questions to ask:
 - Skip unnecessary questions if intent is clear
 - Hint recommendation if confident
 
-### Phase 2: Challenge
+### Step 3: Challenge
 
 **Goal:** Surface decisions that need user input.
 
@@ -63,7 +63,7 @@ Questions to ask:
 - "Should filters persist in URL or local state?" → Affects architecture
 - "Inline edit or modal?" → UX decision with trade-offs
 
-### Phase 3: Define Tasks
+### Step 4: Define Tasks
 
 **Goal:** Break down into executable tasks with agent assignments.
 
@@ -89,11 +89,17 @@ For each task, determine:
 implementer → simplifier → tester → simplifier → [reviewer]
 ```
 
-### Phase 4: Present & Confirm
+### Step 5: Write Plan File
 
-Present the task list in this format:
+Write the task list to the plan file using this format:
 
 ```markdown
+# Feature: [Feature Name]
+
+## Summary
+
+[One paragraph describing what we're building and key decisions made]
+
 ## Tasks
 
 ### Task 1: [Title]
@@ -112,9 +118,19 @@ Present the task list in this format:
 
 **Description:** [What to review]
 **Agent:** design-reviewer
+
+## Execution
+
+After approval, execute tasks sequentially:
+
+1. Spawn agent for Task 1, run pipeline
+2. Spawn agent for Task 2, run pipeline
+3. Continue until all tasks complete
 ```
 
-Ask: "Does this task breakdown work? Ready to execute?"
+### Step 6: Exit Plan Mode
+
+Call `ExitPlanMode` to request user approval of the plan.
 
 ---
 
@@ -128,10 +144,16 @@ Each task must be:
 
 ---
 
-## Example Output
+## Example Plan File
 
 ```markdown
-## Feature: Salary Range Filter
+# Feature: Salary Range Filter
+
+## Summary
+
+Add a salary range filter to the job search. Users can set min/max salary using a dual-handle slider or direct input. Filter persists in URL for shareable links.
+
+## Tasks
 
 ### Task 1: Create SalaryRangeFilter component
 
@@ -149,17 +171,42 @@ Each task must be:
 
 **Description:** Review the salary filter for design system compliance and usability.
 **Agent:** design-reviewer
+
+## Execution
+
+After approval, execute tasks sequentially:
+
+1. Spawn implementer for Task 1, run full pipeline with design review
+2. Spawn implementer for Task 2, run pipeline
+3. Spawn design-reviewer for Task 3
 ```
 
 ---
 
-## After Confirmation
+## After Approval
 
-Once user confirms, the main session will:
+Once the user approves via `ExitPlanMode`:
 
-1. Execute tasks sequentially
-2. Spawn appropriate agents for each task
-3. Run the pipeline (with post-hooks)
-4. Report results with skills applied
+1. Read the task list from the plan file
+2. For each task:
+   - Spawn the assigned agent via `Task` tool
+   - Run the pipeline (agent → simplifier → tester → etc.)
+   - Report results before moving to next task
+3. After all tasks complete, summarize what was built
 
-**Note:** You (brainstorm) only define tasks. Execution happens in the main session.
+**Execution pattern:**
+
+```
+Task 1: implementer agent
+  ↓ completed
+Task 1: simplifier agent
+  ↓ completed
+Task 1: tester agent
+  ↓ completed
+Task 1: simplifier agent
+  ↓ completed
+→ Report Task 1 results
+
+Task 2: implementer agent
+  ...continue pattern
+```
