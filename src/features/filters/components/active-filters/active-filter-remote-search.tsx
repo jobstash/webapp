@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/popover';
 import { RemoteVirtualizedCommand } from '@/components/remote-virtualized-command';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
-import { REMOTE_FILTERS } from '@/features/filters/constants';
+import { FILTER_POPOVER_CONTENT_CLASS } from '@/features/filters/constants';
+import { getRemoteFilterEndpoint } from '@/features/filters/utils';
 
 import { ActiveFilterTrigger } from './active-filter-trigger';
 import { useCsvParam } from './use-csv-param';
@@ -47,8 +48,7 @@ export const ActiveFilterRemoteSearch = ({
     });
   };
 
-  const endpointUrl = REMOTE_FILTERS[paramKey as keyof typeof REMOTE_FILTERS];
-  const endpoint = (query: string) => `${endpointUrl}?query=${query}`;
+  const endpoint = getRemoteFilterEndpoint(paramKey);
 
   const initialValues = options.map((option) => option.value);
   const selectedValues = filterParam?.split(',') || [];
@@ -67,7 +67,7 @@ export const ActiveFilterRemoteSearch = ({
       <PopoverContent
         side='bottom'
         align='start'
-        className='relative flex w-fit max-w-60 min-w-32 flex-col gap-2 border-neutral-800 p-0'
+        className={FILTER_POPOVER_CONTENT_CLASS}
       >
         <RemoteVirtualizedCommand<{ name: string; normalizedName: string }[]>
           queryKeyPrefix={paramKey}

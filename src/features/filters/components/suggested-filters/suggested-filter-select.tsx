@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { FILTER_DROPDOWN_CONTENT_CLASS } from '@/features/filters/constants';
 import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
@@ -43,7 +44,7 @@ export const SuggestedFilterSelect = ({ label, paramKey, options }: Props) => {
       <DropdownMenuContent
         side='bottom'
         align='start'
-        className='w-fit max-w-60 min-w-32'
+        className={FILTER_DROPDOWN_CONTENT_CLASS}
       >
         {options.map((option) => (
           <DropdownMenuItem

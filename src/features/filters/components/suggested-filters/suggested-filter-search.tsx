@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { VirtualizedCommand } from '@/components/virtualized-command';
+import { FILTER_POPOVER_CONTENT_CLASS } from '@/features/filters/constants';
 import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
@@ -43,7 +44,7 @@ export const SuggestedFilterSearch = ({ label, paramKey, options }: Props) => {
       <PopoverContent
         side='bottom'
         align='start'
-        className='relative flex w-fit max-w-60 min-w-32 flex-col gap-2 border-neutral-800 p-0'
+        className={FILTER_POPOVER_CONTENT_CLASS}
       >
         <VirtualizedCommand
           options={options}

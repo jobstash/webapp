@@ -17,3 +17,8 @@ export const REMOTE_FILTERS = {
 };
 
 export const REMOTE_FILTERS_SET = new Set(Object.keys(REMOTE_FILTERS));
+
+export const FILTER_POPOVER_CONTENT_CLASS =
+  'relative flex w-fit max-w-60 min-w-32 flex-col gap-2 border-neutral-800 p-0';
+
+export const FILTER_DROPDOWN_CONTENT_CLASS = 'w-fit max-w-60 min-w-32';

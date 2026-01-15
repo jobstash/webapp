@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
+import { FILTER_DROPDOWN_CONTENT_CLASS } from '@/features/filters/constants';
 
 import { ActiveFilterTrigger } from './active-filter-trigger';
 
@@ -56,7 +57,7 @@ export const ActiveFilterRadio = ({ label, paramKey, options }: Props) => {
       <DropdownMenuContent
         side='bottom'
         align='start'
-        className='w-fit max-w-60 min-w-32'
+        className={FILTER_DROPDOWN_CONTENT_CLASS}
       >
         <DropdownMenuRadioGroup
           value={filterParam ?? undefined}

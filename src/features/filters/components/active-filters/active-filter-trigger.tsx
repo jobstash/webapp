@@ -1,8 +1,9 @@
 'use client';
 
-import { LoaderIcon, XIcon } from 'lucide-react';
+import { XIcon } from 'lucide-react';
 
 import { Button, type ButtonProps } from '@/components/ui/button';
+import { FilterIconSlot } from '@/features/filters/components/filter-icon-slot';
 import {
   ButtonGroup,
   ButtonGroupSeparator,
@@ -30,8 +31,6 @@ export const ActiveFilterTrigger = ({
   icon,
   ...props
 }: Props) => {
-  // Need to keep track of the label text
-  // Nuqs causes the label to flash when the filter is removed
   const labelText = usePrevious(label, !isPending);
 
   return (
@@ -45,13 +44,7 @@ export const ActiveFilterTrigger = ({
             disabled={isPending}
             {...props}
           >
-            <div className='grid size-4 place-items-center'>
-              {isPending ? (
-                <LoaderIcon className='shrink-0 animate-spin text-neutral-400' />
-              ) : (
-                icon
-              )}
-            </div>
+            <FilterIconSlot isPending={isPending} icon={icon} />
             {labelText}
           </Button>
         </TooltipTrigger>

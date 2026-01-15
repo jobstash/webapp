@@ -13,6 +13,7 @@ import {
 import { CommandGroup, CommandItem } from '@/components/ui/command';
 import { VirtualizedCommand } from '@/components/virtualized-command';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
+import { FILTER_POPOVER_CONTENT_CLASS } from '@/features/filters/constants';
 
 import { ActiveFilterTrigger } from './active-filter-trigger';
 import { useCsvParam } from './use-csv-param';
@@ -67,7 +68,7 @@ export const ActiveFiltersSearch = ({ label, paramKey, options }: Props) => {
       <PopoverContent
         side='bottom'
         align='start'
-        className='relative flex w-fit max-w-60 min-w-32 flex-col gap-2 border-neutral-800 p-0'
+        className={FILTER_POPOVER_CONTENT_CLASS}
       >
         <VirtualizedCommand
           options={dedupedOptions}
