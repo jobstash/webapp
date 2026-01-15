@@ -41,4 +41,4 @@ Export only when needed elsewhere. Prefer keeping code close to where it's used:
 - Use `type` import when applicable
 - Return/throw early inside functions - avoid deep nesting
 - No `any` type coercion - use utilize typescript: type guards, satisfies, `as` etc
-- Utilize typescript features e.g. optional chaining, nullish coalescing, satisfies
+- Avoid ternary operators in component render functions

@@ -75,19 +75,20 @@ For each task, determine:
 
 **Agent Selection Guide:**
 
-| Work Type                 | Agent             | Followed By             |
-| ------------------------- | ----------------- | ----------------------- |
-| Build component/hook/util | `implementer`     | `simplifier` → `tester` |
-| Write tests               | `tester`          | `simplifier`            |
-| Review UI/UX              | `design-reviewer` | -                       |
-| Review code quality       | `code-reviewer`   | -                       |
-| Review SEO (pages only)   | `seo-reviewer`    | -                       |
+| Work Type                 | Agent          | Followed By               |
+| ------------------------- | -------------- | ------------------------- |
+| Build component/hook/util | `implementer`  | `tester`                  |
+| Build page                | `implementer`  | `tester` → `seo-reviewer` |
+| Write tests               | `tester`       | -                         |
+| Review SEO (pages only)   | `seo-reviewer` | -                         |
 
 **Standard Pipeline for Implementation:**
 
 ```
-implementer → simplifier → tester → simplifier → [reviewer]
+implementer → tester [→ seo-reviewer if page]
 ```
+
+**Note:** `code-simplifier` and `design-reviewer` run once after ALL tasks complete (see Post-Implementation Review).
 
 ### Step 5: Write Plan File
 
@@ -106,18 +107,28 @@ Write the task list to the plan file using this format:
 
 **Description:** [What to build - one sentence]
 **Agent:** implementer
-**Pipeline:** implementer → simplifier → tester → simplifier
+**Pipeline:** implementer → tester
 
 ### Task 2: [Title]
 
 **Description:** [What to build - one sentence]
-**Agent:** tester
-**Pipeline:** tester → simplifier
+**Agent:** implementer
+**Pipeline:** implementer → tester → seo-reviewer (if page)
 
-### Task 3: [Title]
+## Post-Implementation Review
 
-**Description:** [What to review]
-**Agent:** design-reviewer
+After all tasks complete, run these agents on all modified code:
+
+1. `code-simplifier` - Refines all recently modified code for clarity and consistency
+2. `design-reviewer` - Reviews all UI components holistically for design compliance
+
+## Final Verification
+
+Run lint, build, and tests:
+
+1. `pnpm lint` - Fix any linting errors
+2. `pnpm build` - Ensure production build succeeds
+3. `pnpm test` - Ensure all tests pass
 
 ## Execution
 
@@ -126,6 +137,8 @@ After approval, execute tasks sequentially:
 1. Spawn agent for Task 1, run pipeline
 2. Spawn agent for Task 2, run pipeline
 3. Continue until all tasks complete
+4. Run post-implementation review (simplifier → design-reviewer)
+5. Run final verification (lint → build → test)
 ```
 
 ### Step 6: Exit Plan Mode
@@ -159,26 +172,37 @@ Add a salary range filter to the job search. Users can set min/max salary using 
 
 **Description:** Build a dual-handle slider component for filtering jobs by salary range, with min/max inputs.
 **Agent:** implementer
-**Pipeline:** implementer → simplifier → tester → simplifier → design-reviewer
+**Pipeline:** implementer → tester
 
 ### Task 2: Add salary filter to filters sidebar
 
 **Description:** Integrate SalaryRangeFilter into the existing filters-aside component.
 **Agent:** implementer
-**Pipeline:** implementer → simplifier → tester → simplifier
+**Pipeline:** implementer → tester
 
-### Task 3: Review filter UX
+## Post-Implementation Review
 
-**Description:** Review the salary filter for design system compliance and usability.
-**Agent:** design-reviewer
+After all tasks complete:
+
+1. `code-simplifier` - Refine SalaryRangeFilter and integration code
+2. `design-reviewer` - Review filter UI for design compliance and usability
+
+## Final Verification
+
+Run lint, build, and tests:
+
+1. `pnpm lint` - Fix any linting errors
+2. `pnpm build` - Ensure production build succeeds
+3. `pnpm test` - Ensure all tests pass
 
 ## Execution
 
-After approval, execute tasks sequentially:
+After approval:
 
-1. Spawn implementer for Task 1, run full pipeline with design review
+1. Spawn implementer for Task 1, run pipeline
 2. Spawn implementer for Task 2, run pipeline
-3. Spawn design-reviewer for Task 3
+3. Run review subagents: code-simplifier and design-reviewer on all modified files
+4. Run lint, build, and test to verify everything works
 ```
 
 ---
@@ -187,26 +211,59 @@ After approval, execute tasks sequentially:
 
 Once the user approves via `ExitPlanMode`:
 
+### Phase 1: Implementation
+
 1. Read the task list from the plan file
 2. For each task:
    - Spawn the assigned agent via `Task` tool
-   - Run the pipeline (agent → simplifier → tester → etc.)
+   - Run the pipeline (implementer → tester [→ seo-reviewer if page])
    - Report results before moving to next task
-3. After all tasks complete, summarize what was built
+
+### Phase 2: Post-Implementation Review
+
+After all tasks complete:
+
+1. Run review subagents: `code-simplifier` and `design-reviewer` on all modified files
+2. Apply suggested changes from review subagents
+
+### Phase 3: Final Verification
+
+Run lint, build, and tests to ensure everything works:
+
+1. `pnpm lint` - Fix any linting errors
+2. `pnpm build` - Ensure production build succeeds
+3. `pnpm test` (if applicable) - Ensure all tests pass
+4. Summarize what was built
 
 **Execution pattern:**
 
 ```
 Task 1: implementer agent
   ↓ completed
-Task 1: simplifier agent
-  ↓ completed
 Task 1: tester agent
-  ↓ completed
-Task 1: simplifier agent
   ↓ completed
 → Report Task 1 results
 
 Task 2: implementer agent
-  ...continue pattern
+  ↓ completed
+Task 2: tester agent
+  ↓ completed
+→ Report Task 2 results
+
+...continue until all tasks done
+
+Post-Implementation Review:
+  code-simplifier agent (all modified code)
+    ↓ completed
+  design-reviewer agent (all UI components)
+    ↓ completed
+
+Final Verification:
+  pnpm lint (fix errors)
+    ↓ completed
+  pnpm build (ensure success)
+    ↓ completed
+  pnpm test (if applicable)
+    ↓ completed
+→ Summarize what was built
 ```
