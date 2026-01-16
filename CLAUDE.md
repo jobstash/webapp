@@ -95,3 +95,7 @@ Required in `.env`:
 
 - `NEXT_PUBLIC_FRONTEND_URL` - Frontend URL
 - `NEXT_PUBLIC_MW_URL` - Middleware/API URL
+
+## Avoid (Wastes Time & Tokens)
+
+- **Do NOT test Zod schemas** - Zod guarantees schema enforcement. Testing that a schema validates correctly is testing Zod's implementation, not your code's behavior.

@@ -42,3 +42,12 @@ Export only when needed elsewhere. Prefer keeping code close to where it's used:
 - Return/throw early inside functions - avoid deep nesting
 - No `any` type coercion - use utilize typescript: type guards, satisfies, `as` etc
 - Avoid ternary operators in component render functions
+
+## React
+
+- Always extract all logic into custom hooks - only ui-related logic should remain in the component
+
+## Testing
+
+- Colocate: test files should be on the same folder as the code they test
+- Do not test zod schemas

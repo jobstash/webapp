@@ -93,6 +93,7 @@ it('allows user to filter jobs by selecting a location option');
 
 ## Checklist
 
+- [ ] Colocate: test files should be on the same folder as the code they test
 - [ ] Tests describe what code does, not how
 - [ ] Refactoring internals wouldn't break tests
 - [ ] No assertions on internal state or re-render counts
@@ -109,5 +110,27 @@ Stop if you're:
 - Testing that a mock was rendered
 - Writing tests that break on refactor
 - Adding test-only methods to production code
+
+## Do NOT Test
+
+### Zod Schemas
+
+**Never test Zod schemas directly.** Testing that a schema validates/rejects data is testing Zod's implementation, not your code's behavior.
+
+```typescript
+// BAD - testing Zod's implementation
+it('validates email field', () => {
+  const result = userSchema.safeParse({ email: 'invalid' });
+  expect(result.success).toBe(false);
+});
+
+// BAD - testing schema shape
+it('requires name field', () => {
+  const result = userSchema.safeParse({});
+  expect(result.error?.issues[0].path).toContain('name');
+});
+```
+
+Zod guarantees enforcement. If the schema is defined correctly, it works. Test the **behavior that uses the schema** instead (e.g., component shows error message, API returns 400).
 
 **REQUIRED COMPANION:** Use with superpowers:test-driven-development for the complete testing workflow (TDD handles _when_, this handles _what_).
