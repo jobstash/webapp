@@ -3,32 +3,26 @@ import { Suspense } from 'react';
 import { SocialsAside } from '@/components/socials-aside';
 import { FiltersAside } from '@/features/filters/components/filters-aside';
 import { JobList } from '@/features/jobs/components/job-list/job-list';
-import { JobListBoundary } from '@/features/jobs/components/job-list/job-list-boundary.error';
 import { fetchJobListPage } from '@/features/jobs/server/data';
 
 interface Props {
   searchParams: Promise<Record<string, string> & { page?: string }>;
 }
 
-const preload = (page: number, searchParams: Record<string, string>) => {
-  const pagesToPreload = [page - 2, page - 1, page + 1, page + 2].filter(
-    (p) => p >= 1,
-  );
-  pagesToPreload.forEach((p) => {
-    fetchJobListPage({ page: p, searchParams }).catch((error) => {
-      console.warn(`[Preload] Failed to preload page ${p}:`, error.message);
-    });
-  });
-};
+const preload = (currentPage: number, searchParams: Record<string, string>) => {
+  const adjacentPages = [
+    currentPage - 2,
+    currentPage - 1,
+    currentPage + 1,
+    currentPage + 2,
+  ].filter((page) => page >= 1);
 
-const JobListError = () => (
-  <div className='flex flex-col items-center justify-center gap-2 py-12'>
-    <p className='text-muted-foreground'>Failed to load jobs</p>
-    <p className='text-sm text-muted-foreground'>
-      Please try refreshing the page
-    </p>
-  </div>
-);
+  for (const page of adjacentPages) {
+    fetchJobListPage({ page, searchParams }).catch((error) => {
+      console.warn(`[Preload] Failed to preload page ${page}:`, error.message);
+    });
+  }
+};
 
 const HomePage = async ({ searchParams }: Props) => {
   const { page, ...restSearchParams } = await searchParams;
@@ -49,12 +43,7 @@ const HomePage = async ({ searchParams }: Props) => {
             </div>
           }
         >
-          <JobListBoundary fallback={<JobListError />}>
-            <JobList
-              currentPage={currentPage}
-              searchParams={restSearchParams}
-            />
-          </JobListBoundary>
+          <JobList currentPage={currentPage} searchParams={restSearchParams} />
         </Suspense>
       </section>
     </div>
