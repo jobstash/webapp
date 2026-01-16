@@ -43,3 +43,6 @@ next-env.d.ts
 *.local*
 
 docs/dev/archived
+
+# worktree session files (created by worktree-dev.sh)
+.worktree-session.json
