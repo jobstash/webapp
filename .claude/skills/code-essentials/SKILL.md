@@ -16,7 +16,7 @@ Fundamental principles to apply when writing any code.
 
 ## Project Preferences
 
-- Use **kebab-case** for file names
+- Use **kebab-case** for file names and commit messages
 - Prefer **arrow functions** over function declarations
 
 ## Conventions
