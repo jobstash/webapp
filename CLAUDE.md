@@ -78,6 +78,44 @@ src/
 - **UI Components** - shadcn/ui, always use `cn()` from `@/lib/utils`
 - **Error boundaries** - Required for all components fetching external data
 
+### DTO-to-Schema Mapping
+
+DTOs mirror API responses. Schemas are UI-optimized. Transform in `dto-to-*.ts`.
+
+**Why This Pattern:**
+
+- **Isolate API changes** - API updates only affect DTOs and transformers, not UI code
+- **Frontend-optimized** - Flatten nested data, simplify access patterns for components
+- **Single update point** - Schema changes propagate automatically through transformers
+- **Type safety** - Explicit contracts; invalid data filtered early with `null` returns
+- **Naming alignment** - Fix conventions (snake_case → camelCase), use UI terminology
+
+**File Structure:**
+
+```
+features/{feature}/server/dtos/
+├── *.dto.ts              # API response shape (server-only)
+└── dto-to-*.ts           # DTO → schema transformation
+features/{feature}/
+└── schemas.ts            # UI-optimized schemas
+```
+
+**Transformation Patterns:**
+
+| Pattern     | DTO (API)                  | Schema (UI)            |
+| ----------- | -------------------------- | ---------------------- |
+| Restructure | `googleAnalyticsEventId`   | `analytics.id`         |
+| Normalize   | `value: string \| boolean` | `value: string`        |
+| Rename      | `SINGLE_SELECT`            | `SWITCH`, `RADIO`, …   |
+| Enrich      | —                          | `isSuggested: boolean` |
+
+**Guidelines:**
+
+- DTOs validate API responses (server-only, exact API shape)
+- Schemas define UI types (flat structures, UI terminology)
+- Transformers handle logic-based routing, normalization, filtering
+- Return `null` for invalid/unusable data (filter early)
+
 ### Skills (load for detailed patterns)
 
 | Skill                    | When to Load                        |

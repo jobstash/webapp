@@ -100,6 +100,12 @@ cp -r .claude <WORKTREE_PATH>/
 cp CLAUDE.md <WORKTREE_PATH>/
 ```
 
+Copy environment file (if exists):
+
+```bash
+test -f .env && cp .env <WORKTREE_PATH>/
+```
+
 ### 1.5 Update VS Code Workspace
 
 Add worktree to `../jobstash.code-workspace`:
