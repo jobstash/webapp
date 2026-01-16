@@ -1,13 +1,12 @@
 #!/bin/bash
 # worktree-dev.sh - Parallel feature development with git worktrees
-# Usage: ./scripts/worktree-dev.sh "<description>"
+# Usage: ./scripts/worktree-dev.sh <branch> "<description>"
 #
 # This script:
-# 1. Auto-generates branch name from description (feat/, fix/, test/, etc.)
-# 2. Creates a git worktree for isolated development
-# 3. Launches Claude in the worktree (triggers brainstorm)
-# 4. After Claude exits, cleans up the worktree
-# 5. Returns to main repo and launches Claude with summary
+# 1. Creates a git worktree for isolated development
+# 2. Launches Claude in the worktree (triggers brainstorm)
+# 3. After Claude exits, cleans up the worktree
+# 4. Returns to main repo and launches Claude with summary
 
 set -e
 
@@ -18,62 +17,66 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Validate arguments
-if [ -z "$1" ]; then
-  echo -e "${RED}Error: Description required${NC}"
-  echo "Usage: ./scripts/worktree-dev.sh \"<description>\""
-  echo ""
-  echo "Examples:"
-  echo "  ./scripts/worktree-dev.sh \"Add salary range filter\"        -> feat/add-salary-range-filter"
-  echo "  ./scripts/worktree-dev.sh \"Fix login button not working\"   -> fix/login-button-not-working"
-  echo "  ./scripts/worktree-dev.sh \"Add unit tests for auth hook\"   -> test/unit-tests-for-auth-hook"
-  echo "  ./scripts/worktree-dev.sh \"Refactor job card component\"    -> refactor/job-card-component"
+# Check for jq
+if ! command -v jq &> /dev/null; then
+  echo -e "${RED}Error: jq is required but not installed${NC}"
+  echo "Install with: brew install jq"
   exit 1
 fi
 
-DESCRIPTION="$1"
+# Validate arguments
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo -e "${RED}Error: Branch name and description required${NC}"
+  echo "Usage: ./scripts/worktree-dev.sh <branch> \"<description>\""
+  echo ""
+  echo "Examples:"
+  echo "  ./scripts/worktree-dev.sh feat/salary-filter \"Add salary range filter\""
+  echo "  ./scripts/worktree-dev.sh fix/login-button \"Fix login button not working\""
+  echo "  ./scripts/worktree-dev.sh test/auth-hook \"Add unit tests for auth hook\""
+  exit 1
+fi
+
+BRANCH="$1"
+DESCRIPTION="$2"
 BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-# Generate branch name from description
-generate_branch_name() {
-  local desc="$1"
-  local desc_lower=$(echo "$desc" | tr '[:upper:]' '[:lower:]')
-  local prefix="feat"
+# Add worktree to VS Code workspace
+add_to_workspace() {
+  local worktree_name="$1"
 
-  # Determine prefix based on keywords in description
-  if echo "$desc_lower" | grep -qE "^(fix|bug|patch|resolve|correct)"; then
-    prefix="fix"
-  elif echo "$desc_lower" | grep -qE "(test|spec|unit test|e2e|integration test)"; then
-    prefix="test"
-  elif echo "$desc_lower" | grep -qE "^(refactor|restructure|reorganize|simplify|clean)"; then
-    prefix="refactor"
-  elif echo "$desc_lower" | grep -qE "^(doc|document|readme|update doc)"; then
-    prefix="docs"
-  elif echo "$desc_lower" | grep -qE "^(chore|update dep|upgrade|bump|config)"; then
-    prefix="chore"
-  elif echo "$desc_lower" | grep -qE "^(style|format|lint|css|styling)"; then
-    prefix="style"
-  elif echo "$desc_lower" | grep -qE "^(perf|performance|optimize|speed)"; then
-    prefix="perf"
-  elif echo "$desc_lower" | grep -qE "^(build|ci|deploy|pipeline)"; then
-    prefix="build"
+  if [ ! -f "$WORKSPACE_FILE" ]; then
+    # Create new workspace with main repo + new worktree
+    jq -n \
+      --arg main "webapp" \
+      --arg wt "$worktree_name" \
+      '{folders: [{name: "webapp (main)", path: $main}, {name: $wt, path: $wt}], settings: {}}' \
+      > "$WORKSPACE_FILE"
+  else
+    # Add to existing workspace if not already present
+    if ! jq -e ".folders[] | select(.path == \"$worktree_name\")" "$WORKSPACE_FILE" > /dev/null 2>&1; then
+      jq --arg wt "$worktree_name" \
+        '.folders += [{name: $wt, path: $wt}]' \
+        "$WORKSPACE_FILE" > "$WORKSPACE_FILE.tmp" && mv "$WORKSPACE_FILE.tmp" "$WORKSPACE_FILE"
+    fi
   fi
-
-  # Remove common prefix words and convert to slug
-  local slug=$(echo "$desc_lower" \
-    | sed -E 's/^(add|create|implement|fix|bug|patch|resolve|correct|test|write|refactor|restructure|update|doc|document|chore|style|perf|build|ci)[[:space:]]*//' \
-    | sed -E 's/[^a-z0-9]+/-/g' \
-    | sed -E 's/^-+|-+$//g' \
-    | cut -c1-40)
-
-  echo "${prefix}/${slug}"
 }
 
-BRANCH=$(generate_branch_name "$DESCRIPTION")
+# Remove worktree from VS Code workspace
+remove_from_workspace() {
+  local worktree_name="$1"
+
+  if [ -f "$WORKSPACE_FILE" ]; then
+    jq --arg wt "$worktree_name" \
+      '.folders = [.folders[] | select(.path != $wt)]' \
+      "$WORKSPACE_FILE" > "$WORKSPACE_FILE.tmp" && mv "$WORKSPACE_FILE.tmp" "$WORKSPACE_FILE"
+  fi
+}
+
 MAIN_REPO=$(pwd)
 WORKTREE_NAME="webapp-$(echo "$BRANCH" | tr '/' '-')"
 WORKTREE_PATH="../$WORKTREE_NAME"
 WORKTREE_ABSOLUTE="$(cd "$(dirname "$WORKTREE_PATH")" 2>/dev/null && pwd)/$WORKTREE_NAME"
+WORKSPACE_FILE="$MAIN_REPO/../jobstash.code-workspace"
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}Worktree Development Workflow${NC}"
@@ -83,6 +86,7 @@ echo -e "Branch:      ${GREEN}$BRANCH${NC}"
 echo -e "Base:        ${GREEN}$BASE_BRANCH${NC}"
 echo -e "Description: ${GREEN}$DESCRIPTION${NC}"
 echo -e "Worktree:    ${GREEN}$WORKTREE_PATH${NC}"
+echo -e "Workspace:   ${GREEN}$WORKSPACE_FILE${NC}"
 echo ""
 
 # Check if branch already exists
@@ -90,7 +94,7 @@ if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
   # Branch exists - check if it has an active worktree
   if git worktree list | grep -q "$BRANCH"; then
     echo -e "${RED}Error: Branch '$BRANCH' has an active worktree${NC}"
-    echo "Use a different description or finish the existing worktree session"
+    echo "Use a different branch name or finish the existing worktree session"
     exit 1
   fi
 
@@ -133,6 +137,8 @@ else
   git worktree add "$WORKTREE_PATH" "$BRANCH"
 fi
 echo -e "${GREEN}✓ Worktree created${NC}"
+add_to_workspace "$WORKTREE_NAME"
+echo -e "${GREEN}✓ Added to VS Code workspace${NC}"
 
 # Step 2: Copy Claude config to worktree
 echo -e "${BLUE}[2/6] Copying Claude config to worktree...${NC}"
@@ -218,8 +224,11 @@ if git worktree list | grep -q "$WORKTREE_NAME"; then
     echo "You may need to run: git worktree remove $WORKTREE_PATH --force"
   }
   echo -e "${GREEN}✓ Worktree removed${NC}"
+  remove_from_workspace "$WORKTREE_NAME"
+  echo -e "${GREEN}✓ Removed from VS Code workspace${NC}"
 else
   echo -e "${YELLOW}Worktree already removed${NC}"
+  remove_from_workspace "$WORKTREE_NAME"
 fi
 
 # Smart branch cleanup - only delete if no commits were made
