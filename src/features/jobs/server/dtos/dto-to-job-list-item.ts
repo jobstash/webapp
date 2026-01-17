@@ -10,11 +10,19 @@ import {
   titleCase,
 } from '@/lib/server/utils';
 import { type JobListItemDto } from './job-list-item.dto';
-import { type JobListItemSchema } from '@/features/jobs/schemas';
+import {
+  type JobFundingRoundSchema,
+  type JobInvestorSchema,
+  type JobListItemSchema,
+  type JobOrganizationSchema,
+} from '@/features/jobs/schemas';
 import { MappedInfoTagSchema } from '@/lib/schemas';
 import { SENIORITY_MAPPING } from '@/lib/constants';
-import { FundingRoundDto } from '@/lib/server/dtos';
+import { FundingRoundDto, InvestorDto } from '@/lib/server/dtos';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
+
+const createFilterUrl = (param: string, value: string) =>
+  `/?${param}=${encodeURIComponent(value)}`;
 
 export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const {
@@ -74,6 +82,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'seniority',
       label: SENIORITY_MAPPING[seniority as keyof typeof SENIORITY_MAPPING],
+      href: createFilterUrl('seniority', seniority),
     });
   }
 
@@ -89,6 +98,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'location',
       label: capitalize(location),
+      href: createFilterUrl('location', location),
     });
   }
 
@@ -96,6 +106,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'workMode',
       label: capitalize(locationType, true),
+      href: createFilterUrl('locationType', locationType),
     });
   }
 
@@ -103,6 +114,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'commitment',
       label: titleCase(commitment),
+      href: createFilterUrl('commitment', commitment),
     });
   }
 
@@ -110,6 +122,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'paysInCrypto',
       label: 'Pays in Crypto',
+      href: createFilterUrl('paysInCrypto', 'true'),
     });
   }
 
@@ -117,6 +130,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'offersTokenAllocation',
       label: 'Token Allocation',
+      href: createFilterUrl('offersTokenAllocation', 'true'),
     });
   }
 
@@ -124,6 +138,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'category',
       label: titleCase(classification),
+      href: createFilterUrl('classification', classification),
     });
   }
 
@@ -173,71 +188,59 @@ const dtoToJobItemTag = (
   }));
 };
 
-const getOrgFundingInfo = (fundingRounds: FundingRoundDto[] = []) => {
-  let lastFundingAmount = null;
-  let lastFundingDate = null;
-
-  if (fundingRounds.length > 0) {
-    for (const fundingRound of fundingRounds) {
-      if (fundingRound.date && fundingRound.date > (lastFundingDate ?? 0)) {
-        lastFundingDate = fundingRound.date;
-        lastFundingAmount = fundingRound.raisedAmount ?? 0;
-      }
-    }
-  }
-
-  return {
-    lastDate: lastFundingDate ? `${shortTimestamp(lastFundingDate)}` : null,
-    lastAmount: lastFundingAmount
-      ? `${formatNumber(lastFundingAmount * 1_000_000)}`
-      : null,
-  };
+const dtoToFundingRounds = (
+  fundingRounds: FundingRoundDto[],
+): JobFundingRoundSchema[] => {
+  return fundingRounds
+    .filter((fr) => fr.roundName)
+    .sort((a, b) => (b.date ?? 0) - (a.date ?? 0))
+    .map((fr) => ({
+      roundName: fr.roundName!,
+      amount: fr.raisedAmount
+        ? `$${formatNumber(fr.raisedAmount * 1_000_000)}`
+        : null,
+      date: fr.date ? shortTimestamp(fr.date) : null,
+      href: createFilterUrl(
+        'fundingRounds',
+        fr.roundName!.toLowerCase().replace(/\s+/g, '-'),
+      ),
+    }));
 };
 
-const createJobOrgInfoTags = (
-  dto: JobListItemDto['organization'],
-): MappedInfoTagSchema[] => {
-  if (!dto) return [];
-
-  const { fundingRounds, headcountEstimate } = dto;
-  const { lastAmount, lastDate } = getOrgFundingInfo(fundingRounds);
-
-  const infoTags: MappedInfoTagSchema[] = [];
-  if (lastAmount) {
-    infoTags.push({
-      iconKey: 'lastFundingAmount',
-      label: `Last Funding: $${lastAmount}`,
-    });
-  }
-
-  if (lastDate) {
-    infoTags.push({
-      iconKey: 'lastFundingDate',
-      label: `Funding Date: ${lastDate}`,
-    });
-  }
-
-  if (headcountEstimate) {
-    infoTags.push({
-      iconKey: 'employees',
-      label: `Employees: ${headcountEstimate}`,
-    });
-  }
-
-  return infoTags;
+const dtoToInvestors = (investors: InvestorDto[]): JobInvestorSchema[] => {
+  return investors.map((inv) => ({
+    name: inv.name,
+    href: createFilterUrl('investors', inv.normalizedName),
+  }));
 };
 
 const dtoToJobItemOrg = (
   dto: JobListItemDto['organization'],
-): JobListItemSchema['organization'] => {
+): JobOrganizationSchema | null => {
   if (!dto) return null;
 
+  const {
+    name,
+    website,
+    location,
+    logoUrl,
+    headcountEstimate,
+    fundingRounds,
+    investors,
+  } = dto;
+
   return {
-    name: dto.name,
-    logo: getLogoUrl(dto.website, dto.logoUrl),
-    location: dto.location,
-    infoTags: createJobOrgInfoTags(dto),
-    url: dto.logoUrl,
+    name,
+    href: createFilterUrl(
+      'organizations',
+      name.toLowerCase().replace(/\s+/g, '-'),
+    ),
+    websiteUrl: website,
+    location,
+    logo: getLogoUrl(website, logoUrl),
+    employeeCount: headcountEstimate ? `${headcountEstimate}` : null,
+    fundingRounds: dtoToFundingRounds(fundingRounds),
+    investors: dtoToInvestors(investors),
   };
 };
 
