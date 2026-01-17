@@ -15,6 +15,32 @@ export const jobTagSchema = z.object({
 });
 export type JobTagSchema = z.infer<typeof jobTagSchema>;
 
+export const jobFundingRoundSchema = z.object({
+  roundName: nonEmptyStringSchema,
+  amount: nullableStringSchema,
+  date: nullableStringSchema,
+  href: nonEmptyStringSchema,
+});
+export type JobFundingRoundSchema = z.infer<typeof jobFundingRoundSchema>;
+
+export const jobInvestorSchema = z.object({
+  name: nonEmptyStringSchema,
+  href: nonEmptyStringSchema,
+});
+export type JobInvestorSchema = z.infer<typeof jobInvestorSchema>;
+
+export const jobOrganizationSchema = z.object({
+  name: nonEmptyStringSchema,
+  href: nonEmptyStringSchema,
+  websiteUrl: nullableStringSchema,
+  location: nullableStringSchema,
+  logo: nullableStringSchema,
+  employeeCount: nullableStringSchema,
+  fundingRounds: jobFundingRoundSchema.array(),
+  investors: jobInvestorSchema.array(),
+});
+export type JobOrganizationSchema = z.infer<typeof jobOrganizationSchema>;
+
 export const jobListItemSchema = z.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
@@ -23,15 +49,7 @@ export const jobListItemSchema = z.object({
   summary: nullableStringSchema,
   infoTags: mappedInfoTagSchema.array(),
   tags: jobTagSchema.array(),
-  organization: z.nullable(
-    z.object({
-      name: nonEmptyStringSchema,
-      url: nullableStringSchema,
-      location: nullableStringSchema,
-      logo: nullableStringSchema,
-      infoTags: mappedInfoTagSchema.array(),
-    }),
-  ),
+  organization: jobOrganizationSchema.nullable(),
   timestampText: nonEmptyStringSchema,
   badge: z.nullable(
     z.enum(Object.values(JOB_ITEM_BADGE) as [string, ...string[]]),
