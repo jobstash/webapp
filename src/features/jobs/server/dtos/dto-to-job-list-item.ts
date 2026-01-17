@@ -109,7 +109,11 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     });
   }
 
-  if (locationType) {
+  const isRedundantRemote =
+    location?.toLowerCase() === 'remote' &&
+    locationType?.toLowerCase() === 'remote';
+
+  if (locationType && !isRedundantRemote) {
     tags.push({
       iconKey: 'workMode',
       label: capitalize(locationType, true),
