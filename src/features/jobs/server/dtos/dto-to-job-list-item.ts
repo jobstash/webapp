@@ -193,7 +193,7 @@ const dtoToJobItemTag = (
 ): JobListItemSchema['tags'] => {
   return dto.map((tag) => ({
     id: tag.id,
-    name: tag.name,
+    name: titleCase(tag.name),
     normalizedName: tag.normalizedName,
     colorIndex: getJobTechColorIndex(tag.id),
   }));
