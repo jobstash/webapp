@@ -1,7 +1,8 @@
-import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLinkIcon } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { LinkWithLoader } from '@/components/link-with-loader';
 import { type JobListItemSchema } from '@/features/jobs/schemas';
 import { JobListItemBadge } from './job-list-item-badge';
 import { JobListItemOrg } from './job-list-item-org';
@@ -18,7 +19,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
   return (
     <article
       className={cn(
-        'group relative overflow-hidden rounded-xl bg-card',
+        'group relative overflow-hidden rounded-2xl bg-card',
         'border border-border/50 shadow-sm',
         'transition-all duration-200',
         'hover:border-border hover:shadow-md',
@@ -34,14 +35,14 @@ export const JobListItem = ({ job }: JobListItemProps) => {
         )}
       />
 
-      <div className='p-5'>
+      <div className='p-5 pb-3'>
         {/* View Details - top right */}
         <div className='absolute top-5 right-5'>
           <Badge variant='outline' asChild className='rounded-md py-1'>
-            <Link href={href} target='_blank' rel='noopener'>
+            <LinkWithLoader href={href}>
+              <ExternalLinkIcon className='size-3' />
               View Details
-              <ExternalLink className='size-3' />
-            </Link>
+            </LinkWithLoader>
           </Badge>
         </div>
 
@@ -56,18 +57,16 @@ export const JobListItem = ({ job }: JobListItemProps) => {
         <div className='space-y-4'>
           {/* Title */}
           <div className='flex h-6 justify-between gap-4 self-baseline'>
-            <Link
+            <LinkWithLoader
               href={href}
-              target='_blank'
-              rel='noopener'
               className={cn(
                 'text-lg leading-tight font-semibold text-foreground',
                 'transition-colors duration-150',
-                'hover:text-primary',
+                'hover:text-primary hover:underline',
               )}
             >
               {title}
-            </Link>
+            </LinkWithLoader>
           </div>
 
           {/* Info Tags */}
@@ -78,7 +77,10 @@ export const JobListItem = ({ job }: JobListItemProps) => {
             {organization && <JobListItemOrg organization={organization} />}
             <div
               className={cn(
-                organization?.fundingRounds?.length ? 'mt-0' : 'mt-2',
+                !!organization?.fundingRounds.length ||
+                  !!organization?.investors.length
+                  ? 'mt-0'
+                  : 'mt-2',
               )}
             >
               <JobListItemTechTags tags={tags} />

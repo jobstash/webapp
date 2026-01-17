@@ -1,15 +1,15 @@
 import {
-  Briefcase,
-  Building2,
-  Calendar,
-  Clock,
-  Coins,
-  DollarSign,
-  Globe,
-  MapPin,
-  Tag,
-  Users,
-  Wallet,
+  Building2Icon,
+  CalendarIcon,
+  ClockIcon,
+  CoinsIcon,
+  DollarSignIcon,
+  GlobeIcon,
+  MapPinIcon,
+  TagIcon,
+  UsersIcon,
+  UserStarIcon,
+  WalletIcon,
 } from 'lucide-react';
 
 interface InfoTagIconProps {
@@ -17,21 +17,21 @@ interface InfoTagIconProps {
 }
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  posted: Clock,
-  seniority: Briefcase,
-  salary: DollarSign,
-  location: MapPin,
-  workMode: Globe,
-  commitment: Calendar,
-  paysInCrypto: Wallet,
-  offersTokenAllocation: Coins,
-  category: Tag,
-  lastFundingAmount: DollarSign,
-  lastFundingDate: Calendar,
-  employees: Users,
+  posted: ClockIcon,
+  seniority: UserStarIcon,
+  salary: DollarSignIcon,
+  location: MapPinIcon,
+  workMode: GlobeIcon,
+  commitment: CalendarIcon,
+  paysInCrypto: WalletIcon,
+  offersTokenAllocation: CoinsIcon,
+  category: TagIcon,
+  lastFundingAmount: DollarSignIcon,
+  lastFundingDate: CalendarIcon,
+  employees: UsersIcon,
 };
 
 export const InfoTagIcon = ({ iconKey }: InfoTagIconProps) => {
-  const Icon = ICON_MAP[iconKey] ?? Building2;
+  const Icon = ICON_MAP[iconKey] ?? Building2Icon;
   return <Icon className='size-3.5' aria-hidden='true' />;
 };

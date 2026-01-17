@@ -2,7 +2,12 @@ import Link from 'next/link';
 
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, MapPin, Users } from 'lucide-react';
+import {
+  ChevronRight,
+  ExternalLinkIcon,
+  LandmarkIcon,
+  UsersIcon,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { ImageWithFallback } from '@/components/image-with-fallback';
@@ -26,33 +31,44 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
 
   const hasExpandableContent = fundingRounds.length > 0 || investors.length > 0;
 
+  const tagStyles = cn(
+    'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1',
+    'bg-muted/50 text-xs text-muted-foreground',
+    'ring-1 ring-border/50',
+  );
+
+  const linkTagStyles = cn(
+    tagStyles,
+    'transition-all duration-150',
+    'hover:bg-muted hover:text-foreground hover:ring-border',
+  );
+
   return (
     <div className='space-y-2'>
-      {/* Organization header */}
-      <div className='flex items-center gap-3'>
-        <ImageWithFallback
-          src={logo ?? ''}
-          alt={`${name} logo`}
-          width={40}
-          height={40}
-          className='shrink-0 rounded-lg ring-1 ring-border/50'
-          fallback={
-            <div
-              className={cn(
-                'flex size-10 items-center justify-center rounded-lg',
-                'bg-linear-to-br from-muted to-muted/50',
-                'text-sm font-semibold text-muted-foreground',
-                'ring-1 ring-border/50',
-              )}
-            >
-              {name.charAt(0).toUpperCase()}
-            </div>
-          }
-        />
+      <div className='flex flex-wrap items-center gap-4'>
+        {/* Logo + Name/Location */}
+        <div className='flex items-center gap-3'>
+          <ImageWithFallback
+            src={logo ?? ''}
+            alt={`${name} logo`}
+            width={40}
+            height={40}
+            className='shrink-0 rounded-lg ring-1 ring-border/50'
+            fallback={
+              <div
+                className={cn(
+                  'flex size-10 items-center justify-center rounded-lg',
+                  'bg-linear-to-br from-muted to-muted/50',
+                  'text-sm font-semibold text-muted-foreground',
+                  'ring-1 ring-border/50',
+                )}
+              >
+                {name.charAt(0).toUpperCase()}
+              </div>
+            }
+          />
 
-        {/* Title + Subtitle */}
-        <div className='flex min-w-0 flex-col gap-1'>
-          <div className='flex flex-wrap items-center gap-1.5'>
+          <div className='flex flex-col gap-0.5'>
             {websiteUrl ? (
               <Link
                 href={websiteUrl}
@@ -61,9 +77,10 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
                 // oxlint-disable-next-line aria-proptypes
                 aria-label={`Visit ${name} website`}
                 className={cn(
-                  'text-sm font-medium text-foreground',
+                  'flex items-center gap-1',
+                  'font-bold text-foreground/90',
                   'transition-colors duration-150',
-                  'hover:text-primary',
+                  'hover:text-primary hover:underline',
                 )}
               >
                 <span className='truncate'>{name}</span>
@@ -73,35 +90,30 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
                 {name}
               </span>
             )}
-            <span className='text-xs text-muted-foreground/40'>|</span>
-            <LinkWithLoader
-              href={href}
-              className={cn(
-                'text-xs text-muted-foreground',
-                'transition-colors duration-150',
-                'hover:text-foreground',
-              )}
-            >
-              View jobs by {name}
-            </LinkWithLoader>
           </div>
-          {(location || employeeCount) && (
-            <div className='flex flex-wrap items-center gap-2'>
-              {location && (
-                <span className='flex items-center gap-1 text-xs text-muted-foreground'>
-                  <MapPin className='size-3 shrink-0' aria-hidden='true' />
-                  <span className='truncate'>{location}</span>
-                </span>
-              )}
-              {employeeCount && (
-                <span className='flex items-center gap-1 text-xs text-muted-foreground'>
-                  <Users className='size-3 shrink-0' aria-hidden='true' />
-                  <span>{employeeCount} Employees</span>
-                </span>
-              )}
-            </div>
-          )}
         </div>
+
+        {/* Location */}
+        {location && (
+          <span className={tagStyles}>
+            <LandmarkIcon className='size-3.5 shrink-0' aria-hidden='true' />
+            {location}
+          </span>
+        )}
+
+        {/* Employees */}
+        {employeeCount && (
+          <span className={tagStyles}>
+            <UsersIcon className='size-3.5 shrink-0' aria-hidden='true' />
+            {employeeCount} Employees
+          </span>
+        )}
+
+        {/* Jobs link */}
+        <LinkWithLoader href={href} className={linkTagStyles}>
+          <ExternalLinkIcon className='size-3.5 shrink-0' aria-hidden='true' />
+          Jobs by {name}
+        </LinkWithLoader>
       </div>
 
       {/* Expandable content - uses native <details> for SEO/no-JS support */}
@@ -126,7 +138,7 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
             </span>
           </summary>
 
-          <div className='mt-3 space-y-3'>
+          <div className='mt-3 space-y-3 pl-4'>
             {/* Funding rounds - card style */}
             {fundingRounds.length > 0 && (
               <div className='space-y-2'>
@@ -135,13 +147,11 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
                 </p>
                 <div className='flex flex-wrap gap-2'>
                   {fundingRounds.map((round) => (
-                    <Link
+                    <LinkWithLoader
                       key={`${round.roundName}-${round.date}`}
                       href={round.href}
-                      target='_blank'
-                      rel='noopener'
                       className={cn(
-                        'flex flex-col rounded-lg px-3 py-2',
+                        'flex flex-col items-start gap-0.5 rounded-lg px-3 py-2',
                         'bg-muted/50 ring-1 ring-border/50',
                         'transition-all duration-150',
                         'hover:bg-muted hover:ring-border',
@@ -157,7 +167,7 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
                             .join(' · ')}
                         </span>
                       )}
-                    </Link>
+                    </LinkWithLoader>
                   ))}
                 </div>
               </div>
@@ -165,7 +175,7 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
 
             {/* Investors - badge style */}
             {investors.length > 0 && (
-              <div className='mb-2 space-y-2'>
+              <div className='space-y-2 pb-2'>
                 <p className='text-xs font-medium text-muted-foreground'>
                   Investors
                 </p>
@@ -183,20 +193,6 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
           </div>
         </details>
       )}
-
-      {/* View all jobs link */}
-      {/* <LinkWithLoader
-        href={href}
-        className={cn(
-          'inline-flex items-center gap-1',
-          'text-xs text-muted-foreground',
-          'transition-colors duration-150',
-          'hover:text-foreground',
-        )}
-      >
-        <ChevronRight className='size-3.5' aria-hidden='true' />
-        View all jobs from {name}
-      </LinkWithLoader> */}
     </div>
   );
 };

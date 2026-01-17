@@ -36,7 +36,7 @@ export const JobListItemInfoTags = ({
         if (tag.href) {
           return (
             <LinkWithLoader
-              key={tag.label}
+              key={`${tag.label}-${tag.iconKey}`}
               href={tag.href}
               className={cn(
                 baseStyles,

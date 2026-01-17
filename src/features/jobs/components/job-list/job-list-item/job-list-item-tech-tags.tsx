@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRightIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { LinkWithLoader } from '@/components/link-with-loader';
@@ -26,31 +26,25 @@ const TAG_COLORS: Record<number, string> = {
 export const JobListItemTechTags = ({ tags }: JobListItemTechTagsProps) => {
   if (tags.length === 0) return null;
 
-  const hasOverflow = tags.length > 3;
-
   return (
     <details className='group'>
       {/* Toggle - positioned first for better UX, matches org details pattern */}
-      {hasOverflow && (
-        <summary
-          className={cn(
-            'mb-1.5 inline-flex cursor-pointer list-none items-center gap-1 group-open:mb-2',
-            'text-xs text-muted-foreground',
-            'transition-colors duration-150',
-            'hover:text-foreground',
-            '[&::-webkit-details-marker]:hidden',
-          )}
-        >
-          <ChevronRight
-            className='size-3.5 transition-transform duration-200 group-open:rotate-90'
-            aria-hidden='true'
-          />
-          <span className='group-open:hidden'>
-            View all {tags.length} skills
-          </span>
-          <span className='hidden group-open:inline'>Hide skills</span>
-        </summary>
-      )}
+      <summary
+        className={cn(
+          'mb-1.5 inline-flex cursor-pointer list-none items-center gap-1 group-open:mb-2',
+          'text-xs text-muted-foreground',
+          'transition-colors duration-150',
+          'hover:text-foreground',
+          '[&::-webkit-details-marker]:hidden',
+        )}
+      >
+        <ChevronRightIcon
+          className='size-3.5 transition-transform duration-200 group-open:rotate-90'
+          aria-hidden='true'
+        />
+        <span className='group-open:hidden'>View all {tags.length} skills</span>
+        <span className='hidden group-open:inline'>Hide skills</span>
+      </summary>
 
       {/*
         All tags rendered in DOM for crawlers.
@@ -59,9 +53,9 @@ export const JobListItemTechTags = ({ tags }: JobListItemTechTagsProps) => {
       */}
       <div
         className={cn(
-          'flex flex-wrap items-center gap-1.5 overflow-hidden',
-          hasOverflow && 'max-h-7 group-open:max-h-none',
-          'transition-[max-height] duration-200',
+          'flex flex-wrap items-center gap-2 overflow-hidden',
+          'max-h-7 group-open:max-h-none',
+          'pl-4 transition-[max-height] duration-200',
         )}
       >
         {tags.map((tag) => (
