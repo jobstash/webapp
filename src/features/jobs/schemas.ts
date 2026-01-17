@@ -11,7 +11,7 @@ export const jobTagSchema = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
   normalizedName: nonEmptyStringSchema,
-  colorIndex: z.number().min(1).max(12),
+  colorIndex: z.number().min(0).max(11),
 });
 export type JobTagSchema = z.infer<typeof jobTagSchema>;
 
