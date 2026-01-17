@@ -67,6 +67,7 @@ const createJobItemHref = (dto: JobListItemDto) => {
 
 const createJobInfoTags = (dto: JobListItemDto) => {
   const {
+    timestamp,
     seniority,
     locationType,
     location,
@@ -77,6 +78,12 @@ const createJobInfoTags = (dto: JobListItemDto) => {
   } = dto;
 
   const tags: MappedInfoTagSchema[] = [];
+
+  // Timestamp as first tag (not filterable)
+  tags.push({
+    iconKey: 'posted',
+    label: prettyTimestamp(timestamp),
+  });
 
   if (seniority && seniority in SENIORITY_MAPPING) {
     tags.push({

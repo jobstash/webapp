@@ -1,11 +1,8 @@
+import Link from 'next/link';
+
 import { LinkWithLoader } from '@/components/link-with-loader';
-import {
-  ChevronDown,
-  ExternalLink,
-  Users,
-  Landmark,
-  Coins,
-} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ChevronRight, MapPin, Users } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { ImageWithFallback } from '@/components/image-with-fallback';
@@ -27,115 +24,158 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
     investors,
   } = organization;
 
-  const hasExpandableContent =
-    employeeCount || fundingRounds.length > 0 || investors.length > 0;
+  const hasExpandableContent = fundingRounds.length > 0 || investors.length > 0;
 
   return (
     <div className='space-y-2'>
       {/* Organization header */}
-      <div className='flex items-center gap-2'>
+      <div className='flex items-center gap-3'>
         <ImageWithFallback
           src={logo ?? ''}
           alt={`${name} logo`}
-          width={36}
-          height={36}
-          className='rounded-md'
+          width={40}
+          height={40}
+          className='shrink-0 rounded-lg ring-1 ring-border/50'
           fallback={
-            <div className='flex size-9 items-center justify-center rounded-md bg-muted text-xs font-medium text-muted-foreground'>
+            <div
+              className={cn(
+                'flex size-10 items-center justify-center rounded-lg',
+                'bg-linear-to-br from-muted to-muted/50',
+                'text-sm font-semibold text-muted-foreground',
+                'ring-1 ring-border/50',
+              )}
+            >
               {name.charAt(0).toUpperCase()}
             </div>
           }
         />
 
-        <div className='flex flex-1 items-center gap-1.5 text-sm'>
-          <LinkWithLoader href={href} className='font-medium hover:underline'>
-            {name}
-          </LinkWithLoader>
-
-          {websiteUrl && (
+        {/* Title + Subtitle */}
+        <div className='flex min-w-0 flex-col gap-1'>
+          <div className='flex flex-wrap items-center gap-1.5'>
+            {websiteUrl ? (
+              <Link
+                href={websiteUrl}
+                target='_blank'
+                rel='noopener'
+                // oxlint-disable-next-line aria-proptypes
+                aria-label={`Visit ${name} website`}
+                className={cn(
+                  'text-sm font-medium text-foreground',
+                  'transition-colors duration-150',
+                  'hover:text-primary',
+                )}
+              >
+                <span className='truncate'>{name}</span>
+              </Link>
+            ) : (
+              <span className='truncate text-sm font-medium text-foreground'>
+                {name}
+              </span>
+            )}
+            <span className='text-xs text-muted-foreground/40'>|</span>
             <LinkWithLoader
-              href={websiteUrl}
-              target='_blank'
-              rel='noopener noreferrer'
-              aria-label='Visit website'
-              className='text-muted-foreground hover:text-foreground'
+              href={href}
+              className={cn(
+                'text-xs text-muted-foreground',
+                'transition-colors duration-150',
+                'hover:text-foreground',
+              )}
             >
-              <ExternalLink className='size-3.5' aria-hidden='true' />
+              View jobs by {name}
             </LinkWithLoader>
-          )}
-
-          {location && (
-            <>
-              <span className='text-muted-foreground'>·</span>
-              <span className='text-muted-foreground'>{location}</span>
-            </>
+          </div>
+          {(location || employeeCount) && (
+            <div className='flex flex-wrap items-center gap-2'>
+              {location && (
+                <span className='flex items-center gap-1 text-xs text-muted-foreground'>
+                  <MapPin className='size-3 shrink-0' aria-hidden='true' />
+                  <span className='truncate'>{location}</span>
+                </span>
+              )}
+              {employeeCount && (
+                <span className='flex items-center gap-1 text-xs text-muted-foreground'>
+                  <Users className='size-3 shrink-0' aria-hidden='true' />
+                  <span>{employeeCount} Employees</span>
+                </span>
+              )}
+            </div>
           )}
         </div>
       </div>
 
       {/* Expandable content - uses native <details> for SEO/no-JS support */}
       {hasExpandableContent && (
-        <details className='group ml-11'>
+        <details className='group mb-0'>
           <summary
             className={cn(
-              'flex cursor-pointer list-none items-center gap-1 text-sm text-muted-foreground',
-              'hover:text-foreground [&::-webkit-details-marker]:hidden',
+              'inline-flex cursor-pointer list-none items-center gap-1',
+              'text-xs text-muted-foreground',
+              'transition-colors duration-150',
+              'hover:text-foreground',
+              '[&::-webkit-details-marker]:hidden',
             )}
           >
-            <ChevronDown
-              className='size-4 transition-transform group-open:rotate-180'
+            <ChevronRight
+              className='size-3.5 transition-transform duration-200 group-open:rotate-90'
               aria-hidden='true'
             />
-            <span>Organization details</span>
+            <span className='group-open:hidden'>View organization details</span>
+            <span className='hidden group-open:inline'>
+              Hide organization details
+            </span>
           </summary>
 
-          <div className='mt-2 space-y-1.5 text-sm'>
-            {employeeCount && (
-              <div className='flex items-center gap-1.5 text-muted-foreground'>
-                <Users className='size-3.5' />
-                <span>{employeeCount} employees</span>
+          <div className='mt-3 space-y-3'>
+            {/* Funding rounds - card style */}
+            {fundingRounds.length > 0 && (
+              <div className='space-y-2'>
+                <p className='text-xs font-medium text-muted-foreground'>
+                  Funding
+                </p>
+                <div className='flex flex-wrap gap-2'>
+                  {fundingRounds.map((round) => (
+                    <Link
+                      key={`${round.roundName}-${round.date}`}
+                      href={round.href}
+                      target='_blank'
+                      rel='noopener'
+                      className={cn(
+                        'flex flex-col rounded-lg px-3 py-2',
+                        'bg-muted/50 ring-1 ring-border/50',
+                        'transition-all duration-150',
+                        'hover:bg-muted hover:ring-border',
+                      )}
+                    >
+                      <span className='text-sm font-medium text-foreground'>
+                        {round.roundName}
+                      </span>
+                      {(round.amount || round.date) && (
+                        <span className='text-xs text-muted-foreground'>
+                          {[round.amount, round.date]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
 
-            {fundingRounds.map((round) => (
-              <div
-                key={`${round.roundName}-${round.date}`}
-                className='flex items-center gap-1.5'
-              >
-                <Coins className='size-3.5 text-muted-foreground' />
-                <LinkWithLoader
-                  href={round.href}
-                  className='text-foreground hover:underline'
-                >
-                  {round.roundName}
-                </LinkWithLoader>
-                {round.amount && (
-                  <span className='text-muted-foreground'>
-                    · {round.amount}
-                  </span>
-                )}
-                {round.date && (
-                  <span className='text-muted-foreground'>· {round.date}</span>
-                )}
-              </div>
-            ))}
-
+            {/* Investors - badge style */}
             {investors.length > 0 && (
-              <div className='flex items-start gap-1.5'>
-                <Landmark className='mt-0.5 size-3.5 shrink-0 text-muted-foreground' />
-                <div className='flex flex-wrap items-center gap-x-1'>
-                  {investors.map((investor, i) => (
-                    <span key={investor.name}>
-                      <LinkWithLoader
-                        href={investor.href}
-                        className='text-foreground hover:underline'
-                      >
+              <div className='mb-2 space-y-2'>
+                <p className='text-xs font-medium text-muted-foreground'>
+                  Investors
+                </p>
+                <div className='flex flex-wrap gap-1.5'>
+                  {investors.map((investor) => (
+                    <Badge key={investor.name} variant='secondary' asChild>
+                      <LinkWithLoader href={investor.href}>
                         {investor.name}
                       </LinkWithLoader>
-                      {i < investors.length - 1 && (
-                        <span className='text-muted-foreground'>,</span>
-                      )}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -143,6 +183,20 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
           </div>
         </details>
       )}
+
+      {/* View all jobs link */}
+      {/* <LinkWithLoader
+        href={href}
+        className={cn(
+          'inline-flex items-center gap-1',
+          'text-xs text-muted-foreground',
+          'transition-colors duration-150',
+          'hover:text-foreground',
+        )}
+      >
+        <ChevronRight className='size-3.5' aria-hidden='true' />
+        View all jobs from {name}
+      </LinkWithLoader> */}
     </div>
   );
 };

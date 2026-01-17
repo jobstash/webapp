@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
 
 interface JobListItemBadgeProps {
@@ -6,23 +7,34 @@ interface JobListItemBadgeProps {
 }
 
 const BADGE_STYLES: Record<string, string> = {
-  [JOB_ITEM_BADGE.FEATURED]:
-    'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-  [JOB_ITEM_BADGE.EXPERT]:
-    'bg-purple-500/10 text-purple-600 dark:text-purple-400',
-  [JOB_ITEM_BADGE.BEGINNER]:
-    'bg-green-500/10 text-green-600 dark:text-green-400',
+  [JOB_ITEM_BADGE.FEATURED]: cn(
+    'bg-gradient-to-r from-amber-500/15 to-orange-500/15',
+    'text-amber-600 dark:text-amber-400',
+    'ring-1 ring-amber-500/20',
+  ),
+  [JOB_ITEM_BADGE.EXPERT]: cn(
+    'bg-gradient-to-r from-violet-500/15 to-purple-500/15',
+    'text-violet-600 dark:text-violet-400',
+    'ring-1 ring-violet-500/20',
+  ),
+  [JOB_ITEM_BADGE.BEGINNER]: cn(
+    'bg-gradient-to-r from-emerald-500/15 to-green-500/15',
+    'text-emerald-600 dark:text-emerald-400',
+    'ring-1 ring-emerald-500/20',
+  ),
 };
 
 export const JobListItemBadge = ({ badge }: JobListItemBadgeProps) => {
   return (
-    <span
+    <Badge
+      variant='outline'
       className={cn(
-        'absolute top-5 right-5 rounded-full px-2 py-0.5 text-xs font-medium',
-        BADGE_STYLES[badge] ?? 'bg-muted text-muted-foreground',
+        'rounded-md border-transparent py-1 tracking-wide',
+        BADGE_STYLES[badge] ??
+          'bg-muted text-muted-foreground ring-1 ring-border',
       )}
     >
       {badge}
-    </span>
+    </Badge>
   );
 };

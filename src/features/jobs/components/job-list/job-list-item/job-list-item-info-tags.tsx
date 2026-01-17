@@ -18,7 +18,7 @@ export const JobListItemInfoTags = ({
   const visibleTags = tags.slice(0, maxVisible);
 
   return (
-    <div className='flex flex-wrap items-center gap-1.5'>
+    <div className='flex flex-wrap items-center gap-2'>
       {visibleTags.map((tag) => {
         const content = (
           <>
@@ -27,9 +27,10 @@ export const JobListItemInfoTags = ({
           </>
         );
 
-        const className = cn(
-          'inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs',
-          tag.href && 'transition-colors hover:bg-muted/80',
+        const baseStyles = cn(
+          'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1',
+          'bg-muted/50 text-xs text-muted-foreground',
+          'ring-1 ring-border/50',
         );
 
         if (tag.href) {
@@ -37,7 +38,11 @@ export const JobListItemInfoTags = ({
             <LinkWithLoader
               key={tag.label}
               href={tag.href}
-              className={className}
+              className={cn(
+                baseStyles,
+                'transition-all duration-150',
+                'hover:bg-muted hover:text-foreground hover:ring-border',
+              )}
             >
               {content}
             </LinkWithLoader>
@@ -45,7 +50,7 @@ export const JobListItemInfoTags = ({
         }
 
         return (
-          <span key={tag.label} className={className}>
+          <span key={tag.label} className={baseStyles}>
             {content}
           </span>
         );

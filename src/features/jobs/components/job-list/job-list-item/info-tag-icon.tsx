@@ -2,6 +2,7 @@ import {
   Briefcase,
   Building2,
   Calendar,
+  Clock,
   Coins,
   DollarSign,
   Globe,
@@ -16,6 +17,7 @@ interface InfoTagIconProps {
 }
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  posted: Clock,
   seniority: Briefcase,
   salary: DollarSign,
   location: MapPin,
@@ -31,5 +33,5 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export const InfoTagIcon = ({ iconKey }: InfoTagIconProps) => {
   const Icon = ICON_MAP[iconKey] ?? Building2;
-  return <Icon className='size-3' />;
+  return <Icon className='size-3.5' aria-hidden='true' />;
 };

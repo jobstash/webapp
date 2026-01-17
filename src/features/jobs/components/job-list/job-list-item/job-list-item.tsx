@@ -1,5 +1,7 @@
+import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LinkWithLoader } from '@/components/link-with-loader';
+import { Badge } from '@/components/ui/badge';
 import { type JobListItemSchema } from '@/features/jobs/schemas';
 import { JobListItemBadge } from './job-list-item-badge';
 import { JobListItemOrg } from './job-list-item-org';
@@ -11,39 +13,77 @@ interface JobListItemProps {
 }
 
 export const JobListItem = ({ job }: JobListItemProps) => {
-  const { title, href, organization, infoTags, tags, timestampText, badge } =
-    job;
+  const { title, href, organization, infoTags, tags, badge } = job;
 
   return (
     <article
       className={cn(
-        'relative rounded-2xl border border-border bg-card p-5',
-        'transition-shadow hover:shadow-md',
+        'group relative overflow-hidden rounded-xl bg-card',
+        'border border-border/50 shadow-sm',
+        'transition-all duration-200',
+        'hover:border-border hover:shadow-md',
       )}
     >
-      {badge && <JobListItemBadge badge={badge} />}
+      {/* Subtle gradient accent on hover */}
+      <div
+        className={cn(
+          'absolute inset-x-0 top-0 h-px',
+          'bg-linear-to-r from-transparent via-primary/20 to-transparent',
+          'opacity-0 transition-opacity duration-300',
+          'group-hover:opacity-100',
+        )}
+      />
 
-      <div className='space-y-3'>
-        {/* Job Title */}
-        <LinkWithLoader
-          href={href}
-          className='block text-lg font-semibold text-foreground hover:underline'
-        >
-          {title}
-        </LinkWithLoader>
+      <div className='p-5'>
+        {/* View Details - top right */}
+        <div className='absolute top-5 right-5'>
+          <Badge variant='outline' asChild className='rounded-md py-1'>
+            <Link href={href} target='_blank' rel='noopener'>
+              View Details
+              <ExternalLink className='size-3' />
+            </Link>
+          </Badge>
+        </div>
 
-        {/* Organization */}
-        {organization && <JobListItemOrg organization={organization} />}
+        {/* Badge - standalone row if present */}
+        {badge && (
+          <div className='mb-3 flex h-6 self-baseline'>
+            <JobListItemBadge badge={badge} />
+          </div>
+        )}
 
-        {/* Info Tags */}
-        <JobListItemInfoTags tags={infoTags} />
+        {/* Content */}
+        <div className='space-y-4'>
+          {/* Title */}
+          <div className='flex h-6 justify-between gap-4 self-baseline'>
+            <Link
+              href={href}
+              target='_blank'
+              rel='noopener'
+              className={cn(
+                'text-lg leading-tight font-semibold text-foreground',
+                'transition-colors duration-150',
+                'hover:text-primary',
+              )}
+            >
+              {title}
+            </Link>
+          </div>
 
-        {/* Tech Tags + Timestamp */}
-        <div className='flex items-center justify-between gap-4'>
-          <JobListItemTechTags tags={tags} />
-          <span className='shrink-0 text-xs text-muted-foreground'>
-            {timestampText}
-          </span>
+          {/* Info Tags */}
+          <JobListItemInfoTags tags={infoTags} />
+
+          {/* Org + Tech grouped with tighter spacing */}
+          <div className='space-y-0'>
+            {organization && <JobListItemOrg organization={organization} />}
+            <div
+              className={cn(
+                organization?.fundingRounds?.length ? 'mt-0' : 'mt-2',
+              )}
+            >
+              <JobListItemTechTags tags={tags} />
+            </div>
+          </div>
         </div>
       </div>
     </article>
