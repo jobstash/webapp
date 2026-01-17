@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
     qualities: [25, 50, 75, 100],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
+      },
+    ],
   },
   experimental: {
     staticGenerationRetryCount: 1,
