@@ -1,6 +1,7 @@
 import { fetchJobListPage } from '@/features/jobs/server/data';
 import { JOBS_PER_PAGE } from '@/features/jobs/constants';
 import { JobListPagination } from './job-list-pagination';
+import { JobListItem } from './job-list-item';
 
 interface JobListProps {
   currentPage: number;
@@ -9,7 +10,7 @@ interface JobListProps {
 
 export const JobList = async ({ currentPage, searchParams }: JobListProps) => {
   try {
-    const { page, total, data } = await fetchJobListPage({
+    const { total, data } = await fetchJobListPage({
       page: currentPage,
       searchParams,
     });
@@ -17,18 +18,9 @@ export const JobList = async ({ currentPage, searchParams }: JobListProps) => {
 
     return (
       <div>
-        <pre>{JSON.stringify({ page, total, searchParams }, null, 2)}</pre>
         <div className='space-y-4 py-4'>
-          {data.map(({ id, title, organization }) => (
-            <div key={id} className='rounded-lg bg-muted p-4'>
-              <pre>
-                {JSON.stringify(
-                  { id, title, organization: organization?.name },
-                  null,
-                  2,
-                )}
-              </pre>
-            </div>
+          {data.map((job) => (
+            <JobListItem key={job.id} job={job} />
           ))}
         </div>
         <JobListPagination

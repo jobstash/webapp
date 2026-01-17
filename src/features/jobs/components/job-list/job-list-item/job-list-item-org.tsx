@@ -59,15 +59,15 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
           </Link>
 
           {websiteUrl && (
-            <a
+            <Link
               href={websiteUrl}
               target='_blank'
               rel='noopener noreferrer'
-              aria-label={`Visit ${name} website`}
+              aria-label='Visit website'
               className='text-muted-foreground hover:text-foreground'
             >
               <ExternalLink className='size-3.5' aria-hidden='true' />
-            </a>
+            </Link>
           )}
 
           {location && (
