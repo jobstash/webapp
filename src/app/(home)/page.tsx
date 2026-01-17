@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-
 import { SocialsAside } from '@/components/socials-aside';
 import { FiltersAside } from '@/features/filters/components/filters-aside';
 import { JobList } from '@/features/jobs/components/job-list/job-list';
@@ -36,15 +34,7 @@ const HomePage = async ({ searchParams }: Props) => {
         <SocialsAside />
       </aside>
       <section className='grow'>
-        <Suspense
-          fallback={
-            <div className='py-12 text-center text-muted-foreground'>
-              Loading jobs...
-            </div>
-          }
-        >
-          <JobList currentPage={currentPage} searchParams={restSearchParams} />
-        </Suspense>
+        <JobList currentPage={currentPage} searchParams={restSearchParams} />
       </section>
     </div>
   );
