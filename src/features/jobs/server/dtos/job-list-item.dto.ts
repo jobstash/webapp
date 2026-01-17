@@ -8,7 +8,7 @@ import {
   nullableNumberSchema,
   nullableStringSchema,
 } from '@/lib/schemas';
-import { fundingRoundDto, tagDto } from '@/lib/server/dtos';
+import { fundingRoundDto, investorDto, tagDto } from '@/lib/server/dtos';
 
 export const jobListItemDto = z.object({
   id: nonEmptyStringSchema,
@@ -49,6 +49,7 @@ export const jobListItemDto = z.object({
       logoUrl: nullableStringSchema,
       headcountEstimate: nullableNumberSchema,
       fundingRounds: fundingRoundDto.array(),
+      investors: investorDto.array(),
     })
     .nullable(),
 });
