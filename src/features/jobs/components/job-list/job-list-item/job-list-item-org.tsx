@@ -63,9 +63,10 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
               href={websiteUrl}
               target='_blank'
               rel='noopener noreferrer'
+              aria-label={`Visit ${name} website`}
               className='text-muted-foreground hover:text-foreground'
             >
-              <ExternalLink className='size-3.5' />
+              <ExternalLink className='size-3.5' aria-hidden='true' />
             </a>
           )}
 
@@ -81,12 +82,18 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
           <button
             type='button'
             onClick={() => setIsExpanded(!isExpanded)}
-            className='rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground'
+            aria-expanded={isExpanded}
+            aria-label={
+              isExpanded
+                ? 'Collapse organization details'
+                : 'Expand organization details'
+            }
+            className='rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
           >
             {isExpanded ? (
-              <ChevronUp className='size-4' />
+              <ChevronUp className='size-4' aria-hidden='true' />
             ) : (
-              <ChevronDown className='size-4' />
+              <ChevronDown className='size-4' aria-hidden='true' />
             )}
           </button>
         )}
