@@ -1,6 +1,5 @@
-import Link from 'next/link';
-
 import { cn } from '@/lib/utils';
+import { LinkWithLoader } from '@/components/link-with-loader';
 import { type JobListItemSchema } from '@/features/jobs/schemas';
 import { JobListItemBadge } from './job-list-item-badge';
 import { JobListItemOrg } from './job-list-item-org';
@@ -18,7 +17,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
   return (
     <article
       className={cn(
-        'relative rounded-lg border border-border bg-card p-4',
+        'relative rounded-2xl border border-border bg-card p-5',
         'transition-shadow hover:shadow-md',
       )}
     >
@@ -26,12 +25,12 @@ export const JobListItem = ({ job }: JobListItemProps) => {
 
       <div className='space-y-3'>
         {/* Job Title */}
-        <Link
+        <LinkWithLoader
           href={href}
           className='block text-lg font-semibold text-foreground hover:underline'
         >
           {title}
-        </Link>
+        </LinkWithLoader>
 
         {/* Organization */}
         {organization && <JobListItemOrg organization={organization} />}

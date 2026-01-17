@@ -18,7 +18,7 @@ export const JobList = async ({ currentPage, searchParams }: JobListProps) => {
 
     return (
       <div>
-        <div className='space-y-4 py-4'>
+        <div className='space-y-4 pb-4'>
           {data.map((job) => (
             <JobListItem key={job.id} job={job} />
           ))}

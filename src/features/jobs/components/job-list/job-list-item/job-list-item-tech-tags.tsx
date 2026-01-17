@@ -1,6 +1,5 @@
-import Link from 'next/link';
-
 import { cn } from '@/lib/utils';
+import { LinkWithLoader } from '@/components/link-with-loader';
 import { type JobTagSchema } from '@/features/jobs/schemas';
 
 interface JobListItemTechTagsProps {
@@ -35,7 +34,7 @@ export const JobListItemTechTags = ({
   return (
     <div className='flex flex-wrap items-center gap-1.5'>
       {visibleTags.map((tag) => (
-        <Link
+        <LinkWithLoader
           key={tag.id}
           href={`/?tags=${tag.normalizedName}`}
           className={cn(
@@ -44,7 +43,7 @@ export const JobListItemTechTags = ({
           )}
         >
           {tag.name}
-        </Link>
+        </LinkWithLoader>
       ))}
       {remainingCount > 0 && (
         <span className='text-xs text-muted-foreground'>+{remainingCount}</span>

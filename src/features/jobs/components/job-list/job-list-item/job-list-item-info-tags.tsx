@@ -1,6 +1,5 @@
-import Link from 'next/link';
-
 import { cn } from '@/lib/utils';
+import { LinkWithLoader } from '@/components/link-with-loader';
 import { type MappedInfoTagSchema } from '@/lib/schemas';
 
 import { InfoTagIcon } from './info-tag-icon';
@@ -35,9 +34,13 @@ export const JobListItemInfoTags = ({
 
         if (tag.href) {
           return (
-            <Link key={tag.label} href={tag.href} className={className}>
+            <LinkWithLoader
+              key={tag.label}
+              href={tag.href}
+              className={className}
+            >
               {content}
-            </Link>
+            </LinkWithLoader>
           );
         }
 

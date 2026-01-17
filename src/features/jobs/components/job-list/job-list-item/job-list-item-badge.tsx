@@ -18,7 +18,7 @@ export const JobListItemBadge = ({ badge }: JobListItemBadgeProps) => {
   return (
     <span
       className={cn(
-        'absolute top-3 right-3 rounded-full px-2 py-0.5 text-xs font-medium',
+        'absolute top-5 right-5 rounded-full px-2 py-0.5 text-xs font-medium',
         BADGE_STYLES[badge] ?? 'bg-muted text-muted-foreground',
       )}
     >
