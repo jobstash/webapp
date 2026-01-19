@@ -17,16 +17,16 @@ const TAG_COLORS: Record<number, string> = {
   11: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 hover:bg-violet-500/20 ring-violet-500/20',
 };
 
-interface JobDetailsTechTagsProps {
+interface JobDetailsSkillsProps {
   tags: JobTagSchema[];
 }
 
-export const JobDetailsTechTags = ({ tags }: JobDetailsTechTagsProps) => {
+export const JobDetailsSkills = ({ tags }: JobDetailsSkillsProps) => {
   if (tags.length === 0) return null;
 
   return (
-    <section className='mt-6'>
-      <h2 className='mb-3 text-sm font-medium'>Tech Stack</h2>
+    <section>
+      <h2 className='mb-3 text-sm font-medium'>Skills</h2>
       <div className='flex flex-wrap gap-2'>
         {tags.map((tag) => (
           <LinkWithLoader

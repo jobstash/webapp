@@ -1,11 +1,16 @@
 import { cn } from '@/lib/utils';
-import { type JobDetailsSchema } from '@/features/jobs/schemas';
+import {
+  type JobDetailsSchema,
+  type JobTagSchema,
+} from '@/features/jobs/schemas';
+import { JobDetailsSkills } from './job-details-skills';
 
 interface JobDetailsContentProps {
   job: JobDetailsSchema;
+  tags: JobTagSchema[];
 }
 
-export const JobDetailsContent = ({ job }: JobDetailsContentProps) => {
+export const JobDetailsContent = ({ job, tags }: JobDetailsContentProps) => {
   const { description, requirements, responsibilities, benefits } = job;
 
   return (
@@ -75,6 +80,8 @@ export const JobDetailsContent = ({ job }: JobDetailsContentProps) => {
           </ul>
         </section>
       )}
+
+      <JobDetailsSkills tags={tags} />
     </div>
   );
 };

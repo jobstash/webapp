@@ -1,7 +1,6 @@
 import { type JobDetailsSchema } from '@/features/jobs/schemas';
 import { JobDetailsHeader } from './job-details-header';
 import { JobDetailsContent } from './job-details-content';
-import { JobDetailsTechTags } from './job-details-tech-tags';
 import { JobDetailsSidebar } from './job-details-sidebar';
 import { MobileApplyBar } from './mobile-apply-bar';
 
@@ -17,8 +16,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
           <article className='min-w-0 flex-1'>
             <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>
               <JobDetailsHeader job={job} />
-              <JobDetailsContent job={job} />
-              <JobDetailsTechTags tags={job.tags} />
+              <JobDetailsContent job={job} tags={job.tags} />
             </div>
           </article>
 
