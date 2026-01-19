@@ -35,7 +35,6 @@ export const useSearchSuggestions = (
       const json: unknown = await res.json();
       return suggestionsResponseSchema.parse(json);
     },
-    enabled: !!trimmed,
     placeholderData: keepPreviousData,
   });
 

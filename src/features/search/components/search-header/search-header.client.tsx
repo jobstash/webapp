@@ -76,7 +76,7 @@ export const SearchHeaderClient = () => {
           onSubmit={handleSubmit}
           className='flex w-full items-center gap-2'
         >
-          <SearchButton isLoading={isLoading} />
+          <SearchButton />
           <input
             ref={inputRef}
             type='text'
@@ -90,10 +90,11 @@ export const SearchHeaderClient = () => {
           />
         </form>
 
-        {isOpen && (inputValue.trim() || groups.length > 0) && (
+        {isOpen && (
           <SearchSuggestions
             query={inputValue}
             groups={groups}
+            isLoading={isLoading}
             onSearchSubmit={handleSearchSubmit}
             onClose={() => setIsOpen(false)}
           />
@@ -103,7 +104,6 @@ export const SearchHeaderClient = () => {
       <div className='flex min-w-0 grow items-center gap-2 lg:hidden'>
         <SearchButton
           type='button'
-          isLoading={isLoading}
           onClick={() => setIsMobileOverlayOpen(true)}
           aria-label='Open search'
         />

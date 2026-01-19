@@ -9,6 +9,7 @@ import { SearchResultsList } from './search-results-list';
 interface Props {
   query: string;
   groups: SuggestionGroup[];
+  isLoading: boolean;
   onSearchSubmit: (query: string) => void;
   onClose: () => void;
 }
@@ -16,6 +17,7 @@ interface Props {
 export const SearchSuggestions = ({
   query,
   groups,
+  isLoading,
   onSearchSubmit,
   onClose,
 }: Props) => (
@@ -25,6 +27,7 @@ export const SearchSuggestions = ({
         <SearchResultsList
           query={query}
           groups={groups}
+          isLoading={isLoading}
           onSearchSubmit={onSearchSubmit}
           onClose={onClose}
         />

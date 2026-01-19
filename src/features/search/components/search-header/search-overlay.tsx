@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { ArrowLeftIcon, LoaderIcon, SearchIcon } from 'lucide-react';
+import { ArrowLeftIcon, SearchIcon } from 'lucide-react';
 
 import {
   Dialog,
@@ -82,11 +82,7 @@ export const SearchOverlay = ({
                 className='shrink-0 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400'
                 aria-label='Search'
               >
-                {isLoading ? (
-                  <LoaderIcon className='size-5 animate-spin' />
-                ) : (
-                  <SearchIcon className='size-5' />
-                )}
+                <SearchIcon className='size-5' />
               </button>
               <input
                 ref={inputRef}
@@ -104,6 +100,7 @@ export const SearchOverlay = ({
               <SearchResultsList
                 query={query}
                 groups={groups}
+                isLoading={isLoading}
                 onSearchSubmit={onSearchSubmit}
                 onClose={onClose}
                 showEmptyPrompt

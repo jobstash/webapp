@@ -1,13 +1,12 @@
 'use client';
 
-import { LoaderIcon, SearchIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  isLoading: boolean;
   size?: 'sm' | 'md';
 }
 
-export const SearchButton = ({ isLoading, size = 'md', ...props }: Props) => {
+export const SearchButton = ({ size = 'md', ...props }: Props) => {
   const iconClass = size === 'sm' ? 'size-5' : 'size-6';
 
   return (
@@ -17,11 +16,7 @@ export const SearchButton = ({ isLoading, size = 'md', ...props }: Props) => {
       aria-label='Search'
       {...props}
     >
-      {isLoading ? (
-        <LoaderIcon className={`${iconClass} animate-spin`} />
-      ) : (
-        <SearchIcon className={iconClass} />
-      )}
+      <SearchIcon className={iconClass} />
     </button>
   );
 };
