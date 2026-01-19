@@ -49,3 +49,5 @@ docs/dev/archived
 
 # git worktrees
 .worktrees/
+
+docs/plans/
