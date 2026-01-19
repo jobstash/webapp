@@ -40,7 +40,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
   return (
     <section className='relative w-full overflow-hidden border-b bg-linear-to-b from-primary/5 via-background to-background'>
       {/* Subtle radial gradient */}
-      <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/[0.04] via-transparent to-transparent' />
+      <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/4 via-transparent to-transparent' />
 
       <div className='relative mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24'>
         <div className='flex flex-col items-center gap-10 text-center'>
