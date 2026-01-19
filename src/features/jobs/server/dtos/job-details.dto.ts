@@ -7,8 +7,9 @@ import { jobListItemDto } from './job-list-item.dto';
 
 export const jobDetailsDto = jobListItemDto.extend({
   description: nullableStringSchema,
-  requirements: z.string().array(),
-  responsibilities: z.string().array(),
-  benefits: z.string().array(),
+  requirements: z.string().array().nullable(),
+  responsibilities: z.string().array().nullable(),
+  benefits: z.string().array().nullable(),
+  culture: z.string().array().nullable(),
 });
 export type JobDetailsDto = z.infer<typeof jobDetailsDto>;

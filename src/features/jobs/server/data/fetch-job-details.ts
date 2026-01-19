@@ -103,6 +103,11 @@ const createMockJobDetails = (id: string): JobDetailsSchema => ({
     'Annual team retreats',
     'Learning and development budget',
   ],
+  culture: [
+    'Collaborative and inclusive team environment',
+    'Focus on work-life balance',
+    'Continuous learning and growth opportunities',
+  ],
   similarJobs: [
     {
       id: 'sim1',
