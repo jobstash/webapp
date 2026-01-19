@@ -80,7 +80,7 @@ export const jobDetailsSchema = jobListItemSchema.extend({
   requirements: z.string().array(),
   responsibilities: z.string().array(),
   benefits: z.string().array(),
-  culture: z.string().array(),
+  culture: nullableStringSchema,
   similarJobs: similarJobSchema.array(),
 });
 export type JobDetailsSchema = z.infer<typeof jobDetailsSchema>;

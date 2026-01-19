@@ -10,6 +10,6 @@ export const jobDetailsDto = jobListItemDto.extend({
   requirements: z.string().array().nullable(),
   responsibilities: z.string().array().nullable(),
   benefits: z.string().array().nullable(),
-  culture: z.string().array().nullable(),
+  culture: nullableStringSchema,
 });
 export type JobDetailsDto = z.infer<typeof jobDetailsDto>;

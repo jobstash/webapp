@@ -57,7 +57,7 @@ export const dtoToJobDetails = (
     requirements: dto.requirements ?? [],
     responsibilities: dto.responsibilities ?? [],
     benefits: dto.benefits ?? [],
-    culture: dto.culture ?? [],
+    culture: dto.culture,
     similarJobs,
   };
 };
