@@ -63,3 +63,23 @@ export const jobListPageSchema = z.object({
   data: jobListItemSchema.array(),
 });
 export type JobListPageSchema = z.infer<typeof jobListPageSchema>;
+
+export const similarJobSchema = z.object({
+  id: nonEmptyStringSchema,
+  title: nonEmptyStringSchema,
+  href: nonEmptyStringSchema,
+  salaryText: nullableStringSchema,
+  location: nullableStringSchema,
+  companyName: nullableStringSchema,
+  companyLogo: nullableStringSchema,
+});
+export type SimilarJobSchema = z.infer<typeof similarJobSchema>;
+
+export const jobDetailsSchema = jobListItemSchema.extend({
+  description: nullableStringSchema,
+  requirements: z.string().array(),
+  responsibilities: z.string().array(),
+  benefits: z.string().array(),
+  similarJobs: similarJobSchema.array(),
+});
+export type JobDetailsSchema = z.infer<typeof jobDetailsSchema>;
