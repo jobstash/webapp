@@ -1,3 +1,8 @@
+---
+name: react-when-to-server-vs-client
+description: Use when deciding between Server and Client components, setting up data flow, or creating new features in Next.js App Router
+---
+
 # Server vs Client Components in Next.js App Router
 
 ## Decision Criteria

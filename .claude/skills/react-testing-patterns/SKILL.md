@@ -1,3 +1,8 @@
+---
+name: react-testing-patterns
+description: Use when writing tests for React components or when refactoring components to be more testable - covers hook extraction and concern separation
+---
+
 # Testable Components
 
 ## Core Principle

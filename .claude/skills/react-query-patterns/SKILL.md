@@ -1,3 +1,8 @@
+---
+name: react-query-patterns
+description: Use when implementing client-side data fetching with TanStack Query - covers hook patterns, loading states, and query keys
+---
+
 # React Query Patterns
 
 ## Data Fetching Hook Pattern
@@ -73,8 +78,6 @@ Use `placeholderData: keepPreviousData` to:
 - Prevent layout shift during refetch
 - Keep showing old data while new data loads
 - Provide smoother pagination/filtering UX
-
-Use `isPending` for initial load skeleton, `isFetching` for subtle refetch indicator:
 
 ```tsx
 import { keepPreviousData, useQuery } from '@tanstack/react-query';

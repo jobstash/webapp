@@ -17,7 +17,28 @@ Fundamental principles to apply when writing any code.
 ## Project Preferences
 
 - Use **kebab-case** for file names and commit messages
-- Prefer **arrow functions** over function declarations
+
+### Arrow Functions (HARD RULE)
+
+**Always use arrow functions** for components, hooks, utils, handlers, and all other code.
+
+```typescript
+// Good
+const MyComponent = () => { ... };
+const useCustomHook = () => { ... };
+const formatDate = (date: Date): string => { ... };
+const handleClick = () => { ... };
+
+// Bad - do not use function declarations
+function MyComponent() { ... }
+function useCustomHook() { ... }
+function formatDate(date: Date): string { ... }
+```
+
+**Only exceptions** (where `function` is required):
+
+- Generator functions (`function*`)
+- Rare cases needing dynamic `this` binding
 
 ## Conventions
 
@@ -34,6 +55,26 @@ Export only when needed elsewhere. Prefer keeping code close to where it's used:
 1. **Same file** - if only used within that file
 2. **Same folder** - if only imported by files in that folder
 3. **Shared folder** - if imported from multiple locations
+
+### Imports
+
+- Use **absolute imports** with `@/...` for files outside the current folder
+- Use **relative imports** only for files in the same folder (`./<file>`)
+- Never use parent traversal (`..`) - use absolute imports instead
+- Separate relative imports from absolute imports with a blank line above
+
+```typescript
+// Good
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/features/auth/hooks/use-auth';
+
+import { helper } from './helper';
+import { schema } from './schema';
+
+// Bad - parent traversal
+import { Button } from '../components/button';
+import { useAuth } from '../../hooks/use-auth';
+```
 
 ### Typescript
 

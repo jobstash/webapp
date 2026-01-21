@@ -51,3 +51,7 @@ docs/dev/archived
 .worktrees/
 
 docs/plans/
+
+
+.claude/plans
+.claude/state

@@ -1,3 +1,8 @@
+---
+name: react-route-files
+description: Use when creating or modifying Next.js App Router route files (page.tsx, layout.tsx, loading.tsx, error.tsx) - defines composition-only rules
+---
+
 # Route File Rules
 
 ## Principle
