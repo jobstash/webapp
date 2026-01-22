@@ -61,7 +61,7 @@ export const JobListItemTechTags = ({ tags }: JobListItemTechTagsProps) => {
         {tags.map((tag) => (
           <LinkWithLoader
             key={tag.id}
-            href={`/?tags=${tag.normalizedName}`}
+            href={`/t-${tag.normalizedName}`}
             className={cn(
               'rounded-md px-2 py-0.5 text-xs font-medium',
               'ring-1 transition-all duration-150',

@@ -31,7 +31,7 @@ export const JobDetailsSkills = ({ tags }: JobDetailsSkillsProps) => {
         {tags.map((tag) => (
           <LinkWithLoader
             key={tag.id}
-            href={`/?tags=${tag.normalizedName}`}
+            href={`/t-${tag.normalizedName}`}
             className={cn(
               'rounded-md px-2.5 py-1 text-xs font-medium',
               'ring-1 transition-all duration-150',
