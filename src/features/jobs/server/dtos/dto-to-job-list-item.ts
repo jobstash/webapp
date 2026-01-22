@@ -255,7 +255,7 @@ const createOrgInfoTags = (
 
   if (location) {
     tags.push({
-      iconKey: 'location',
+      iconKey: 'orgLocation',
       label: capitalize(location),
     });
   }
