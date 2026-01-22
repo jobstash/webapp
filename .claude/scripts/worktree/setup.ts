@@ -3,8 +3,11 @@
 /**
  * Sets up a worktree for a feature plan.
  *
- * Usage: npx tsx .claude/scripts/worktree/setup.ts <plan-name>
+ * Usage: npx tsx .claude/scripts/worktree/setup.ts <plan-name> [--no-plan]
  * Example: npx tsx .claude/scripts/worktree/setup.ts dashboard
+ * Example: npx tsx .claude/scripts/worktree/setup.ts quick-fix --no-plan
+ *
+ * --no-plan: Skip plan file validation (for lightweight worktree workflow)
  *
  * Output: JSON with worktree path and metadata
  */
@@ -36,12 +39,15 @@ function exec(cmd: string): string {
 }
 
 function main() {
-  const planName = process.argv[2];
+  // Filter out flags to get positional args
+  const args = process.argv.slice(2);
+  const noPlan = args.includes('--no-plan');
+  const planName = args.find((arg) => !arg.startsWith('--'));
 
   if (!planName) {
     const result: SetupResult = {
       success: false,
-      error: 'Usage: setup.ts <plan-name>',
+      error: 'Usage: setup.ts <name> [--no-plan]',
     };
     console.log(JSON.stringify(result, null, 2));
     process.exit(1);
@@ -52,18 +58,19 @@ function main() {
     const planPath = `.claude/plans/${planName}.plan.md`;
     const fullPlanPath = resolve(projectRoot, planPath);
 
-    // Check if plan exists
-    if (!existsSync(fullPlanPath)) {
-      const result: SetupResult = {
-        success: false,
-        error: `Plan not found: ${planPath}`,
-      };
-      console.log(JSON.stringify(result, null, 2));
-      process.exit(1);
+    // Check if plan exists (skip if --no-plan)
+    let planContent: string | null = null;
+    if (!noPlan) {
+      if (!existsSync(fullPlanPath)) {
+        const result: SetupResult = {
+          success: false,
+          error: `Plan not found: ${planPath}`,
+        };
+        console.log(JSON.stringify(result, null, 2));
+        process.exit(1);
+      }
+      planContent = readFileSync(fullPlanPath, 'utf-8');
     }
-
-    // Read plan content now (before worktree creation) so we can copy it later
-    const planContent = readFileSync(fullPlanPath, 'utf-8');
 
     // Read .env file if it exists (gitignored, needs to be copied)
     const envPath = resolve(projectRoot, '.env');
@@ -83,10 +90,12 @@ function main() {
         const metadata = JSON.parse(readFileSync(metadataPath, 'utf-8'));
 
         // Ensure plan file is copied (it's gitignored, may not exist or may be stale)
-        const worktreePlansDir = resolve(worktreePath, '.claude/plans');
-        mkdirSync(worktreePlansDir, { recursive: true });
-        const worktreePlanPath = resolve(worktreePath, planPath);
-        writeFileSync(worktreePlanPath, planContent);
+        if (planContent) {
+          const worktreePlansDir = resolve(worktreePath, '.claude/plans');
+          mkdirSync(worktreePlansDir, { recursive: true });
+          const worktreePlanPath = resolve(worktreePath, planPath);
+          writeFileSync(worktreePlanPath, planContent);
+        }
 
         // Copy .env file (gitignored, needs to be refreshed)
         if (envContent) {
@@ -94,7 +103,17 @@ function main() {
           writeFileSync(worktreeEnvPath, envContent);
         }
 
-        console.error('Refreshed plan and env files in existing worktree');
+        const refreshedItems = [
+          planContent ? 'plan' : null,
+          envContent ? 'env' : null,
+        ]
+          .filter(Boolean)
+          .join(' and ');
+        console.error(
+          refreshedItems
+            ? `Refreshed ${refreshedItems} files in existing worktree`
+            : 'Using existing worktree',
+        );
 
         // Ensure worktree is in VS Code workspace (may have been removed)
         addWorktreeToWorkspace(projectRoot, planName);
@@ -161,7 +180,7 @@ function main() {
     // Create metadata file
     const metadata: WorktreeMetadata = {
       feature: planName,
-      plan: planPath,
+      plan: noPlan ? '' : planPath,
       baseBranch,
       branchName,
       createdAt: new Date().toISOString(),
@@ -181,8 +200,10 @@ function main() {
     mkdirSync(worktreeStateDir, { recursive: true });
 
     // Copy plan file into worktree (since it's gitignored, it won't be there)
-    const worktreePlanPath = resolve(worktreePath, planPath);
-    writeFileSync(worktreePlanPath, planContent);
+    if (planContent) {
+      const worktreePlanPath = resolve(worktreePath, planPath);
+      writeFileSync(worktreePlanPath, planContent);
+    }
 
     // Copy .env file into worktree (gitignored, won't be there)
     if (envContent) {

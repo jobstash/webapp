@@ -18,7 +18,7 @@ No arguments needed — the command detects the current worktree automatically.
 ## Prerequisites
 
 - Must be run from within a worktree (sibling folder `<project>-<feature>/`)
-- Worktree must have been created with `/implement`
+- Worktree must have been created with `/implement` or `/wt init`
 
 ## Execution Flow
 
@@ -236,7 +236,11 @@ git worktree remove ../<project>-<feature> --force
 
 Note: `--force` is needed because `.claude-worktree.json` is an untracked metadata file.
 
-**6d. Optionally clean up orchestration state:**
+**6d. Optionally clean up orchestration state (if plan exists):**
+
+Check if `metadata.plan` from `.claude-worktree.json` is non-empty.
+
+**If `metadata.plan` is non-empty:**
 
 Ask user:
 
@@ -251,6 +255,10 @@ If yes:
 ```bash
 npx tsx .claude/scripts/orchestrate/cleanup.ts <feature> --force
 ```
+
+**If `metadata.plan` is empty:**
+
+Skip this step (no plan to delete). This occurs when the worktree was created with `/wt init` (lightweight worktree workflow).
 
 ### Step 7: Report Completion
 
