@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "pnpm format && pnpm lint",
-    "build": "next build",
+    "build": "DISABLE_STATIC_GENERATION=true next build",
+    "build:prod": "next build",
     "start": "next start",
     "lint": "oxlint --fix --fix-suggestions",
     "format": "prettier --write --log-level warn './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",

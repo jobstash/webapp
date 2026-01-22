@@ -16,7 +16,10 @@ export const fetchPillarDetails = async ({
 }: FetchPillarDetailsParams): Promise<PillarDetails | null> => {
   const url = `${clientEnv.MW_URL}/search/pillar/details?nav=jobs&slug=${slug}`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    cache: 'force-cache',
+    next: { revalidate: 3600 },
+  });
   if (!response.ok) return null;
 
   const json = await response.json();

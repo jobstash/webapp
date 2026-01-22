@@ -92,7 +92,7 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
               />
             </h1>
 
-            <p className='mx-auto max-w-2xl text-base text-muted-foreground md:text-lg'>
+            <p className='mx-auto max-w-2xl text-base text-muted-foreground md:max-w-4xl md:text-lg'>
               {description}
             </p>
           </div>

@@ -2,6 +2,12 @@ import { notFound } from 'next/navigation';
 
 import { PillarHero } from '@/features/pillar/components';
 import { fetchPillarDetails } from '@/features/pillar/server';
+import { fetchPillarStaticParams } from '@/features/pillar/server/data';
+
+export const generateStaticParams = async () => {
+  if (process.env.DISABLE_STATIC_GENERATION === 'true') return [];
+  return fetchPillarStaticParams();
+};
 
 interface Props {
   params: Promise<{ slug: string }>;
