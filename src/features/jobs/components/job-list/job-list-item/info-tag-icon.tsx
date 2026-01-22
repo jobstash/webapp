@@ -5,8 +5,9 @@ import {
   ClockIcon,
   CoinsIcon,
   DollarSignIcon,
+  ExternalLinkIcon,
   GlobeIcon,
-  MapPinIcon,
+  LandmarkIcon,
   TagIcon,
   UsersIcon,
   UserStarIcon,
@@ -21,7 +22,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   posted: ClockIcon,
   seniority: UserStarIcon,
   salary: DollarSignIcon,
-  location: MapPinIcon,
+  location: LandmarkIcon,
   workMode: GlobeIcon,
   commitment: CalendarIcon,
   paysInCrypto: WalletIcon,
@@ -31,6 +32,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   lastFundingDate: CalendarIcon,
   employees: UsersIcon,
   organization: BriefcaseIcon,
+  externalLink: ExternalLinkIcon,
 };
 
 export const InfoTagIcon = ({ iconKey }: InfoTagIconProps) => {

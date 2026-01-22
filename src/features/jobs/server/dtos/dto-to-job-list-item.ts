@@ -268,7 +268,7 @@ const createOrgInfoTags = (
   }
 
   tags.push({
-    iconKey: 'organization',
+    iconKey: 'externalLink',
     label: `Jobs by ${name}`,
     href,
   });
