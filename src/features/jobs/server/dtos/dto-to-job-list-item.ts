@@ -153,7 +153,7 @@ const createJobInfoTags = (dto: JobListItemDto) => {
     tags.push({
       iconKey: 'commitment',
       label: titleCase(commitment),
-      href: `/c-${slugify(commitment)}`,
+      href: `/co-${slugify(commitment)}`,
     });
   }
 
