@@ -1,11 +1,11 @@
 ---
 name: finalize
-description: Finalize a feature implementation - analyze changes, create atomic commits, and clean up the worktree.
+description: Finalize a feature implementation - validate, create atomic commits, and clean up the worktree.
 ---
 
 # Finalize Feature
 
-Complete a feature implementation by creating commits and cleaning up. Fully automated.
+Complete a feature implementation by validating, committing, and cleaning up.
 
 ## Usage
 
@@ -13,42 +13,78 @@ Complete a feature implementation by creating commits and cleaning up. Fully aut
 /finalize
 ```
 
-No arguments needed — the command detects the current worktree automatically.
+No arguments needed — detects worktree from current directory.
 
-## Prerequisites
+## Context Requirement
 
-- Must be run from within a worktree (sibling folder `<project>-<feature>/`)
-- Worktree must have been created with `/implement` or `/worktree init`
+This command must be run from a worktree session.
+
+If `.claude-worktree.json` does not exist:
+
+```
+Error: Not in a worktree.
+Start Claude from the worktree directory:
+  cd <worktreePath> && claude
+```
 
 ## Execution
 
-1. Read `.claude-worktree.json` for metadata (feature, baseBranch, projectRoot)
+### Step 1: Validate Context
 
-2. Run validation and fix any issues until all pass:
+Check if `.claude-worktree.json` exists in current directory.
+Read metadata to get `projectRoot` and `feature`.
 
-   ```bash
-   pnpm format && pnpm lint && pnpm build
-   ```
+### Step 2: Run Validation
 
-3. Create commits and cleanup in one command:
+Fix any issues before committing:
 
-   ```bash
-   npx tsx .claude/scripts/worktree/finalize.ts --path=../<project>-<feature> --commit --cleanup
-   ```
+```bash
+pnpm format && pnpm lint && pnpm build
+```
 
-4. If `cleanedUp: false` in output, run manual fallback:
+If validation fails, fix issues and retry.
 
-   ```bash
-   cd <projectRoot> && git worktree remove ../<project>-<feature> --force
-   ```
+### Step 3: Analyze Changes
 
-5. Report completion with branch name and PR instructions
+```bash
+npx tsx .claude/scripts/worktree/analyze.ts --path=<cwd>
+```
+
+Parse JSON output. If no changes, report and skip to cleanup.
+
+### Step 4: Create Commits
+
+```bash
+npx tsx .claude/scripts/worktree/commit.ts --path=<cwd>
+```
+
+Report each commit created.
+
+### Step 5: Cleanup
+
+```bash
+npx tsx .claude/scripts/worktree/cleanup.ts --path=<cwd>
+```
+
+### Step 6: Report Completion
+
+```
+✓ Worktree cleaned up
+Branch: feature/<name> (<N> commits)
+
+To return to main project:
+  cd <projectRoot> && claude
+
+To create PR:
+  git push -u origin feature/<name>
+  gh pr create
+```
 
 ---
 
 ## Commit Grouping Logic
 
-Changes are grouped by **logical unit** with atomic granularity. The goal is meaningful, cohesive commits that represent complete units of work.
+Changes are grouped by **logical unit** with atomic granularity.
 
 ### Commit Message Convention
 
@@ -65,41 +101,19 @@ feat(dashboard): add schemas  # Avoid - redundant scope
 
 2. **Dependency order**: Commits are ordered so earlier commits don't depend on later ones:
    - Infrastructure (tsconfig, package.json) first
-   - Utilities (cn, helpers) before components that use them
+   - Utilities (cn, helpers) before components
    - Schemas/types (no dependencies)
    - API endpoints (depend on schemas)
    - Server data layer (depends on API)
-   - Leaf components first (MetricCard before MetricsGrid)
+   - Leaf components first
    - Container components (depend on leaf components)
    - Pages last (depend on everything)
 
-3. **No broad grouping**: Avoid grouping all components together. Each component directory is atomic.
-
-### Example Groupings
-
-| Commit                                   | Files                                  |
-| ---------------------------------------- | -------------------------------------- |
-| `chore: migrate to src folder structure` | `tsconfig.json`, `src/app/` base files |
-| `chore: add dependencies`                | `package.json`, `pnpm-lock.yaml`       |
-| `chore: add utility functions`           | `src/lib/utils.ts`                     |
-| `feat: add schemas`                      | `schemas.ts`                           |
-| `feat: add API endpoint`                 | `app/api/**/route.ts`                  |
-| `feat: add server-side data fetcher`     | `server/**/*.ts`                       |
-| `feat: add metric-card component`        | `components/metric-card/**`            |
-| `feat: add metrics-grid component`       | `components/metrics-grid/**`           |
-| `feat: add dashboard-metrics component`  | `components/dashboard-metrics/**`      |
-| `feat: add page`                         | `app/**/page.tsx`                      |
+3. **No broad grouping**: Each component directory is atomic.
 
 ---
 
 ## Error Handling
-
-**Not in worktree:**
-
-```
-Error: Not in a worktree.
-Run /finalize from within the worktree directory.
-```
 
 **No changes:**
 
@@ -118,26 +132,25 @@ The worktree has no modifications compared to <baseBranch>.
 Running validation...
 ✓ All checks passed
 
+Analyzing changes...
+Found 10 files changed
+
 Creating commits...
-✓ chore: migrate to src folder structure
-✓ chore: add dependencies
 ✓ chore: add utility functions
 ✓ feat: add schemas
 ✓ feat: add API endpoint
-✓ feat: add server-side data fetcher
 ✓ feat: add metric-card component
-✓ feat: add metrics-grid component
-✓ feat: add dashboard-metrics component
 ✓ feat: add page
 
 Cleaning up...
 ✓ Worktree removed
 
-Branch: feature/dashboard (10 commits)
+Branch: feature/dashboard (5 commits)
+
+To return to main project:
+  cd /Users/john/code/webapp && claude
 
 To create PR:
   git push -u origin feature/dashboard
   gh pr create
-
-~/project (main) $ _
 ```

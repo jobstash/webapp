@@ -298,8 +298,49 @@ npx tsx .claude/scripts/validate-plan.ts .claude/plans/<feature>.plan.md
 
 Fix any errors before finishing.
 
+## Post-Plan Actions
+
+After writing the plan, use AskUserQuestion to prompt:
+
+**Question**: "Would you like to create a worktree for this feature?"
+
+**Options**:
+
+1. **Yes, create worktree** - Creates isolated workspace for implementation
+2. **No, just the plan** - Create worktree later manually
+
+### If "Yes, create worktree":
+
+1. Run setup script:
+
+   ```bash
+   npx tsx .claude/scripts/worktree/setup.ts <feature-slug>
+   ```
+
+2. Report with terminal instructions:
+
+   ```
+   ✓ Plan created: .claude/plans/<feature>.plan.md
+   ✓ Worktree ready: <worktreePath>
+   ✓ Branch: feature/<feature>
+
+   To start implementation, run in your terminal:
+     cd <worktreePath> && claude
+
+   Then run `/implement-plan` in that session.
+   ```
+
+### If "No, just the plan":
+
+```
+✓ Plan created: .claude/plans/<feature>.plan.md
+
+To implement later:
+  /worktree-init <feature>
+  # Then in new session: /implement-plan
+```
+
 ## Notes
 
 - Plans are **draft** until user approves
-- Run `/implement <slug>` to execute approved plans (e.g., `/implement analytics` for `analytics.plan.md`)
 - Each task prompt should be self-contained (subagent has no prior context)

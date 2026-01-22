@@ -1,31 +1,44 @@
 ---
-name: orchestrate
-description: Execute a plan file by running tasks in dependency order. Uses scripts for deterministic validation and state management, parallel subagents for task execution.
+name: implement-plan
+description: Execute the plan for this worktree. Runs tasks in dependency order with parallel subagents.
 ---
 
-# Plan Orchestrator
+# Plan Implementer
 
-Execute a `.plan.md` file with deterministic orchestration and **parallel subagents**.
+Execute the plan for this worktree with deterministic orchestration and **parallel subagents**.
 
 ## Usage
 
 ```
-/orchestrate <plan-file>
+/implement-plan
 ```
 
-## Prerequisites
+## Context Requirement
 
-**CRITICAL: Must be run from within the worktree for the plan.**
+This command must be run from a worktree session.
 
-All orchestration work (file creation, code generation, validation) MUST happen in the worktree context, not in the main project. If you run orchestration from the project root, files will be created in the wrong location.
+If `.claude-worktree.json` does not exist in current directory:
 
-Before running `/orchestrate`:
+```
+Error: Not in a worktree.
 
-1. Ensure a worktree exists for this plan (created via `/implement` or `/worktree init`)
-2. Verify you're in the worktree with `pwd` (should show `../<project>-<feature>`)
-3. The worktree has `.claude-worktree.json` file
+To run /implement-plan:
+1. Create a worktree first: /worktree-init <name>
+2. Start Claude from the worktree: cd <worktreePath> && claude
+3. Then run /implement-plan
+```
 
-**If not in worktree:** First `cd` to the worktree directory, then run orchestration.
+## Plan Discovery
+
+Read `.claude-worktree.json` from the current directory:
+
+```typescript
+// metadata.plan = ".claude/plans/user-profile.plan.md"
+// metadata.feature = "user-profile"
+```
+
+Use `metadata.plan` as the plan file path.
+Use `metadata.feature` for state file naming.
 
 ## Execution Flow
 
@@ -34,7 +47,7 @@ Before running `/orchestrate`:
 Run the validation script:
 
 ```bash
-npx tsx .claude/scripts/orchestrate/validate.ts <plan-file>
+npx tsx .claude/scripts/implement-plan/validate.ts <plan-file>
 ```
 
 **If output shows `"valid": false`:** Stop. Report the errors. Do not proceed.
@@ -46,7 +59,7 @@ npx tsx .claude/scripts/orchestrate/validate.ts <plan-file>
 Run the next tasks script:
 
 ```bash
-npx tsx .claude/scripts/orchestrate/next.ts <plan-file> .claude/state/<feature>.state.json
+npx tsx .claude/scripts/implement-plan/next.ts <plan-file> .claude/state/<feature>.state.json
 ```
 
 This outputs:
@@ -119,13 +132,13 @@ After ALL parallel subagents complete, mark each task with the scripts:
 **For each successful task:**
 
 ```bash
-npx tsx .claude/scripts/orchestrate/update-task.ts .claude/state/<feature>.state.json <task-id> --complete --files <files-created> --exports <symbols-exported>
+npx tsx .claude/scripts/implement-plan/update-task.ts .claude/state/<feature>.state.json <task-id> --complete --files <files-created> --exports <symbols-exported>
 ```
 
 **For each failed task:**
 
 ```bash
-npx tsx .claude/scripts/orchestrate/update-task.ts .claude/state/<feature>.state.json <task-id> --fail
+npx tsx .claude/scripts/implement-plan/update-task.ts .claude/state/<feature>.state.json <task-id> --fail
 ```
 
 ### Step 5: Loop
@@ -139,7 +152,7 @@ Repeat until `done` is true or no tasks are ready.
 Run status script:
 
 ```bash
-npx tsx .claude/scripts/orchestrate/status.ts <plan-file> .claude/state/<feature>.state.json
+npx tsx .claude/scripts/implement-plan/status.ts <plan-file> .claude/state/<feature>.state.json
 ```
 
 Report the summary to the user.
@@ -216,12 +229,12 @@ Report to user:
     <task.prompt>
 
 When done, run:
-npx tsx .claude/scripts/orchestrate/update-task.ts .claude/state/<feature>.state.json <task-id> --complete
+npx tsx .claude/scripts/implement-plan/update-task.ts .claude/state/<feature>.state.json <task-id> --complete
 ```
 
 ## Resumability
 
-Re-run `/orchestrate` to continue from where you left off.
+Re-run `/implement-plan` to continue from where you left off.
 
 Reset: `rm .claude/state/<feature>.state.json`
 

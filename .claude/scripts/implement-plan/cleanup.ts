@@ -3,7 +3,7 @@
 /**
  * Cleans up orchestration files (plan + state) for a feature.
  *
- * Usage: npx tsx .claude/scripts/orchestrate/cleanup.ts <feature> [--force]
+ * Usage: npx tsx .claude/scripts/implement-plan/cleanup.ts <feature> [--force]
  *
  * Without --force: Shows preview (summary + files to delete), does NOT delete
  * With --force: Actually deletes the files

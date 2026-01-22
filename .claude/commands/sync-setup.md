@@ -16,9 +16,9 @@ Synchronize the orchestration configuration with the current agents and skills s
 ## What This Does
 
 1. Scans `.claude/agents/` for all agent definitions
-2. Updates `.claude/scripts/orchestrate/types.ts` with the `AgentType` union
-3. Updates `.claude/scripts/orchestrate/parser.ts` with the `VALID_AGENTS` array
-4. Outputs the subagent mapping table for `orchestrate.md`
+2. Updates `.claude/scripts/implement-plan/types.ts` with the `AgentType` union
+3. Updates `.claude/scripts/implement-plan/parser.ts` with the `VALID_AGENTS` array
+4. Outputs the subagent mapping table for `implement-plan.md`
 
 ## Execution
 
@@ -38,7 +38,7 @@ Found 2 agents: react-architect, react-qa
 ✓ Updated types.ts with AgentType: 'react-architect' | 'react-qa' | 'manual'
 ✓ Updated parser.ts with VALID_AGENTS: ['react-architect', 'react-qa', 'manual']
 
---- Subagent mapping for orchestrate.md ---
+--- Subagent mapping for implement-plan.md ---
 
 **Subagent mapping:**
 
@@ -48,12 +48,12 @@ Found 2 agents: react-architect, react-qa
 | `react-qa` | `react-qa` | ... |
 | `manual` | (skip - report to user) | Human action required |
 
-✓ Copy the table above to .claude/commands/orchestrate.md if needed
+✓ Copy the table above to .claude/commands/implement-plan.md if needed
 ```
 
 ## After Running
 
-If the subagent mapping table changed, update `.claude/commands/orchestrate.md` Step 3 with the new table.
+If the subagent mapping table changed, update `.claude/commands/implement-plan.md` Step 3 with the new table.
 
 ## When to Run
 
@@ -65,11 +65,11 @@ Run this command after:
 
 ## Files Modified
 
-| File                                    | What Changes           |
-| --------------------------------------- | ---------------------- |
-| `.claude/scripts/orchestrate/types.ts`  | `AgentType` union type |
-| `.claude/scripts/orchestrate/parser.ts` | `VALID_AGENTS` array   |
+| File                                       | What Changes           |
+| ------------------------------------------ | ---------------------- |
+| `.claude/scripts/implement-plan/types.ts`  | `AgentType` union type |
+| `.claude/scripts/implement-plan/parser.ts` | `VALID_AGENTS` array   |
 
 ## Manual Step
 
-The `orchestrate.md` subagent mapping table is printed but not auto-updated. Copy it manually if the agents changed.
+The `implement-plan.md` subagent mapping table is printed but not auto-updated. Copy it manually if the agents changed.

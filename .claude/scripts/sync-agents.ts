@@ -8,7 +8,7 @@ interface AgentMeta {
 
 const CLAUDE_DIR = join(process.cwd(), '.claude');
 const AGENTS_DIR = join(CLAUDE_DIR, 'agents');
-const ORCHESTRATE_DIR = join(CLAUDE_DIR, 'scripts', 'orchestrate');
+const IMPLEMENT_PLAN_DIR = join(CLAUDE_DIR, 'scripts', 'implement-plan');
 
 async function parseAgentFrontmatter(
   content: string,
@@ -39,7 +39,7 @@ async function getAgents(): Promise<AgentMeta[]> {
 }
 
 async function updateTypesFile(agents: AgentMeta[]): Promise<void> {
-  const typesPath = join(ORCHESTRATE_DIR, 'types.ts');
+  const typesPath = join(IMPLEMENT_PLAN_DIR, 'types.ts');
   const content = await readFile(typesPath, 'utf-8');
 
   const agentNames = [...agents.map((a) => `'${a.name}'`), "'manual'"];
@@ -52,7 +52,7 @@ async function updateTypesFile(agents: AgentMeta[]): Promise<void> {
 }
 
 async function updateParserFile(agents: AgentMeta[]): Promise<void> {
-  const parserPath = join(ORCHESTRATE_DIR, 'parser.ts');
+  const parserPath = join(IMPLEMENT_PLAN_DIR, 'parser.ts');
   const content = await readFile(parserPath, 'utf-8');
 
   const agentNames = [...agents.map((a) => `'${a.name}'`), "'manual'"];
@@ -105,10 +105,10 @@ async function main() {
   await updateTypesFile(agents);
   await updateParserFile(agents);
 
-  console.log('\n--- Subagent mapping for orchestrate.md ---\n');
+  console.log('\n--- Subagent mapping for implement-plan.md ---\n');
   console.log(generateSubagentTable(agents));
   console.log(
-    '\n✓ Copy the table above to .claude/commands/orchestrate.md if needed',
+    '\n✓ Copy the table above to .claude/commands/implement-plan.md if needed',
   );
 }
 
