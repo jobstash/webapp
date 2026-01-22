@@ -335,7 +335,13 @@ function main() {
         unlinkSync(metadataPath);
       }
 
-      // Remove state files
+      // Remove plan and state files inside worktree (copies from main project)
+      // User can delete main project's plan/state separately if desired
+      const plansDir = resolve(cwd, '.claude/plans');
+      if (existsSync(plansDir)) {
+        rmSync(plansDir, { recursive: true, force: true });
+      }
+
       const stateDir = resolve(cwd, '.claude/state');
       if (existsSync(stateDir)) {
         rmSync(stateDir, { recursive: true, force: true });
@@ -344,20 +350,27 @@ function main() {
       // Remove worktree from VS Code workspace file
       removeWorktreeFromWorkspace(projectRoot, metadata.feature);
 
-      // If running from project root (via --path), we can remove the worktree directly
-      const runningFromProjectRoot = process.cwd() !== cwd;
+      // Always attempt to remove the worktree directory
+      // The git command runs with cwd: projectRoot, so it works regardless of where
+      // this script's process.cwd() is. Some systems may still fail if the shell's
+      // cwd is inside the worktree being removed.
       let worktreeRemoved = false;
 
-      if (runningFromProjectRoot) {
-        try {
-          exec(`git worktree remove "${worktreePath}" --force`, {
-            cwd: projectRoot,
-          });
-          worktreeRemoved = true;
-        } catch (e) {
+      try {
+        exec(`git worktree remove "${worktreePath}" --force`, {
+          cwd: projectRoot,
+        });
+        worktreeRemoved = true;
+      } catch (e) {
+        const errorMsg = e instanceof Error ? e.message : String(e);
+        // Check if error is due to cwd being inside the worktree
+        const cwdInWorktree = process.cwd().startsWith(worktreePath);
+        if (cwdInWorktree) {
           console.error(
-            `Warning: Failed to remove worktree: ${e instanceof Error ? e.message : e}`,
+            `Warning: Cannot remove worktree while inside it. Change to project root first.`,
           );
+        } else {
+          console.error(`Warning: Failed to remove worktree: ${errorMsg}`);
         }
       }
 

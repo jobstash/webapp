@@ -13,6 +13,20 @@ Execute a `.plan.md` file with deterministic orchestration and **parallel subage
 /orchestrate <plan-file>
 ```
 
+## Prerequisites
+
+**CRITICAL: Must be run from within the worktree for the plan.**
+
+All orchestration work (file creation, code generation, validation) MUST happen in the worktree context, not in the main project. If you run orchestration from the project root, files will be created in the wrong location.
+
+Before running `/orchestrate`:
+
+1. Ensure a worktree exists for this plan (created via `/implement` or `/worktree init`)
+2. Verify you're in the worktree with `pwd` (should show `../<project>-<feature>`)
+3. The worktree has `.claude-worktree.json` file
+
+**If not in worktree:** First `cd` to the worktree directory, then run orchestration.
+
 ## Execution Flow
 
 ### Step 1: Validate

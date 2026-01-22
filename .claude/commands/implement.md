@@ -65,7 +65,9 @@ This should now show the worktree path.
 
 ### Step 3: Run Orchestration
 
-Now execute the orchestration within the worktree context:
+**CRITICAL: All orchestration MUST run from within the worktree.**
+
+Now execute the orchestration within the worktree context. All files created by subagents will be in the worktree, not the main project:
 
 ```bash
 npx tsx .claude/scripts/orchestrate/validate.ts .claude/plans/<plan-name>.plan.md
