@@ -3,10 +3,11 @@
 import { FILTER_KIND } from '@/features/filters/constants';
 import { type FilterConfigSchema } from '@/features/filters/schemas';
 
+import { SuggestedFilterRange } from './suggested-filter-range';
+import { SuggestedFilterRemoteSearch } from './suggested-filter-remote-search';
+import { SuggestedFilterSearch } from './suggested-filter-search';
 import { SuggestedFilterSelect } from './suggested-filter-select';
 import { SuggestedFilterSwitch } from './suggested-filter-switch';
-import { SuggestedFilterSearch } from './suggested-filter-search';
-import { SuggestedFilterRemoteSearch } from './suggested-filter-remote-search';
 import { useSuggestedFilters } from './use-suggested-filters';
 
 interface Props {
@@ -62,6 +63,9 @@ export const SuggestedFilters = ({ configs }: Props) => {
                 options={config.options}
               />
             );
+          }
+          case FILTER_KIND.RANGE: {
+            return <SuggestedFilterRange key={key} config={config} />;
           }
           default:
             return null;

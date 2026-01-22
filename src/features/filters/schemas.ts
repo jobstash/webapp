@@ -77,6 +77,20 @@ export type RemoteSearchFilterConfigSchema = z.infer<
   typeof remoteSearchFilterConfigSchema
 >;
 
+const rangeValueSchema = z.object({
+  value: z.number(),
+  paramKey: nonEmptyStringSchema,
+});
+
+export const rangeFilterConfigSchema = z.object({
+  ...filterConfigSharedPropertiesSchema.shape,
+  kind: z.literal(FILTER_KIND.RANGE),
+  lowest: rangeValueSchema,
+  highest: rangeValueSchema,
+  prefix: z.nullish(nonEmptyStringSchema),
+});
+export type RangeFilterConfig = z.infer<typeof rangeFilterConfigSchema>;
+
 export const filterConfigSchema = z.union([
   switchFilterConfigSchema,
   radioFilterConfigSchema,
@@ -84,5 +98,6 @@ export const filterConfigSchema = z.union([
   checkboxFilterConfigSchema,
   searchFilterConfigSchema,
   remoteSearchFilterConfigSchema,
+  rangeFilterConfigSchema,
 ]);
 export type FilterConfigSchema = z.infer<typeof filterConfigSchema>;

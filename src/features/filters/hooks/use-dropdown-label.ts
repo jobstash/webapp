@@ -1,6 +1,7 @@
 import { useSearchParams } from 'next/navigation';
 
 import { capitalizeSlug } from '@/lib/utils';
+import { FILTER_KIND } from '@/features/filters/constants';
 import {
   FilterConfigSchema,
   SelectOptionsSchema,
@@ -31,6 +32,10 @@ const getLabelForLocalFilter = (
 
 export const useDropdownLabel = (config: FilterConfigSchema) => {
   const searchParams = useSearchParams();
+
+  // RANGE filters don't use dropdown labels - they have their own UI
+  if (config.kind === FILTER_KIND.RANGE) return DEFAULT_LABEL;
+
   const paramValue = searchParams.get(config.paramKey);
   if (!paramValue) return DEFAULT_LABEL;
 

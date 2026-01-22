@@ -7,8 +7,7 @@ export const FILTER_KIND = {
   CHECKBOX: 'CHECKBOX',
   SEARCH: 'SEARCH',
   REMOTE_SEARCH: 'REMOTE_SEARCH',
-
-  // TODO: RANGE: 'RANGE',
+  RANGE: 'RANGE',
 } as const;
 export type FilterKind = (typeof FILTER_KIND)[keyof typeof FILTER_KIND];
 

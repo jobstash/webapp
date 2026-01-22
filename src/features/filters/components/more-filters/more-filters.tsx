@@ -21,6 +21,7 @@ import { FILTER_KIND } from '@/features/filters/constants';
 import { type FilterConfigSchema } from '@/features/filters/schemas';
 
 import { MoreFiltersItem } from './more-filters-item';
+import { MoreFiltersRangeItem } from './more-filters-range-item';
 import { useMoreFiltersOptions } from './use-more-filters-options';
 
 interface Props {
@@ -61,17 +62,31 @@ export const MoreFilters = ({ configs }: Props) => {
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options.map((config) => (
-                <MoreFiltersItem
-                  key={config.label}
-                  isPending={isPending}
-                  paramKey={config.paramKey}
-                  label={config.label}
-                  defaultValue={getDefaultValue(config)}
-                  closeDropdown={closeDropdown}
-                  startTransition={startTransition}
-                />
-              ))}
+              {options.map((config) => {
+                if (config.kind === FILTER_KIND.RANGE) {
+                  return (
+                    <MoreFiltersRangeItem
+                      key={config.label}
+                      isPending={isPending}
+                      config={config}
+                      closeDropdown={closeDropdown}
+                      startTransition={startTransition}
+                    />
+                  );
+                }
+
+                return (
+                  <MoreFiltersItem
+                    key={config.label}
+                    isPending={isPending}
+                    paramKey={config.paramKey}
+                    label={config.label}
+                    defaultValue={getDefaultValue(config)}
+                    closeDropdown={closeDropdown}
+                    startTransition={startTransition}
+                  />
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

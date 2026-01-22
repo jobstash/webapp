@@ -6,6 +6,7 @@ import { type FilterConfigSchema } from '@/features/filters/schemas';
 
 import { ActiveFilterCheckbox } from './active-filter-checkbox';
 import { ActiveFilterRadio } from './active-filter-radio';
+import { ActiveFilterRange } from './active-filter-range';
 import { ActiveFiltersSearch } from './active-filter-search';
 import { ActiveFilterSwitch } from './active-filter-switch';
 import { ActiveFilterRemoteSearch } from './active-filter-remote-search';
@@ -72,6 +73,9 @@ export const ActiveFilters = ({ configs }: Props) => {
                 options={config.options}
               />
             );
+          }
+          case FILTER_KIND.RANGE: {
+            return <ActiveFilterRange key={key} config={config} />;
           }
           default:
             return null;

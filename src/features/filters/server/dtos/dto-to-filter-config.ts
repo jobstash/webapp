@@ -8,6 +8,7 @@ import {
   FilterConfigSchema,
   FilterConfigSharedPropertiesSchema,
   RadioFilterConfigSchema,
+  RangeFilterConfig,
   RemoteSearchFilterConfigSchema,
   SearchFilterConfigSchema,
   SelectOptionsSchema,
@@ -19,6 +20,7 @@ import {
   FilterConfigDto,
   FilterConfigSharedPropertiesDto,
   MultiSelectFilterConfigDto,
+  RangeFilterConfigDto,
   SelectOptionDto,
   SingleSelectFilterConfigDto,
 } from './filter-config.dto';
@@ -145,6 +147,27 @@ const dtoToMultiSelectFilterConfig = (
   };
 };
 
+const handleRangeFilter = (
+  dto: RangeFilterConfigDto,
+): RangeFilterConfig | null => {
+  const { lowest, highest } = dto.value;
+
+  if (lowest.value > highest.value) return null;
+
+  const isSalarySuggested =
+    lowest.paramKey.toLowerCase().includes('salary') ||
+    highest.paramKey.toLowerCase().includes('salary');
+
+  return {
+    ...dtoToFilterConfigSharedProps(dto),
+    kind: FILTER_KIND.RANGE,
+    lowest,
+    highest,
+    prefix: dto.prefix,
+    isSuggested: isSalarySuggested || undefined,
+  };
+};
+
 const adjustFilterPosition = (dto: FilterConfigDto[string]) => {
   if (dto.label === LABELS.ORDER) dto.position = -2;
   if (dto.label === LABELS.ORDER_BY) dto.position = -1;
@@ -232,15 +255,23 @@ const handleFilterConfig = (
     case 'MULTI_SELECT_WITH_SEARCH':
       baseFilter = handleMultiSelect(dto);
       break;
-
-    // TODO: RANGE
+    case 'RANGE':
+      baseFilter = handleRangeFilter(dto);
+      break;
   }
 
   if (!baseFilter) return null;
 
+  // RANGE filters handle isSuggested internally (based on salary paramKey)
+  // Other filters use SUGGESTED_FILTERS set based on paramKey
+  const isSuggested =
+    'paramKey' in baseFilter
+      ? SUGGESTED_FILTERS.has(baseFilter.paramKey as ParamKey)
+      : baseFilter.isSuggested;
+
   return {
     ...baseFilter,
-    isSuggested: SUGGESTED_FILTERS.has(baseFilter.paramKey as ParamKey),
+    isSuggested,
   };
 };
 
