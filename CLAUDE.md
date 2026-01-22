@@ -122,18 +122,35 @@ Pillar pages are SEO landing pages for specific job filters. Each pillar slug us
 
 **Slug Prefix → Filter Param Mappings:**
 
-| Prefix     | Filter Param     | Category Name  | Example Slug            |
-| ---------- | ---------------- | -------------- | ----------------------- |
-| `t-`       | tags             | tag            | `t-typescript`          |
-| `cl-`      | classification   | classification | `cl-devrel`             |
-| `l-`       | location         | location       | `l-usa`                 |
-| `co-`      | commitment       | commitment     | `co-fulltime`           |
-| `lt-`      | locationType     | locationType   | `lt-remote`             |
-| `o-`       | organization     | organization   | `o-ethereum-foundation` |
-| `s-`       | seniority        | seniority      | `s-senior`              |
-| `i-`       | investors        | investor       | `i-a16z`                |
-| `fr-`      | fundingRounds    | fundingRound   | `fr-series-a`           |
-| `b-{name}` | {name} (boolean) | boolean        | `b-pays-in-crypto`      |
+| Prefix                    | Filter Param          | Hero Label                         | Example Slug                |
+| ------------------------- | --------------------- | ---------------------------------- | --------------------------- |
+| `t-`                      | tags                  | `<tag> Jobs`                       | `t-typescript`              |
+| `cl-`                     | classifications       | `<classification> Jobs`            | `cl-devrel`                 |
+| `l-`                      | locations             | `Jobs in <location>`               | `l-usa`                     |
+| `co-`                     | commitments           | `<commitment> Jobs`                | `co-fulltime`               |
+| `lt-`                     | locationType          | `<locationType> Jobs`              | `lt-remote`                 |
+| `o-`                      | organizations         | `Jobs at <organization>`           | `o-ethereum-foundation`     |
+| `c-`                      | chains                | `Jobs in <chain> Chain`            | `c-ethereum`                |
+| `s-`                      | seniority             | `<seniority> Jobs`                 | `s-senior`                  |
+| `i-`                      | investors             | `Jobs backed by <investor>`        | `i-a16z`                    |
+| `fr-`                     | fundingRounds         | `<fundingRound> Funded Jobs`       | `fr-series-a`               |
+| `b-{name}`                | {name} (boolean)      | (contextual - see Boolean Filters) | `b-pays-in-crypto`          |
+| `b-with-token-allocation` | offersTokenAllocation | `Jobs with Token Allocation`       | `b-offers-token-allocation` |
+| `b-beginner-friendly`     | onboardIntoWeb3       | `Beginner Friendly Jobs`           | `b-beginner-friendly`       |
+| `b-expert`                | expertJobs            | `Expert Jobs`                      | `b-expert`                  |
+
+**Hero Label Examples:**
+
+- `t-typescript` → "TypeScript Jobs"
+- `cl-devrel` → "DevRel Jobs"
+- `l-usa` → "Jobs in USA"
+- `co-fulltime` → "Full-time Jobs"
+- `lt-remote` → "Remote Jobs"
+- `o-ethereum-foundation` → "Jobs at Ethereum Foundation"
+- `c-ethereum` → "Jobs in Ethereum Chain"
+- `s-senior` → "Senior Jobs"
+- `i-a16z` → "Jobs backed by a16z"
+- `fr-series-a` → "Series A Funded Jobs"
 
 **Boolean Filters:**
 
