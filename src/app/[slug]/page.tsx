@@ -1,4 +1,7 @@
-import { clientEnv } from '@/lib/env/client';
+import { notFound } from 'next/navigation';
+
+import { PillarHero } from '@/features/pillar/components';
+import { fetchPillarDetails } from '@/features/pillar/server';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -6,15 +9,17 @@ interface Props {
 
 const PillarPage = async ({ params }: Props) => {
   const { slug } = await params;
+  const pillarDetails = await fetchPillarDetails({ slug });
 
-  const url = `${clientEnv.MW_URL}/search/pillar/details?nav=jobs&slug=${slug}`;
-  const response = await fetch(url);
-  const data = await response.json();
+  if (!pillarDetails) notFound();
 
   return (
-    <pre className='text-sm whitespace-pre-wrap'>
-      {JSON.stringify(data, null, 2)}
-    </pre>
+    <main className='pb-16'>
+      <PillarHero slug={slug} pillarDetails={pillarDetails} />
+      <div id='jobs' className='space-y-4 pt-4'>
+        {/* Job list will be added here */}
+      </div>
+    </main>
   );
 };
 

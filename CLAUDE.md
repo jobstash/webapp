@@ -116,6 +116,35 @@ features/{feature}/
 - Transformers handle logic-based routing, normalization, filtering
 - Return `null` for invalid/unusable data (filter early)
 
+### Pillar Pages
+
+Pillar pages are SEO landing pages for specific job filters. Each pillar slug uses a prefix to identify its category.
+
+**Slug Prefix → Filter Param Mappings:**
+
+| Prefix     | Filter Param     | Category Name  | Example Slug            |
+| ---------- | ---------------- | -------------- | ----------------------- |
+| `t-`       | tags             | tag            | `t-typescript`          |
+| `cl-`      | classification   | classification | `cl-devrel`             |
+| `l-`       | location         | location       | `l-usa`                 |
+| `co-`      | commitment       | commitment     | `co-fulltime`           |
+| `lt-`      | locationType     | locationType   | `lt-remote`             |
+| `o-`       | organization     | organization   | `o-ethereum-foundation` |
+| `s-`       | seniority        | seniority      | `s-senior`              |
+| `i-`       | investors        | investor       | `i-a16z`                |
+| `fr-`      | fundingRounds    | fundingRound   | `fr-series-a`           |
+| `b-{name}` | {name} (boolean) | boolean        | `b-pays-in-crypto`      |
+
+**Boolean Filters:**
+
+Boolean filters use the `b-` prefix followed by the filter name. They generate contextual taglines:
+
+- `b-pays-in-crypto` → "Jobs that pay in crypto"
+- `b-offers-token-allocation` → "Jobs with token allocation"
+- Default: "Jobs with {readable name}"
+
+**Implementation:** `src/features/pillar/constants.ts`
+
 ### Skills (load for detailed patterns)
 
 | Skill                    | When to Load                        |
