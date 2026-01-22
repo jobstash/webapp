@@ -157,6 +157,27 @@ npx tsx .claude/scripts/implement-plan/status.ts <plan-file> .claude/state/<feat
 
 Report the summary to the user.
 
+### Step 7: Generate Test Documentation
+
+Run the test checklist command:
+
+```
+/generate-test-checklist
+```
+
+This auto-detects the feature from `.claude-worktree.json`.
+
+### Step 8: Next Steps
+
+After test documentation is created, report:
+
+```
+✓ Implementation complete
+✓ Test checklist created: docs/todo-tests/<feature>.md
+
+Next: Run /worktree-done to validate, commit, and cleanup.
+```
+
 ---
 
 ## Why Parallel Execution?
