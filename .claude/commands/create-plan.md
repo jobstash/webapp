@@ -11,7 +11,7 @@ Generate a `.plan.md` file from a feature description. Help turn ideas into full
 ## Usage
 
 ```
-/plan "<feature description>"
+/create-plan "<feature description>"
 ```
 
 ## Output

@@ -29,7 +29,7 @@ npx tsx .claude/scripts/worktree/setup.ts <plan-name>
 
 Possible errors:
 
-- Plan not found → User needs to create the plan first with `/plan`
+- Plan not found → User needs to create the plan first with `/create-plan`
 
 **If output shows `"alreadyExists": true`:**
 
