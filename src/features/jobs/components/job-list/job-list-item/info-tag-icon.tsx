@@ -6,6 +6,7 @@ import {
   CoinsIcon,
   DollarSignIcon,
   ExternalLinkIcon,
+  FlameIcon,
   FolderClosedIcon,
   LandmarkIcon,
   LaptopIcon,
@@ -21,6 +22,7 @@ interface InfoTagIconProps {
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   posted: ClockIcon,
+  urgentlyHiring: FlameIcon,
   seniority: UserStarIcon,
   salary: DollarSignIcon,
   location: MapPinIcon,

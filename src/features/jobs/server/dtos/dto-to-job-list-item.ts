@@ -59,10 +59,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemOrg(organization);
   const badge = dtoToJobItemBadge(dto);
-  const isUrgentlyHiring = !!badge && badge === JOB_ITEM_BADGE.BEGINNER;
-  const timestampText = isUrgentlyHiring
-    ? 'Urgently Hiring'
-    : prettyTimestamp(timestamp);
+  const timestampText = prettyTimestamp(timestamp);
 
   return {
     id: shortUUID,
@@ -98,11 +95,21 @@ const createJobInfoTags = (dto: JobListItemDto) => {
 
   const tags: MappedInfoTagSchema[] = [];
 
-  // Timestamp as first tag (not filterable)
-  tags.push({
-    iconKey: 'posted',
-    label: prettyTimestamp(timestamp),
-  });
+  // First tag: "Urgently Hiring" for expert jobs, timestamp for others
+  const badge = dtoToJobItemBadge(dto);
+  const isExpertJob = badge === JOB_ITEM_BADGE.EXPERT;
+
+  if (isExpertJob) {
+    tags.push({
+      iconKey: 'urgentlyHiring',
+      label: 'Urgently Hiring',
+    });
+  } else {
+    tags.push({
+      iconKey: 'posted',
+      label: prettyTimestamp(timestamp),
+    });
+  }
 
   if (seniority && seniority in SENIORITY_MAPPING) {
     const label =

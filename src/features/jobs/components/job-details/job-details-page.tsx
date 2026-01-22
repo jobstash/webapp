@@ -1,4 +1,5 @@
 import { type JobDetailsSchema } from '@/features/jobs/schemas';
+import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
 import { JobDetailsHeader } from './job-details-header';
 import { JobDetailsContent } from './job-details-content';
 import { JobDetailsSidebar } from './job-details-sidebar';
@@ -9,6 +10,8 @@ interface JobDetailsPageProps {
 }
 
 export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
+  const isExpertJob = job.badge === JOB_ITEM_BADGE.EXPERT;
+
   return (
     <>
       <main className='pb-24 lg:pb-8'>
@@ -30,7 +33,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
         </div>
       </main>
 
-      <MobileApplyBar applyUrl={job.applyUrl} />
+      <MobileApplyBar applyUrl={job.applyUrl} isExpertJob={isExpertJob} />
     </>
   );
 };
