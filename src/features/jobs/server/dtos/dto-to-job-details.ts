@@ -9,10 +9,12 @@ import {
   type SimilarJobSchema,
 } from '@/features/jobs/schemas';
 
+const getSimilarJobDefaultTitle = (dto: SimilarJobDto): string =>
+  dto.organization?.name ? `Role at ${dto.organization.name}` : 'Open Role';
+
 export const dtoToSimilarJob = (dto: SimilarJobDto): SimilarJobSchema => {
   const {
     shortUUID,
-    title,
     minimumSalary,
     maximumSalary,
     salary,
@@ -21,6 +23,7 @@ export const dtoToSimilarJob = (dto: SimilarJobDto): SimilarJobSchema => {
     organization,
   } = dto;
 
+  const title = dto.title ?? getSimilarJobDefaultTitle(dto);
   const orgSlug = organization?.name ? `-${organization.name}` : '';
   const href = `/${slugify(`${title}${orgSlug}`)}/${shortUUID}`;
 

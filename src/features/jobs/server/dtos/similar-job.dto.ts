@@ -11,7 +11,7 @@ import {
 export const similarJobDto = z.object({
   id: nonEmptyStringSchema,
   shortUUID: nonEmptyStringSchema,
-  title: nonEmptyStringSchema,
+  title: nullableStringSchema,
   minimumSalary: nullableNumberSchema,
   maximumSalary: nullableNumberSchema,
   salary: nullableNumberSchema,

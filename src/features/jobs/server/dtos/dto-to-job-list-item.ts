@@ -24,9 +24,27 @@ import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
 const createFilterUrl = (param: string, value: string) =>
   `/?${param}=${encodeURIComponent(value)}`;
 
+const getDefaultTitle = (dto: JobListItemDto): string => {
+  const seniority =
+    dto.seniority && dto.seniority in SENIORITY_MAPPING
+      ? SENIORITY_MAPPING[dto.seniority as keyof typeof SENIORITY_MAPPING]
+      : null;
+  const classification = dto.classification
+    ? titleCase(dto.classification)
+    : null;
+  const orgName = dto.organization?.name ?? null;
+
+  const role = classification ?? 'Role';
+  const roleWithSeniority = seniority ? `${seniority} ${role}` : role;
+  const title = orgName
+    ? `${roleWithSeniority} at ${orgName}`
+    : roleWithSeniority;
+
+  return title || 'Open Role';
+};
+
 export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const {
-    title,
     url: applyUrl,
     shortUUID,
     timestamp,
@@ -35,7 +53,8 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     organization,
   } = dto;
 
-  const href = createJobItemHref(dto);
+  const title = dto.title ?? getDefaultTitle(dto);
+  const href = createJobItemHref(title, dto);
   const infoTags = createJobInfoTags(dto);
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemOrg(organization);
@@ -59,9 +78,9 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   };
 };
 
-const createJobItemHref = (dto: JobListItemDto) => {
+const createJobItemHref = (title: string, dto: JobListItemDto) => {
   const orgText = dto.organization?.name ? `-${dto.organization?.name}` : '';
-  const slug = slugify(`${dto.title}${orgText}`);
+  const slug = slugify(`${title}${orgText}`);
   return `/${slug}/${dto.shortUUID}`;
 };
 

@@ -12,7 +12,7 @@ import { fundingRoundDto, investorDto, tagDto } from '@/lib/server/dtos';
 
 export const jobListItemDto = z.object({
   id: nonEmptyStringSchema,
-  title: nonEmptyStringSchema,
+  title: nullableStringSchema,
   url: nullableStringSchema,
   shortUUID: nonEmptyStringSchema,
   timestamp: z.number(),
