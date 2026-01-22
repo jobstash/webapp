@@ -21,12 +21,14 @@ interface Props {
   label: string;
   paramKey: string;
   options: Option[];
+  excludeValues?: string[];
 }
 
 export const SuggestedFilterRemoteSearch = ({
   label,
   paramKey,
   options,
+  excludeValues,
 }: Props) => {
   const [, setFilterParam] = useFilterQueryState(paramKey);
   const [isPending, startTransition] = useTransition();
@@ -61,6 +63,7 @@ export const SuggestedFilterRemoteSearch = ({
           endpoint={endpoint}
           initialValues={initialValues}
           selectedValues={[]}
+          excludeValues={excludeValues}
           responseToValues={(data) => data.map((d) => d.normalizedName)}
           formatLabel={capitalizeSlug}
           onSelect={handleSelect}

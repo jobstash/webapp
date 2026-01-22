@@ -1,3 +1,5 @@
+import type { PillarFilterContext } from './schemas';
+
 export type PillarCategory =
   | 'tag'
   | 'classification'
@@ -117,6 +119,26 @@ const PREFIX_TO_CATEGORY: [string, PillarCategory][] = [
   ['b-', 'boolean'],
 ];
 
+export const PREFIX_TO_PARAM_KEY: Record<string, string> = {
+  't-': 'tags',
+  'cl-': 'classifications',
+  'l-': 'locations',
+  'co-': 'commitments',
+  'lt-': 'locationType',
+  'o-': 'organizations',
+  'c-': 'chains',
+  's-': 'seniority',
+  'i-': 'investors',
+  'fr-': 'fundingRounds',
+};
+
+export const BOOLEAN_SLUG_TO_PARAM_KEY: Record<string, string> = {
+  'offers-token-allocation': 'offersTokenAllocation',
+  'beginner-friendly': 'onboardIntoWeb3',
+  expert: 'expertJobs',
+  'pays-in-crypto': 'paysInCrypto',
+};
+
 export const getPillarCategory = (slug: string): PillarCategory => {
   const match = PREFIX_TO_CATEGORY.find(([prefix]) => slug.startsWith(prefix));
   return match?.[1] ?? 'tag';
@@ -144,4 +166,24 @@ const BOOLEAN_TAGLINES: Record<string, string> = {
 export const getBooleanTagline = (slug: string): string => {
   const filterName = slug.replace(/^b-/, '');
   return BOOLEAN_TAGLINES[filterName] ?? `Jobs with ${getPillarName(slug)}`;
+};
+
+export const getPillarFilterContext = (
+  slug: string,
+): PillarFilterContext | null => {
+  if (slug.startsWith('b-')) {
+    const booleanSlug = slug.slice(2);
+    const paramKey = BOOLEAN_SLUG_TO_PARAM_KEY[booleanSlug];
+    return paramKey ? { paramKey, value: 'true' } : null;
+  }
+
+  const matchingPrefix = Object.keys(PREFIX_TO_PARAM_KEY).find((prefix) =>
+    slug.startsWith(prefix),
+  );
+  if (!matchingPrefix) return null;
+
+  const paramKey = PREFIX_TO_PARAM_KEY[matchingPrefix];
+  const value = slug.slice(matchingPrefix.length);
+
+  return value ? { paramKey, value } : null;
 };

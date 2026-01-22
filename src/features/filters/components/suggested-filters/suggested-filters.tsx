@@ -1,5 +1,6 @@
 'use client';
 
+import type { PillarFilterContext } from '@/features/pillar/schemas';
 import { FILTER_KIND } from '@/features/filters/constants';
 import { type FilterConfigSchema } from '@/features/filters/schemas';
 
@@ -12,9 +13,10 @@ import { useSuggestedFilters } from './use-suggested-filters';
 
 interface Props {
   configs: FilterConfigSchema[];
+  pillarContext?: PillarFilterContext | null;
 }
 
-export const SuggestedFilters = ({ configs }: Props) => {
+export const SuggestedFilters = ({ configs, pillarContext }: Props) => {
   const suggestedFilters = useSuggestedFilters(configs);
   if (suggestedFilters.length === 0) return null;
 
@@ -55,12 +57,17 @@ export const SuggestedFilters = ({ configs }: Props) => {
             );
           }
           case FILTER_KIND.REMOTE_SEARCH: {
+            const excludeValues =
+              pillarContext?.paramKey === config.paramKey
+                ? [pillarContext.value]
+                : undefined;
             return (
               <SuggestedFilterRemoteSearch
                 key={key}
                 label={config.label}
                 paramKey={config.paramKey}
                 options={config.options}
+                excludeValues={excludeValues}
               />
             );
           }

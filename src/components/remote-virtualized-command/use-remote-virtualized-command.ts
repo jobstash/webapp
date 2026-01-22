@@ -14,6 +14,7 @@ interface UseRemoteVirtualizedCommandProps<T> {
   responseToValues: (data: T) => string[];
   initialValues: string[];
   selectedValues: string[];
+  excludeValues?: string[];
   fetchOptions?: RequestInit;
   onSelect?: (value: string) => void;
 }
@@ -34,6 +35,7 @@ export const useRemoteVirtualizedCommand = <T>({
   responseToValues,
   initialValues,
   selectedValues,
+  excludeValues = [],
   fetchOptions,
   onSelect,
 }: UseRemoteVirtualizedCommandProps<T>): UseRemoteVirtualizedCommandReturn => {
@@ -54,7 +56,9 @@ export const useRemoteVirtualizedCommand = <T>({
   const values = data ?? initialValues;
   const filteredValues = isLoading
     ? []
-    : values.filter((v) => !selectedValues.includes(v));
+    : values.filter(
+        (v) => !selectedValues.includes(v) && !excludeValues.includes(v),
+      );
   const isEmpty = filteredValues.length === 0;
 
   const handleSelect = (value: string) => {

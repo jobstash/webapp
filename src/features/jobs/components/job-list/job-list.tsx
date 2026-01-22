@@ -1,18 +1,39 @@
 import { fetchJobListPage } from '@/features/jobs/server/data';
 import { JOBS_PER_PAGE } from '@/features/jobs/constants';
+import type { PillarFilterContext } from '@/features/pillar/schemas';
+
 import { JobListPagination } from './job-list-pagination';
 import { JobListItem } from './job-list-item';
 
 interface JobListProps {
   currentPage: number;
   searchParams: Record<string, string>;
+  pillarContext?: PillarFilterContext;
 }
 
-export const JobList = async ({ currentPage, searchParams }: JobListProps) => {
+const mergeSearchParams = (
+  searchParams: Record<string, string>,
+  pillarContext?: PillarFilterContext,
+): Record<string, string> => {
+  if (!pillarContext) return searchParams;
+
+  const { paramKey, value: pillarValue } = pillarContext;
+  const userValue = searchParams[paramKey];
+  const mergedValue = userValue ? `${pillarValue},${userValue}` : pillarValue;
+
+  return { ...searchParams, [paramKey]: mergedValue };
+};
+
+export const JobList = async ({
+  currentPage,
+  searchParams,
+  pillarContext,
+}: JobListProps) => {
   try {
+    const mergedParams = mergeSearchParams(searchParams, pillarContext);
     const { total, data } = await fetchJobListPage({
       page: currentPage,
-      searchParams,
+      searchParams: mergedParams,
     });
     const totalPages = Math.ceil(total / JOBS_PER_PAGE);
 

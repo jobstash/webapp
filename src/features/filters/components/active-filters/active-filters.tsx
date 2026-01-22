@@ -1,5 +1,6 @@
 'use client';
 
+import type { PillarFilterContext } from '@/features/pillar/schemas';
 import { FILTER_KIND } from '@/features/filters/constants';
 import { useActiveFilters } from '@/features/filters/hooks';
 import { type FilterConfigSchema } from '@/features/filters/schemas';
@@ -13,9 +14,10 @@ import { ActiveFilterRemoteSearch } from './active-filter-remote-search';
 
 interface Props {
   configs: FilterConfigSchema[];
+  pillarContext?: PillarFilterContext | null;
 }
 
-export const ActiveFilters = ({ configs }: Props) => {
+export const ActiveFilters = ({ configs, pillarContext }: Props) => {
   const activeFilters = useActiveFilters(configs);
   if (activeFilters.length === 0) return null;
 
@@ -65,12 +67,17 @@ export const ActiveFilters = ({ configs }: Props) => {
             );
           }
           case FILTER_KIND.REMOTE_SEARCH: {
+            const excludeValues =
+              pillarContext?.paramKey === config.paramKey
+                ? [pillarContext.value]
+                : undefined;
             return (
               <ActiveFilterRemoteSearch
                 key={key}
                 label={config.label}
                 paramKey={config.paramKey}
                 options={config.options}
+                excludeValues={excludeValues}
               />
             );
           }

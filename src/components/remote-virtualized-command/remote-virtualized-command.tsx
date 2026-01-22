@@ -25,6 +25,7 @@ interface Props<T> {
   responseToValues: (data: T) => string[];
   initialValues: string[];
   selectedValues: string[];
+  excludeValues?: string[];
   formatLabel: (value: string) => string;
   height?: string;
   placeholder?: string;
@@ -42,6 +43,7 @@ export const RemoteVirtualizedCommand = <T,>({
   responseToValues,
   initialValues,
   selectedValues,
+  excludeValues,
   formatLabel,
   height = '400px',
   placeholder = 'Search...',
@@ -65,6 +67,7 @@ export const RemoteVirtualizedCommand = <T,>({
     responseToValues,
     initialValues,
     selectedValues,
+    excludeValues,
     fetchOptions,
     onSelect,
   });

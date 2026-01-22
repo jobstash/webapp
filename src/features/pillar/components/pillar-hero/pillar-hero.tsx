@@ -65,11 +65,11 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
   const config = PILLAR_CATEGORY_CONFIG[category];
 
   return (
-    <section className='relative w-full overflow-hidden border-b bg-linear-to-b from-primary/5 via-background to-background'>
+    <section className='relative flex min-h-[420px] w-full items-center overflow-hidden border-b bg-linear-to-b from-primary/5 via-background to-background md:min-h-[520px]'>
       {/* Radial glow - matches home hero */}
       <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/4 via-transparent to-transparent' />
 
-      <div className='relative mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24'>
+      <div className='relative mx-auto w-full max-w-7xl px-4 py-12 md:px-8 md:py-16'>
         <div className='flex flex-col items-center gap-10 text-center'>
           {/* Hero content */}
           <div className='flex flex-col gap-6'>
