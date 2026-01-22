@@ -38,7 +38,7 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
               <div
                 className={cn(
                   'flex size-10 items-center justify-center rounded-lg',
-                  'bg-gradient-to-br from-muted to-muted/50',
+                  'bg-linear-to-br from-muted to-muted/50',
                   'text-sm font-medium text-muted-foreground',
                   'ring-1 ring-border/50',
                 )}
@@ -48,14 +48,14 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
             }
           />
           <div className='flex items-center gap-1.5'>
-            <span className='font-medium text-foreground'>{name}</span>
             {websiteUrl && (
               <Link
                 href={websiteUrl}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='text-muted-foreground transition-colors hover:text-foreground'
+                className='flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground hover:underline'
               >
+                <span className='font-medium text-foreground'>{name}</span>
                 <ExternalLinkIcon className='size-3.5' />
               </Link>
             )}
@@ -81,14 +81,24 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
           <div className='space-y-2'>
             <p className='text-xs font-medium text-muted-foreground'>Funding</p>
             <div className='flex flex-wrap gap-1.5'>
-              {fundingRounds.slice(0, 3).map((round) => (
-                <Badge key={round.roundName} variant='secondary' asChild>
-                  <LinkWithLoader href={round.href}>
+              {fundingRounds.slice(0, 3).map((round) =>
+                round.href ? (
+                  <Badge
+                    key={`${round.roundName}-${round.date}`}
+                    variant='secondary'
+                  >
+                    <LinkWithLoader href={round.href}>
+                      {round.roundName}
+                      {round.amount && ` (${round.amount})`}
+                    </LinkWithLoader>
+                  </Badge>
+                ) : (
+                  <Badge key={round.roundName} variant='secondary'>
                     {round.roundName}
                     {round.amount && ` (${round.amount})`}
-                  </LinkWithLoader>
-                </Badge>
-              ))}
+                  </Badge>
+                ),
+              )}
             </div>
           </div>
         )}

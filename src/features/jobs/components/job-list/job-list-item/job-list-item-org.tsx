@@ -103,29 +103,52 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
                   Funding
                 </p>
                 <div className='flex flex-wrap gap-2'>
-                  {fundingRounds.map((round) => (
-                    <LinkWithLoader
-                      key={`${round.roundName}-${round.date}`}
-                      href={round.href}
-                      className={cn(
-                        'flex flex-col items-start gap-0.5 rounded-lg px-3 py-2',
-                        'bg-muted/50 ring-1 ring-border/50',
-                        'transition-all duration-150',
-                        'hover:bg-muted hover:ring-border',
-                      )}
-                    >
-                      <span className='text-sm font-medium text-foreground'>
-                        {round.roundName}
-                      </span>
-                      {(round.amount || round.date) && (
-                        <span className='text-xs text-muted-foreground'>
-                          {[round.amount, round.date]
-                            .filter(Boolean)
-                            .join(' · ')}
+                  {fundingRounds.map((round) => {
+                    const content = (
+                      <>
+                        <span className='flex items-center gap-1.5 text-sm font-medium text-foreground'>
+                          {round.roundName}
                         </span>
-                      )}
-                    </LinkWithLoader>
-                  ))}
+                        {(round.amount || round.date) && (
+                          <span className='text-xs text-muted-foreground'>
+                            {[round.amount, round.date]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </span>
+                        )}
+                      </>
+                    );
+
+                    const baseClassName = cn(
+                      'flex flex-col items-start gap-0.5 rounded-lg px-3 py-2',
+                      'bg-muted/50 ring-1 ring-border/50',
+                    );
+
+                    if (round.href) {
+                      return (
+                        <LinkWithLoader
+                          key={`${round.roundName}-${round.date}`}
+                          href={round.href}
+                          className={cn(
+                            baseClassName,
+                            'transition-all duration-150',
+                            'hover:bg-muted hover:ring-border',
+                          )}
+                        >
+                          {content}
+                        </LinkWithLoader>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={`${round.roundName}-${round.date}`}
+                        className={baseClassName}
+                      >
+                        {content}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

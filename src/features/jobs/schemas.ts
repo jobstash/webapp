@@ -16,10 +16,10 @@ export const jobTagSchema = z.object({
 export type JobTagSchema = z.infer<typeof jobTagSchema>;
 
 export const jobFundingRoundSchema = z.object({
-  roundName: nonEmptyStringSchema,
+  roundName: nullableStringSchema,
   amount: nullableStringSchema,
   date: nullableStringSchema,
-  href: nonEmptyStringSchema,
+  href: nullableStringSchema,
 });
 export type JobFundingRoundSchema = z.infer<typeof jobFundingRoundSchema>;
 

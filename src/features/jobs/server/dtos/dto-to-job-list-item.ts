@@ -231,25 +231,21 @@ const dtoToFundingRounds = (
   fundingRounds: FundingRoundDto[],
 ): JobFundingRoundSchema[] => {
   return fundingRounds
-    .filter((fr) => fr.roundName)
     .sort((a, b) => (b.date ?? 0) - (a.date ?? 0))
     .map((fr) => ({
-      roundName: fr.roundName!,
+      roundName: fr.roundName ?? null,
       amount: fr.raisedAmount
         ? `$${formatNumber(fr.raisedAmount * 1_000_000)}`
         : null,
       date: fr.date ? shortTimestamp(fr.date) : null,
-      href: createFilterUrl(
-        'fundingRounds',
-        fr.roundName!.toLowerCase().replace(/\s+/g, '-'),
-      ),
+      href: fr.roundName ? `/fr-${slugify(fr.roundName)}` : null,
     }));
 };
 
 const dtoToInvestors = (investors: InvestorDto[]): JobInvestorSchema[] => {
   return investors.map((inv) => ({
     name: inv.name,
-    href: createFilterUrl('investors', inv.normalizedName),
+    href: `/i-${inv.normalizedName}`,
   }));
 };
 
