@@ -1,4 +1,5 @@
 import {
+  BriefcaseIcon,
   Building2Icon,
   CalendarIcon,
   ClockIcon,
@@ -29,6 +30,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   lastFundingAmount: DollarSignIcon,
   lastFundingDate: CalendarIcon,
   employees: UsersIcon,
+  organization: BriefcaseIcon,
 };
 
 export const InfoTagIcon = ({ iconKey }: InfoTagIconProps) => {

@@ -2,51 +2,27 @@ import Link from 'next/link';
 
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { Badge } from '@/components/ui/badge';
-import {
-  ChevronRight,
-  ExternalLinkIcon,
-  LandmarkIcon,
-  UsersIcon,
-} from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { ImageWithFallback } from '@/components/image-with-fallback';
 import { type JobOrganizationSchema } from '@/features/jobs/schemas';
+import { JobListItemInfoTags } from './job-list-item-info-tags';
 
 interface JobListItemOrgProps {
   organization: JobOrganizationSchema;
 }
 
 export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
-  const {
-    name,
-    href,
-    websiteUrl,
-    location,
-    logo,
-    employeeCount,
-    fundingRounds,
-    investors,
-  } = organization;
+  const { name, websiteUrl, logo, fundingRounds, investors, infoTags } =
+    organization;
 
   const hasExpandableContent = fundingRounds.length > 0 || investors.length > 0;
-
-  const tagStyles = cn(
-    'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1',
-    'bg-muted/50 text-xs text-muted-foreground',
-    'ring-1 ring-border/50',
-  );
-
-  const linkTagStyles = cn(
-    tagStyles,
-    'transition-all duration-150',
-    'hover:bg-muted hover:text-foreground hover:ring-border',
-  );
 
   return (
     <div className='space-y-2'>
       <div className='flex flex-wrap items-center gap-4'>
-        {/* Logo + Name/Location */}
+        {/* Logo + Name */}
         <div className='flex items-center gap-3'>
           <ImageWithFallback
             src={logo ?? ''}
@@ -93,27 +69,8 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
           </div>
         </div>
 
-        {/* Location */}
-        {location && (
-          <span className={tagStyles}>
-            <LandmarkIcon className='size-3.5 shrink-0' aria-hidden='true' />
-            {location}
-          </span>
-        )}
-
-        {/* Employees */}
-        {employeeCount && (
-          <span className={tagStyles}>
-            <UsersIcon className='size-3.5 shrink-0' aria-hidden='true' />
-            {employeeCount} Employees
-          </span>
-        )}
-
-        {/* Jobs link */}
-        <LinkWithLoader href={href} className={linkTagStyles}>
-          <ExternalLinkIcon className='size-3.5 shrink-0' aria-hidden='true' />
-          Jobs by {name}
-        </LinkWithLoader>
+        {/* Info Tags */}
+        <JobListItemInfoTags tags={infoTags} />
       </div>
 
       {/* Expandable content - uses native <details> for SEO/no-JS support */}

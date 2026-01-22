@@ -41,6 +41,7 @@ export const jobListItemDto = z.object({
     .object({
       id: nonEmptyStringSchema,
       name: nonEmptyStringSchema,
+      normalizedName: nonEmptyStringSchema,
       orgId: nonEmptyStringSchema,
       website: nullableStringSchema,
       summary: nonEmptyStringSchema,
