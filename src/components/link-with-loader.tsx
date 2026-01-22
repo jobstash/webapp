@@ -18,6 +18,11 @@ interface LinkWithLoaderProps extends LinkProps {
    * Optional loader element shown when navigation is pending
    */
   loader?: React.ReactNode;
+  /**
+   * Whether to scroll to top on navigation
+   * @default true
+   */
+  scroll?: boolean;
 }
 
 export function LinkWithLoader({
@@ -27,6 +32,7 @@ export function LinkWithLoader({
   className,
   loaderPosition = 'right',
   loader,
+  scroll = true,
   ...props
 }: LinkWithLoaderProps) {
   const router = useRouter();
@@ -43,7 +49,7 @@ export function LinkWithLoader({
     onClick?.(e);
 
     startTransition(() => {
-      router.push(href.toString());
+      router.push(href.toString(), { scroll });
     });
   };
 
