@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ChevronDownIcon } from 'lucide-react';
 
+import { BrowseJobsButton } from '@/components/browse-jobs-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -61,9 +62,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
 
           {/* Primary CTAs */}
           <div className='flex flex-col gap-3 sm:flex-row'>
-            <Button size='lg' asChild>
-              <Link href='/#jobs'>Browse Jobs</Link>
-            </Button>
+            <BrowseJobsButton />
             <Button size='lg' variant='outline' asChild>
               <Link href='/signup'>Post a Job</Link>
             </Button>

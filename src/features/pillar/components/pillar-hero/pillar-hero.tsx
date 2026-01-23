@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { BrowseJobsButton } from '@/components/browse-jobs-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { PillarDetails } from '@/features/pillar/schemas';
@@ -99,9 +100,7 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
 
           {/* Primary CTAs - matching home hero */}
           <div className='flex flex-col gap-3 sm:flex-row'>
-            <Button size='lg' asChild>
-              <a href='#jobs'>Browse Jobs</a>
-            </Button>
+            <BrowseJobsButton />
             <Button size='lg' variant='outline' asChild>
               <Link href='/signup'>Post a Job</Link>
             </Button>
