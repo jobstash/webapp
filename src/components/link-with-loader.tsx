@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils/index';
 
 type LinkProps = React.ComponentProps<typeof Link>;
 
-interface LinkWithLoaderProps extends LinkProps {
+interface LinkWithLoaderProps extends Omit<LinkProps, 'children'> {
   /**
    * Position of the loader relative to children
    * @default 'right'
@@ -23,6 +23,10 @@ interface LinkWithLoaderProps extends LinkProps {
    * @default true
    */
   scroll?: boolean;
+  /**
+   * Children can be a ReactNode or a render function receiving isPending state
+   */
+  children: React.ReactNode | ((isPending: boolean) => React.ReactNode);
 }
 
 export function LinkWithLoader({
@@ -54,6 +58,8 @@ export function LinkWithLoader({
   };
 
   const loaderElement = isPending && loader ? loader : null;
+  const resolvedChildren =
+    typeof children === 'function' ? children(isPending) : children;
 
   return (
     <Link
@@ -68,7 +74,7 @@ export function LinkWithLoader({
       {...props}
     >
       {loaderPosition === 'left' && loaderElement}
-      {children}
+      {resolvedChildren}
       {loaderPosition === 'right' && loaderElement}
     </Link>
   );
