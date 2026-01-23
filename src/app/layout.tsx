@@ -5,6 +5,7 @@ import type { Metadata, Viewport } from 'next';
 import { interTight } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 import { AppHeader } from '@/components/app-header/app-header';
+import { AppFooter } from '@/components/app-footer/app-footer';
 import { RootProviders } from '@/components/providers/root-providers';
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ const RootLayout = ({ children }: Props) => (
       <RootProviders header={<AppHeader />}>
         <div className='mx-auto max-w-7xl px-2 pt-4'>{children}</div>
       </RootProviders>
+      <AppFooter />
     </body>
   </html>
 );
