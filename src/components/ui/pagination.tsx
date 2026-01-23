@@ -1,5 +1,6 @@
+'use client';
+
 import * as React from 'react';
-import Link from 'next/link';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -8,6 +9,7 @@ import {
 
 import { cn } from '@/lib/utils/index';
 import { buttonVariants, type Button } from '@/components/ui/button';
+import { LinkWithLoader } from '@/components/link-with-loader';
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
@@ -40,20 +42,27 @@ function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
 type PaginationLinkProps = {
   isActive?: boolean;
 } & Pick<React.ComponentProps<typeof Button>, 'size'> &
-  React.ComponentProps<typeof Link>;
+  Omit<
+    React.ComponentProps<typeof LinkWithLoader>,
+    'loader' | 'loaderPosition'
+  >;
 
 function PaginationLink({
   className,
   isActive,
   size = 'icon',
+  scroll = true,
+  children,
   ...props
 }: PaginationLinkProps) {
   return (
-    <Link
+    <LinkWithLoader
       prefetch
+      scroll={scroll}
       aria-current={isActive ? 'page' : undefined}
       data-slot='pagination-link'
       data-active={isActive}
+      data-disable-progress='true'
       className={cn(
         buttonVariants({
           variant: isActive ? 'outline' : 'ghost',
@@ -62,14 +71,16 @@ function PaginationLink({
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </LinkWithLoader>
   );
 }
 
 function PaginationPrevious({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: Omit<React.ComponentProps<typeof PaginationLink>, 'children'>) {
   return (
     <PaginationLink
       aria-label='Go to previous page'
@@ -86,7 +97,7 @@ function PaginationPrevious({
 function PaginationNext({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: Omit<React.ComponentProps<typeof PaginationLink>, 'children'>) {
   return (
     <PaginationLink
       aria-label='Go to next page'
