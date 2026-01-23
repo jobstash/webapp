@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { CornerDownLeftIcon } from 'lucide-react';
 
 import { SearchButton } from './search-button';
 import { SearchOverlay } from './search-overlay';
@@ -88,6 +89,12 @@ export const SearchHeaderClient = () => {
             placeholder='Search...'
             autoComplete='off'
           />
+          {inputValue.trim() && (
+            <span className='flex shrink-0 items-center gap-1 text-xs text-muted-foreground'>
+              <CornerDownLeftIcon className='size-3' />
+              <span className='hidden xl:inline'>to search</span>
+            </span>
+          )}
         </form>
 
         {isOpen && (
@@ -95,7 +102,6 @@ export const SearchHeaderClient = () => {
             query={inputValue}
             groups={groups}
             isLoading={isLoading}
-            onSearchSubmit={handleSearchSubmit}
             onClose={() => setIsOpen(false)}
           />
         )}

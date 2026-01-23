@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { ArrowLeftIcon, SearchIcon } from 'lucide-react';
+import { ArrowLeftIcon, CornerDownLeftIcon, SearchIcon } from 'lucide-react';
 
 import {
   Dialog,
@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Command, CommandList } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
 
 import type { SuggestionGroup } from '@/features/search/schemas';
@@ -62,7 +61,7 @@ export const SearchOverlay = ({
         </DialogHeader>
 
         <div className='flex h-full flex-col'>
-          <div className='flex items-center gap-2 border-b border-neutral-800 px-4 py-3'>
+          <div className='flex items-center gap-2 border-b border-border px-4 py-3'>
             <Button
               variant='ghost'
               size='icon'
@@ -77,13 +76,7 @@ export const SearchOverlay = ({
               onSubmit={handleSubmit}
               className='flex grow items-center gap-2'
             >
-              <button
-                type='submit'
-                className='shrink-0 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400'
-                aria-label='Search'
-              >
-                <SearchIcon className='size-5' />
-              </button>
+              <SearchIcon className='size-5 shrink-0 text-muted-foreground' />
               <input
                 ref={inputRef}
                 type='text'
@@ -92,21 +85,27 @@ export const SearchOverlay = ({
                 placeholder='Search...'
                 className='h-10 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground'
               />
+              {trimmedQuery && (
+                <button
+                  type='submit'
+                  className='shrink-0 rounded-md bg-accent p-1.5 text-muted-foreground transition-colors hover:bg-accent/80 hover:text-foreground'
+                  aria-label='Search'
+                >
+                  <CornerDownLeftIcon className='size-4' />
+                </button>
+              )}
             </form>
           </div>
 
-          <Command className='flex-1 rounded-none' shouldFilter={false}>
-            <CommandList className='h-full max-h-none'>
-              <SearchResultsList
-                query={query}
-                groups={groups}
-                isLoading={isLoading}
-                onSearchSubmit={onSearchSubmit}
-                onClose={onClose}
-                showEmptyPrompt
-              />
-            </CommandList>
-          </Command>
+          <div className='flex-1 overflow-y-auto'>
+            <SearchResultsList
+              query={query}
+              groups={groups}
+              isLoading={isLoading}
+              onClose={onClose}
+              showEmptyPrompt
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

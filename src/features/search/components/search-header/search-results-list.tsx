@@ -1,111 +1,80 @@
 'use client';
 
-import { LoaderIcon, SearchIcon } from 'lucide-react';
-
-import {
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from '@/components/ui/command';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import type { SuggestionGroup } from '@/features/search/schemas';
 
-import { SearchSuggestionItem } from './search-suggestion-item';
+import { SearchResultsTabs } from './search-results-tabs';
 
 interface Props {
   query: string;
   groups: SuggestionGroup[];
   isLoading?: boolean;
-  onSearchSubmit: (query: string) => void;
   onClose: () => void;
   showEmptyPrompt?: boolean;
 }
 
-const SKELETON_GROUPS = [
-  { label: 'Jobs', widths: ['w-48', 'w-56', 'w-40'] },
-  { label: 'Organizations', widths: ['w-32', 'w-44', 'w-36'] },
-  { label: 'Tags', widths: ['w-20', 'w-28', 'w-24'] },
-];
+const SKELETON_TABS = ['Jobs', 'Organizations', 'Tags'];
+
+const SearchResultsSkeleton = () => (
+  <div className='flex flex-col'>
+    <div className='flex gap-1 border-b border-border px-2 py-2'>
+      {SKELETON_TABS.map((tab) => (
+        <Skeleton key={tab} className='h-8 w-20 rounded-md' />
+      ))}
+    </div>
+    <div className='flex flex-col gap-0.5 px-1 py-1'>
+      <Skeleton className='h-9 w-full rounded-md' />
+      <Skeleton className='h-9 w-full rounded-md' />
+      <Skeleton className='h-9 w-3/4 rounded-md' />
+      <Skeleton className='h-9 w-5/6 rounded-md' />
+    </div>
+  </div>
+);
+
+const EmptyMessage = ({ children }: { children: React.ReactNode }) => (
+  <p className='py-6 text-center text-sm text-muted-foreground'>{children}</p>
+);
 
 export const SearchResultsList = ({
   query,
   groups,
   isLoading = false,
-  onSearchSubmit,
   onClose,
   showEmptyPrompt = false,
 }: Props) => {
   const trimmedQuery = query.trim();
   const hasResults = groups.length > 0;
 
-  // Initial load with no results - show skeleton
   if (isLoading && !hasResults && !trimmedQuery) {
+    return <SearchResultsSkeleton />;
+  }
+
+  if (hasResults) {
     return (
-      <>
-        {SKELETON_GROUPS.map((group) => (
-          <CommandGroup key={group.label} heading={group.label}>
-            {group.widths.map((width, i) => (
-              <div key={i} className='px-2 py-1.5'>
-                <Skeleton className={`h-5 ${width}`} />
-              </div>
-            ))}
-          </CommandGroup>
-        ))}
-      </>
+      <div
+        className={
+          isLoading
+            ? 'pointer-events-none opacity-50'
+            : 'flex min-h-0 flex-1 flex-col'
+        }
+      >
+        <SearchResultsTabs groups={groups} onItemSelect={onClose} />
+      </div>
     );
   }
 
-  // Pending state classes - reduce opacity when fetching new results
-  const pendingClass = isLoading ? 'opacity-50 pointer-events-none' : '';
+  if (trimmedQuery && !isLoading) {
+    return (
+      <EmptyMessage>
+        No suggestions found for &quot;{trimmedQuery}&quot;
+      </EmptyMessage>
+    );
+  }
 
-  return (
-    <>
-      {trimmedQuery && (
-        <CommandGroup>
-          <CommandItem
-            onSelect={() => {
-              onSearchSubmit(trimmedQuery);
-              onClose();
-            }}
-          >
-            {isLoading ? (
-              <LoaderIcon className='mr-2 size-4 animate-spin' />
-            ) : (
-              <SearchIcon className='mr-2 size-4' />
-            )}
-            Search for &quot;{trimmedQuery}&quot;
-          </CommandItem>
-        </CommandGroup>
-      )}
+  if (showEmptyPrompt && !trimmedQuery && !isLoading) {
+    return <EmptyMessage>Start typing to search...</EmptyMessage>;
+  }
 
-      {hasResults && (
-        <div className={pendingClass}>
-          {groups.map((group) => (
-            <CommandGroup key={group.label} heading={group.label}>
-              {group.items.map((item) => (
-                <SearchSuggestionItem
-                  key={item.id}
-                  item={item}
-                  onSelect={onClose}
-                />
-              ))}
-            </CommandGroup>
-          ))}
-        </div>
-      )}
-
-      {!hasResults && trimmedQuery && !isLoading && (
-        <CommandEmpty>
-          No suggestions found for &quot;{trimmedQuery}&quot;
-        </CommandEmpty>
-      )}
-
-      {showEmptyPrompt && !hasResults && !trimmedQuery && !isLoading && (
-        <div className='py-6 text-center text-sm text-muted-foreground'>
-          Start typing to search...
-        </div>
-      )}
-    </>
-  );
+  return null;
 };
