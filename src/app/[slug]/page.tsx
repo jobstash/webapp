@@ -6,7 +6,10 @@ import {
   PillarJobList,
   PlaceholderAside,
 } from '@/features/pillar/components';
-import { getPillarFilterContext } from '@/features/pillar/constants';
+import {
+  getPillarFilterContext,
+  isValidPillarSlug,
+} from '@/features/pillar/constants';
 import { fetchPillarDetails } from '@/features/pillar/server';
 import { fetchPillarStaticParams } from '@/features/pillar/server/data';
 
@@ -22,8 +25,9 @@ interface Props {
 const PillarPage = async ({ params }: Props) => {
   const { slug } = await params;
 
+  if (!isValidPillarSlug(slug)) notFound();
+
   const pillarContext = getPillarFilterContext(slug);
-  if (!pillarContext) notFound();
 
   const pillarDetails = await fetchPillarDetails({ slug });
   if (!pillarDetails) notFound();

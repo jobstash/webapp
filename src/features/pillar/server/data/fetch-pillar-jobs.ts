@@ -16,18 +16,19 @@ const sortFeaturedFirst = (jobs: JobListItemSchema[]): JobListItemSchema[] => {
 };
 
 interface Props {
-  pillarContext: PillarFilterContext;
+  pillarContext: PillarFilterContext | null;
 }
 
 export const fetchPillarJobs = async ({
   pillarContext,
 }: Props): Promise<JobListItemSchema[]> => {
-  const { paramKey, value } = pillarContext;
-
-  const searchParams = {
-    [paramKey]: value,
+  const searchParams: Record<string, string> = {
     publicationDate: 'this-month',
   };
+
+  if (pillarContext) {
+    searchParams[pillarContext.paramKey] = pillarContext.value;
+  }
 
   const { data } = await fetchJobListPage({
     page: 1,

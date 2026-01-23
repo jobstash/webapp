@@ -106,7 +106,7 @@ const PILLAR_NAME_OVERRIDES: Record<string, string> = {
   onsite: 'On-Site',
 };
 
-const PREFIX_TO_CATEGORY: [string, PillarCategory][] = [
+export const PREFIX_TO_CATEGORY: [string, PillarCategory][] = [
   ['cl-', 'classification'],
   ['co-', 'commitment'],
   ['lt-', 'locationType'],
@@ -119,14 +119,16 @@ const PREFIX_TO_CATEGORY: [string, PillarCategory][] = [
   ['b-', 'boolean'],
 ];
 
+export const isValidPillarSlug = (slug: string): boolean => {
+  return PREFIX_TO_CATEGORY.some(([prefix]) => slug.startsWith(prefix));
+};
+
 export const PREFIX_TO_PARAM_KEY: Record<string, string> = {
   't-': 'tags',
   'cl-': 'classifications',
-  'l-': 'locations',
   'co-': 'commitments',
-  'lt-': 'locationType',
+  'lt-': 'locations',
   'o-': 'organizations',
-  'c-': 'chains',
   's-': 'seniority',
   'i-': 'investors',
   'fr-': 'fundingRounds',
@@ -210,4 +212,11 @@ export const getPillarFilterContext = (
   const value = slug.slice(matchingPrefix.length);
 
   return value ? { paramKey, value } : null;
+};
+
+export const getPillarFilterHref = (
+  pillarContext: PillarFilterContext | null,
+): string => {
+  if (!pillarContext) return '/';
+  return `/?${pillarContext.paramKey}=${encodeURIComponent(pillarContext.value)}`;
 };

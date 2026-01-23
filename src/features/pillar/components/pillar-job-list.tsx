@@ -2,25 +2,27 @@ import Link from 'next/link';
 import { ArrowRightIcon, SearchIcon } from 'lucide-react';
 
 import { JobListItem } from '@/features/jobs/components/job-list/job-list-item';
-import { getPillarName } from '@/features/pillar/constants';
+import {
+  getPillarFilterHref,
+  getPillarName,
+} from '@/features/pillar/constants';
 import { fetchPillarJobs } from '@/features/pillar/server/data';
 import type { PillarFilterContext } from '@/features/pillar/schemas';
 
 interface Props {
   slug: string;
-  pillarContext: PillarFilterContext;
+  pillarContext: PillarFilterContext | null;
 }
 
 export const PillarJobList = async ({ slug, pillarContext }: Props) => {
   const pillarName = getPillarName(slug);
-  const { paramKey, value } = pillarContext;
 
   try {
     const data = await fetchPillarJobs({ pillarContext });
 
     if (data.length === 0) {
       return (
-        <EmptyState pillarName={pillarName} paramKey={paramKey} value={value} />
+        <EmptyState pillarName={pillarName} pillarContext={pillarContext} />
       );
     }
 
@@ -49,12 +51,14 @@ export const PillarJobList = async ({ slug, pillarContext }: Props) => {
 
 interface EmptyStateProps {
   pillarName: string;
-  paramKey: string;
-  value: string;
+  pillarContext: PillarFilterContext | null;
 }
 
-const EmptyState = ({ pillarName, paramKey, value }: EmptyStateProps) => {
-  const href = `/?${paramKey}=${encodeURIComponent(value)}`;
+const EmptyState = ({ pillarName, pillarContext }: EmptyStateProps) => {
+  const href = getPillarFilterHref(pillarContext);
+  const linkText = pillarContext
+    ? `View all ${pillarName} jobs`
+    : 'Browse all jobs';
 
   return (
     <div className='flex flex-col items-center justify-center gap-4 rounded-2xl border border-border/50 bg-card px-6 py-12'>
@@ -73,7 +77,7 @@ const EmptyState = ({ pillarName, paramKey, value }: EmptyStateProps) => {
         href={href}
         className='group inline-flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/80'
       >
-        View all {pillarName} jobs
+        {linkText}
         <ArrowRightIcon className='size-4 transition-transform duration-200 group-hover:translate-x-0.5' />
       </Link>
     </div>
