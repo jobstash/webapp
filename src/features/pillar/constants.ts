@@ -168,6 +168,30 @@ export const getBooleanTagline = (slug: string): string => {
   return BOOLEAN_TAGLINES[filterName] ?? `Jobs with ${getPillarName(slug)}`;
 };
 
+const NAME_FIRST_CATEGORIES = new Set([
+  'tag',
+  'classification',
+  'commitment',
+  'locationType',
+]);
+
+export const getPillarHeadline = (slug: string): string => {
+  const category = getPillarCategory(slug);
+
+  if (category === 'boolean') {
+    return getBooleanTagline(slug);
+  }
+
+  const pillarName = getPillarName(slug);
+  const tagline = PILLAR_CATEGORY_CONFIG[category].tagline;
+
+  if (NAME_FIRST_CATEGORIES.has(category)) {
+    return `${pillarName} ${tagline}`;
+  }
+
+  return `${tagline} ${pillarName}`;
+};
+
 export const getPillarFilterContext = (
   slug: string,
 ): PillarFilterContext | null => {
