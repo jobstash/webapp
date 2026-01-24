@@ -36,10 +36,20 @@ const fetchLocations = async (): Promise<void> => {
     }
 
     const json = await response.json();
-    const jobs = json.data as Array<{ location?: string | null }>;
+    const jobs = json.data as Array<{
+      location?: string | null;
+      locationType?: string | null;
+    }>;
 
     const locations = jobs
-      .map((job) => job.location)
+      .map((job) => {
+        if (!job.location) return null;
+        // Prepend [REMOTE] when locationType is REMOTE
+        if (job.locationType === 'REMOTE') {
+          return `[REMOTE] ${job.location}`;
+        }
+        return job.location;
+      })
       .filter((loc): loc is string => Boolean(loc));
 
     const uniqueLocations = [...new Set(locations)].sort((a, b) =>

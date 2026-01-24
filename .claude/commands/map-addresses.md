@@ -44,362 +44,74 @@ This compares fetched locations against existing mappings and outputs unmapped s
 
 Read `.claude/scripts/address-mapping/unmapped.json` to get the list of location strings that need mapping.
 
-### Step 5: Process in Batches of 50
+### Step 5: Get User Approval
 
-For each batch of up to 50 unmapped locations:
+1. Count total unmapped locations from `unmapped.json`
+2. Calculate:
+   - Number of batches = ceil(total / 50)
+   - Number of waves = ceil(batches / 5) (max 5 agents per wave)
+3. Report to user:
+   ```
+   === Address Mapping Summary ===
+   Locations to map: X
+   Batches (50 each): Y
+   Parallel agents per wave: 5 (max)
+   Waves needed: Z
+   ```
+4. Ask for confirmation using AskUserQuestion:
+   - "Proceed with mapping X locations?"
+   - Options: "Yes, proceed", "Cancel"
 
-1. **Show the batch** to the user with the locations to be mapped
-2. **Ask for confirmation** using AskUserQuestion:
-   - "Proceed with mapping these 50 locations?"
-   - Options: "Yes, map them", "Skip this batch", "Stop mapping"
+### Step 6: Launch Parallel Agents
 
-3. **If user confirms**, generate mappings for the batch following the conversion guidelines below
+1. Divide locations into batches of 50
+2. Launch up to **5 agents in parallel** using Task tool:
+   ````
+   Task({
+     subagent_type: "address-mapper",
+     model: "opus",
+     prompt: "Process batch X of Y:\n\n```json\n[...locations...]\n```"
+   })
+   ````
+3. Wait for wave to complete, launch next wave if needed
+4. Repeat until all batches are processed
 
-4. **Track uncertain mappings** - locations where you had to make assumptions or couldn't determine exact data
+### Step 7: Consolidate Results
 
-5. **Pipe mappings to add-mappings.ts**:
-
+1. Collect JSON output from each agent
+2. Merge all mappings into single object
+3. Collect all uncertain mappings
+4. Handle agent failures:
+   - If an agent fails or returns invalid JSON, report the batch that failed
+   - Include failed batches in final report for manual processing
+   - Continue with successful batches
+5. Pipe consolidated mappings to add-mappings.ts:
    ```bash
-   echo '<json>' | npx tsx .claude/scripts/address-mapping/add-mappings.ts
+   echo '<consolidated-json>' | npx tsx .claude/scripts/address-mapping/add-mappings.ts
    ```
 
-6. **Report batch results**:
-   - Mappings added
-   - Any validation errors
-   - Uncertain mappings flagged
+### Step 8: Final Report
 
-7. **Loop** back to Step 3 to find remaining unmapped locations
+Report:
 
-### Step 6: Final Report
-
-When all locations are mapped (or user stops), provide a summary:
+- Total locations processed
+- Successfully mapped
+- Validation errors (if any)
+- Failed batches (if any) for manual processing
+- Uncertain mappings for review
 
 ```
 === Address Mapping Complete ===
 
 Total locations processed: X
 Successfully mapped: Y
-Skipped: Z
+Failed batches: Z (list batch numbers if any)
 
 Uncertain mappings (review recommended):
 - "APAC" → Expanded to 5 major Asia-Pacific countries
 - "EU/US" → Split into Europe + US addresses
 
 Remaining unmapped: N
-```
-
-## Mapping Structure
-
-Each mapping has:
-
-```typescript
-interface AddressMapping {
-  label: string; // Display label for job info tag
-  addresses: Address[] | null; // Structured addresses, null for invalid
-}
-```
-
-## Label Guidelines
-
-Labels appear on job info tags. Keep them concise with NO "remote" word (redundant with work mode tag).
-
-### Single Location
-
-| Raw String             | Label                  |
-| ---------------------- | ---------------------- |
-| `"Remote - Singapore"` | `"Singapore"`          |
-| `"New York, USA"`      | `"New York, USA"`      |
-| `"NYC"`                | `"NY, USA"`            |
-| `"San Francisco"`      | `"San Francisco, USA"` |
-| `"USA"`                | `"United States"`      |
-| `"United Kingdom"`     | `"United Kingdom"`     |
-
-### Multi-Location
-
-Parse each location separated by `/`, `,`, or `;`. Include each as a separate address entry.
-
-| Raw String                | Label                     | Addresses Count        |
-| ------------------------- | ------------------------- | ---------------------- |
-| `"USA, UK"`               | `"US, UK"`                | 2 (US + UK)            |
-| `"USA, Philippines"`      | `"US, Philippines"`       | 2 (US + PH)            |
-| `"EU/US"`                 | `"EU, US"`                | 2 (EU + US)            |
-| `"Chicago, IL / NY, US"`  | `"Chicago, New York"`     | 2 (Chicago + NYC)      |
-| `"SF, Seattle, Austin"`   | `"SF, Seattle, Austin"`   | 3 cities               |
-| `"London, Paris, Berlin"` | `"London, Paris, Berlin"` | 3 cities (3 countries) |
-| `"New York, SF, London"`  | `"NY, SF, London"`        | 3 cities (2 countries) |
-
-**Label Guidelines for Multiple Cities:**
-
-- Use abbreviated city names when space is limited (SF, NY, LA)
-- If 4+ cities in same country, consider using country name: `"USA"` or `"US (multiple cities)"`
-- If cities span multiple countries, list cities: `"NY, London, Berlin"`
-
-### Regions
-
-| Raw String    | Label            |
-| ------------- | ---------------- |
-| `"APAC"`      | `"Asia-Pacific"` |
-| `"EMEA"`      | `"EMEA"`         |
-| `"Europe"`    | `"Europe"`       |
-| `"Worldwide"` | `"Worldwide"`    |
-| `"Global"`    | `"Worldwide"`    |
-
-### Invalid Locations
-
-| Raw String   | Label                     |
-| ------------ | ------------------------- |
-| `"Cow Moon"` | `"Cow Moon"` (keep as-is) |
-
-## Location Precedence Rules
-
-**Key Principle:** If a location string contains specific cities, regions, or countries, those take precedence over generic modifiers like "Remote (any location)" or "any location".
-
-### Precedence Order (highest to lowest)
-
-1. **Explicit cities/regions** - `"Chicago, IL / NY, US"` → extract Chicago (IL) + New York (NY)
-2. **Explicit countries** - `"USA, UK"` → use those countries
-3. **Regional patterns** - `"APAC"`, `"EMEA"` → expand to countries
-4. **Generic patterns** - `"Anywhere"`, `"Any"`, `"Worldwide"` → use worldwide expansion
-
-### Examples
-
-| Raw String                                             | Label                 | Addresses              | Rationale                     |
-| ------------------------------------------------------ | --------------------- | ---------------------- | ----------------------------- |
-| `"Chicago, IL / NY, US - Remote (any location)"`       | `"Chicago, New York"` | Chicago (IL) + NY (NY) | Cities take precedence        |
-| `"San Francisco, CA / Seattle, WA - Remote"`           | `"SF, Seattle"`       | SF (CA) + Seattle (WA) | Multiple US cities            |
-| `"Amsterdam, NL / London, GB - Remote (any location)"` | `"Amsterdam, London"` | Amsterdam + London     | Cities in different countries |
-| `"USA - Remote (any location)"`                        | `"United States"`     | US only                | Country specified             |
-| `"Remote (any location)"`                              | `"Worldwide"`         | Worldwide expansion    | No specific location          |
-| `"Anywhere"`                                           | `"Worldwide"`         | Worldwide expansion    | Generic pattern               |
-
-## Address Schema
-
-Each address must have:
-
-- `country` (required): Display name (e.g., "United States")
-- `countryCode` (required): ISO 3166-1 alpha-2 (e.g., "US") - **NO XX ALLOWED**
-- `isRemote` (required): Boolean
-
-Optional fields:
-
-- `locality`: City or municipality
-- `region`: State, province, or region
-- `postalCode`: Postal code
-- `street`: Street address
-- `extendedAddress`: Apt, suite, unit, etc.
-- `geo`: `{ latitude, longitude }` for rich results
-
-## No XX Country Codes
-
-**CRITICAL:** Every address MUST have a valid country and countryCode. The `XX` placeholder is NOT allowed.
-
-For regional locations, expand to actual countries:
-
-```typescript
-const REGION_TO_COUNTRIES: Record<string, string[]> = {
-  APAC: [
-    'AU',
-    'JP',
-    'SG',
-    'IN',
-    'KR',
-    'NZ',
-    'HK',
-    'TW',
-    'PH',
-    'MY',
-    'TH',
-    'VN',
-    'ID',
-  ],
-  EMEA: [
-    'GB',
-    'DE',
-    'FR',
-    'NL',
-    'ES',
-    'IT',
-    'IE',
-    'SE',
-    'PL',
-    'AE',
-    'IL',
-    'ZA',
-  ],
-  'North America': ['US', 'CA', 'MX'],
-  Europe: [
-    'GB',
-    'DE',
-    'FR',
-    'NL',
-    'ES',
-    'IT',
-    'IE',
-    'SE',
-    'NO',
-    'DK',
-    'FI',
-    'PL',
-    'PT',
-    'BE',
-    'AT',
-    'CH',
-  ],
-  Worldwide: ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'NL', 'SG', 'IE'],
-};
-```
-
-Include at least 5 major countries for each region.
-
-## Remote Detection
-
-Set `isRemote: true` if the string contains "Remote" (case insensitive).
-
-Examples:
-
-- "Remote" → `isRemote: true`
-- "Remote - Singapore" → `isRemote: true`
-- "USA" → `isRemote: false`
-
-## "Remote (any location)" Handling
-
-The phrase "Remote (any location)" or similar variations indicate remote work is available, but **does NOT override explicit locations**.
-
-### Parsing Rules
-
-1. **Strip the remote modifier** to find actual locations
-   - `"Chicago, IL - Remote (any location)"` → parse `"Chicago, IL"`
-   - `"NYC / SF - Remote"` → parse `"NYC / SF"`
-
-2. **If locations remain after stripping** → use those locations
-   - Label: Use the parsed locations
-   - Addresses: One entry per parsed location
-   - `isRemote: true` (because "Remote" was present)
-
-3. **If NO locations remain** → treat as worldwide
-   - `"Remote (any location)"` → label: `"Worldwide"`, addresses: worldwide expansion
-   - `"Remote - Global"` → label: `"Worldwide"`, addresses: worldwide expansion
-
-### Examples
-
-| Raw String                                       | After Stripping          | Label                 | Addresses           |
-| ------------------------------------------------ | ------------------------ | --------------------- | ------------------- |
-| `"Chicago, IL / NY, US - Remote (any location)"` | `"Chicago, IL / NY, US"` | `"Chicago, New York"` | 2 US cities         |
-| `"USA - Remote (any location)"`                  | `"USA"`                  | `"United States"`     | 1 country (US)      |
-| `"Remote (any location)"`                        | (empty)                  | `"Worldwide"`         | Worldwide expansion |
-| `"APAC - Remote"`                                | `"APAC"`                 | `"Asia-Pacific"`      | APAC countries      |
-
-## Country Code Reference
-
-Use ISO 3166-1 alpha-2 codes:
-
-| Pattern                     | Country              | Code |
-| --------------------------- | -------------------- | ---- |
-| USA, United States, US      | United States        | US   |
-| UK, United Kingdom, Britain | United Kingdom       | GB   |
-| Philippines, PH             | Philippines          | PH   |
-| Singapore, SG               | Singapore            | SG   |
-| Germany, DE                 | Germany              | DE   |
-| Canada, CA                  | Canada               | CA   |
-| Australia, AU               | Australia            | AU   |
-| Japan, JP                   | Japan                | JP   |
-| India, IN                   | India                | IN   |
-| France, FR                  | France               | FR   |
-| Netherlands, NL             | Netherlands          | NL   |
-| Switzerland, CH             | Switzerland          | CH   |
-| Ireland, IE                 | Ireland              | IE   |
-| Portugal, PT                | Portugal             | PT   |
-| Spain, ES                   | Spain                | ES   |
-| Poland, PL                  | Poland               | PL   |
-| Brazil, BR                  | Brazil               | BR   |
-| Mexico, MX                  | Mexico               | MX   |
-| China, CN                   | China                | CN   |
-| Hong Kong, HK               | Hong Kong            | HK   |
-| Taiwan, TW                  | Taiwan               | TW   |
-| UAE, Dubai                  | United Arab Emirates | AE   |
-| Israel, IL                  | Israel               | IL   |
-| South Korea, Korea          | South Korea          | KR   |
-| Vietnam, VN                 | Vietnam              | VN   |
-| Thailand, TH                | Thailand             | TH   |
-| Indonesia, ID               | Indonesia            | ID   |
-| Malaysia, MY                | Malaysia             | MY   |
-
-## Cities with Implicit Countries
-
-Parse country from well-known cities:
-
-| Cities                                                                                             | Country              | Code |
-| -------------------------------------------------------------------------------------------------- | -------------------- | ---- |
-| New York, NYC, San Francisco, SF, Los Angeles, LA, Seattle, Austin, Denver, Miami, Chicago, Boston | United States        | US   |
-| London, Manchester, Birmingham, Edinburgh                                                          | United Kingdom       | GB   |
-| Toronto, Vancouver, Montreal                                                                       | Canada               | CA   |
-| Sydney, Melbourne, Brisbane                                                                        | Australia            | AU   |
-| Berlin, Munich, Frankfurt, Hamburg                                                                 | Germany              | DE   |
-| Paris, Lyon, Marseille                                                                             | France               | FR   |
-| Amsterdam, Rotterdam                                                                               | Netherlands          | NL   |
-| Zurich, Geneva, Basel                                                                              | Switzerland          | CH   |
-| Dublin                                                                                             | Ireland              | IE   |
-| Lisbon, Porto                                                                                      | Portugal             | PT   |
-| Madrid, Barcelona                                                                                  | Spain                | ES   |
-| Tel Aviv, Jerusalem                                                                                | Israel               | IL   |
-| Dubai, Abu Dhabi                                                                                   | United Arab Emirates | AE   |
-| Tokyo, Osaka                                                                                       | Japan                | JP   |
-| Seoul                                                                                              | South Korea          | KR   |
-| Beijing, Shanghai, Shenzhen                                                                        | China                | CN   |
-| Mumbai, Bangalore, Delhi, Hyderabad                                                                | India                | IN   |
-| Sao Paulo, Rio de Janeiro                                                                          | Brazil               | BR   |
-
-## Output Format
-
-Valid JSON with the new structure:
-
-```json
-{
-  "USA": {
-    "label": "United States",
-    "addresses": [
-      { "country": "United States", "countryCode": "US", "isRemote": false }
-    ]
-  },
-  "New York, USA": {
-    "label": "New York, USA",
-    "addresses": [
-      {
-        "country": "United States",
-        "countryCode": "US",
-        "isRemote": false,
-        "locality": "New York"
-      }
-    ]
-  },
-  "Remote - Singapore": {
-    "label": "Singapore",
-    "addresses": [
-      { "country": "Singapore", "countryCode": "SG", "isRemote": true }
-    ]
-  },
-  "USA, UK": {
-    "label": "US, UK",
-    "addresses": [
-      { "country": "United States", "countryCode": "US", "isRemote": false },
-      { "country": "United Kingdom", "countryCode": "GB", "isRemote": false }
-    ]
-  },
-  "APAC": {
-    "label": "Asia-Pacific",
-    "addresses": [
-      { "country": "Australia", "countryCode": "AU", "isRemote": false },
-      { "country": "Japan", "countryCode": "JP", "isRemote": false },
-      { "country": "Singapore", "countryCode": "SG", "isRemote": false },
-      { "country": "India", "countryCode": "IN", "isRemote": false },
-      { "country": "South Korea", "countryCode": "KR", "isRemote": false }
-    ]
-  },
-  "Cow Moon": {
-    "label": "Cow Moon",
-    "addresses": null
-  }
-}
 ```
 
 ## Error Handling
