@@ -55,3 +55,7 @@ docs/plans/
 
 .claude/plans
 .claude/state
+
+# address mapping temporary files
+.claude/scripts/address-mapping/fetched-locations.json
+.claude/scripts/address-mapping/unmapped.json

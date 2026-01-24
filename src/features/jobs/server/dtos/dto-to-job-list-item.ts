@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { capitalize } from '@/lib/utils';
+import { lookupAddresses } from '@/lib/server/address-lookup';
 import {
   formatNumber,
   getLogoUrl,
@@ -49,6 +50,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     shortUUID,
     timestamp,
     summary,
+    location,
     tags,
     organization,
   } = dto;
@@ -67,6 +69,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     href,
     applyUrl,
     summary,
+    addresses: lookupAddresses(location),
     infoTags,
     tags: mappedTags,
     organization: mappedOrg,

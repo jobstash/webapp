@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { lookupAddresses } from '@/lib/server/address-lookup';
 import { formatNumber, getLogoUrl, slugify } from '@/lib/server/utils';
 import { type JobDetailsDto } from './job-details.dto';
 import { type SimilarJobDto } from './similar-job.dto';
@@ -39,7 +40,7 @@ export const dtoToSimilarJob = (dto: SimilarJobDto): SimilarJobSchema => {
     title,
     href,
     salaryText,
-    location,
+    addresses: lookupAddresses(location),
     companyName: organization?.name ?? null,
     companyLogo: organization
       ? getLogoUrl(organization.website, organization.logoUrl)

@@ -10,7 +10,7 @@ interface SimilarJobItemProps {
 }
 
 export const SimilarJobItem = ({ job }: SimilarJobItemProps) => {
-  const { title, href, salaryText, location, companyName, companyLogo } = job;
+  const { title, href, salaryText, addresses, companyName, companyLogo } = job;
 
   return (
     <LinkWithLoader
@@ -48,10 +48,10 @@ export const SimilarJobItem = ({ job }: SimilarJobItemProps) => {
           </p>
         )}
         <div className='mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
-          {location && (
+          {addresses?.[0] && (
             <span className='inline-flex items-center gap-1'>
               <MapPinIcon className='size-3' />
-              {location}
+              {addresses[0].country}
             </span>
           )}
           {salaryText && (

@@ -17,7 +17,7 @@ const buildJobPostingSchema = (
 ): Record<string, unknown> => {
   const salaryData = extractSalaryData(job.infoTags);
   const employmentType = extractEmploymentType(job.infoTags);
-  const locationType = extractLocationType(job.infoTags);
+  const locationType = extractLocationType(job.infoTags, job.addresses);
 
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -40,7 +40,28 @@ const buildJobPostingSchema = (
     };
   }
 
-  if (job.organization?.location) {
+  // Use job-level addresses for structured PostalAddress
+  if (job.addresses?.length) {
+    schema.jobLocation = job.addresses.map((addr) => ({
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: addr.countryCode,
+        ...(addr.locality && { addressLocality: addr.locality }),
+        ...(addr.region && { addressRegion: addr.region }),
+        ...(addr.postalCode && { postalCode: addr.postalCode }),
+        ...(addr.street && { streetAddress: addr.street }),
+      },
+      ...(addr.geo && {
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: addr.geo.latitude,
+          longitude: addr.geo.longitude,
+        },
+      }),
+    }));
+  } else if (job.organization?.location) {
+    // Fallback to organization location string
     schema.jobLocation = {
       '@type': 'Place',
       address: job.organization.location,

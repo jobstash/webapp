@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  addressSchema,
   mappedInfoTagSchema,
   nonEmptyStringSchema,
   nullableStringSchema,
@@ -48,6 +49,7 @@ export const jobListItemSchema = z.object({
   href: nonEmptyStringSchema,
   applyUrl: nullableStringSchema,
   summary: nullableStringSchema,
+  addresses: addressSchema.array().nullable(),
   infoTags: mappedInfoTagSchema.array(),
   tags: jobTagSchema.array(),
   organization: jobOrganizationSchema.nullable(),
@@ -70,7 +72,7 @@ export const similarJobSchema = z.object({
   title: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
   salaryText: nullableStringSchema,
-  location: nullableStringSchema,
+  addresses: addressSchema.array().nullable(),
   companyName: nullableStringSchema,
   companyLogo: nullableStringSchema,
 });

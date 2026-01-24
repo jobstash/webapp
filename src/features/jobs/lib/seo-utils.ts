@@ -1,4 +1,4 @@
-import type { MappedInfoTagSchema } from '@/lib/schemas';
+import type { Address, MappedInfoTagSchema } from '@/lib/schemas';
 
 /**
  * Salary data extracted from infoTags for structured data
@@ -97,13 +97,19 @@ export const extractEmploymentType = (
 type JobLocationType = 'TELECOMMUTE' | 'onsite' | null;
 
 /**
- * Extracts job location type from infoTags for structured data
+ * Extracts job location type from addresses or infoTags for structured data
  * @returns Location type or null if not determinable
  */
 export const extractLocationType = (
   infoTags: MappedInfoTagSchema[],
+  addresses?: Address[] | null,
 ): JobLocationType => {
-  // Check workMode tag first (more specific)
+  // Check addresses for isRemote first (most accurate)
+  if (addresses?.some((addr) => addr.isRemote)) {
+    return 'TELECOMMUTE';
+  }
+
+  // Check workMode tag (more specific than location tag)
   const workModeTag = infoTags.find((tag) => tag.iconKey === 'workMode');
   if (workModeTag) {
     const label = workModeTag.label.toLowerCase();
