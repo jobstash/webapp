@@ -54,11 +54,16 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     timestamp,
     summary,
     location,
+    locationType,
     tags,
     organization,
   } = dto;
 
-  const addressLookup = lookupAddresses(location);
+  const lookupKey =
+    locationType?.toLowerCase() === 'remote' && location
+      ? `[REMOTE] ${location}`
+      : location;
+  const addressLookup = lookupAddresses(lookupKey);
   const title = dto.title ?? getDefaultTitle(dto);
   const href = createJobItemHref(title, dto);
   const infoTags = createJobInfoTags(dto, addressLookup);
@@ -148,11 +153,7 @@ const createJobInfoTags = (
     });
   }
 
-  const isRedundantRemote =
-    location?.toLowerCase() === 'remote' &&
-    locationType?.toLowerCase() === 'remote';
-
-  if (locationType && !isRedundantRemote) {
+  if (locationType) {
     tags.push({
       iconKey: 'workMode',
       label: capitalize(locationType, true),

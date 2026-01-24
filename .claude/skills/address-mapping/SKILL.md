@@ -77,8 +77,8 @@ Parse each location separated by `/`, `,`, or `;`. Include each as a separate ad
 | `"APAC"`      | `"Asia-Pacific"` |
 | `"EMEA"`      | `"EMEA"`         |
 | `"Europe"`    | `"Europe"`       |
-| `"Worldwide"` | `"Worldwide"`    |
-| `"Global"`    | `"Worldwide"`    |
+| `"Worldwide"` | `"Anywhere"`     |
+| `"Global"`    | `"Anywhere"`     |
 
 ### Invalid Locations
 
@@ -95,7 +95,7 @@ Parse each location separated by `/`, `,`, or `;`. Include each as a separate ad
 1. **Explicit cities/regions** - `"Chicago, IL / NY, US"` → extract Chicago (IL) + New York (NY)
 2. **Explicit countries** - `"USA, UK"` → use those countries
 3. **Regional patterns** - `"APAC"`, `"EMEA"` → expand to countries
-4. **Generic patterns** - `"Anywhere"`, `"Any"`, `"Worldwide"` → use worldwide expansion
+4. **Generic patterns** - `"Anywhere"`, `"Any"`, `"Worldwide"` → use worldwide expansion (label as "Anywhere")
 
 ### Examples
 
@@ -105,8 +105,8 @@ Parse each location separated by `/`, `,`, or `;`. Include each as a separate ad
 | `"San Francisco, CA / Seattle, WA - Remote"`           | `"SF, Seattle"`       | SF (CA) + Seattle (WA) | Multiple US cities            |
 | `"Amsterdam, NL / London, GB - Remote (any location)"` | `"Amsterdam, London"` | Amsterdam + London     | Cities in different countries |
 | `"USA - Remote (any location)"`                        | `"United States"`     | US only                | Country specified             |
-| `"Remote (any location)"`                              | `"Worldwide"`         | Worldwide expansion    | No specific location          |
-| `"Anywhere"`                                           | `"Worldwide"`         | Worldwide expansion    | Generic pattern               |
+| `"Remote (any location)"`                              | `"Anywhere"`          | Worldwide expansion    | No specific location          |
+| `"Global"`                                             | `"Anywhere"`          | Worldwide expansion    | Generic pattern               |
 
 ## Address Schema
 
@@ -216,8 +216,8 @@ The phrase "Remote (any location)" or similar variations indicate remote work is
    - `isRemote: true` (because "Remote" was present)
 
 3. **If NO locations remain** → treat as worldwide
-   - `"Remote (any location)"` → label: `"Worldwide"`, addresses: worldwide expansion
-   - `"Remote - Global"` → label: `"Worldwide"`, addresses: worldwide expansion
+   - `"Remote (any location)"` → label: `"Anywhere"`, addresses: worldwide expansion
+   - `"Remote - Global"` → label: `"Anywhere"`, addresses: worldwide expansion
 
 ### Examples
 
@@ -225,7 +225,7 @@ The phrase "Remote (any location)" or similar variations indicate remote work is
 | ------------------------------------------------ | ------------------------ | --------------------- | ------------------- |
 | `"Chicago, IL / NY, US - Remote (any location)"` | `"Chicago, IL / NY, US"` | `"Chicago, New York"` | 2 US cities         |
 | `"USA - Remote (any location)"`                  | `"USA"`                  | `"United States"`     | 1 country (US)      |
-| `"Remote (any location)"`                        | (empty)                  | `"Worldwide"`         | Worldwide expansion |
+| `"Remote (any location)"`                        | (empty)                  | `"Anywhere"`          | Worldwide expansion |
 | `"APAC - Remote"`                                | `"APAC"`                 | `"Asia-Pacific"`      | APAC countries      |
 
 ## Country Code Reference

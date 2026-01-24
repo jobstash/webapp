@@ -70,25 +70,29 @@ Read `.claude/scripts/address-mapping/unmapped.json` to get the list of location
    Task({
      subagent_type: "address-mapper",
      model: "opus",
-     prompt: "Process batch X of Y:\n\n```json\n[...locations...]\n```"
+     prompt: "Output file: .claude/scripts/address-mapping/temp/batch-{N}.json\n\nProcess batch {N} of {total}:\n\n```json\n[...locations...]\n```"
    })
    ````
 3. Wait for wave to complete, launch next wave if needed
 4. Repeat until all batches are processed
 
-### Step 7: Consolidate Results
+### Step 7: Finalize Mappings
 
-1. Collect JSON output from each agent
-2. Merge all mappings into single object
-3. Collect all uncertain mappings
-4. Handle agent failures:
-   - If an agent fails or returns invalid JSON, report the batch that failed
-   - Include failed batches in final report for manual processing
-   - Continue with successful batches
-5. Pipe consolidated mappings to add-mappings.ts:
-   ```bash
-   echo '<consolidated-json>' | npx tsx .claude/scripts/address-mapping/add-mappings.ts
-   ```
+Run the finalize script to merge all batch outputs:
+
+```bash
+npx tsx .claude/scripts/address-mapping/finalize-mappings.ts
+```
+
+This script:
+
+- Reads all `temp/batch-*.json` files
+- Validates each mapping
+- Merges with existing `mappings.json`
+- Sorts keys alphabetically
+- Cleans up temp files
+- Saves uncertain mappings to `uncertain-mappings.json` (same format as mappings.json)
+- Reports results including any uncertain mappings
 
 ### Step 8: Final Report
 
@@ -132,11 +136,15 @@ Common errors:
 
 ```
 .claude/scripts/address-mapping/
-├── mappings.json          # Accumulated mappings (committed to repo)
-├── types.ts               # TypeScript types
-├── fetch-locations.ts     # Fetches from API (requires URL arg)
-├── find-unmapped.ts       # Finds unmapped strings
-├── add-mappings.ts        # Validates and merges mappings
-├── fetched-locations.json # Temporary (gitignored)
-└── unmapped.json          # Temporary (gitignored)
+├── mappings.json           # Accumulated mappings (committed to repo)
+├── uncertain-mappings.json # Mappings requiring review (same format as mappings.json)
+├── types.ts                # TypeScript types
+├── fetch-locations.ts      # Fetches from API (requires URL arg)
+├── find-unmapped.ts        # Finds unmapped strings
+├── finalize-mappings.ts    # Merges batch outputs, validates, cleans up
+├── add-mappings.ts         # Validates and merges mappings (stdin)
+├── temp/                   # Batch output directory (gitignored)
+│   └── batch-*.json        # Agent outputs
+├── fetched-locations.json  # Temporary (gitignored)
+└── unmapped.json           # Temporary (gitignored)
 ```
