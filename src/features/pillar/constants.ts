@@ -1,3 +1,5 @@
+import { SENIORITY_LABEL_TO_KEY } from '@/lib/constants';
+
 import type { PillarFilterContext } from './schemas';
 
 export type PillarCategory =
@@ -188,7 +190,15 @@ export const getPillarFilterContext = (
   if (!mapping?.paramKey) return null;
 
   const value = slug.slice(mapping.prefix.length);
-  return value ? { paramKey: mapping.paramKey, value } : null;
+  if (!value) return null;
+
+  // Seniority requires numeric key (e.g., "3" for "Senior")
+  if (mapping.paramKey === 'seniority') {
+    const numericValue = SENIORITY_LABEL_TO_KEY[value];
+    return numericValue ? { paramKey: 'seniority', value: numericValue } : null;
+  }
+
+  return { paramKey: mapping.paramKey, value };
 };
 
 export const getPillarFilterHref = (
