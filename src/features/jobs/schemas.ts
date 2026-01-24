@@ -39,7 +39,6 @@ export const jobOrganizationSchema = z.object({
   employeeCount: nullableStringSchema,
   fundingRounds: jobFundingRoundSchema.array(),
   investors: jobInvestorSchema.array(),
-  infoTags: mappedInfoTagSchema.array(),
 });
 export type JobOrganizationSchema = z.infer<typeof jobOrganizationSchema>;
 

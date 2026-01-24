@@ -20,7 +20,7 @@ import {
   type JobListItemSchema,
   type JobOrganizationSchema,
 } from '@/features/jobs/schemas';
-import { MappedInfoTagSchema } from '@/lib/schemas';
+import type { MappedInfoTagSchema } from '@/lib/schemas';
 import { SENIORITY_MAPPING } from '@/lib/constants';
 import { FundingRoundDto, InvestorDto } from '@/lib/server/dtos';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
@@ -98,7 +98,6 @@ const createJobInfoTags = (
   addressLookup: AddressLookupResult | null,
 ) => {
   const {
-    timestamp,
     seniority,
     locationType,
     location,
@@ -106,25 +105,10 @@ const createJobInfoTags = (
     paysInCrypto,
     offersTokenAllocation,
     classification,
+    organization,
   } = dto;
 
   const tags: MappedInfoTagSchema[] = [];
-
-  // First tag: "Urgently Hiring" for expert jobs, timestamp for others
-  const badge = dtoToJobItemBadge(dto);
-  const isExpertJob = badge === JOB_ITEM_BADGE.EXPERT;
-
-  if (isExpertJob) {
-    tags.push({
-      iconKey: 'urgentlyHiring',
-      label: 'Urgently Hiring',
-    });
-  } else {
-    tags.push({
-      iconKey: 'posted',
-      label: prettyTimestamp(timestamp),
-    });
-  }
 
   if (seniority && seniority in SENIORITY_MAPPING) {
     const label =
@@ -190,6 +174,14 @@ const createJobInfoTags = (
       iconKey: 'category',
       label: titleCase(classification),
       href: `/cl-${slugify(classification)}`,
+    });
+  }
+
+  if (organization) {
+    tags.push({
+      iconKey: 'externalLink',
+      label: `Jobs by ${organization.name}`,
+      href: `/o-${organization.normalizedName}`,
     });
   }
 
@@ -261,36 +253,6 @@ const dtoToInvestors = (investors: InvestorDto[]): JobInvestorSchema[] => {
   }));
 };
 
-const createOrgInfoTags = (
-  dto: NonNullable<JobListItemDto['organization']>,
-  href: string,
-): MappedInfoTagSchema[] => {
-  const { name, location, headcountEstimate } = dto;
-  const tags: MappedInfoTagSchema[] = [];
-
-  if (location) {
-    tags.push({
-      iconKey: 'orgLocation',
-      label: capitalize(location),
-    });
-  }
-
-  if (headcountEstimate) {
-    tags.push({
-      iconKey: 'employees',
-      label: `${headcountEstimate} Employees`,
-    });
-  }
-
-  tags.push({
-    iconKey: 'externalLink',
-    label: `Jobs by ${name}`,
-    href,
-  });
-
-  return tags;
-};
-
 const dtoToJobItemOrg = (
   dto: JobListItemDto['organization'],
 ): JobOrganizationSchema | null => {
@@ -307,18 +269,15 @@ const dtoToJobItemOrg = (
     investors,
   } = dto;
 
-  const href = `/o-${normalizedName}`;
-
   return {
     name,
-    href,
+    href: `/o-${normalizedName}`,
     websiteUrl: website,
     location,
     logo: getLogoUrl(website, logoUrl),
     employeeCount: headcountEstimate ? `${headcountEstimate}` : null,
     fundingRounds: dtoToFundingRounds(fundingRounds),
     investors: dtoToInvestors(investors),
-    infoTags: createOrgInfoTags(dto, href),
   };
 };
 
