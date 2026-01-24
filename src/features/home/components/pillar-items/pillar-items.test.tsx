@@ -93,16 +93,18 @@ describe('HeroWithPillars', () => {
 
     // All items should be rendered as links (no category headers)
     const links = screen.getAllByRole('link');
-    // +2 for "Browse Jobs" and "Post a Job" CTAs
-    expect(links.length).toBe(items.length + 2);
+    // +1 for "Post a Job" CTA (Browse Jobs is a button, not a link)
+    expect(links.length).toBe(items.length + 1);
   });
 
   it('renders primary CTA buttons', async () => {
     render(await HeroWithPillars());
 
+    // Browse Jobs is a button (scrolls to jobs section)
     expect(
-      screen.getByRole('link', { name: /browse jobs/i }),
+      screen.getByRole('button', { name: /browse jobs/i }),
     ).toBeInTheDocument();
+    // Post a Job is a link
     expect(
       screen.getByRole('link', { name: /post a job/i }),
     ).toBeInTheDocument();

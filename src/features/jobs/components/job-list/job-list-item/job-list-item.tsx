@@ -41,7 +41,14 @@ export const JobListItem = ({ job }: JobListItemProps) => {
       <div className='p-5 pb-3'>
         {/* View Details - top right */}
         <div className='absolute top-5 right-5'>
-          <Badge variant='outline' asChild className='rounded-md py-1'>
+          <Badge
+            asChild
+            variant='outline'
+            className={cn(
+              'rounded-md border-transparent py-1 tracking-wide',
+              'bg-muted text-muted-foreground ring-1 ring-border',
+            )}
+          >
             <LinkWithLoader href={href}>
               <ExternalLinkIcon className='size-3' />
               View Details
