@@ -23,7 +23,7 @@ const buildJobPostingSchema = (
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: job.title,
-    description: job.description || job.summary,
+    description: job.summary || job.description,
     datePosted: new Date().toISOString().split('T')[0],
     employmentType,
     directApply: !!job.applyUrl,
