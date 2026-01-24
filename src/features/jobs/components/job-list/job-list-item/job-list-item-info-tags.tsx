@@ -6,20 +6,14 @@ import { InfoTagIcon } from './info-tag-icon';
 
 interface JobListItemInfoTagsProps {
   tags: MappedInfoTagSchema[];
-  maxVisible?: number;
 }
 
-export const JobListItemInfoTags = ({
-  tags,
-  maxVisible = 4,
-}: JobListItemInfoTagsProps) => {
+export const JobListItemInfoTags = ({ tags }: JobListItemInfoTagsProps) => {
   if (tags.length === 0) return null;
-
-  const visibleTags = tags.slice(0, maxVisible);
 
   return (
     <div className='flex flex-wrap items-center gap-2'>
-      {visibleTags.map((tag) => {
+      {tags.map((tag) => {
         const content = (
           <>
             <InfoTagIcon iconKey={tag.iconKey} />

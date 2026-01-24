@@ -22,7 +22,7 @@ export const JobDetailsHeader = ({ job }: JobDetailsHeaderProps) => {
 
       <h1 className='text-xl font-semibold text-foreground'>{title}</h1>
 
-      <JobListItemInfoTags tags={infoTags} maxVisible={infoTags.length} />
+      <JobListItemInfoTags tags={infoTags} />
     </header>
   );
 };
