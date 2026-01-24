@@ -10,7 +10,7 @@ import {
   getPillarFilterContext,
   isValidPillarSlug,
 } from '@/features/pillar/constants';
-import { fetchPillarDetails } from '@/features/pillar/server';
+import { fetchPillarPageStatic } from '@/features/pillar/server';
 import { fetchPillarStaticParams } from '@/features/pillar/server/data';
 
 export const generateStaticParams = async () => {
@@ -29,8 +29,13 @@ const PillarPage = async ({ params }: Props) => {
 
   const pillarContext = getPillarFilterContext(slug);
 
-  const pillarDetails = await fetchPillarDetails({ slug });
-  if (!pillarDetails) notFound();
+  const pillarPage = await fetchPillarPageStatic(slug);
+  if (!pillarPage) notFound();
+
+  const pillarDetails = {
+    title: pillarPage.title,
+    description: pillarPage.description,
+  };
 
   return (
     <>
@@ -41,7 +46,11 @@ const PillarPage = async ({ params }: Props) => {
           <PillarCTA slug={slug} pillarContext={pillarContext} />
         </aside>
         <section className='min-w-0 grow'>
-          <PillarJobList slug={slug} pillarContext={pillarContext} />
+          <PillarJobList
+            slug={slug}
+            pillarContext={pillarContext}
+            jobs={pillarPage.jobs}
+          />
         </section>
       </div>
     </>

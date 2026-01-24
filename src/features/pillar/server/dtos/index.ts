@@ -1,2 +1,5 @@
-export { pillarDetailsDto, type PillarDetailsDto } from './pillar-details.dto';
-export { dtoToPillarDetails } from './dto-to-pillar-details';
+export {
+  pillarPageStaticDto,
+  type PillarPageStaticDto,
+} from './pillar-page-static.dto';
+export { dtoToPillarPageStatic } from './dto-to-pillar-page-static';

@@ -2,51 +2,33 @@ import Link from 'next/link';
 import { ArrowRightIcon, SearchIcon } from 'lucide-react';
 
 import { JobListItem } from '@/features/jobs/components/job-list/job-list-item';
+import type { JobListItemSchema } from '@/features/jobs/schemas';
 import {
   getPillarFilterHref,
   getPillarName,
 } from '@/features/pillar/constants';
-import { fetchPillarJobs } from '@/features/pillar/server/data';
 import type { PillarFilterContext } from '@/features/pillar/schemas';
 
 interface Props {
   slug: string;
   pillarContext: PillarFilterContext | null;
+  jobs: JobListItemSchema[];
 }
 
-export const PillarJobList = async ({ slug, pillarContext }: Props) => {
+export const PillarJobList = ({ slug, pillarContext, jobs }: Props) => {
   const pillarName = getPillarName(slug);
 
-  try {
-    const data = await fetchPillarJobs({ pillarContext });
-
-    if (data.length === 0) {
-      return (
-        <EmptyState pillarName={pillarName} pillarContext={pillarContext} />
-      );
-    }
-
-    return (
-      <div className='space-y-4'>
-        {data.map((job) => (
-          <JobListItem key={job.id} job={job} />
-        ))}
-      </div>
-    );
-  } catch (error) {
-    console.error('[PillarJobList] Failed to load jobs:', error);
-    return (
-      <div
-        role='alert'
-        className='flex flex-col items-center justify-center gap-2 py-12'
-      >
-        <p className='text-muted-foreground'>Failed to load jobs</p>
-        <p className='text-sm text-muted-foreground'>
-          Please try refreshing the page
-        </p>
-      </div>
-    );
+  if (jobs.length === 0) {
+    return <EmptyState pillarName={pillarName} pillarContext={pillarContext} />;
   }
+
+  return (
+    <div className='space-y-4'>
+      {jobs.map((job) => (
+        <JobListItem key={job.id} job={job} />
+      ))}
+    </div>
+  );
 };
 
 interface EmptyStateProps {

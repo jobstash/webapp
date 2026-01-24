@@ -1,2 +1,2 @@
-export { fetchPillarDetails } from './data';
-export { pillarDetailsDto, dtoToPillarDetails } from './dtos';
+export { fetchPillarPageStatic } from './data';
+export { pillarPageStaticDto, dtoToPillarPageStatic } from './dtos';

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { pillarSlugsDto } from '@/features/pillar/server/dtos/pillar-details.dto';
+import { pillarSlugsDto } from '@/features/pillar/server/dtos/pillar-slugs.dto';
 import { clientEnv } from '@/lib/env/client';
 
 const LIMIT_LENGTH = 255;

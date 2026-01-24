@@ -1,3 +1,2 @@
-export { fetchPillarDetails } from './fetch-pillar-details';
-export { fetchPillarJobs } from './fetch-pillar-jobs';
+export { fetchPillarPageStatic } from './fetch-pillar-page-static';
 export { fetchPillarStaticParams } from './fetch-pillar-static-params';
