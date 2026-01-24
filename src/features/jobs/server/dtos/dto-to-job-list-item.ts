@@ -1,7 +1,10 @@
 import 'server-only';
 
 import { capitalize } from '@/lib/utils';
-import { lookupAddresses } from '@/lib/server/address-lookup';
+import {
+  lookupAddresses,
+  type AddressLookupResult,
+} from '@/lib/server/address-lookup';
 import {
   formatNumber,
   getLogoUrl,
@@ -55,9 +58,10 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     organization,
   } = dto;
 
+  const addressLookup = lookupAddresses(location);
   const title = dto.title ?? getDefaultTitle(dto);
   const href = createJobItemHref(title, dto);
-  const infoTags = createJobInfoTags(dto);
+  const infoTags = createJobInfoTags(dto, addressLookup);
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemOrg(organization);
   const badge = dtoToJobItemBadge(dto);
@@ -69,7 +73,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     href,
     applyUrl,
     summary,
-    addresses: lookupAddresses(location),
+    addresses: addressLookup?.addresses ?? null,
     infoTags,
     tags: mappedTags,
     organization: mappedOrg,
@@ -84,7 +88,10 @@ const createJobItemHref = (title: string, dto: JobListItemDto) => {
   return `/${slug}/${dto.shortUUID}`;
 };
 
-const createJobInfoTags = (dto: JobListItemDto) => {
+const createJobInfoTags = (
+  dto: JobListItemDto,
+  addressLookup: AddressLookupResult | null,
+) => {
   const {
     timestamp,
     seniority,
@@ -133,9 +140,10 @@ const createJobInfoTags = (dto: JobListItemDto) => {
   }
 
   if (location) {
+    const locationLabel = addressLookup?.label ?? capitalize(location);
     tags.push({
       iconKey: 'location',
-      label: capitalize(location),
+      label: locationLabel,
       href: `/l-${slugify(location)}`,
     });
   }

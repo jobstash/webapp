@@ -35,12 +35,14 @@ export const dtoToSimilarJob = (dto: SimilarJobDto): SimilarJobSchema => {
     salaryText = `${formatNumber(salary)} ${salaryCurrency}`;
   }
 
+  const addressLookup = lookupAddresses(location);
+
   return {
     id: shortUUID,
     title,
     href,
     salaryText,
-    addresses: lookupAddresses(location),
+    addresses: addressLookup?.addresses ?? null,
     companyName: organization?.name ?? null,
     companyLogo: organization
       ? getLogoUrl(organization.website, organization.logoUrl)

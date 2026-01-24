@@ -1,7 +1,8 @@
 /**
  * Reads new mappings from stdin and merges into mappings.json
  * Validates each address against the Zod schema before adding
- * Run with: echo '{"USA": [...]}' | npx tsx .claude/scripts/address-mapping/add-mappings.ts
+ * Rejects XX country codes - regions must be expanded to real countries
+ * Run with: echo '{"USA": {"label": "United States", "addresses": [...]}}' | npx tsx .claude/scripts/address-mapping/add-mappings.ts
  */
 
 import { readFile, writeFile } from 'node:fs/promises';
@@ -33,9 +34,28 @@ const validateMappings = (input: unknown): AddressMappings => {
   const validated: AddressMappings = {};
   const entries = Object.entries(input as Record<string, unknown>);
 
-  for (const [key, addresses] of entries) {
+  for (const [key, mapping] of entries) {
+    if (typeof mapping !== 'object' || mapping === null) {
+      throw new Error(
+        `Value for "${key}" must be an object with label and addresses`,
+      );
+    }
+
+    const { label, addresses } = mapping as Record<string, unknown>;
+
+    // Validate label
+    if (typeof label !== 'string' || label.length === 0) {
+      throw new Error(`Missing or invalid "label" for "${key}"`);
+    }
+
+    // addresses can be null for invalid locations
+    if (addresses === null) {
+      validated[key] = { label, addresses: null };
+      continue;
+    }
+
     if (!Array.isArray(addresses)) {
-      throw new Error(`Value for "${key}" must be an array of addresses`);
+      throw new Error(`"addresses" for "${key}" must be an array or null`);
     }
 
     const validatedAddresses = addresses.map((address, index) => {
@@ -48,10 +68,17 @@ const validateMappings = (input: unknown): AddressMappings => {
         throw new Error(`Invalid address at "${key}"[${index}]: ${errors}`);
       }
 
+      // Reject XX country codes - regions must be expanded
+      if (result.data.countryCode === 'XX') {
+        throw new Error(
+          `Invalid countryCode "XX" at "${key}"[${index}]: Regional locations must be expanded to real countries`,
+        );
+      }
+
       return result.data;
     });
 
-    validated[key] = validatedAddresses;
+    validated[key] = { label, addresses: validatedAddresses };
   }
 
   return validated;

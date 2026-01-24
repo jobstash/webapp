@@ -26,4 +26,14 @@ export interface Address {
   };
 }
 
-export type AddressMappings = Record<string, Address[]>;
+/**
+ * Address mapping with display label and structured addresses.
+ */
+export interface AddressMapping {
+  /** Display label for job info tag (no "remote" word, concise) */
+  label: string;
+  /** Structured address data, or null for invalid/unparseable locations */
+  addresses: Address[] | null;
+}
+
+export type AddressMappings = Record<string, AddressMapping>;

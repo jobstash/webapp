@@ -8,24 +8,27 @@ Generate structured address mappings from raw location strings.
 /map-addresses
 ```
 
-## Prerequisites
-
-- Dev server must be running (`pnpm dev`)
-- The `/api/locations` endpoint must be accessible
-
 ## Workflow
 
-### Step 1: Fetch Locations
+### Step 1: Select Middleware URL
 
-Run the fetch script:
+Use AskUserQuestion to prompt the user for the middleware URL:
+
+- **Production** (https://middleware.jobstash.xyz) - Recommended
+- **Local** (http://localhost:8080)
+- **Other** - Custom URL
+
+### Step 2: Fetch Locations
+
+Run the fetch script with the selected URL:
 
 ```bash
-npx tsx .claude/scripts/address-mapping/fetch-locations.ts
+npx tsx .claude/scripts/address-mapping/fetch-locations.ts <middleware-url>
 ```
 
 This fetches all unique location strings from the API and saves to `fetched-locations.json`.
 
-### Step 2: Find Unmapped Locations
+### Step 3: Find Unmapped Locations
 
 Run the find-unmapped script:
 
@@ -37,11 +40,11 @@ This compares fetched locations against existing mappings and outputs unmapped s
 
 **If no unmapped locations:** Report completion and stop.
 
-### Step 3: Read Unmapped Locations
+### Step 4: Read Unmapped Locations
 
 Read `.claude/scripts/address-mapping/unmapped.json` to get the list of location strings that need mapping.
 
-### Step 4: Process in Batches of 50
+### Step 5: Process in Batches of 50
 
 For each batch of up to 50 unmapped locations:
 
@@ -65,9 +68,9 @@ For each batch of up to 50 unmapped locations:
    - Any validation errors
    - Uncertain mappings flagged
 
-7. **Loop** back to Step 2 to find remaining unmapped locations
+7. **Loop** back to Step 3 to find remaining unmapped locations
 
-### Step 5: Final Report
+### Step 6: Final Report
 
 When all locations are mapped (or user stops), provide a summary:
 
@@ -79,20 +82,102 @@ Successfully mapped: Y
 Skipped: Z
 
 Uncertain mappings (review recommended):
-- "APAC" → Used generic Asia-Pacific region
-- "EU/US" → Split into two addresses
+- "APAC" → Expanded to 5 major Asia-Pacific countries
+- "EU/US" → Split into Europe + US addresses
 
 Remaining unmapped: N
 ```
 
-## Conversion Guidelines
+## Mapping Structure
 
-### Address Schema
+Each mapping has:
+
+```typescript
+interface AddressMapping {
+  label: string; // Display label for job info tag
+  addresses: Address[] | null; // Structured addresses, null for invalid
+}
+```
+
+## Label Guidelines
+
+Labels appear on job info tags. Keep them concise with NO "remote" word (redundant with work mode tag).
+
+### Single Location
+
+| Raw String             | Label                  |
+| ---------------------- | ---------------------- |
+| `"Remote - Singapore"` | `"Singapore"`          |
+| `"New York, USA"`      | `"New York, USA"`      |
+| `"NYC"`                | `"NY, USA"`            |
+| `"San Francisco"`      | `"San Francisco, USA"` |
+| `"USA"`                | `"United States"`      |
+| `"United Kingdom"`     | `"United Kingdom"`     |
+
+### Multi-Location
+
+Parse each location separated by `/`, `,`, or `;`. Include each as a separate address entry.
+
+| Raw String                | Label                     | Addresses Count        |
+| ------------------------- | ------------------------- | ---------------------- |
+| `"USA, UK"`               | `"US, UK"`                | 2 (US + UK)            |
+| `"USA, Philippines"`      | `"US, Philippines"`       | 2 (US + PH)            |
+| `"EU/US"`                 | `"EU, US"`                | 2 (EU + US)            |
+| `"Chicago, IL / NY, US"`  | `"Chicago, New York"`     | 2 (Chicago + NYC)      |
+| `"SF, Seattle, Austin"`   | `"SF, Seattle, Austin"`   | 3 cities               |
+| `"London, Paris, Berlin"` | `"London, Paris, Berlin"` | 3 cities (3 countries) |
+| `"New York, SF, London"`  | `"NY, SF, London"`        | 3 cities (2 countries) |
+
+**Label Guidelines for Multiple Cities:**
+
+- Use abbreviated city names when space is limited (SF, NY, LA)
+- If 4+ cities in same country, consider using country name: `"USA"` or `"US (multiple cities)"`
+- If cities span multiple countries, list cities: `"NY, London, Berlin"`
+
+### Regions
+
+| Raw String    | Label            |
+| ------------- | ---------------- |
+| `"APAC"`      | `"Asia-Pacific"` |
+| `"EMEA"`      | `"EMEA"`         |
+| `"Europe"`    | `"Europe"`       |
+| `"Worldwide"` | `"Worldwide"`    |
+| `"Global"`    | `"Worldwide"`    |
+
+### Invalid Locations
+
+| Raw String   | Label                     |
+| ------------ | ------------------------- |
+| `"Cow Moon"` | `"Cow Moon"` (keep as-is) |
+
+## Location Precedence Rules
+
+**Key Principle:** If a location string contains specific cities, regions, or countries, those take precedence over generic modifiers like "Remote (any location)" or "any location".
+
+### Precedence Order (highest to lowest)
+
+1. **Explicit cities/regions** - `"Chicago, IL / NY, US"` → extract Chicago (IL) + New York (NY)
+2. **Explicit countries** - `"USA, UK"` → use those countries
+3. **Regional patterns** - `"APAC"`, `"EMEA"` → expand to countries
+4. **Generic patterns** - `"Anywhere"`, `"Any"`, `"Worldwide"` → use worldwide expansion
+
+### Examples
+
+| Raw String                                             | Label                 | Addresses              | Rationale                     |
+| ------------------------------------------------------ | --------------------- | ---------------------- | ----------------------------- |
+| `"Chicago, IL / NY, US - Remote (any location)"`       | `"Chicago, New York"` | Chicago (IL) + NY (NY) | Cities take precedence        |
+| `"San Francisco, CA / Seattle, WA - Remote"`           | `"SF, Seattle"`       | SF (CA) + Seattle (WA) | Multiple US cities            |
+| `"Amsterdam, NL / London, GB - Remote (any location)"` | `"Amsterdam, London"` | Amsterdam + London     | Cities in different countries |
+| `"USA - Remote (any location)"`                        | `"United States"`     | US only                | Country specified             |
+| `"Remote (any location)"`                              | `"Worldwide"`         | Worldwide expansion    | No specific location          |
+| `"Anywhere"`                                           | `"Worldwide"`         | Worldwide expansion    | Generic pattern               |
+
+## Address Schema
 
 Each address must have:
 
 - `country` (required): Display name (e.g., "United States")
-- `countryCode` (required): ISO 3166-1 alpha-2 (e.g., "US")
+- `countryCode` (required): ISO 3166-1 alpha-2 (e.g., "US") - **NO XX ALLOWED**
 - `isRemote` (required): Boolean
 
 Optional fields:
@@ -104,7 +189,69 @@ Optional fields:
 - `extendedAddress`: Apt, suite, unit, etc.
 - `geo`: `{ latitude, longitude }` for rich results
 
-### Remote Detection
+## No XX Country Codes
+
+**CRITICAL:** Every address MUST have a valid country and countryCode. The `XX` placeholder is NOT allowed.
+
+For regional locations, expand to actual countries:
+
+```typescript
+const REGION_TO_COUNTRIES: Record<string, string[]> = {
+  APAC: [
+    'AU',
+    'JP',
+    'SG',
+    'IN',
+    'KR',
+    'NZ',
+    'HK',
+    'TW',
+    'PH',
+    'MY',
+    'TH',
+    'VN',
+    'ID',
+  ],
+  EMEA: [
+    'GB',
+    'DE',
+    'FR',
+    'NL',
+    'ES',
+    'IT',
+    'IE',
+    'SE',
+    'PL',
+    'AE',
+    'IL',
+    'ZA',
+  ],
+  'North America': ['US', 'CA', 'MX'],
+  Europe: [
+    'GB',
+    'DE',
+    'FR',
+    'NL',
+    'ES',
+    'IT',
+    'IE',
+    'SE',
+    'NO',
+    'DK',
+    'FI',
+    'PL',
+    'PT',
+    'BE',
+    'AT',
+    'CH',
+  ],
+  Worldwide: ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'NL', 'SG', 'IE'],
+};
+```
+
+Include at least 5 major countries for each region.
+
+## Remote Detection
 
 Set `isRemote: true` if the string contains "Remote" (case insensitive).
 
@@ -114,7 +261,35 @@ Examples:
 - "Remote - Singapore" → `isRemote: true`
 - "USA" → `isRemote: false`
 
-### Country Code Reference
+## "Remote (any location)" Handling
+
+The phrase "Remote (any location)" or similar variations indicate remote work is available, but **does NOT override explicit locations**.
+
+### Parsing Rules
+
+1. **Strip the remote modifier** to find actual locations
+   - `"Chicago, IL - Remote (any location)"` → parse `"Chicago, IL"`
+   - `"NYC / SF - Remote"` → parse `"NYC / SF"`
+
+2. **If locations remain after stripping** → use those locations
+   - Label: Use the parsed locations
+   - Addresses: One entry per parsed location
+   - `isRemote: true` (because "Remote" was present)
+
+3. **If NO locations remain** → treat as worldwide
+   - `"Remote (any location)"` → label: `"Worldwide"`, addresses: worldwide expansion
+   - `"Remote - Global"` → label: `"Worldwide"`, addresses: worldwide expansion
+
+### Examples
+
+| Raw String                                       | After Stripping          | Label                 | Addresses           |
+| ------------------------------------------------ | ------------------------ | --------------------- | ------------------- |
+| `"Chicago, IL / NY, US - Remote (any location)"` | `"Chicago, IL / NY, US"` | `"Chicago, New York"` | 2 US cities         |
+| `"USA - Remote (any location)"`                  | `"USA"`                  | `"United States"`     | 1 country (US)      |
+| `"Remote (any location)"`                        | (empty)                  | `"Worldwide"`         | Worldwide expansion |
+| `"APAC - Remote"`                                | `"APAC"`                 | `"Asia-Pacific"`      | APAC countries      |
+
+## Country Code Reference
 
 Use ISO 3166-1 alpha-2 codes:
 
@@ -149,34 +324,7 @@ Use ISO 3166-1 alpha-2 codes:
 | Indonesia, ID               | Indonesia            | ID   |
 | Malaysia, MY                | Malaysia             | MY   |
 
-### Multi-Location Strings
-
-For strings listing multiple locations, create multiple Address objects in the array.
-
-Example:
-
-```json
-{
-  "USA, Philippines": [
-    { "country": "United States", "countryCode": "US", "isRemote": false },
-    { "country": "Philippines", "countryCode": "PH", "isRemote": false }
-  ]
-}
-```
-
-### Region-Level Locations
-
-For vague regional locations, mark as **uncertain** and use best approximation:
-
-| String            | Handling                           | Uncertain? |
-| ----------------- | ---------------------------------- | ---------- |
-| APAC              | Use "Asia-Pacific" with code "XX"  | Yes        |
-| Europe            | Use "Europe" with code "XX"        | Yes        |
-| EMEA              | Use "EMEA" with code "XX"          | Yes        |
-| LATAM             | Use "Latin America" with code "XX" | Yes        |
-| Worldwide, Global | Use "Worldwide" with code "XX"     | Yes        |
-
-### Cities with Implicit Countries
+## Cities with Implicit Countries
 
 Parse country from well-known cities:
 
@@ -201,26 +349,56 @@ Parse country from well-known cities:
 | Mumbai, Bangalore, Delhi, Hyderabad                                                                | India                | IN   |
 | Sao Paulo, Rio de Janeiro                                                                          | Brazil               | BR   |
 
-### Output Format
+## Output Format
 
-Valid JSON that can be piped to add-mappings.ts:
+Valid JSON with the new structure:
 
 ```json
 {
-  "USA": [
-    { "country": "United States", "countryCode": "US", "isRemote": false }
-  ],
-  "Remote - Singapore": [
-    { "country": "Singapore", "countryCode": "SG", "isRemote": true }
-  ],
-  "New York, USA": [
-    {
-      "country": "United States",
-      "countryCode": "US",
-      "isRemote": false,
-      "locality": "New York"
-    }
-  ]
+  "USA": {
+    "label": "United States",
+    "addresses": [
+      { "country": "United States", "countryCode": "US", "isRemote": false }
+    ]
+  },
+  "New York, USA": {
+    "label": "New York, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "New York"
+      }
+    ]
+  },
+  "Remote - Singapore": {
+    "label": "Singapore",
+    "addresses": [
+      { "country": "Singapore", "countryCode": "SG", "isRemote": true }
+    ]
+  },
+  "USA, UK": {
+    "label": "US, UK",
+    "addresses": [
+      { "country": "United States", "countryCode": "US", "isRemote": false },
+      { "country": "United Kingdom", "countryCode": "GB", "isRemote": false }
+    ]
+  },
+  "APAC": {
+    "label": "Asia-Pacific",
+    "addresses": [
+      { "country": "Australia", "countryCode": "AU", "isRemote": false },
+      { "country": "Japan", "countryCode": "JP", "isRemote": false },
+      { "country": "Singapore", "countryCode": "SG", "isRemote": false },
+      { "country": "India", "countryCode": "IN", "isRemote": false },
+      { "country": "South Korea", "countryCode": "KR", "isRemote": false }
+    ]
+  },
+  "Cow Moon": {
+    "label": "Cow Moon",
+    "addresses": null
+  }
 }
 ```
 
@@ -232,13 +410,19 @@ If add-mappings.ts reports validation errors:
 2. Ask if they want to fix and retry or skip the problematic mapping
 3. Continue with remaining mappings
 
+Common errors:
+
+- `countryCode "XX"` - Region not expanded to countries
+- Missing `label` - Every mapping needs a display label
+- Invalid `addresses` - Must be array or null
+
 ## Files
 
 ```
 .claude/scripts/address-mapping/
 ├── mappings.json          # Accumulated mappings (committed to repo)
 ├── types.ts               # TypeScript types
-├── fetch-locations.ts     # Fetches from API
+├── fetch-locations.ts     # Fetches from API (requires URL arg)
 ├── find-unmapped.ts       # Finds unmapped strings
 ├── add-mappings.ts        # Validates and merges mappings
 ├── fetched-locations.json # Temporary (gitignored)
