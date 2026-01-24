@@ -12,141 +12,131 @@ export type PillarCategory =
   | 'fundingRound'
   | 'boolean';
 
-export const PILLAR_CATEGORY_CONFIG: Record<
-  PillarCategory,
-  {
-    label: string;
-    tagline: string;
-    accent: string;
-    accentMuted: string;
-    dot: string;
-  }
-> = {
+interface CategoryConfig {
+  label: string;
+  tagline: string;
+  accent: string;
+  dot: string;
+  nameFirst: boolean;
+}
+
+export const PILLAR_CATEGORY_CONFIG: Record<PillarCategory, CategoryConfig> = {
   tag: {
     label: 'Skill',
-    tagline: 'Jobs', // Rendered as "{name} Jobs"
+    tagline: 'Jobs',
     accent: 'text-emerald-400',
-    accentMuted: 'text-emerald-400/60',
     dot: 'bg-emerald-400',
+    nameFirst: true,
   },
   classification: {
     label: 'Role',
-    tagline: 'Jobs', // Rendered as "{name} Jobs"
+    tagline: 'Jobs',
     accent: 'text-blue-400',
-    accentMuted: 'text-blue-400/60',
     dot: 'bg-blue-400',
+    nameFirst: true,
   },
   location: {
     label: 'Location',
     tagline: 'Jobs in',
     accent: 'text-amber-400',
-    accentMuted: 'text-amber-400/60',
     dot: 'bg-amber-400',
+    nameFirst: false,
   },
   commitment: {
     label: 'Work Type',
-    tagline: 'Jobs', // Rendered as "{name} Jobs"
+    tagline: 'Jobs',
     accent: 'text-violet-400',
-    accentMuted: 'text-violet-400/60',
     dot: 'bg-violet-400',
+    nameFirst: true,
   },
   locationType: {
     label: 'Work Mode',
-    tagline: 'Jobs', // Rendered as "{name} Jobs"
+    tagline: 'Jobs',
     accent: 'text-cyan-400',
-    accentMuted: 'text-cyan-400/60',
     dot: 'bg-cyan-400',
+    nameFirst: true,
   },
   organization: {
     label: 'Company',
     tagline: 'Jobs at',
     accent: 'text-rose-400',
-    accentMuted: 'text-rose-400/60',
     dot: 'bg-rose-400',
+    nameFirst: false,
   },
   seniority: {
     label: 'Level',
-    tagline: 'Explore',
+    tagline: 'Role Jobs',
     accent: 'text-orange-400',
-    accentMuted: 'text-orange-400/60',
     dot: 'bg-orange-400',
+    nameFirst: true,
   },
   investor: {
     label: 'Investor',
     tagline: 'Jobs backed by',
     accent: 'text-teal-400',
-    accentMuted: 'text-teal-400/60',
     dot: 'bg-teal-400',
+    nameFirst: false,
   },
   fundingRound: {
     label: 'Funding',
-    tagline: 'Jobs at',
+    tagline: 'Funded Jobs',
     accent: 'text-indigo-400',
-    accentMuted: 'text-indigo-400/60',
     dot: 'bg-indigo-400',
+    nameFirst: true,
   },
   boolean: {
     label: 'Filter',
-    tagline: '', // Dynamic based on filter name
+    tagline: '',
     accent: 'text-slate-400',
-    accentMuted: 'text-slate-400/60',
     dot: 'bg-slate-400',
+    nameFirst: false,
   },
 };
 
-// Custom display names for known slugs (key = slug without prefix)
 const PILLAR_NAME_OVERRIDES: Record<string, string> = {
-  // Classifications
   bizdev: 'Business Development',
   devrel: 'Developer Relations',
-  // Commitments
   'full-time': 'Full-Time',
   'part-time': 'Part-Time',
-  // Location types
   onsite: 'On-Site',
 };
 
-export const PREFIX_TO_CATEGORY: [string, PillarCategory][] = [
-  ['cl-', 'classification'],
-  ['co-', 'commitment'],
-  ['lt-', 'locationType'],
-  ['fr-', 'fundingRound'],
-  ['t-', 'tag'],
-  ['l-', 'location'],
-  ['o-', 'organization'],
-  ['s-', 'seniority'],
-  ['i-', 'investor'],
-  ['b-', 'boolean'],
+interface PrefixMapping {
+  prefix: string;
+  category: PillarCategory;
+  paramKey: string | null;
+}
+
+const PREFIX_MAPPINGS: PrefixMapping[] = [
+  { prefix: 'cl-', category: 'classification', paramKey: 'classifications' },
+  { prefix: 'co-', category: 'commitment', paramKey: 'commitments' },
+  { prefix: 'lt-', category: 'locationType', paramKey: 'locations' },
+  { prefix: 'fr-', category: 'fundingRound', paramKey: 'fundingRounds' },
+  { prefix: 't-', category: 'tag', paramKey: 'tags' },
+  { prefix: 'l-', category: 'location', paramKey: null },
+  { prefix: 'o-', category: 'organization', paramKey: 'organizations' },
+  { prefix: 's-', category: 'seniority', paramKey: 'seniority' },
+  { prefix: 'i-', category: 'investor', paramKey: 'investors' },
+  { prefix: 'b-', category: 'boolean', paramKey: null },
 ];
 
-export const isValidPillarSlug = (slug: string): boolean => {
-  return PREFIX_TO_CATEGORY.some(([prefix]) => slug.startsWith(prefix));
-};
+export const isValidPillarSlug = (slug: string): boolean =>
+  PREFIX_MAPPINGS.some(({ prefix }) => slug.startsWith(prefix));
 
-export const PREFIX_TO_PARAM_KEY: Record<string, string> = {
-  't-': 'tags',
-  'cl-': 'classifications',
-  'co-': 'commitments',
-  'lt-': 'locations',
-  'o-': 'organizations',
-  's-': 'seniority',
-  'i-': 'investors',
-  'fr-': 'fundingRounds',
-};
-
-export const BOOLEAN_SLUG_TO_PARAM_KEY: Record<string, string> = {
+const BOOLEAN_SLUG_TO_PARAM_KEY: Record<string, string> = {
   'offers-token-allocation': 'offersTokenAllocation',
   'beginner-friendly': 'onboardIntoWeb3',
   expert: 'expertJobs',
   'pays-in-crypto': 'paysInCrypto',
 };
 
-export const getPillarCategory = (slug: string): PillarCategory => {
-  const match = PREFIX_TO_CATEGORY.find(([prefix]) => slug.startsWith(prefix));
-  return match?.[1] ?? 'tag';
-};
+const findMapping = (slug: string): PrefixMapping | undefined =>
+  PREFIX_MAPPINGS.find(({ prefix }) => slug.startsWith(prefix));
 
-const ALL_PREFIXES = PREFIX_TO_CATEGORY.map(([prefix]) => prefix);
+export const getPillarCategory = (slug: string): PillarCategory =>
+  findMapping(slug)?.category ?? 'tag';
+
+const ALL_PREFIXES = PREFIX_MAPPINGS.map(({ prefix }) => prefix);
 const PREFIX_REGEX = new RegExp(`^(${ALL_PREFIXES.join('|')})`);
 
 const toTitleCase = (str: string): string =>
@@ -170,13 +160,6 @@ export const getBooleanTagline = (slug: string): string => {
   return BOOLEAN_TAGLINES[filterName] ?? `Jobs with ${getPillarName(slug)}`;
 };
 
-const NAME_FIRST_CATEGORIES = new Set([
-  'tag',
-  'classification',
-  'commitment',
-  'locationType',
-]);
-
 export const getPillarHeadline = (slug: string): string => {
   const category = getPillarCategory(slug);
 
@@ -184,14 +167,12 @@ export const getPillarHeadline = (slug: string): string => {
     return getBooleanTagline(slug);
   }
 
+  const config = PILLAR_CATEGORY_CONFIG[category];
   const pillarName = getPillarName(slug);
-  const tagline = PILLAR_CATEGORY_CONFIG[category].tagline;
 
-  if (NAME_FIRST_CATEGORIES.has(category)) {
-    return `${pillarName} ${tagline}`;
-  }
-
-  return `${tagline} ${pillarName}`;
+  return config.nameFirst
+    ? `${pillarName} ${config.tagline}`
+    : `${config.tagline} ${pillarName}`;
 };
 
 export const getPillarFilterContext = (
@@ -203,15 +184,11 @@ export const getPillarFilterContext = (
     return paramKey ? { paramKey, value: 'true' } : null;
   }
 
-  const matchingPrefix = Object.keys(PREFIX_TO_PARAM_KEY).find((prefix) =>
-    slug.startsWith(prefix),
-  );
-  if (!matchingPrefix) return null;
+  const mapping = findMapping(slug);
+  if (!mapping?.paramKey) return null;
 
-  const paramKey = PREFIX_TO_PARAM_KEY[matchingPrefix];
-  const value = slug.slice(matchingPrefix.length);
-
-  return value ? { paramKey, value } : null;
+  const value = slug.slice(mapping.prefix.length);
+  return value ? { paramKey: mapping.paramKey, value } : null;
 };
 
 export const getPillarFilterHref = (

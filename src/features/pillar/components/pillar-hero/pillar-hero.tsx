@@ -16,25 +16,20 @@ interface Props {
   pillarDetails: PillarDetails;
 }
 
-const NAME_FIRST_CATEGORIES = new Set([
-  'tag',
-  'classification',
-  'commitment',
-  'locationType',
-]);
-
 const Headline = ({
   slug,
   category,
   pillarName,
   accent,
   tagline,
+  nameFirst,
 }: {
   slug: string;
   category: string;
   pillarName: string;
   accent: string;
   tagline: string;
+  nameFirst: boolean;
 }) => {
   if (category === 'boolean') {
     return <>{getBooleanTagline(slug)}</>;
@@ -44,15 +39,11 @@ const Headline = ({
     <span className={cn('inline-block', accent)}>{pillarName}</span>
   );
 
-  if (NAME_FIRST_CATEGORIES.has(category)) {
-    return (
-      <>
-        {accentedName} {tagline}
-      </>
-    );
-  }
-
-  return (
+  return nameFirst ? (
+    <>
+      {accentedName} {tagline}
+    </>
+  ) : (
     <>
       {tagline} {accentedName}
     </>
@@ -90,6 +81,7 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
                 pillarName={pillarName}
                 accent={config.accent}
                 tagline={config.tagline}
+                nameFirst={config.nameFirst}
               />
             </h1>
 
