@@ -12,7 +12,8 @@
     "format": "prettier --write --log-level warn './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "test": "vitest",
     "test:run": "vitest run",
-    "worktree:exec": "tsx scripts/worktree-exec.ts"
+    "worktree:exec": "tsx scripts/worktree-exec.ts",
+    "version:bump": "tsx scripts/version-bump.ts"
   },
   "dependencies": {
     "@bprogress/next": "^3.2.12",
@@ -56,6 +57,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/semver": "^7.7.1",
     "@vitejs/plugin-react": "^5.1.2",
     "babel-plugin-react-compiler": "1.0.0",
     "jsdom": "^27.4.0",
@@ -63,6 +65,7 @@
     "oxlint": "^1.36.0",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "semver": "^7.7.3",
     "server-only": "^0.0.1",
     "simple-git-hooks": "^2.13.1",
     "tailwindcss": "^4",

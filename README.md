@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# webapp v2
 
-## Getting Started
+## Development Workflow
 
-First, run the development server:
+This project uses a two-branch workflow with automated releases.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Branches
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `dev` - Integration branch. All PRs merge here.
+- `main` - Production branch. Only updated via release publish.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Branch Naming
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Branch names must use one of these prefixes:
 
-## Learn More
+| Prefix                                       | Version Bump          | Example             |
+| -------------------------------------------- | --------------------- | ------------------- |
+| `feat/` or `feature/`                        | Minor (1.2.0 → 1.3.0) | `feat/add-filters`  |
+| `major/`                                     | Major (1.2.0 → 2.0.0) | `major/v2-redesign` |
+| `fix/`, `chore/`, `refactor/`, `docs/`, etc. | Patch (1.2.0 → 1.2.1) | `fix/login-bug`     |
 
-To learn more about Next.js, take a look at the following resources:
+### Creating a Feature
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Create a branch from `dev`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   git checkout dev && git pull
+   git checkout -b feat/my-feature
+   ```
 
-## Deploy on Vercel
+2. Make your changes and commit
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Bump the version:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   pnpm version:bump
+   ```
+
+4. Push and create a PR to `dev`:
+
+   ```bash
+   git push -u origin feat/my-feature
+   ```
+
+5. CI will validate branch prefix and version, then run lint/build/test
+
+### Releasing to Production
+
+1. Go to GitHub Releases
+2. Review the draft release (auto-generated from merged PRs)
+3. Click "Publish release"
+4. This triggers:
+   - Auto-merge `dev` → `main`
+   - DevOps deploys from `main`
+
+### Version Tracking
+
+The app version is exposed via `X-App-Version` header on API responses
+for client staleness detection.
