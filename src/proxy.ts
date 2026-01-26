@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-export const middleware = (_request: NextRequest): NextResponse => {
+export const proxy = (_request: NextRequest): NextResponse => {
   const response = NextResponse.next();
 
   // Add version header for client staleness detection
