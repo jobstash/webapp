@@ -1,44 +1,55 @@
-FROM node:22-alpine AS base
-
-FROM base AS deps
-RUN apk add --no-cache libc6-compat python3 make g++
+# Stage 1: Install dependencies
+FROM node:22-alpine AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml* .npmrc* ./
-RUN yarn global add pnpm && pnpm i --frozen-lockfile
 
-FROM base AS builder
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Stage 2: Build application
+FROM node:22-alpine AS builder
 WORKDIR /app
+
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Build-time environment variables (Coolify passes these as --build-arg)
+ARG NEXT_PUBLIC_MW_URL
+ARG NEXT_PUBLIC_FRONTEND_URL
+ENV NEXT_PUBLIC_MW_URL=$NEXT_PUBLIC_MW_URL
+ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
+
+# Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN yarn global add pnpm
-ENV NODE_ENV=production
-# ENV NEXT_PUBLIC_MW_URL=https://middleware-prod-615438274260.europe-west4.run.app 
-ENV NEXT_PUBLIC_MW_URL=https://middleware.jobstash.xyz
-ENV NEXT_PUBLIC_FRONTEND_URL=https://v2.jobstash.xyz
-ENV NEXT_PUBLIC_PAGE_SIZE=20
-ENV NEXT_PUBLIC_VERI_URL=https://ecosystem.vision
-ENV NEXT_PUBLIC_PRIVY_APP_ID=clyr78r8l05a16wqnojin5hbz
-ENV NEXT_PUBLIC_PRIVY_CLIENT_ID=client-WY2o8bjWEos9v51Y8kW3NYA9JG5qTVPZSbQSQZePpPRBq
-ENV NEXT_PUBLIC_JOB_FRAME_URL=https://job-frame.vercel.app
-ENV NEXT_PUBLIC_INFURA_ID=805a91964ce748f7b7b3d0c787ad7783
+
+# Build Next.js
 RUN pnpm build
 
-FROM base AS runner
+# Stage 3: Production runner
+FROM node:22-alpine AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-RUN apk add --no-cache curl
-
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+# Copy standalone build output
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-EXPOSE 3000
-ENV PORT=3000
+
 USER nextjs
-ENV HOSTNAME=0.0.0.0
+
+EXPOSE 3000
+
 CMD ["node", "server.js"]

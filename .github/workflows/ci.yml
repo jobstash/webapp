@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  validate-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch prefix
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          VALID_PREFIXES="feat/|feature/|fix/|chore/|refactor/|style/|perf/|test/|docs/|ci/|build/|revert/|major/"
+
+          if [[ ! "$BRANCH" =~ ^($VALID_PREFIXES) ]]; then
+            echo "::error::Invalid branch prefix. Branch must start with: feat/, fix/, chore/, refactor/, style/, perf/, test/, docs/, ci/, build/, revert/, or major/"
+            exit 1
+          fi
+          echo "Branch prefix valid: $BRANCH"
+
+  validate-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get version from PR branch
+        id: pr_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Get version from dev branch
+        id: dev_version
+        run: |
+          git fetch origin dev
+          DEV_VERSION=$(git show origin/dev:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).version")
+          echo "version=$DEV_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        run: |
+          PR_VERSION="${{ steps.pr_version.outputs.version }}"
+          DEV_VERSION="${{ steps.dev_version.outputs.version }}"
+
+          if ! npx semver "$PR_VERSION" -r ">$DEV_VERSION"; then
+            echo "::error::Version $PR_VERSION must be greater than dev version $DEV_VERSION"
+            echo "Run 'pnpm version:bump' to update the version"
+            exit 1
+          fi
+          echo "Version valid: $PR_VERSION > $DEV_VERSION"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:run

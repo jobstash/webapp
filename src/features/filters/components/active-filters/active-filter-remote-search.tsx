@@ -1,0 +1,91 @@
+'use client';
+
+import { useState, useTransition } from 'react';
+
+import { type Option } from '@/lib/types';
+import { capitalizeSlug } from '@/lib/utils';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { RemoteVirtualizedCommand } from '@/components/remote-virtualized-command';
+import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
+import { FILTER_POPOVER_CONTENT_CLASS } from '@/features/filters/constants';
+import { getRemoteFilterEndpoint } from '@/features/filters/utils';
+
+import { ActiveFilterTrigger } from './active-filter-trigger';
+import { useCsvParam } from './use-csv-param';
+
+interface Props {
+  label: string;
+  paramKey: string;
+  options: Option[];
+  excludeValues?: string[];
+}
+
+export const ActiveFilterRemoteSearch = ({
+  label,
+  paramKey,
+  options,
+  excludeValues,
+}: Props) => {
+  const [isPending, startTransition] = useTransition();
+
+  const [open, setOpen] = useState(false);
+
+  const { filterParam, values, toggleItem, setFilterParam } =
+    useCsvParam(paramKey);
+
+  const handleSelect = (value: string, checked: boolean) => {
+    setOpen(false);
+    startTransition(() => {
+      toggleItem(value, checked);
+    });
+  };
+
+  const handleClose = () => {
+    startTransition(() => {
+      setFilterParam(null);
+    });
+  };
+
+  const endpoint = getRemoteFilterEndpoint(paramKey);
+
+  const initialValues = options.map((option) => option.value);
+  const selectedValues = filterParam?.split(',') || [];
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger disabled={isPending} asChild>
+        <ActiveFilterTrigger
+          isPending={isPending}
+          label={`${label} (${values.length})`}
+          tooltipLabel={label}
+          icon={<MappedFilterIcon paramKey={paramKey} />}
+          onClose={handleClose}
+        />
+      </PopoverTrigger>
+      <PopoverContent
+        side='bottom'
+        align='start'
+        className={FILTER_POPOVER_CONTENT_CLASS}
+      >
+        <RemoteVirtualizedCommand<{ name: string; normalizedName: string }[]>
+          queryKeyPrefix={paramKey}
+          endpoint={endpoint}
+          initialValues={initialValues}
+          selectedValues={selectedValues}
+          excludeValues={excludeValues}
+          responseToValues={(data) => data.map((d) => d.normalizedName)}
+          formatLabel={capitalizeSlug}
+          onSelect={(value) => handleSelect(value, true)}
+          onDeselect={(value) => handleSelect(value, false)}
+          classNames={{
+            command: 'bg-secondary',
+          }}
+        />
+      </PopoverContent>
+    </Popover>
+  );
+};
