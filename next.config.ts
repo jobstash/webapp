@@ -1,61 +1,27 @@
 import type { NextConfig } from 'next';
 
-import { withSentryConfig } from '@sentry/nextjs';
+import packageJson from './package.json';
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
   output: 'standalone',
-  transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
+  env: {
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
+  },
+  reactCompiler: true,
+  images: {
+    qualities: [25, 50, 75, 100],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
+      },
+    ],
+  },
   experimental: {
     staticGenerationRetryCount: 1,
     staticGenerationMaxConcurrency: 1,
     staticGenerationMinPagesPerWorker: 13000,
   },
-  logging: {
-    fetches: {
-      fullUrl: true,
-      hmrRefreshes: true,
-    },
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-      },
-      {
-        protocol: 'https',
-        hostname: 'api.dicebear.com',
-      },
-    ],
-  },
-  webpack: (config, { webpack }) => {
-    config.plugins.push(
-      new webpack.DefinePlugin({
-        __SENTRY_DEBUG__: false,
-        __SENTRY_TRACING__: false,
-        __RRWEB_EXCLUDE_IFRAME__: true,
-        __RRWEB_EXCLUDE_SHADOW_DOM__: true,
-        __SENTRY_EXCLUDE_REPLAY_WORKER__: true,
-      }),
-    );
-
-    // return the modified config
-    return config;
-  },
 };
 
-export default withSentryConfig(nextConfig, {
-  org: 'jobstash',
-  project: 'webapp',
-  silent: !process.env.CI,
-  widenClientFileUpload: true,
-  reactComponentAnnotation: {
-    enabled: true,
-  },
-  tunnelRoute: '/sentry-tunnel',
-  disableLogger: true,
-  sourcemaps: {
-    deleteSourcemapsAfterUpload: true,
-  },
-});
+export default nextConfig;

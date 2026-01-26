@@ -1,3 +1,4 @@
+
 {
   "singleQuote": true,
   "jsxSingleQuote": true,
@@ -7,9 +8,8 @@
   "arrowParens": "always",
   "tabWidth": 2,
   "useTabs": false,
-  "printWidth": 90,
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./app/globals.css",
-  "tailwindConfig": "./tailwind.config.ts",
+  "printWidth": 80,
+  "plugins": ["@prettier/plugin-oxc", "prettier-plugin-tailwindcss"],
+  "tailwindStylesheet": "./src/app/globals.css",
   "tailwindFunctions": ["clsx", "cva", "cn"]
 }

@@ -1,18 +1,37 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
 categories:
-  - title: '✨🔥 Features 🔥✨'
+  - title: 'Features'
     labels: ['feat', 'feature', 'enhancement']
-  - title: '🐛🪓 Bug Fixes 🐛🪓'
+  - title: 'Bug Fixes'
     labels: ['fix', 'bug']
-  - title: '💻 Code Changes 💻'
-    labels: ['refactor', 'style', 'perf', 'revert', 'style']
-  - title: '🛡 Tests 🛡'
+  - title: 'Code Changes'
+    labels: ['refactor', 'style', 'perf', 'revert']
+  - title: 'Tests'
     labels: ['test']
-  - title: '🧰 Maintenance 🧰'
+  - title: 'Maintenance'
     labels: ['chore', 'ci', 'docs', 'build']
+  - title: 'Breaking Changes'
+    labels: ['major']
 
 change-template: '- $TITLE ([#$NUMBER]($URL))'
-version-template: $MAJOR.$MINOR.$PATCH
+change-title-escapes: '\<*_&'
+
+version-resolver:
+  major:
+    labels: ['major']
+  minor:
+    labels: ['feat', 'feature']
+  patch:
+    labels: ['fix', 'chore', 'refactor', 'style', 'perf', 'test', 'docs', 'ci', 'build', 'revert']
+  default: patch
 
 template: |
   ## Changes
+
   $CHANGES
+
+  ## Contributors
+
+  $CONTRIBUTORS
