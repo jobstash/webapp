@@ -9,10 +9,10 @@ import {
 } from '@/features/jobs/server/data';
 import { clientEnv } from '@/lib/env/client';
 
-export const generateStaticParams = async () => {
-  if (process.env.DISABLE_STATIC_GENERATION === 'true') return [];
-  return fetchJobDetailsStaticParams();
-};
+export const generateStaticParams =
+  process.env.DISABLE_STATIC_GENERATION === 'true'
+    ? undefined
+    : async () => fetchJobDetailsStaticParams();
 
 interface Props {
   params: Promise<{ slug: string; id: string }>;
