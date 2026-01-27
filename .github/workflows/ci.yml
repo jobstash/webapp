@@ -80,7 +80,11 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - name: Build
+        env:
+          NEXT_PUBLIC_FRONTEND_URL: https://app.dev.jobstash.xyz
+          NEXT_PUBLIC_MW_URL: https://middleware.dev.jobstash.xyz
+        run: pnpm build
 
   test:
     runs-on: ubuntu-latest

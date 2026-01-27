@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
 export const nonEmptyStringSchema = z.string().min(1);
-export const nullableStringSchema = nonEmptyStringSchema.nullable();
+export const nullableStringSchema = z
+  .string()
+  .nullable()
+  .transform((val) => (val === '' ? null : val));
 export const nullableNumberSchema = z.number().nullable();
 export const nullableBooleanSchema = z.boolean().nullable();
 export const optionalStringSchema = nullableStringSchema.optional();
