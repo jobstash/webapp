@@ -48,13 +48,11 @@ export const generateMetadata = async ({
       title,
       description,
       url,
-      images: ['/jobstash-logo.png'],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/jobstash-logo.png'],
     },
   };
 };
