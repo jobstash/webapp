@@ -1,7 +1,8 @@
 import type { JobDetailsSchema } from '@/features/jobs/schemas';
 import {
+  extractApplicantLocationRequirements,
   extractEmploymentType,
-  extractLocationType,
+  extractJobLocationType,
   extractSalaryData,
 } from '@/features/jobs/lib/seo-utils';
 
@@ -9,15 +10,13 @@ interface Props {
   job: JobDetailsSchema;
 }
 
-/**
- * Builds Schema.org JobPosting structured data for SEO
- */
+/** Builds Schema.org JobPosting structured data for SEO */
 const buildJobPostingSchema = (
   job: JobDetailsSchema,
 ): Record<string, unknown> => {
   const salaryData = extractSalaryData(job.infoTags);
   const employmentType = extractEmploymentType(job.infoTags);
-  const locationType = extractLocationType(job.infoTags, job.addresses);
+  const jobLocationType = extractJobLocationType(job.infoTags, job.addresses);
 
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -40,7 +39,6 @@ const buildJobPostingSchema = (
     };
   }
 
-  // Use job-level addresses for structured PostalAddress
   if (job.addresses?.length) {
     schema.jobLocation = job.addresses.map((addr) => ({
       '@type': 'Place',
@@ -61,7 +59,6 @@ const buildJobPostingSchema = (
       }),
     }));
   } else if (job.organization?.location) {
-    // Fallback to organization location string
     schema.jobLocation = {
       '@type': 'Place',
       address: job.organization.location,
@@ -81,8 +78,15 @@ const buildJobPostingSchema = (
     };
   }
 
-  if (locationType === 'TELECOMMUTE') {
+  if (jobLocationType === 'TELECOMMUTE') {
     schema.jobLocationType = 'TELECOMMUTE';
+
+    const locationRequirements = extractApplicantLocationRequirements(
+      job.addresses,
+    );
+    if (locationRequirements) {
+      schema.applicantLocationRequirements = locationRequirements;
+    }
   }
 
   if (job.tags.length > 0) {
@@ -92,9 +96,7 @@ const buildJobPostingSchema = (
   return schema;
 };
 
-/**
- * Server component that renders Schema.org JobPosting JSON-LD for SEO
- */
+/** Server component that renders Schema.org JobPosting JSON-LD for SEO */
 export const JobPostingSchema = ({ job }: Props) => {
   const schema = buildJobPostingSchema(job);
 
