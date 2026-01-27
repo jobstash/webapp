@@ -40,7 +40,7 @@ const RootLayout = ({ children }: Props) => (
   <html lang='en' className={cn('dark', interTight.className)}>
     <body className='antialiased'>
       <RootProviders header={<AppHeader />}>
-        <div className='mx-auto max-w-7xl px-2 pt-4'>{children}</div>
+        <main className='mx-auto max-w-7xl px-2 pt-4'>{children}</main>
       </RootProviders>
       <AppFooter />
     </body>
