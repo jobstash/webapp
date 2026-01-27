@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
 
 interface JobListItemBadgeProps {
@@ -24,17 +29,30 @@ const BADGE_STYLES: Record<string, string> = {
   ),
 };
 
+const BADGE_TOOLTIPS: Record<string, string> = {
+  [JOB_ITEM_BADGE.FEATURED]: 'Sponsored job posting',
+  [JOB_ITEM_BADGE.EXPERT]: 'Requires proven web3 experience',
+  [JOB_ITEM_BADGE.BEGINNER]: 'Great for those new to web3',
+};
+
 export const JobListItemBadge = ({ badge }: JobListItemBadgeProps) => {
+  const tooltip = BADGE_TOOLTIPS[badge];
+
   return (
-    <Badge
-      variant='outline'
-      className={cn(
-        'rounded-md border-transparent py-1 tracking-wide',
-        BADGE_STYLES[badge] ??
-          'bg-muted text-muted-foreground ring-1 ring-border',
-      )}
-    >
-      {badge}
-    </Badge>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Badge
+          variant='outline'
+          className={cn(
+            'rounded-md border-transparent py-1 tracking-wide',
+            BADGE_STYLES[badge] ??
+              'bg-muted text-muted-foreground ring-1 ring-border',
+          )}
+        >
+          {badge}
+        </Badge>
+      </TooltipTrigger>
+      {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
+    </Tooltip>
   );
 };
