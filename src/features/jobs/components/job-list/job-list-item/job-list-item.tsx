@@ -1,7 +1,8 @@
-import { ExternalLinkIcon } from 'lucide-react';
+import { ArrowRightIcon, ExternalLinkIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ImageWithFallback } from '@/components/image-with-fallback';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
@@ -39,23 +40,6 @@ export const JobListItem = ({ job }: JobListItemProps) => {
       />
 
       <div className='p-5 pb-3'>
-        {/* View Details - top right */}
-        <div className='absolute top-5 right-5'>
-          <Badge
-            asChild
-            variant='outline'
-            className={cn(
-              'rounded-md border-transparent py-1 tracking-wide',
-              'bg-muted text-muted-foreground ring-1 ring-border',
-            )}
-          >
-            <LinkWithLoader href={href}>
-              <ExternalLinkIcon className='size-3' />
-              View Details
-            </LinkWithLoader>
-          </Badge>
-        </div>
-
         {/* Badge row */}
         {badge && (
           <div className='mb-3 flex items-center gap-2'>
@@ -137,6 +121,42 @@ export const JobListItem = ({ job }: JobListItemProps) => {
             {organization && <JobListItemOrg organization={organization} />}
             <JobListItemTechTags tags={tags} />
           </div>
+        </div>
+
+        {/* View Details - Desktop (top-right badge) */}
+        <div className='absolute top-5 right-5 hidden md:block'>
+          <Badge
+            asChild
+            variant='outline'
+            className={cn(
+              'rounded-md border-transparent py-1 tracking-wide',
+              'bg-muted text-muted-foreground ring-1 ring-border',
+            )}
+          >
+            <LinkWithLoader href={href}>
+              <ExternalLinkIcon className='size-3' />
+              View Details
+            </LinkWithLoader>
+          </Badge>
+        </div>
+
+        {/* View Details - Mobile (full-width CTA) */}
+        <div className='mt-4 md:hidden'>
+          <Button
+            asChild
+            className={cn(
+              'h-11 w-full justify-between rounded-xl',
+              'bg-muted hover:bg-muted/80',
+              'font-medium text-muted-foreground',
+              'active:scale-[0.98]',
+              'transition-all duration-150',
+            )}
+          >
+            <LinkWithLoader href={href}>
+              View Job Details
+              <ArrowRightIcon className='size-4' />
+            </LinkWithLoader>
+          </Button>
         </div>
       </div>
     </article>
