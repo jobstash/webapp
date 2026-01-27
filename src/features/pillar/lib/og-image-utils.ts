@@ -28,8 +28,7 @@ interface OrgInfo {
   logo: string | null;
 }
 
-const MAX_ORGS = 5;
-const LONG_NAMES_THRESHOLD = 55;
+const MAX_ORGS = 4;
 
 interface HeadlineParts {
   text: string;
@@ -73,10 +72,7 @@ const extractOrgData = (jobs: JobListItemSchema[]) => {
     }
   }
 
-  const totalChars = orgs.reduce((sum, org) => sum + org.name.length, 0);
-  const finalOrgs = totalChars > LONG_NAMES_THRESHOLD ? orgs.slice(0, 4) : orgs;
-
-  return { orgs: finalOrgs, overflowCount: seen.size - finalOrgs.length };
+  return { orgs, overflowCount: seen.size - orgs.length };
 };
 
 export const extractPillarOgImageData = (

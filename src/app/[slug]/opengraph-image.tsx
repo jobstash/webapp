@@ -1,6 +1,7 @@
 // oxlint-disable no-img-element
 import { ImageResponse } from 'next/og';
 
+import { truncateText } from '@/features/jobs/lib/og-image-utils';
 import { isValidPillarSlug } from '@/features/pillar/constants';
 import {
   extractPillarOgImageData,
@@ -27,7 +28,8 @@ const COLORS = {
   separator: '#4B5563',
 } as const;
 
-const LOGO_SIZE = 36;
+const LOGO_SIZE = 48;
+const MAX_DESCRIPTION_LENGTH = 220;
 
 const PageNotFoundImage = () => (
   <div
@@ -35,7 +37,7 @@ const PageNotFoundImage = () => (
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 16,
+      gap: 24,
       width: '100%',
       height: '100%',
       backgroundColor: COLORS.background,
@@ -44,12 +46,12 @@ const PageNotFoundImage = () => (
     <img
       src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
       alt='JobStash'
-      width={48}
-      height={48}
+      width={56}
+      height={56}
     />
     <span
       style={{
-        fontSize: 40,
+        fontSize: 48,
         fontWeight: 700,
         color: COLORS.text,
       }}
@@ -69,26 +71,27 @@ const CategoryPill = ({ label, accentColor }: CategoryPillProps) => (
     style={{
       display: 'flex',
       alignItems: 'center',
-      gap: 8,
-      padding: '8px 16px',
+      gap: 10,
+      padding: '8px 24px',
       backgroundColor: COLORS.surface,
-      borderRadius: 999,
+      borderRadius: 16,
       border: `1px solid ${COLORS.border}`,
     }}
   >
     <div
       style={{
-        width: 10,
-        height: 10,
+        width: 12,
+        height: 12,
         borderRadius: '50%',
         backgroundColor: accentColor,
       }}
     />
     <span
       style={{
-        fontSize: 18,
-        fontWeight: 500,
+        fontSize: 24,
+        fontWeight: 700,
         color: COLORS.text,
+        paddingLeft: 6,
       }}
     >
       {label}
@@ -103,14 +106,14 @@ interface OrgItemProps {
 }
 
 const OrgItem = ({ name, logo, accentColor }: OrgItemProps) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
     {logo ? (
       <img
         src={logo}
         alt={name}
         width={LOGO_SIZE}
         height={LOGO_SIZE}
-        style={{ borderRadius: 6, objectFit: 'contain' }}
+        style={{ borderRadius: 10, objectFit: 'contain' }}
       />
     ) : (
       <div
@@ -119,10 +122,10 @@ const OrgItem = ({ name, logo, accentColor }: OrgItemProps) => (
           width: LOGO_SIZE,
           height: LOGO_SIZE,
           backgroundColor: accentColor,
-          borderRadius: 6,
+          borderRadius: 10,
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 16,
+          fontSize: 28,
           fontWeight: 700,
           color: COLORS.background,
         }}
@@ -130,7 +133,7 @@ const OrgItem = ({ name, logo, accentColor }: OrgItemProps) => (
         {name.charAt(0).toUpperCase()}
       </div>
     )}
-    <span style={{ fontSize: 18, fontWeight: 500, color: COLORS.text }}>
+    <span style={{ fontSize: 28, fontWeight: 500, color: COLORS.text }}>
       {name}
     </span>
   </div>
@@ -141,15 +144,16 @@ interface OverflowBadgeProps {
 }
 
 const OverflowBadge = ({ count }: OverflowBadgeProps) => (
-  <span style={{ fontSize: 18, fontWeight: 500, color: COLORS.textMuted }}>
+  <span style={{ fontSize: 28, fontWeight: 500, color: COLORS.textMuted }}>
     +{count} more {count === 1 ? 'organization' : 'organizations'}
   </span>
 );
 
 const HEADLINE_STYLE = {
   display: 'flex',
-  marginTop: 28,
-  fontSize: 60,
+  flexWrap: 'wrap',
+  maxWidth: '100%',
+  fontSize: 72,
   fontWeight: 900,
   lineHeight: 1.1,
   letterSpacing: '-0.025em',
@@ -224,9 +228,6 @@ const OpengraphImage = async ({ params }: Props) => {
     overflowCount,
   } = extractPillarOgImageData(pillarData, slug);
 
-  const truncatedDescription =
-    description.length > 150 ? description.slice(0, 147) + '...' : description;
-
   const { text, coloredText, nameFirst } = headlineParts;
 
   return new ImageResponse(
@@ -239,22 +240,23 @@ const OpengraphImage = async ({ params }: Props) => {
         width: '100%',
         height: '100%',
         backgroundColor: COLORS.background,
-        padding: '56px 64px',
+        padding: '56px',
+        gap: 28,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         <img
           src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
           alt='JobStash'
-          width={44}
-          height={44}
-          style={{ borderRadius: 8 }}
+          width={60}
+          height={60}
+          style={{ borderRadius: 12 }}
         />
-        <span style={{ fontSize: 24, fontWeight: 600, color: COLORS.text }}>
+        <span style={{ fontSize: 36, fontWeight: 600, color: COLORS.text }}>
           JobStash
         </span>
         <span
-          style={{ fontSize: 28, fontWeight: 400, color: COLORS.textMuted }}
+          style={{ fontSize: 44, fontWeight: 400, color: COLORS.textMuted }}
         >
           ×
         </span>
@@ -271,26 +273,25 @@ const OpengraphImage = async ({ params }: Props) => {
 
       <span
         style={{
-          marginTop: 16,
-          marginBottom: 32,
-          maxWidth: '95%',
-          fontSize: 22,
+          maxWidth: '100%',
+          fontSize: 36,
           fontWeight: 400,
           color: COLORS.textSecondary,
           lineHeight: 1.4,
+          marginBottom: 16,
         }}
       >
-        {truncatedDescription}
+        {truncateText(description, MAX_DESCRIPTION_LENGTH)}
       </span>
 
       {orgs.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div
             style={{
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',
-              gap: 16,
+              gap: 24,
             }}
           >
             {orgs.map((org, index) => (
@@ -301,7 +302,7 @@ const OpengraphImage = async ({ params }: Props) => {
                 {index > 0 && (
                   <span
                     style={{
-                      fontSize: 20,
+                      fontSize: 28,
                       fontWeight: 300,
                       color: COLORS.separator,
                     }}
