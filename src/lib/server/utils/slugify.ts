@@ -5,7 +5,11 @@ import { transliterate } from 'transliteration';
 
 export const slugify = (str: string | null | undefined): string => {
   if (str === null || str === undefined) return '';
-  const transliterated = transliterate(str);
+
+  // Normalize slashes (with or without spaces) to ' - ' for consistent dash conversion
+  const normalized = str.replace(/\s*\/\s*/g, ' - ');
+
+  const transliterated = transliterate(normalized);
   const slug = baseSlugify(transliterated, {
     lower: true,
     remove: /[*+~.()'"!:@]/g,
