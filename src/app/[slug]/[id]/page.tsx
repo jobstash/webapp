@@ -18,12 +18,6 @@ interface Props {
   params: Promise<{ slug: string; id: string }>;
 }
 
-const getOgImageUrl = (logo: string | null | undefined): string => {
-  if (!logo) return '/jobstash-logo.png';
-  // Use org logo if it's an absolute URL, otherwise fallback to brand logo
-  return logo.startsWith('http') ? logo : '/jobstash-logo.png';
-};
-
 export const generateMetadata = async ({
   params,
 }: Props): Promise<Metadata> => {
@@ -38,7 +32,6 @@ export const generateMetadata = async ({
 
   const description = job.summary ?? `View details for ${job.title}`;
   const canonicalUrl = `${clientEnv.FRONTEND_URL}${job.href}`;
-  const imageUrl = getOgImageUrl(job.organization?.logo);
   const keywords = job.tags.map((tag) => tag.name);
 
   return {
@@ -52,13 +45,11 @@ export const generateMetadata = async ({
       title,
       description,
       url: canonicalUrl,
-      images: [imageUrl],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [imageUrl],
     },
   };
 };
