@@ -1,18 +1,12 @@
 import type { Address, MappedInfoTagSchema } from '@/lib/schemas';
 
-/**
- * Salary data extracted from infoTags for structured data
- */
 interface SalaryData {
   currency: string;
   minValue: number;
   maxValue: number;
 }
 
-/**
- * Extracts salary data from infoTags for Schema.org structured data
- * @returns Salary object or null if no salary info found
- */
+/** Extracts salary data from infoTags for Schema.org structured data */
 export const extractSalaryData = (
   infoTags: MappedInfoTagSchema[],
 ): SalaryData | null => {
@@ -57,9 +51,6 @@ export const extractSalaryData = (
   return null;
 };
 
-/**
- * Schema.org employment type values
- */
 type SchemaEmploymentType =
   | 'FULL_TIME'
   | 'PART_TIME'
@@ -67,10 +58,7 @@ type SchemaEmploymentType =
   | 'INTERN'
   | 'TEMPORARY';
 
-/**
- * Extracts employment type from infoTags for Schema.org structured data
- * @returns Schema.org employment type string
- */
+/** Extracts employment type from infoTags for Schema.org structured data */
 export const extractEmploymentType = (
   infoTags: MappedInfoTagSchema[],
 ): SchemaEmploymentType => {
@@ -92,38 +80,69 @@ export const extractEmploymentType = (
 };
 
 /**
- * Job location type for structured data
+ * Schema.org jobLocationType value.
+ * Only 'TELECOMMUTE' is a valid Schema.org value for remote/hybrid jobs.
+ * Returns null for on-site only positions (no jobLocationType needed).
  */
-type JobLocationType = 'TELECOMMUTE' | 'onsite' | null;
+type SchemaJobLocationType = 'TELECOMMUTE' | null;
 
 /**
- * Extracts job location type from addresses or infoTags for structured data
- * @returns Location type or null if not determinable
+ * Extracts job location type for Schema.org structured data.
+ * Returns 'TELECOMMUTE' for remote/hybrid positions, null for on-site only.
  */
-export const extractLocationType = (
+export const extractJobLocationType = (
   infoTags: MappedInfoTagSchema[],
   addresses?: Address[] | null,
-): JobLocationType => {
-  // Check addresses for isRemote first (most accurate)
+): SchemaJobLocationType => {
+  // Check addresses first - most reliable source
   if (addresses?.some((addr) => addr.isRemote)) {
     return 'TELECOMMUTE';
   }
 
-  // Check workMode tag (more specific than location tag)
+  // Check workMode tag for remote/hybrid indicators
   const workModeTag = infoTags.find((tag) => tag.iconKey === 'workMode');
   if (workModeTag) {
     const label = workModeTag.label.toLowerCase();
-    if (label.includes('remote')) return 'TELECOMMUTE';
-    if (label.includes('on-site') || label.includes('onsite')) return 'onsite';
-    if (label.includes('hybrid')) return 'TELECOMMUTE';
+    if (label.includes('remote') || label.includes('hybrid')) {
+      return 'TELECOMMUTE';
+    }
   }
 
-  // Check location tag as fallback
+  // Check location tag for explicit "Remote" label
   const locationTag = infoTags.find((tag) => tag.iconKey === 'location');
-  if (locationTag) {
-    const label = locationTag.label.toLowerCase();
-    if (label === 'remote') return 'TELECOMMUTE';
+  if (locationTag?.label.toLowerCase() === 'remote') {
+    return 'TELECOMMUTE';
   }
 
+  // On-site positions don't need jobLocationType
   return null;
+};
+
+interface SchemaCountry {
+  '@type': 'Country';
+  name: string;
+}
+
+/**
+ * Extracts applicant location requirements for remote jobs.
+ * Returns countries where remote work is offered for Schema.org structured data.
+ * Only relevant when jobLocationType is 'TELECOMMUTE'.
+ */
+export const extractApplicantLocationRequirements = (
+  addresses?: Address[] | null,
+): SchemaCountry[] | null => {
+  if (!addresses?.length) return null;
+
+  const remoteCountries = addresses
+    .filter((addr) => addr.isRemote)
+    .map((addr) => addr.country);
+
+  if (remoteCountries.length === 0) return null;
+
+  const uniqueCountries = [...new Set(remoteCountries)];
+
+  return uniqueCountries.map((country) => ({
+    '@type': 'Country',
+    name: country,
+  }));
 };
