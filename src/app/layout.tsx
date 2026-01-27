@@ -7,14 +7,24 @@ import { cn } from '@/lib/utils';
 import { AppHeader } from '@/components/app-header/app-header';
 import { AppFooter } from '@/components/app-footer/app-footer';
 import { RootProviders } from '@/components/providers/root-providers';
+import { clientEnv } from '@/lib/env/client';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(clientEnv.FRONTEND_URL),
   title: 'Crypto Native Jobs',
   description:
     'Explore crypto native jobs across the entire crypto ecosystem, powered by AI and enhanced by unique data insights as a public good.',
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-icon.png',
+  },
+  openGraph: {
+    siteName: 'JobStash',
+    type: 'website',
+    images: ['/jobstash-logo.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
   },
 };
 
