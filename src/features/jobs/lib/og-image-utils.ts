@@ -1,5 +1,6 @@
 import type { Address, MappedInfoTagSchema } from '@/lib/schemas';
 import type { JobDetailsSchema } from '@/features/jobs/schemas';
+import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
 
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
 
@@ -12,14 +13,14 @@ interface OgImageData {
   workMode: string | null;
   seniority: string | null;
   commitment: string | null;
+  description: string | null;
+  badge: string | null;
+  isUrgentlyHiring: boolean;
 }
 
-export const truncateTitle = (
-  title: string,
-  maxLength: number = 60,
-): string => {
-  if (title.length <= maxLength) return title;
-  return title.slice(0, maxLength - 1).trim() + '…';
+export const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength - 3).trim() + '...';
 };
 
 export const formatLocationText = (
@@ -50,7 +51,7 @@ const getInfoTagLabel = (
 
 export const extractOgImageData = (job: JobDetailsSchema): OgImageData => {
   return {
-    title: truncateTitle(job.title),
+    title: truncateText(job.title, 60),
     orgName: job.organization?.name ?? null,
     orgLogo: job.organization?.logo ?? null,
     salary: getInfoTagLabel(job.infoTags, 'salary'),
@@ -58,5 +59,8 @@ export const extractOgImageData = (job: JobDetailsSchema): OgImageData => {
     workMode: getInfoTagLabel(job.infoTags, 'workMode'),
     seniority: getInfoTagLabel(job.infoTags, 'seniority'),
     commitment: getInfoTagLabel(job.infoTags, 'commitment'),
+    description: job.summary ?? job.description ?? null,
+    badge: job.badge,
+    isUrgentlyHiring: job.badge === JOB_ITEM_BADGE.EXPERT,
   };
 };
