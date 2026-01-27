@@ -183,3 +183,12 @@ Required in `.env`:
 ## Avoid (Wastes Time & Tokens)
 
 - **Do NOT test Zod schemas** - Zod guarantees schema enforcement. Testing that a schema validates correctly is testing Zod's implementation, not your code's behavior.
+- **Do NOT test primitive schema helpers** - Schemas like `nullableStringSchema`, `nonEmptyStringSchema` are Zod primitives with transforms. Test the DTO transformers that use them instead.
+- **DO test DTO transformers** - `dto-to-*.ts` functions contain business logic (fallbacks, normalization, enrichment). These are testable behaviors.
+
+**Example - What to test:**
+
+```typescript
+// ❌ Don't test: nullableStringSchema transforms empty to null
+// ✓ Do test: dtoToJobListItem generates fallback summary when summary is null
+```

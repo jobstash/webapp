@@ -47,6 +47,14 @@ const getDefaultTitle = (dto: JobListItemDto): string => {
   return title || 'Open Role';
 };
 
+const getDefaultSummary = (dto: JobListItemDto): string => {
+  const orgName = dto.organization?.name;
+  const title = dto.title ?? getDefaultTitle(dto);
+  return orgName
+    ? `${orgName} is looking for a ${title}.`
+    : `Apply for ${title} position.`;
+};
+
 export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const {
     url: applyUrl,
@@ -77,7 +85,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     title,
     href,
     applyUrl,
-    summary,
+    summary: summary || getDefaultSummary(dto),
     addresses: addressLookup?.addresses ?? null,
     infoTags,
     tags: mappedTags,
