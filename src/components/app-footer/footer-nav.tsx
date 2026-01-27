@@ -21,26 +21,24 @@ const NAV_SECTIONS = [
   },
 ] as const;
 
-export const FooterNav = () => {
-  return (
-    <nav aria-label='Footer navigation' className='flex gap-12 lg:gap-16'>
-      {NAV_SECTIONS.map(({ title, links }) => (
-        <div key={title} className='flex flex-col gap-4'>
-          <h3 className='text-sm font-semibold text-foreground'>{title}</h3>
-          <ul className='flex flex-col gap-2'>
-            {links.map(({ label, href }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className='text-sm text-muted-foreground transition-colors hover:text-foreground'
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </nav>
-  );
-};
+export const FooterNav = () => (
+  <nav aria-label='Footer navigation' className='flex gap-12 lg:gap-16'>
+    {NAV_SECTIONS.map(({ title, links }) => (
+      <div key={title} className='flex flex-col gap-4'>
+        <p className='text-sm font-semibold text-foreground'>{title}</p>
+        <ul className='flex flex-col gap-2'>
+          {links.map(({ label, href }) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className='text-sm text-muted-foreground transition-colors hover:text-foreground'
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </nav>
+);

@@ -9,7 +9,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 export const FooterLegal = () => (
   <div className='flex flex-col gap-4'>
-    <h3 className='text-sm font-semibold text-foreground'>Legal</h3>
+    <p className='text-sm font-semibold text-foreground'>Legal</p>
     <ul className='flex flex-col gap-2'>
       {LEGAL_LINKS.map(({ label, href }) => (
         <li key={href}>
