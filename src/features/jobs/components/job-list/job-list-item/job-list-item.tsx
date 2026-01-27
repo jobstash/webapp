@@ -3,6 +3,11 @@ import { ArrowRightIcon, ExternalLinkIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { ImageWithFallback } from '@/components/image-with-fallback';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
@@ -45,17 +50,24 @@ export const JobListItem = ({ job }: JobListItemProps) => {
           <div className='mb-3 flex items-center gap-2'>
             <JobListItemBadge badge={badge} />
             {badge === JOB_ITEM_BADGE.EXPERT && (
-              <Badge
-                variant='outline'
-                className={cn(
-                  'rounded-md border-transparent py-1 tracking-wide',
-                  'bg-gradient-to-r from-amber-500/15 to-orange-500/15',
-                  'text-amber-600 dark:text-amber-400',
-                  'ring-1 ring-amber-500/20',
-                )}
-              >
-                Urgently Hiring
-              </Badge>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant='outline'
+                    className={cn(
+                      'rounded-md border-transparent py-1 tracking-wide',
+                      'bg-gradient-to-r from-amber-500/15 to-orange-500/15',
+                      'text-amber-600 dark:text-amber-400',
+                      'ring-1 ring-amber-500/20',
+                    )}
+                  >
+                    Urgently Hiring
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  This role needs to be filled quickly
+                </TooltipContent>
+              </Tooltip>
             )}
           </div>
         )}
