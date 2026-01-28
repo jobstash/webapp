@@ -1,0 +1,9 @@
+{
+  "feature": "update-job-details-page-layout",
+  "plan": "",
+  "baseBranch": "dev",
+  "branchType": "refactor",
+  "branchName": "refactor/update-job-details-page-layout",
+  "createdAt": "2026-01-28T01:53:57.159Z",
+  "projectRoot": "/Users/johnshift/code/jobstash/webapp"
+}
