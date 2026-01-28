@@ -1,9 +1,0 @@
-{
-  "feature": "add-actual-job-suggestion-search",
-  "plan": "",
-  "baseBranch": "dev",
-  "branchType": "feat",
-  "branchName": "feat/add-actual-job-suggestion-search",
-  "createdAt": "2026-01-27T14:38:39.196Z",
-  "projectRoot": "/Users/johnshift/code/jobstash/webapp"
-}
