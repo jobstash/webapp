@@ -1,42 +1,43 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { CornerDownLeftIcon } from 'lucide-react';
 
 import { SearchButton } from './search-button';
 import { SearchOverlay } from './search-overlay';
 import { SearchSuggestions } from './search-suggestions';
-import { useSearchQueryState } from './use-search-query-state';
 import { useSearchSuggestions } from './use-search-suggestions';
 
 export const SearchHeaderClient = () => {
-  const { queryParam, setSearchQuery } = useSearchQueryState();
-  const [inputValue, setInputValue] = useState(queryParam ?? '');
+  const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileOverlayOpen, setIsMobileOverlayOpen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { groups, isLoading } = useSearchSuggestions(inputValue);
+  const suggestions = useSearchSuggestions(inputValue);
 
-  useEffect(() => {
-    setInputValue(queryParam ?? '');
-  }, [queryParam]);
+  const closeDropdown = () => {
+    setInputValue('');
+    setIsOpen(false);
+  };
+
+  const closeMobileOverlay = () => {
+    setInputValue('');
+    setIsMobileOverlayOpen(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
+      const isOutside =
         containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
+        !containerRef.current.contains(event.target as Node);
+      if (isOutside) closeDropdown();
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsOpen(false);
+        closeDropdown();
         inputRef.current?.blur();
       }
     };
@@ -49,24 +50,6 @@ export const SearchHeaderClient = () => {
     };
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    setIsOpen(true);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = inputValue.trim();
-    setSearchQuery(trimmed || null);
-    setIsOpen(false);
-    inputRef.current?.blur();
-  };
-
-  const handleSearchSubmit = (query: string) => {
-    setSearchQuery(query);
-    setInputValue(query);
-  };
-
   return (
     <>
       <div
@@ -74,7 +57,7 @@ export const SearchHeaderClient = () => {
         className='relative hidden min-w-0 grow items-center gap-2 lg:flex'
       >
         <form
-          onSubmit={handleSubmit}
+          onSubmit={(e) => e.preventDefault()}
           className='flex w-full items-center gap-2'
         >
           <SearchButton />
@@ -83,26 +66,22 @@ export const SearchHeaderClient = () => {
             type='text'
             name='search'
             value={inputValue}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setIsOpen(true);
+            }}
             onFocus={() => setIsOpen(true)}
             className='h-full w-full grow border-none bg-transparent p-0 shadow-none outline-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
             placeholder='Search...'
             autoComplete='off'
           />
-          {inputValue.trim() && (
-            <span className='flex shrink-0 items-center gap-1 text-xs text-muted-foreground'>
-              <CornerDownLeftIcon className='size-3' />
-              <span className='hidden xl:inline'>to search</span>
-            </span>
-          )}
         </form>
 
         {isOpen && (
           <SearchSuggestions
             query={inputValue}
-            groups={groups}
-            isLoading={isLoading}
-            onClose={() => setIsOpen(false)}
+            {...suggestions}
+            onClose={closeDropdown}
           />
         )}
       </div>
@@ -126,11 +105,10 @@ export const SearchHeaderClient = () => {
       <SearchOverlay
         open={isMobileOverlayOpen}
         query={inputValue}
-        groups={groups}
-        isLoading={isLoading}
+        {...suggestions}
         onQueryChange={setInputValue}
-        onSearchSubmit={handleSearchSubmit}
-        onClose={() => setIsMobileOverlayOpen(false)}
+        onItemSelect={closeMobileOverlay}
+        onClose={closeMobileOverlay}
       />
     </>
   );
