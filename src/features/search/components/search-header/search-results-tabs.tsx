@@ -1,8 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { Loader2Icon } from 'lucide-react';
+import { ChevronDownIcon, Loader2Icon } from 'lucide-react';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 import type {
@@ -42,7 +49,7 @@ const ResultItem = ({
       const isModifierClick = e.altKey || e.metaKey || e.ctrlKey;
       if (!isModifierClick) onSelect?.();
     }}
-    className='block rounded-md px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground focus-visible:outline-none'
+    className='block w-full min-w-0 rounded-md px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground focus-visible:outline-none'
   >
     <HighlightMatch
       text={item.label}
@@ -65,7 +72,7 @@ const TabButton = ({
     type='button'
     onClick={onClick}
     className={cn(
-      'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+      'shrink-0 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors',
       isActive
         ? 'bg-accent text-accent-foreground'
         : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
@@ -91,7 +98,31 @@ export const SearchResultsTabs = ({
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
-      <div className='flex gap-1 border-b border-border px-2 py-2'>
+      <div className='border-b border-border px-3 py-2 md:hidden'>
+        <DropdownMenu>
+          <DropdownMenuTrigger className='flex w-full items-center justify-between rounded-md bg-accent px-3 py-2 text-sm font-medium'>
+            {groups.find((g) => g.id === activeGroup)?.label}
+            <ChevronDownIcon className='size-4' />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align='start'
+            className='w-[var(--radix-dropdown-menu-trigger-width)]'
+          >
+            <DropdownMenuRadioGroup
+              value={activeGroup}
+              onValueChange={onGroupChange}
+            >
+              {groups.map((group) => (
+                <DropdownMenuRadioItem key={group.id} value={group.id}>
+                  {group.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className='hidden gap-1 border-b border-border px-2 py-2 md:flex'>
         {groups.map((group) => (
           <TabButton
             key={group.id}
@@ -102,7 +133,7 @@ export const SearchResultsTabs = ({
         ))}
       </div>
 
-      <div className='min-h-0 flex-1 overflow-y-auto px-1 py-1'>
+      <div className='min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-1'>
         {items.map((item) => (
           <ResultItem
             key={item.id}

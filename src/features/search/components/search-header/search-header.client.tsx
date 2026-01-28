@@ -27,6 +27,9 @@ export const SearchHeaderClient = () => {
     setIsMobileOverlayOpen(false);
   };
 
+  const handleOpenDropdown = () => setIsOpen(true);
+  const handleOpenMobileOverlay = () => setIsMobileOverlayOpen(true);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const isOutside =
@@ -42,13 +45,16 @@ export const SearchHeaderClient = () => {
       }
     };
 
+    // Only attach listeners when desktop dropdown is open (not mobile overlay)
+    if (!isOpen) return;
+
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, []);
+  }, [isOpen]);
 
   return (
     <>
@@ -68,9 +74,9 @@ export const SearchHeaderClient = () => {
             value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value);
-              setIsOpen(true);
+              handleOpenDropdown();
             }}
-            onFocus={() => setIsOpen(true)}
+            onFocus={handleOpenDropdown}
             className='h-full w-full grow border-none bg-transparent p-0 shadow-none outline-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
             placeholder='Search...'
             autoComplete='off'
@@ -89,14 +95,14 @@ export const SearchHeaderClient = () => {
       <div className='flex min-w-0 grow items-center gap-2 lg:hidden'>
         <SearchButton
           type='button'
-          onClick={() => setIsMobileOverlayOpen(true)}
+          onClick={handleOpenMobileOverlay}
           aria-label='Open search'
         />
         <input
           type='text'
           readOnly
           value={inputValue}
-          onFocus={() => setIsMobileOverlayOpen(true)}
+          onFocus={handleOpenMobileOverlay}
           className='h-full w-full grow border-none bg-transparent p-0 shadow-none outline-none'
           placeholder='Search...'
         />
