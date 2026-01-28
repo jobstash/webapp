@@ -4,6 +4,14 @@ import { type MappedInfoTagSchema } from '@/lib/schemas';
 
 import { InfoTagIcon } from './info-tag-icon';
 
+const BASE_STYLES =
+  'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 bg-muted/50 text-xs text-foreground/60 ring-1 ring-border/50';
+
+const LINK_STYLES = cn(
+  BASE_STYLES,
+  'transition-all duration-150 hover:bg-muted hover:text-foreground hover:ring-border',
+);
+
 interface JobListItemInfoTagsProps {
   tags: MappedInfoTagSchema[];
 }
@@ -21,22 +29,12 @@ export const JobListItemInfoTags = ({ tags }: JobListItemInfoTagsProps) => {
           </>
         );
 
-        const baseStyles = cn(
-          'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1',
-          'bg-muted/50 text-xs text-muted-foreground',
-          'ring-1 ring-border/50',
-        );
-
         if (tag.href) {
           return (
             <LinkWithLoader
               key={`${tag.label}-${tag.iconKey}`}
               href={tag.href}
-              className={cn(
-                baseStyles,
-                'transition-all duration-150',
-                'hover:bg-muted hover:text-foreground hover:ring-border',
-              )}
+              className={LINK_STYLES}
             >
               {content}
             </LinkWithLoader>
@@ -44,7 +42,7 @@ export const JobListItemInfoTags = ({ tags }: JobListItemInfoTagsProps) => {
         }
 
         return (
-          <span key={tag.label} className={baseStyles}>
+          <span key={tag.label} className={BASE_STYLES}>
             {content}
           </span>
         );
