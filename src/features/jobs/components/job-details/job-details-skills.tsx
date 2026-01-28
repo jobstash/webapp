@@ -26,7 +26,7 @@ export const JobDetailsSkills = ({ tags }: JobDetailsSkillsProps) => {
 
   return (
     <section>
-      <h2 className='mb-3 text-sm font-medium'>Skills</h2>
+      <h2 className='mb-4 text-lg font-semibold'>Skills</h2>
       <div className='flex flex-wrap gap-2'>
         {tags.map((tag) => (
           <LinkWithLoader

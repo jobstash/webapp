@@ -17,7 +17,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
       <main className='pb-24 lg:pb-8'>
         <div className='flex gap-6'>
           <article className='min-w-0 flex-1'>
-            <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>
+            <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-3 pt-4 md:p-6 md:pt-6'>
               <JobDetailsHeader job={job} />
               <JobDetailsContent job={job} tags={job.tags} />
             </div>

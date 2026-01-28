@@ -192,3 +192,26 @@ Required in `.env`:
 // ❌ Don't test: nullableStringSchema transforms empty to null
 // ✓ Do test: dtoToJobListItem generates fallback summary when summary is null
 ```
+
+## Git Commit Rules
+
+**CRITICAL: Always stage specific files by name.** Never use broad staging commands.
+
+```bash
+# ✅ Good - stage specific files
+git add src/components/button.tsx src/hooks/use-auth.ts
+
+# ❌ Bad - can stage ignored files that were previously tracked
+git add .
+git add -A
+git add --all
+git add *
+```
+
+**Why:** Broad staging commands can re-add files that are in `.gitignore` if they were previously tracked. This happened with `.claude-worktree.json` which got re-committed despite being gitignored.
+
+**Before committing:**
+
+1. Run `git status` to review what will be staged
+2. Stage only the files you intentionally modified
+3. If you accidentally stage something, use `git restore --staged <file>`
