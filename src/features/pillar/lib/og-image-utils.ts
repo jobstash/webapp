@@ -28,7 +28,10 @@ interface OrgInfo {
   logo: string | null;
 }
 
-const MAX_ORGS = 4;
+// Character threshold for org names to fit on single line
+// Based on: 1200px width - 112px padding = 1088px available
+// Each org: 60px (logo+gap) + ~15px per char + 32px gap between items
+const MAX_ORG_CHARS = 40;
 
 interface HeadlineParts {
   text: string;
@@ -60,6 +63,7 @@ const getHeadlineParts = (
 const extractOrgData = (jobs: JobListItemSchema[]) => {
   const seen = new Set<string>();
   const orgs: OrgInfo[] = [];
+  let totalChars = 0;
 
   for (const job of jobs) {
     if (!job.organization) continue;
@@ -67,8 +71,10 @@ const extractOrgData = (jobs: JobListItemSchema[]) => {
     if (seen.has(name)) continue;
     seen.add(name);
 
-    if (orgs.length < MAX_ORGS) {
+    // Only add org if total character count stays within threshold
+    if (totalChars + name.length <= MAX_ORG_CHARS) {
       orgs.push({ name, logo });
+      totalChars += name.length;
     }
   }
 

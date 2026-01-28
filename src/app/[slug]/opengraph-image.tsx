@@ -289,7 +289,6 @@ const OpengraphImage = async ({ params }: Props) => {
           <div
             style={{
               display: 'flex',
-              flexWrap: 'wrap',
               alignItems: 'center',
               gap: 24,
             }}
