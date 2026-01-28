@@ -44,7 +44,7 @@ export const SearchOverlay = ({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent
-        className='top-0 left-0 h-full max-h-none w-full max-w-none translate-x-0 translate-y-0 rounded-none border-0 p-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top'
+        className='top-0 left-0 h-full max-h-none w-full max-w-none translate-x-0 translate-y-0 rounded-none border-0 bg-popover p-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top'
         showCloseButton={false}
       >
         <DialogHeader className='sr-only'>

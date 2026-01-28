@@ -8,7 +8,6 @@ const findWordMatches = (text: string, word: string): Range[] => {
 
   const normalizedText = normalize(text);
 
-  // Build index map: normalizedIndex -> originalIndex
   const indexMap: number[] = [];
   for (let i = 0; i < text.length; i++) {
     if (!/[\s-]/.test(text[i])) {
@@ -87,5 +86,5 @@ export const HighlightMatch = ({
 
   if (lastEnd < text.length) parts.push(text.slice(lastEnd));
 
-  return <>{parts}</>;
+  return <span className='block truncate'>{parts}</span>;
 };
