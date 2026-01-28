@@ -1,8 +1,9 @@
 {
-  "feature": "job-details-seo",
-  "plan": ".claude/plans/job-details-seo.plan.md",
-  "baseBranch": "wip/v2",
-  "branchName": "feature/job-details-seo",
-  "createdAt": "2026-01-23T15:28:42.723Z",
+  "feature": "add-actual-job-suggestion-search",
+  "plan": "",
+  "baseBranch": "dev",
+  "branchType": "feat",
+  "branchName": "feat/add-actual-job-suggestion-search",
+  "createdAt": "2026-01-27T14:38:39.196Z",
   "projectRoot": "/Users/johnshift/code/jobstash/webapp"
 }
