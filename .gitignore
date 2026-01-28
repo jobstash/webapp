@@ -46,6 +46,7 @@ docs/dev/archived
 
 # worktree session files (created by worktree-dev.sh)
 .worktree-session.json
+.claude-worktree.json
 
 # git worktrees
 .worktrees/
