@@ -1,5 +1,7 @@
 'use client';
 
+import { LoaderIcon } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 
 import type {
@@ -63,12 +65,19 @@ export const SearchResultsList = ({
     );
   }
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground'>
+        <LoaderIcon className='size-4 animate-spin' />
+        <span>Loading suggestions...</span>
+      </div>
+    );
+  }
 
   if (trimmedQuery) {
     return (
       <p className='py-6 text-center text-sm text-muted-foreground'>
-        No suggestions found for &quot;{trimmedQuery}&quot;
+        No jobs published for &quot;{trimmedQuery}&quot; in the past 30 days
       </p>
     );
   }

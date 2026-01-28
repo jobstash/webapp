@@ -9,7 +9,7 @@ import { useDebounce, useMinDuration } from '@/hooks';
 import { suggestionsResponseSchema } from '@/features/search/schemas';
 
 const DEBOUNCE_MS = 300;
-const MIN_LOADING_MS = 200;
+const MIN_LOADING_MS = 300;
 
 export const useSearchSuggestions = (query: string) => {
   const debouncedQuery = useDebounce(query, DEBOUNCE_MS);
