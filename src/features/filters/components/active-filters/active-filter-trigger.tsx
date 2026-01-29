@@ -2,7 +2,7 @@
 
 import { XIcon } from 'lucide-react';
 
-import { Button, type ButtonProps } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { FilterIconSlot } from '@/features/filters/components/filter-icon-slot';
 import {
   ButtonGroup,
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/tooltip';
 import { usePrevious } from '@/hooks';
 
-interface Props extends Omit<ButtonProps, 'disabled'> {
+interface Props extends Omit<React.ComponentProps<'button'>, 'disabled'> {
   isPending: boolean;
   label: string;
   tooltipLabel?: string;

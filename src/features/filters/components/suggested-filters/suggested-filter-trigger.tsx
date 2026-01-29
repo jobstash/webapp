@@ -1,7 +1,7 @@
-import { Button, type ButtonProps } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { FilterIconSlot } from '@/features/filters/components/filter-icon-slot';
 
-interface Props extends ButtonProps {
+interface Props extends React.ComponentProps<'button'> {
   isPending: boolean;
   label: string;
   icon?: React.ReactNode;
