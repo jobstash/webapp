@@ -1,9 +1,10 @@
-import { SlidersHorizontalIcon, UserIcon } from 'lucide-react';
+import { SlidersHorizontalIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { SearchHeader } from '@/features/search';
 
 import { Brand } from './brand';
+import { HeaderAuthButton } from './header-auth-button';
 
 export const AppHeader = () => {
   return (
@@ -25,23 +26,7 @@ export const AppHeader = () => {
           </Button>
         </div>
 
-        <div>
-          <Button
-            size='icon'
-            variant='secondary'
-            aria-label='User menu'
-            className='rounded-xl border border-neutral-800 lg:hidden'
-          >
-            <UserIcon className='size-5 text-muted-foreground' />
-          </Button>
-          <Button
-            size='lg'
-            variant='secondary'
-            className='hidden h-10 w-40 lg:block'
-          >
-            Login / Signup
-          </Button>
-        </div>
+        <HeaderAuthButton />
       </div>
     </header>
   );
