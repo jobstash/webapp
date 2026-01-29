@@ -20,7 +20,7 @@ export const HeaderAuthButton = () => (
       asChild
       size='lg'
       variant='secondary'
-      className='hidden h-10 w-40 lg:block'
+      className='hidden h-10 w-40 lg:inline-flex'
     >
       <Link href='/onboarding'>Get Started</Link>
     </Button>
