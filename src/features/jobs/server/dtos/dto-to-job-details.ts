@@ -1,48 +1,31 @@
 import 'server-only';
 
-import { lookupAddresses } from '@/lib/server/address-lookup';
-import { formatNumber, getLogoUrl, slugify } from '@/lib/server/utils';
+import { getLogoUrl, prettyTimestamp, slugify } from '@/lib/server/utils';
 import { type JobDetailsDto } from './job-details.dto';
-import { type SimilarJobDto } from './similar-job.dto';
+import { type SimilarJobItemDto } from './similar-job.dto';
 import { dtoToJobListItem } from './dto-to-job-list-item';
 import {
   type JobDetailsSchema,
   type SimilarJobSchema,
 } from '@/features/jobs/schemas';
 
-const getSimilarJobDefaultTitle = (dto: SimilarJobDto): string =>
-  dto.organization?.name ? `Role at ${dto.organization.name}` : 'Open Role';
+export const dtoToSimilarJob = (dto: SimilarJobItemDto): SimilarJobSchema => {
+  const { shortUUID, timestamp, organization } = dto;
 
-export const dtoToSimilarJob = (dto: SimilarJobDto): SimilarJobSchema => {
-  const {
-    shortUUID,
-    minimumSalary,
-    maximumSalary,
-    salary,
-    salaryCurrency,
-    location,
-    organization,
-  } = dto;
-
-  const title = dto.title ?? getSimilarJobDefaultTitle(dto);
+  const title =
+    dto.title ??
+    (organization?.name ? `Role at ${organization.name}` : 'Open Role');
   const orgSlug = organization?.name ? `-${organization.name}` : '';
   const href = `/${slugify(`${title}${orgSlug}`)}/${shortUUID}`;
 
-  let salaryText: string | null = null;
-  if (minimumSalary && maximumSalary) {
-    salaryText = `${formatNumber(minimumSalary)} - ${formatNumber(maximumSalary)}`;
-  } else if (salary && salaryCurrency) {
-    salaryText = `${formatNumber(salary)} ${salaryCurrency}`;
-  }
-
-  const addressLookup = lookupAddresses(location);
+  const normalizedName = organization?.normalizedName;
+  const id = normalizedName ? `${shortUUID}-${normalizedName}` : shortUUID;
 
   return {
-    id: shortUUID,
+    id,
     title,
     href,
-    salaryText,
-    addresses: addressLookup?.addresses ?? null,
+    timestampText: prettyTimestamp(timestamp),
     companyName: organization?.name ?? null,
     companyLogo: organization
       ? getLogoUrl(organization.website, organization.logoUrl)
@@ -52,7 +35,7 @@ export const dtoToSimilarJob = (dto: SimilarJobDto): SimilarJobSchema => {
 
 export const dtoToJobDetails = (
   dto: JobDetailsDto,
-  similarJobsDto: SimilarJobDto[] = [],
+  similarJobsDto: SimilarJobItemDto[] = [],
 ): JobDetailsSchema => {
   const baseItem = dtoToJobListItem(dto);
   const similarJobs = similarJobsDto.map(dtoToSimilarJob);

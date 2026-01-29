@@ -39,6 +39,6 @@ export const fetchJobDetails = async ({
     return null;
   }
 
-  const similarJobs = await fetchSimilarJobs({ id });
+  const similarJobs = await fetchSimilarJobs(id);
   return dtoToJobDetails(parsed.data, similarJobs);
 };
