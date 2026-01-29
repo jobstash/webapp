@@ -5,7 +5,7 @@ import {
   PillarCTA,
   PillarHero,
   PillarJobList,
-  PlaceholderAside,
+  SuggestedPillars,
 } from '@/features/pillar/components';
 import {
   getPillarFilterContext,
@@ -67,14 +67,14 @@ const PillarPage = async ({ params }: Props) => {
   if (!pillarPage) notFound();
 
   const pillarContext = getPillarFilterContext(slug);
-  const { title, description, jobs } = pillarPage;
+  const { title, description, jobs, suggestedPillars } = pillarPage;
 
   return (
     <>
       <PillarHero slug={slug} pillarDetails={{ title, description }} />
       <div id='jobs' className='flex scroll-mt-20 gap-4 pt-4 lg:scroll-mt-24'>
         <aside className='sticky top-20 hidden max-h-[calc(100vh-5rem)] w-68 shrink-0 flex-col gap-4 self-start overflow-y-auto lg:top-24 lg:flex lg:max-h-[calc(100vh-6rem)]'>
-          <PlaceholderAside />
+          <SuggestedPillars items={suggestedPillars} />
           <PillarCTA slug={slug} pillarContext={pillarContext} />
         </aside>
         <section className='min-w-0 grow'>
