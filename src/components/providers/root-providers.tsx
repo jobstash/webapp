@@ -6,11 +6,7 @@ import { Progress, Bar } from '@bprogress/next';
 
 import { ReactQueryProvider } from './react-query-provider';
 
-interface Props extends React.PropsWithChildren {
-  header: React.ReactNode;
-}
-
-export const RootProviders = ({ header, children }: Props) => {
+export const RootProviders = ({ children }: React.PropsWithChildren) => {
   return (
     <NuqsAdapter defaultOptions={{ shallow: false }}>
       <ReactQueryProvider>
@@ -23,7 +19,6 @@ export const RootProviders = ({ header, children }: Props) => {
               <Bar className='absolute! top-0! bg-linear-to-r! from-[#D68800]! to-[#8743FF]!' />
             </Progress>
           </div>
-          {header}
           {children}
         </ProgressProvider>
       </ReactQueryProvider>
