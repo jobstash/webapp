@@ -10,7 +10,8 @@ import {
 import { clientEnv } from '@/lib/env/client';
 
 export const generateStaticParams =
-  process.env.DISABLE_STATIC_GENERATION === 'true'
+  process.env.DISABLE_STATIC_GENERATION === 'true' ||
+  process.env.NODE_ENV === 'development'
     ? undefined
     : async () => fetchJobDetailsStaticParams();
 
