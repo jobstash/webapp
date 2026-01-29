@@ -9,15 +9,22 @@ export const pillarDetailsSchema = z.object({
 });
 export type PillarDetails = z.infer<typeof pillarDetailsSchema>;
 
+export const suggestedPillarSchema = z.object({
+  label: nonEmptyStringSchema,
+  href: nonEmptyStringSchema,
+});
+export type SuggestedPillar = z.infer<typeof suggestedPillarSchema>;
+
 export const pillarPageStaticSchema = z.object({
   title: nonEmptyStringSchema,
   description: nonEmptyStringSchema,
   jobs: jobListItemSchema.array(),
+  suggestedPillars: suggestedPillarSchema.array(),
 });
 export type PillarPageStatic = z.infer<typeof pillarPageStaticSchema>;
 
 export const pillarFilterContextSchema = z.object({
-  paramKey: z.string(),
-  value: z.string(),
+  paramKey: nonEmptyStringSchema,
+  value: nonEmptyStringSchema,
 });
 export type PillarFilterContext = z.infer<typeof pillarFilterContextSchema>;

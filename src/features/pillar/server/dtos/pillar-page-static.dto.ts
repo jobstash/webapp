@@ -12,6 +12,10 @@ export const pillarPageStaticDto = z.object({
     title: nonEmptyStringSchema,
     description: nonEmptyStringSchema,
     jobs: jobListItemDto.array(),
+    suggestedPillars: z
+      .array(z.object({ label: z.string(), href: z.string() }))
+      .optional()
+      .default([]),
   }),
 });
 export type PillarPageStaticDto = z.infer<typeof pillarPageStaticDto>;
