@@ -46,15 +46,15 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
             </div>
           }
         />
-        <div className='flex items-center gap-1.5'>
+        <div className='flex items-center gap-2'>
+          <span className='font-medium text-foreground'>{name}</span>
           {websiteUrl && (
             <Link
               href={websiteUrl}
               target='_blank'
               rel='noopener noreferrer'
-              className='flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground hover:underline'
+              className='text-muted-foreground transition-colors hover:text-foreground'
             >
-              <span className='font-medium text-foreground'>{name}</span>
               <ExternalLinkIcon className='size-3.5' />
             </Link>
           )}
@@ -89,6 +89,7 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
                 <Badge
                   key={`${round.roundName}-${round.date}`}
                   variant='secondary'
+                  className='py-1 text-foreground/70 hover:text-foreground'
                 >
                   <LinkWithLoader href={round.href}>{label}</LinkWithLoader>
                 </Badge>
@@ -107,7 +108,12 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
           <p className='text-xs font-medium text-muted-foreground'>Investors</p>
           <div className='flex flex-wrap gap-1.5'>
             {investors.slice(0, 5).map((investor) => (
-              <Badge key={investor.name} variant='outline' asChild>
+              <Badge
+                key={investor.name}
+                variant='secondary'
+                className='py-1 text-foreground/70 hover:text-foreground'
+                asChild
+              >
                 <LinkWithLoader href={investor.href}>
                   {investor.name}
                 </LinkWithLoader>
