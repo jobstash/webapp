@@ -1,5 +1,3 @@
-import { DollarSignIcon, MapPinIcon } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { ImageWithFallback } from '@/components/image-with-fallback';
@@ -10,13 +8,15 @@ interface SimilarJobItemProps {
 }
 
 export const SimilarJobItem = ({ job }: SimilarJobItemProps) => {
-  const { title, href, salaryText, addresses, companyName, companyLogo } = job;
+  const { title, href, timestampText, companyName, companyLogo } = job;
+
+  const subtitle = [companyName, timestampText].filter(Boolean).join(' · ');
 
   return (
     <LinkWithLoader
       href={href}
       className={cn(
-        'flex gap-2.5 rounded-lg p-2',
+        'flex items-start gap-2.5 rounded-lg p-2',
         'transition-colors hover:bg-muted/50',
       )}
     >
@@ -25,12 +25,12 @@ export const SimilarJobItem = ({ job }: SimilarJobItemProps) => {
         alt={companyName ?? 'Company'}
         width={32}
         height={32}
-        className='shrink-0 rounded-md ring-1 ring-border/50'
+        className='mt-0.5 shrink-0 rounded-md ring-1 ring-border/50'
         fallback={
           <div
             className={cn(
-              'flex size-8 items-center justify-center rounded-md',
-              'bg-gradient-to-br from-muted to-muted/50',
+              'mt-0.5 flex size-8 items-center justify-center rounded-md',
+              'bg-linear-to-br from-muted to-muted/50',
               'text-xs font-medium text-muted-foreground',
               'ring-1 ring-border/50',
             )}
@@ -42,25 +42,9 @@ export const SimilarJobItem = ({ job }: SimilarJobItemProps) => {
 
       <div className='min-w-0 flex-1'>
         <p className='truncate text-sm font-medium text-foreground'>{title}</p>
-        {companyName && (
-          <p className='truncate text-xs text-muted-foreground'>
-            by {companyName}
-          </p>
+        {subtitle && (
+          <p className='truncate text-xs text-muted-foreground'>{subtitle}</p>
         )}
-        <div className='mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
-          {addresses?.[0] && (
-            <span className='inline-flex items-center gap-1'>
-              <MapPinIcon className='size-3' />
-              {addresses[0].country}
-            </span>
-          )}
-          {salaryText && (
-            <span className='inline-flex items-center gap-1'>
-              <DollarSignIcon className='size-3' />
-              {salaryText}
-            </span>
-          )}
-        </div>
       </div>
     </LinkWithLoader>
   );

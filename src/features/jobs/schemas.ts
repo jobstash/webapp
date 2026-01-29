@@ -70,8 +70,7 @@ export const similarJobSchema = z.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
-  salaryText: nullableStringSchema,
-  addresses: addressSchema.array().nullable(),
+  timestampText: nonEmptyStringSchema,
   companyName: nullableStringSchema,
   companyLogo: nullableStringSchema,
 });
