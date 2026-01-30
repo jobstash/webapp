@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { ProfileContent } from '@/features/profile/components/profile-content';
 
-const ProfilePage = () => redirect('/onboarding');
+const ProfilePage = () => <ProfileContent />;
 export default ProfilePage;
