@@ -63,7 +63,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
           {/* Primary CTAs */}
           <div className='flex flex-col gap-3 sm:flex-row'>
             <BrowseJobsButton />
-            <Button size='lg' variant='outline' asChild>
+            <Button size='lg' variant='ghost' asChild>
               <Link href='/signup'>Post a Job</Link>
             </Button>
           </div>

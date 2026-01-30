@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { UserIcon } from 'lucide-react';
 
+import { PrimaryCTA } from '@/components/primary-cta';
 import { Button } from '@/components/ui/button';
 
 export const HeaderAuthButton = () => (
@@ -8,21 +9,17 @@ export const HeaderAuthButton = () => (
     <Button
       asChild
       size='icon'
-      variant='secondary'
-      aria-label='Get started'
-      className='rounded-xl border border-neutral-800 lg:hidden'
+      aria-label='Get hired'
+      className='rounded-xl lg:hidden'
     >
       <Link href='/onboarding'>
-        <UserIcon className='size-5 text-muted-foreground' />
+        <UserIcon className='size-5' />
       </Link>
     </Button>
-    <Button
-      asChild
-      size='lg'
-      variant='secondary'
-      className='hidden h-10 w-40 lg:inline-flex'
-    >
-      <Link href='/onboarding'>Get Started</Link>
-    </Button>
+    <div className='hidden lg:block'>
+      <PrimaryCTA asChild>
+        <Link href='/onboarding'>Get Hired Now</Link>
+      </PrimaryCTA>
+    </div>
   </>
 );
