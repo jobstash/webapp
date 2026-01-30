@@ -21,8 +21,15 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 # Build-time environment variables (Coolify passes these as --build-arg)
 ARG NEXT_PUBLIC_MW_URL
 ARG NEXT_PUBLIC_FRONTEND_URL
+ARG NEXT_PUBLIC_PRIVY_APP_ID
 ENV NEXT_PUBLIC_MW_URL=$NEXT_PUBLIC_MW_URL
 ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
+ENV NEXT_PUBLIC_PRIVY_APP_ID=$NEXT_PUBLIC_PRIVY_APP_ID
+
+# Server env stubs — only needed to pass Zod validation during build
+# Real secrets injected at runtime by Coolify
+ENV SESSION_SECRET="build-time-placeholder-not-used-at-runtime-"
+ENV PRIVY_APP_SECRET="build-time-placeholder"
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules

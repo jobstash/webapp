@@ -30,7 +30,7 @@ export const SuggestedPillars = ({ items }: Props) => {
 
   return (
     <div className='w-full rounded-2xl border border-border/50 bg-card p-4'>
-      <span className='text-sm font-semibold'>Explore More</span>
+      <span className='text-sm font-semibold'>Explore More Jobs</span>
       <div className='mt-3 flex flex-wrap gap-2'>
         {items.map((item) => {
           const category = getPillarCategory(item.href.slice(1));

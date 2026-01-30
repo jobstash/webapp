@@ -4,8 +4,6 @@ import type { Metadata, Viewport } from 'next';
 
 import { interTight } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
-import { AppHeader } from '@/components/app-header/app-header';
-import { AppFooter } from '@/components/app-footer/app-footer';
 import { RootProviders } from '@/components/providers/root-providers';
 import { clientEnv } from '@/lib/env/client';
 
@@ -39,10 +37,7 @@ type Props = Readonly<React.PropsWithChildren>;
 const RootLayout = ({ children }: Props) => (
   <html lang='en' className={cn('dark', interTight.className)}>
     <body className='antialiased'>
-      <RootProviders header={<AppHeader />}>
-        <main className='mx-auto max-w-7xl px-2 pt-4'>{children}</main>
-      </RootProviders>
-      <AppFooter />
+      <RootProviders>{children}</RootProviders>
     </body>
   </html>
 );

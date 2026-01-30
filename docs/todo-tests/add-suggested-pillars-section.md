@@ -2,7 +2,7 @@
 
 ## Behaviors to Test
 
-- [ ] Pillar page renders "Explore More" section in the aside when suggestedPillars array is non-empty
+- [ ] Pillar page renders "Explore More Jobs" section in the aside when suggestedPillars array is non-empty
 - [ ] Suggested pillars section is hidden when suggestedPillars array is empty
 - [ ] Each suggested pillar renders as a link with correct href
 - [ ] Each suggested pillar displays the correct label text

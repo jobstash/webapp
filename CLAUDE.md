@@ -177,8 +177,16 @@ Boolean filters use the `b-` prefix followed by the filter name. They generate c
 
 Required in `.env`:
 
+**Public (client + server):**
+
 - `NEXT_PUBLIC_FRONTEND_URL` - Frontend URL
 - `NEXT_PUBLIC_MW_URL` - Middleware/API URL
+- `NEXT_PUBLIC_PRIVY_APP_ID` - Privy application ID
+
+**Server-only:**
+
+- `PRIVY_APP_SECRET` - Privy app secret (from Dashboard)
+- `SESSION_SECRET` - iron-session encryption key (min 32 chars)
 
 ## Avoid (Wastes Time & Tokens)
 

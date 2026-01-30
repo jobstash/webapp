@@ -7,7 +7,12 @@ const scrollToJobs = () => {
 };
 
 export const BrowseJobsButton = () => (
-  <Button size='lg' onClick={scrollToJobs}>
+  <Button
+    size='lg'
+    variant='secondary'
+    className='bg-input/30'
+    onClick={scrollToJobs}
+  >
     Browse Jobs
   </Button>
 );
