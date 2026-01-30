@@ -5,9 +5,9 @@ import { ChromeIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const SOCIAL_OPTIONS = [
-  { label: 'Continue with Email', icon: MailIcon },
-  { label: 'Continue with Google', icon: ChromeIcon },
   { label: 'Continue with GitHub', icon: GithubIcon },
+  { label: 'Continue with Google', icon: ChromeIcon },
+  { label: 'Continue with Email', icon: MailIcon },
 ] as const;
 
 export const AuthButtons = () => (

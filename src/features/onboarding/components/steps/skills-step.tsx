@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2Icon, SearchIcon, XIcon } from 'lucide-react';
+import { LoaderIcon, SearchIcon, XIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription } from '@/components/ui/field';
@@ -64,13 +64,13 @@ export const SkillsStep = () => {
 
             {isDropdownOpen && (
               <div
-                className='absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-lg'
+                className='absolute top-full left-0 z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-lg'
                 onMouseDown={handleDropdownMouseDown}
               >
                 {isInitialLoading && (
                   <div className='flex items-center justify-center gap-2 py-4 text-muted-foreground'>
-                    <Loader2Icon className='size-4 animate-spin' />
-                    <span>Searching...</span>
+                    <LoaderIcon className='size-4 animate-spin' />
+                    <span>Loading skills...</span>
                   </div>
                 )}
 
@@ -105,7 +105,7 @@ export const SkillsStep = () => {
                       >
                         {isFetchingMore ? (
                           <>
-                            <Loader2Icon className='size-3 animate-spin' />
+                            <LoaderIcon className='size-3 animate-spin' />
                             Loading...
                           </>
                         ) : (

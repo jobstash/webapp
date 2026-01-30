@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import {
   CheckCircle2Icon,
   FileTextIcon,
-  Loader2Icon,
+  LoaderIcon,
   UploadIcon,
   XIcon,
 } from 'lucide-react';
@@ -60,7 +60,7 @@ export const ResumeStep = () => {
           )}
         >
           {isParsing && (
-            <Loader2Icon className='size-8 animate-spin text-muted-foreground' />
+            <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
           )}
 
           {!isParsing && hasFile && (
@@ -72,7 +72,10 @@ export const ResumeStep = () => {
                 </span>
                 <button
                   type='button'
-                  onClick={handleRemoveFile}
+                  onClick={() => {
+                    handleRemoveFile();
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                  }}
                   className='rounded-full p-0.5 text-muted-foreground transition-colors hover:text-foreground'
                   aria-label='Remove file'
                 >
@@ -114,7 +117,7 @@ export const ResumeStep = () => {
             </span>
           )}
           {!hasFile &&
-            "We'll extract your skills automatically, saving you time on the next step."}
+            "We'll extract details automatically, saving you time on the next steps."}
           {hasFile && !isParsing && !parsedResume && '\u00A0'}
         </FieldDescription>
 
