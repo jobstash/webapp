@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { LoaderIcon, SearchIcon, XIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -11,8 +13,96 @@ import {
 } from '@/components/ui/input-group';
 import { cn } from '@/lib/utils';
 import { TAG_COLORS } from '@/features/onboarding/constants';
+import type { UserSkill } from '@/features/onboarding/schemas';
 
 import { useSkillsStep } from './use-skills-step';
+
+const DropdownStatus = ({ children }: { children: ReactNode }) => (
+  <div className='flex items-center justify-center gap-2 py-4 text-muted-foreground'>
+    <LoaderIcon className='size-4 animate-spin' />
+    <span>{children}</span>
+  </div>
+);
+
+interface DropdownContentProps {
+  isInitialLoading: boolean;
+  isLoading: boolean;
+  availableSkills: UserSkill[];
+  hasQuery: boolean;
+  hasMore: boolean;
+  isFetchingMore: boolean;
+  loadMore: () => void;
+  onAddSkill: (skill: UserSkill) => void;
+}
+
+const DropdownContent = ({
+  isInitialLoading,
+  isLoading,
+  availableSkills,
+  hasQuery,
+  hasMore,
+  isFetchingMore,
+  loadMore,
+  onAddSkill,
+}: DropdownContentProps) => {
+  if (isInitialLoading) {
+    return <DropdownStatus>Loading skills...</DropdownStatus>;
+  }
+
+  if (availableSkills.length === 0) {
+    if (isLoading) {
+      return <DropdownStatus>Searching...</DropdownStatus>;
+    }
+
+    if (hasQuery) {
+      return (
+        <p className='py-4 text-center text-muted-foreground'>
+          No skills found
+        </p>
+      );
+    }
+
+    return null;
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex flex-col py-1',
+        isLoading && 'pointer-events-none opacity-50',
+      )}
+    >
+      {availableSkills.map((skill) => (
+        <button
+          key={skill.id}
+          type='button'
+          className='px-3 py-2 text-left text-sm transition-colors hover:bg-accent'
+          onClick={() => onAddSkill(skill)}
+        >
+          {skill.name}
+        </button>
+      ))}
+
+      {hasMore && (
+        <button
+          type='button'
+          className='flex items-center justify-center gap-2 border-t border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50'
+          onClick={() => loadMore()}
+          disabled={isFetchingMore}
+        >
+          {isFetchingMore ? (
+            <>
+              <LoaderIcon className='size-3 animate-spin' />
+              Loading...
+            </>
+          ) : (
+            'Load more'
+          )}
+        </button>
+      )}
+    </div>
+  );
+};
 
 export const SkillsStep = () => {
   const {
@@ -40,6 +130,8 @@ export const SkillsStep = () => {
     prevStep,
   } = useSkillsStep();
 
+  const hasSkills = data.selectedSkills.length > 0;
+
   return (
     <div className='flex flex-col gap-6 sm:gap-8'>
       <section className='flex flex-col gap-4'>
@@ -49,7 +141,11 @@ export const SkillsStep = () => {
           <div className='relative'>
             <InputGroup className='h-12'>
               <InputGroupAddon>
-                <SearchIcon />
+                {isLoading ? (
+                  <LoaderIcon className='animate-spin' />
+                ) : (
+                  <SearchIcon />
+                )}
               </InputGroupAddon>
               <InputGroupInput
                 ref={searchInputRef}
@@ -67,54 +163,16 @@ export const SkillsStep = () => {
                 className='absolute top-full left-0 z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-lg'
                 onMouseDown={handleDropdownMouseDown}
               >
-                {isInitialLoading && (
-                  <div className='flex items-center justify-center gap-2 py-4 text-muted-foreground'>
-                    <LoaderIcon className='size-4 animate-spin' />
-                    <span>Loading skills...</span>
-                  </div>
-                )}
-
-                {!isInitialLoading &&
-                  !isLoading &&
-                  availableSkills.length === 0 &&
-                  hasQuery && (
-                    <p className='py-4 text-center text-muted-foreground'>
-                      No skills found
-                    </p>
-                  )}
-
-                {!isInitialLoading && availableSkills.length > 0 && (
-                  <div className='flex flex-col py-1'>
-                    {availableSkills.map((skill) => (
-                      <button
-                        key={skill.id}
-                        type='button'
-                        className='px-3 py-2 text-left text-sm transition-colors hover:bg-accent'
-                        onClick={() => handleAddSkill(skill)}
-                      >
-                        {skill.name}
-                      </button>
-                    ))}
-
-                    {hasMore && (
-                      <button
-                        type='button'
-                        className='flex items-center justify-center gap-2 border-t border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50'
-                        onClick={() => loadMore()}
-                        disabled={isFetchingMore}
-                      >
-                        {isFetchingMore ? (
-                          <>
-                            <LoaderIcon className='size-3 animate-spin' />
-                            Loading...
-                          </>
-                        ) : (
-                          'Load more'
-                        )}
-                      </button>
-                    )}
-                  </div>
-                )}
+                <DropdownContent
+                  isInitialLoading={isInitialLoading}
+                  isLoading={isLoading}
+                  availableSkills={availableSkills}
+                  hasQuery={hasQuery}
+                  hasMore={hasMore}
+                  isFetchingMore={isFetchingMore}
+                  loadMore={loadMore}
+                  onAddSkill={handleAddSkill}
+                />
               </div>
             )}
           </div>
@@ -150,7 +208,7 @@ export const SkillsStep = () => {
                 'inline-flex items-center rounded-md border border-dashed border-current px-2.5 py-1 text-sm font-medium transition-opacity',
                 isDropdownOpen
                   ? 'pointer-events-none opacity-0'
-                  : 'cursor-pointer opacity-50 hover:opacity-80',
+                  : 'opacity-50 hover:opacity-80',
                 TAG_COLORS[skill.colorIndex] ?? TAG_COLORS[0],
                 'bg-transparent ring-0 hover:bg-transparent',
               )}
@@ -168,11 +226,8 @@ export const SkillsStep = () => {
           <Button variant='ghost' onClick={prevStep}>
             Back
           </Button>
-          <Button
-            variant={data.selectedSkills.length > 0 ? 'default' : 'ghost'}
-            onClick={nextStep}
-          >
-            {data.selectedSkills.length > 0 ? 'Continue' : 'Skip'}
+          <Button variant={hasSkills ? 'default' : 'ghost'} onClick={nextStep}>
+            {hasSkills ? 'Continue' : 'Skip'}
           </Button>
         </div>
       </div>
