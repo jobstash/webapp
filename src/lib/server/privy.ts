@@ -2,10 +2,11 @@ import 'server-only';
 
 import { PrivyClient } from '@privy-io/server-auth';
 
+import { clientEnv } from '@/lib/env/client';
 import { serverEnv } from '@/lib/env/server';
 
 const privyClient = new PrivyClient(
-  serverEnv.PRIVY_APP_ID,
+  clientEnv.PRIVY_APP_ID,
   serverEnv.PRIVY_APP_SECRET,
 );
 

@@ -185,7 +185,6 @@ Required in `.env`:
 
 **Server-only:**
 
-- `PRIVY_APP_ID` - Privy app ID (same value as NEXT_PUBLIC_PRIVY_APP_ID)
 - `PRIVY_APP_SECRET` - Privy app secret (from Dashboard)
 - `SESSION_SECRET` - iron-session encryption key (min 32 chars)
 
