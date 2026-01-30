@@ -1,10 +1,8 @@
-'use client';
-
 import { useState } from 'react';
 
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
-import { useDebounce } from '@/hooks';
+import { useDebounce, useMinDuration } from '@/hooks';
 import { clientEnv } from '@/lib/env/client';
 import { getColorIndex } from '@/features/onboarding/constants';
 import {
@@ -14,6 +12,7 @@ import {
 } from '@/features/onboarding/schemas';
 
 const DEBOUNCE_MS = 300;
+const MIN_LOADING_MS = 300;
 const LIMIT = 20;
 
 const tagToSkill = (tag: PopularTagItem): UserSkill => ({
@@ -23,10 +22,22 @@ const tagToSkill = (tag: PopularTagItem): UserSkill => ({
   isFromResume: false,
 });
 
+interface SkillsSearchResult {
+  searchValue: string;
+  setSearchValue: (value: string) => void;
+  isInitialLoading: boolean;
+  isLoading: boolean;
+  isFetchingMore: boolean;
+  availableSkills: UserSkill[];
+  hasMore: boolean;
+  loadMore: () => void;
+  hasQuery: boolean;
+}
+
 export const useSkillsSearch = (
   selectedSkillIds: Set<string>,
   isOpen: boolean,
-) => {
+): SkillsSearchResult => {
   const [searchValue, setSearchValue] = useState('');
   const debouncedSearch = useDebounce(searchValue, DEBOUNCE_MS);
 
@@ -37,6 +48,7 @@ export const useSkillsSearch = (
     isFetching,
     isFetchingNextPage,
     isPending,
+    isPlaceholderData,
   } = useInfiniteQuery({
     queryKey: ['onboarding-skills', debouncedSearch],
     queryFn: async ({ pageParam }) => {
@@ -64,14 +76,17 @@ export const useSkillsSearch = (
     (skill) => !selectedSkillIds.has(skill.id),
   );
 
+  const isLoadingRaw = isPending || (isPlaceholderData && isFetching);
+  const isLoading = useMinDuration(isLoadingRaw, MIN_LOADING_MS);
+
   return {
     searchValue,
     setSearchValue,
     isInitialLoading: isPending && isOpen,
-    isLoading: isFetching && !isFetchingNextPage,
+    isLoading,
     isFetchingMore: isFetchingNextPage,
     availableSkills,
-    hasMore: hasNextPage ?? false,
+    hasMore: hasNextPage,
     loadMore: fetchNextPage,
     hasQuery: debouncedSearch.length > 0,
   };
