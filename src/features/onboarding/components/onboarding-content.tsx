@@ -1,6 +1,6 @@
 'use client';
 
-import { XIcon } from 'lucide-react';
+import { LoaderIcon, XIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -9,17 +9,31 @@ import { LoginView } from './login-view';
 import { useOnboardingContent } from './use-onboarding-content';
 
 export const OnboardingContent = () => {
-  const { steps, currentIndex, isLoginView, StepComponent, handleClose } =
-    useOnboardingContent();
+  const {
+    steps,
+    currentIndex,
+    isLoginView,
+    isLoading,
+    StepComponent,
+    handleClose,
+  } = useOnboardingContent();
+
+  if (isLoading) {
+    return (
+      <div className='flex h-dvh items-center justify-center bg-background'>
+        <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
+      </div>
+    );
+  }
 
   return (
     <div className='flex h-dvh flex-col bg-background'>
       <div className='flex shrink-0 items-center justify-between px-4 pt-4 pb-2'>
         <div className='size-8' />
 
-        {!isLoginView && (
-          <div className='flex items-center gap-2'>
-            {steps.map((step, index) => (
+        <div className='flex items-center gap-2'>
+          {!isLoginView &&
+            steps.map((step, index) => (
               <div
                 key={step}
                 className={cn(
@@ -30,10 +44,7 @@ export const OnboardingContent = () => {
                 )}
               />
             ))}
-          </div>
-        )}
-
-        {isLoginView && <div />}
+        </div>
 
         <Button
           variant='ghost'

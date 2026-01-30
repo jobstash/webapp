@@ -2,8 +2,9 @@
 
 import { ArrowLeftIcon } from 'lucide-react';
 
-import { AuthButtons } from '@/features/onboarding/components/auth-buttons';
 import { useOnboarding } from '@/features/onboarding/hooks/use-onboarding';
+
+import { AuthButtons } from './auth-buttons';
 
 export const LoginView = () => {
   const { hideLogin } = useOnboarding();
