@@ -1,6 +1,5 @@
 'use client';
 
-import { useRef } from 'react';
 import {
   CheckCircle2Icon,
   FileTextIcon,
@@ -10,10 +9,48 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { FieldDescription } from '@/components/ui/field';
+import { FieldDescription, FieldError } from '@/components/ui/field';
 import { cn } from '@/lib/utils';
 
 import { useResumeStep } from './use-resume-step';
+
+const getDropZoneStyles = (hasFile: boolean, isDragActive: boolean) =>
+  cn(
+    'flex h-48 flex-col items-center justify-center gap-4 rounded-lg border-2 text-center transition-colors',
+    hasFile && 'border-solid border-border',
+    !hasFile && 'cursor-pointer border-dashed',
+    !hasFile &&
+      (isDragActive
+        ? 'border-primary bg-primary/5'
+        : 'border-muted-foreground/25 hover:border-muted-foreground/50'),
+  );
+
+const DescriptionContent = ({
+  hasFile,
+  isParsing,
+  parsedResume,
+}: {
+  hasFile: boolean;
+  isParsing: boolean;
+  parsedResume: { skills: { id: string }[] } | null;
+}) => {
+  if (isParsing) return 'Reading your resume...';
+
+  if (parsedResume) {
+    return (
+      <span className='inline-flex items-center gap-1.5'>
+        <CheckCircle2Icon className='inline size-3.5 text-emerald-500' />
+        Found {parsedResume.skills.length} skills, you can review them next.
+      </span>
+    );
+  }
+
+  if (!hasFile) {
+    return "We'll extract details automatically, saving you time on the next steps.";
+  }
+
+  return '\u00A0';
+};
 
 export const ResumeStep = () => {
   const {
@@ -22,21 +59,18 @@ export const ResumeStep = () => {
     isParsing,
     isDragActive,
     hasFile,
+    error,
     acceptedFileTypes,
+    fileInputRef,
     handleDragOver,
     handleDragLeave,
     handleDrop,
     handleFileInputChange,
+    handleOpenFilePicker,
     handleRemoveFile,
     nextStep,
     prevStep,
   } = useResumeStep();
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleBrowseClick = () => {
-    fileInputRef.current?.click();
-  };
 
   return (
     <div className='flex flex-col gap-6 sm:gap-8'>
@@ -47,17 +81,8 @@ export const ResumeStep = () => {
           onDragOver={hasFile ? undefined : handleDragOver}
           onDragLeave={hasFile ? undefined : handleDragLeave}
           onDrop={hasFile ? undefined : handleDrop}
-          onClick={hasFile ? undefined : handleBrowseClick}
-          className={cn(
-            'flex h-48 flex-col items-center justify-center gap-4 rounded-lg border-2 text-center transition-colors',
-            hasFile
-              ? 'border-solid border-border'
-              : 'cursor-pointer border-dashed',
-            !hasFile && isDragActive
-              ? 'border-primary bg-primary/5'
-              : !hasFile &&
-                  'border-muted-foreground/25 hover:border-muted-foreground/50',
-          )}
+          onClick={hasFile ? undefined : handleOpenFilePicker}
+          className={getDropZoneStyles(hasFile, isDragActive)}
         >
           {isParsing && (
             <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
@@ -72,10 +97,7 @@ export const ResumeStep = () => {
                 </span>
                 <button
                   type='button'
-                  onClick={() => {
-                    handleRemoveFile();
-                    if (fileInputRef.current) fileInputRef.current.value = '';
-                  }}
+                  onClick={handleRemoveFile}
                   className='rounded-full p-0.5 text-muted-foreground transition-colors hover:text-foreground'
                   aria-label='Remove file'
                 >
@@ -107,19 +129,16 @@ export const ResumeStep = () => {
           )}
         </div>
 
-        <FieldDescription>
-          {isParsing && 'Reading your resume...'}
-          {!isParsing && parsedResume && (
-            <span className='inline-flex items-center gap-1.5'>
-              <CheckCircle2Icon className='inline size-3.5 text-emerald-500' />
-              Found {parsedResume.skills.length} skills, you can review them
-              next.
-            </span>
-          )}
-          {!hasFile &&
-            "We'll extract details automatically, saving you time on the next steps."}
-          {hasFile && !isParsing && !parsedResume && '\u00A0'}
-        </FieldDescription>
+        {error && <FieldError>{error}</FieldError>}
+        {!error && (
+          <FieldDescription>
+            <DescriptionContent
+              hasFile={hasFile}
+              isParsing={isParsing}
+              parsedResume={parsedResume}
+            />
+          </FieldDescription>
+        )}
 
         <input
           ref={fileInputRef}
