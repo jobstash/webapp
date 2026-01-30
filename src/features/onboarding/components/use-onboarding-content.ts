@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useTransition } from 'react';
+
+import { useRouter } from '@bprogress/next/app';
 
 import { useLoginWithOAuth, usePrivy } from '@privy-io/react-auth';
 
+import { useSession } from '@/features/auth/hooks/use-session';
 import {
   useOnboarding,
   STEP_ORDER,
@@ -22,37 +24,44 @@ const STEP_COMPONENTS = {
 
 export const useOnboardingContent = () => {
   const router = useRouter();
+  const [isNavigating, startTransition] = useTransition();
   const { ready, authenticated } = usePrivy();
+  const { isSessionReady } = useSession();
   const { currentStep, isLoginView, reset } = useOnboarding();
-
   const { loading: isOAuthLoading } = useLoginWithOAuth();
 
+  const currentIndex = STEP_ORDER.indexOf(currentStep);
+  const StepComponent = STEP_COMPONENTS[currentStep];
+  const hasOAuthParams =
+    typeof window !== 'undefined' &&
+    /[?&]privy_oauth_/.test(window.location.search);
+  const isLoading = !ready || hasOAuthParams || isOAuthLoading || authenticated;
+
+  // Reset onboarding state on mount (Zustand persists across SPA navigations)
   useEffect(() => {
     reset();
   }, [reset]);
 
   useEffect(() => {
-    if (ready && authenticated) {
-      router.replace('/profile');
+    if (ready && authenticated && isSessionReady) {
+      startTransition(() => {
+        router.replace('/profile');
+      });
     }
-  }, [ready, authenticated, router]);
+  }, [ready, authenticated, isSessionReady, router]);
 
-  const currentIndex = STEP_ORDER.indexOf(currentStep);
-  const StepComponent = STEP_COMPONENTS[currentStep];
-
-  // Detect OAuth redirect params to cover the gap between SDK ready and hook processing
-  const hasOAuthParams =
-    typeof window !== 'undefined' &&
-    /[?&](privy_oauth_code|privy_oauth_state)=/.test(window.location.search);
-  const isLoading = !ready || hasOAuthParams || isOAuthLoading || authenticated;
-
-  const handleClose = () => router.push('/');
+  const handleClose = () => {
+    startTransition(() => {
+      router.push('/');
+    });
+  };
 
   return {
     steps: STEP_ORDER,
     currentIndex,
     isLoginView,
     isLoading,
+    isNavigating,
     StepComponent,
     handleClose,
   };

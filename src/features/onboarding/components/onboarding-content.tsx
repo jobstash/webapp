@@ -14,6 +14,7 @@ export const OnboardingContent = () => {
     currentIndex,
     isLoginView,
     isLoading,
+    isNavigating,
     StepComponent,
     handleClose,
   } = useOnboardingContent();
@@ -49,6 +50,7 @@ export const OnboardingContent = () => {
         <Button
           variant='ghost'
           size='icon'
+          disabled={isNavigating}
           onClick={handleClose}
           aria-label='Close'
         >
