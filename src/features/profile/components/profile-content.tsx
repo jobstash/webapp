@@ -1,20 +1,20 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { usePrivy } from '@privy-io/react-auth';
 
-import { useProfileContent } from './use-profile-content';
+import { Button } from '@/components/ui/button';
+import { useSession } from '@/features/auth/hooks/use-session';
 
 export const ProfileContent = () => {
+  const { user } = usePrivy();
   const {
-    isLoading,
-    isAuthenticated,
-    user,
     apiToken,
-    isTokenPending,
-    isTokenError,
-    tokenError,
-    handleLogout,
-  } = useProfileContent();
+    isAuthenticated,
+    isSessionReady,
+    isLoading,
+    isLoggingOut,
+    logout,
+  } = useSession();
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -38,14 +38,16 @@ export const ProfileContent = () => {
       <section className='flex flex-col gap-2'>
         <h2 className='text-lg font-semibold'>API Token</h2>
         <pre className='overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm break-all whitespace-pre-wrap text-zinc-100'>
-          {isTokenPending && 'Exchanging token...'}
-          {isTokenError &&
-            `Error: ${tokenError?.message ?? 'Failed to fetch API token'}`}
-          {!isTokenPending && !isTokenError && apiToken}
+          {isSessionReady ? apiToken : 'Exchanging token...'}
         </pre>
       </section>
 
-      <Button variant='destructive' onClick={handleLogout} className='w-fit'>
+      <Button
+        variant='destructive'
+        disabled={isLoggingOut}
+        onClick={logout}
+        className='w-fit'
+      >
         Log out
       </Button>
     </div>
