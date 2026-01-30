@@ -84,6 +84,9 @@ jobs:
         env:
           NEXT_PUBLIC_FRONTEND_URL: https://app.dev.jobstash.xyz
           NEXT_PUBLIC_MW_URL: https://middleware.dev.jobstash.xyz
+          NEXT_PUBLIC_PRIVY_APP_ID: clyyn5fpe00j7nnq78b6dua71
+          SESSION_SECRET: ci-build-dummy-secret-not-for-prod!
+          PRIVY_APP_SECRET: ci-build-dummy-secret
         run: pnpm build
 
   test:
