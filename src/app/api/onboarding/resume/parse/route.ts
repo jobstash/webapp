@@ -1,4 +1,17 @@
 import type { PopularTagItem } from '@/features/onboarding/schemas';
+import {
+  acquireConcurrentSlot,
+  checkFilename,
+  checkMagicBytes,
+  checkOrigin,
+  checkRateLimit,
+  computeFileHash,
+  getCachedResult,
+  getClientIp,
+  releaseConcurrentSlot,
+  runGuards,
+  setCachedResult,
+} from '@/lib/server/guards';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -50,36 +63,71 @@ const getRandomSkills = (count: number): PopularTagItem[] =>
   [...MOCK_SKILLS].sort(() => Math.random() - 0.5).slice(0, count);
 
 export const POST = async (request: Request): Promise<Response> => {
-  let formData: FormData;
+  const ip = getClientIp(request);
+
+  const preCheck = await runGuards(
+    () => checkOrigin(request),
+    () => checkRateLimit(ip),
+    () => acquireConcurrentSlot(ip),
+  );
+  if (preCheck) return preCheck;
+
   try {
-    formData = await request.formData();
-  } catch {
-    return Response.json({ error: 'Invalid form data' }, { status: 400 });
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return Response.json({ error: 'Invalid form data' }, { status: 400 });
+    }
+
+    const file = formData.get('file');
+
+    if (!file || !(file instanceof File)) {
+      return Response.json(
+        { error: 'Missing or invalid file' },
+        { status: 400 },
+      );
+    }
+
+    if (!ACCEPTED_MIME_TYPES.has(file.type)) {
+      return Response.json(
+        { error: 'Unsupported file type. Accepted: PDF, DOC, DOCX' },
+        { status: 400 },
+      );
+    }
+
+    if (file.size === 0) {
+      return Response.json({ error: 'File is empty' }, { status: 400 });
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return Response.json(
+        { error: 'File too large. Maximum size is 10MB' },
+        { status: 400 },
+      );
+    }
+
+    const filenameCheck = checkFilename(file.name);
+    if (filenameCheck) return filenameCheck;
+
+    const buffer = await file.arrayBuffer();
+
+    const magicCheck = checkMagicBytes(buffer);
+    if (magicCheck) return magicCheck;
+
+    const hash = computeFileHash(buffer);
+    const cached = getCachedResult(hash);
+    if (cached) return cached;
+
+    // TODO: Replace with actual resume parsing
+    await delay(1500);
+
+    const skills = getRandomSkills(Math.floor(Math.random() * 4) + 5);
+    const result = Response.json({ fileName: file.name, skills });
+    setCachedResult(hash, result);
+
+    return result;
+  } finally {
+    releaseConcurrentSlot(ip);
   }
-
-  const file = formData.get('file');
-
-  if (!file || !(file instanceof File)) {
-    return Response.json({ error: 'Missing or invalid file' }, { status: 400 });
-  }
-
-  if (!ACCEPTED_MIME_TYPES.has(file.type)) {
-    return Response.json(
-      { error: 'Unsupported file type. Accepted: PDF, DOC, DOCX' },
-      { status: 400 },
-    );
-  }
-
-  if (file.size > MAX_FILE_SIZE) {
-    return Response.json(
-      { error: 'File too large. Maximum size is 10MB' },
-      { status: 400 },
-    );
-  }
-
-  await delay(1500);
-
-  const skills = getRandomSkills(Math.floor(Math.random() * 4) + 5);
-
-  return Response.json({ fileName: file.name, skills });
 };
