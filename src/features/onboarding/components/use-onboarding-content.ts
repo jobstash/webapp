@@ -1,4 +1,4 @@
-import { useEffect, useTransition } from 'react';
+import { useEffect, useRef, useTransition } from 'react';
 
 import dynamic from 'next/dynamic';
 import { useRouter } from '@bprogress/next/app';
@@ -10,6 +10,7 @@ import {
   useOnboarding,
   STEP_ORDER,
 } from '@/features/onboarding/hooks/use-onboarding';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
 const WelcomeStep = dynamic(() =>
   import('./steps/welcome-step').then((mod) => mod.WelcomeStep),
@@ -46,13 +47,27 @@ export const useOnboardingContent = () => {
     /[?&]privy_oauth_/.test(window.location.search);
   const isLoading = !ready || hasOAuthParams || isOAuthLoading || authenticated;
 
-  // Reset onboarding state on mount (Zustand persists across SPA navigations)
+  const hasTrackedCompletion = useRef(false);
+
   useEffect(() => {
     reset();
   }, [reset]);
 
   useEffect(() => {
+    if (!isLoading && !isLoginView) {
+      trackEvent(GA_EVENT.ONBOARDING_STEP_VIEWED, {
+        step_number: currentIndex + 1,
+        step_name: currentStep,
+      });
+    }
+  }, [currentStep, isLoading, isLoginView, currentIndex]);
+
+  useEffect(() => {
     if (ready && authenticated && isSessionReady) {
+      if (!hasTrackedCompletion.current) {
+        hasTrackedCompletion.current = true;
+        trackEvent(GA_EVENT.ONBOARDING_COMPLETED, {});
+      }
       startTransition(() => {
         router.replace('/profile');
       });

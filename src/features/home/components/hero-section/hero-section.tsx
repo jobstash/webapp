@@ -1,9 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronDownIcon } from 'lucide-react';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
+import { cn } from '@/lib/utils';
 import { BrowseJobsButton } from '@/components/browse-jobs-button';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 type PillarCategory = 'role' | 'skill' | 'location' | 'commitment';
 
@@ -17,7 +20,6 @@ interface Props {
   pillarItems?: PillarItem[];
 }
 
-// Category styling - subtle dot indicator + hover accent
 const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
   role: {
     dot: 'bg-blue-400',
@@ -38,14 +40,24 @@ const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
 };
 
 export const HeroSection = ({ pillarItems }: Props) => {
+  const handlePostJobClick = () => {
+    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'post_job' });
+  };
+
+  const handlePillarClick = (item: PillarItem) => {
+    trackEvent(GA_EVENT.PILLAR_CLICKED, {
+      pillar_slug: item.href.slice(1),
+      pillar_category: item.category,
+      source: 'hero_discovery',
+    });
+  };
+
   return (
     <section className='relative w-full overflow-hidden border-b bg-linear-to-b from-primary/5 via-background to-background'>
-      {/* Subtle radial gradient */}
       <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/4 via-transparent to-transparent' />
 
       <div className='relative mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24'>
         <div className='flex flex-col items-center gap-10 text-center'>
-          {/* Hero content */}
           <div className='flex flex-col gap-6'>
             <h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
               Find Your Next{' '}
@@ -60,18 +72,17 @@ export const HeroSection = ({ pillarItems }: Props) => {
             </p>
           </div>
 
-          {/* Primary CTAs */}
           <div className='flex flex-col gap-3 sm:flex-row'>
             <BrowseJobsButton />
             <Button size='lg' variant='ghost' asChild>
-              <Link href='/signup'>Post a Job</Link>
+              <Link href='/signup' onClick={handlePostJobClick}>
+                Post a Job
+              </Link>
             </Button>
           </div>
 
-          {/* Discovery Section */}
-          {pillarItems && pillarItems.length > 0 && (
+          {!!pillarItems?.length && (
             <div className='flex w-full max-w-3xl flex-col items-center gap-6 pt-4'>
-              {/* Connector element */}
               <div className='flex flex-col items-center gap-2 text-muted-foreground/60'>
                 <span className='text-xs font-medium tracking-widest uppercase'>
                   Or explore by
@@ -79,7 +90,6 @@ export const HeroSection = ({ pillarItems }: Props) => {
                 <ChevronDownIcon className='size-4 animate-bounce' />
               </div>
 
-              {/* Aligned chips */}
               <div className='flex flex-wrap items-center justify-center gap-2.5'>
                 {pillarItems.map((item) => {
                   const style = categoryStyles[item.category];
@@ -88,6 +98,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={() => handlePillarClick(item)}
                       className={cn(
                         'group relative flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-4 py-2 text-sm font-medium',
                         'transition-all duration-200',
