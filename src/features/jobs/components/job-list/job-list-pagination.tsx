@@ -1,3 +1,6 @@
+'use client';
+
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import {
   Pagination,
   PaginationContent,
@@ -28,6 +31,10 @@ const getPageHref = (page: number, searchParams: Record<string, string>) => {
 
   const queryString = params.toString();
   return queryString ? `/?${queryString}` : '/';
+};
+
+const handlePaginationClick = (pageNumber: number) => {
+  trackEvent(GA_EVENT.PAGINATION_CLICKED, { page_number: pageNumber });
 };
 
 export const JobListPagination = ({
@@ -62,7 +69,10 @@ export const JobListPagination = ({
               />
             </span>
           ) : (
-            <PaginationPrevious href={getPageHref(prevPage, searchParams)} />
+            <PaginationPrevious
+              href={getPageHref(prevPage, searchParams)}
+              onClick={() => handlePaginationClick(prevPage)}
+            />
           )}
         </PaginationItem>
 
@@ -71,6 +81,7 @@ export const JobListPagination = ({
             <PaginationLink
               href={getPageHref(page, searchParams)}
               isActive={page === currentPage}
+              onClick={() => handlePaginationClick(page)}
             >
               {page}
             </PaginationLink>
@@ -92,7 +103,10 @@ export const JobListPagination = ({
               />
             </span>
           ) : (
-            <PaginationNext href={getPageHref(nextPage, searchParams)} />
+            <PaginationNext
+              href={getPageHref(nextPage, searchParams)}
+              onClick={() => handlePaginationClick(nextPage)}
+            />
           )}
         </PaginationItem>
       </PaginationContent>
