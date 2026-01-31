@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
+  robots: clientEnv.ALLOW_INDEXING
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
