@@ -24,9 +24,10 @@ describe('checkOrigin', () => {
     expect(result).toBeNull();
   });
 
-  it('allows requests with no origin and no referer', () => {
+  it('rejects requests with no origin and no referer', () => {
     const result = checkOrigin(makeRequest());
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result!.status).toBe(403);
   });
 
   it('rejects mismatched origin', () => {

@@ -22,14 +22,25 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 ARG NEXT_PUBLIC_MW_URL
 ARG NEXT_PUBLIC_FRONTEND_URL
 ARG NEXT_PUBLIC_PRIVY_APP_ID
+ARG NEXT_PUBLIC_ALLOW_INDEXING=false
+ARG NEXT_PUBLIC_GA_MEASUREMENT_ID=G-VBP2TL6RJ0
 ENV NEXT_PUBLIC_MW_URL=$NEXT_PUBLIC_MW_URL
 ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
 ENV NEXT_PUBLIC_PRIVY_APP_ID=$NEXT_PUBLIC_PRIVY_APP_ID
+ENV NEXT_PUBLIC_ALLOW_INDEXING=$NEXT_PUBLIC_ALLOW_INDEXING
+ENV NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID
 
 # Server env stubs — only needed to pass Zod validation during build
 # Real secrets injected at runtime by Coolify
 ENV SESSION_SECRET="build-time-placeholder-not-used-at-runtime-"
 ENV PRIVY_APP_SECRET="build-time-placeholder"
+ENV R2_ENDPOINT="https://placeholder.test"
+ENV R2_ACCESS_KEY_ID="build-time-placeholder"
+ENV R2_SECRET_ACCESS_KEY="build-time-placeholder"
+ENV R2_BUCKET_NAME="build-time-placeholder"
+ENV OPENAI_API_KEY="build-time-placeholder"
+ENV UPSTASH_REDIS_REST_URL="https://placeholder.test"
+ENV UPSTASH_REDIS_REST_TOKEN="build-time-placeholder"
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules

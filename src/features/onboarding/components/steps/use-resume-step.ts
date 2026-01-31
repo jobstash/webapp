@@ -8,7 +8,8 @@ import {
 } from '@/features/onboarding/schemas';
 
 const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx';
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+const MAX_FILENAME_LENGTH = 255;
 
 const ACCEPTED_MIME_TYPES = new Set([
   'application/pdf',
@@ -21,8 +22,12 @@ const USER_ERROR_MESSAGES: Record<string, string> = {
     'Please upload a PDF, DOC, or DOCX file.',
   'File content does not match expected format. Accepted: PDF, DOC, DOCX':
     "This file doesn't appear to be a valid document. Please try a different file.",
-  'File too large. Maximum size is 10MB':
-    'This file is too large. Please upload a file under 10MB.',
+  'File too large. Maximum size is 1MB':
+    'This file is too large. Please upload a smaller file.',
+  'Resume is too long':
+    'Your resume is too long. Please shorten it and try again.',
+  'Document does not appear to be a resume':
+    'This file does not appear to be a resume. Please upload your actual resume.',
   'File too small to identify':
     'This file appears to be empty. Please upload your resume.',
   'Invalid filename':
@@ -35,10 +40,10 @@ const USER_ERROR_MESSAGES: Record<string, string> = {
     'Something went wrong with the upload. Please try again.',
   'Missing or invalid file':
     'No file was detected. Please select a file and try again.',
+  'Could not extract text from file':
+    "We couldn't read this document. Please try a different file or format.",
   'Too many requests. Try again later.':
     'Too many upload attempts. Please wait a few minutes and try again.',
-  'Too many concurrent uploads. Please wait for current uploads to finish.':
-    'Your previous upload is still processing. Please wait for it to finish.',
 };
 
 const getErrorMessage = (serverError: string): string =>
@@ -46,11 +51,28 @@ const getErrorMessage = (serverError: string): string =>
   'Something went wrong while processing your resume. Please try again.';
 
 const validateFile = (file: File): string | null => {
+  if (!file.name) {
+    return 'The file name is missing. Please try a different file.';
+  }
+  if (file.name.length > MAX_FILENAME_LENGTH) {
+    return 'The file name is too long. Please shorten it and try again.';
+  }
+  if (
+    file.name.includes('\0') ||
+    file.name.includes('..') ||
+    file.name.includes('/') ||
+    file.name.includes('\\')
+  ) {
+    return 'The file name contains invalid characters. Please rename and try again.';
+  }
   if (!ACCEPTED_MIME_TYPES.has(file.type)) {
     return 'Please upload a PDF, DOC, or DOCX file.';
   }
+  if (file.size === 0) {
+    return 'This file appears to be empty. Please upload your resume.';
+  }
   if (file.size > MAX_FILE_SIZE) {
-    return 'This file is too large. Please upload a file under 10MB.';
+    return 'This file is too large. Please upload a smaller file.';
   }
   return null;
 };
@@ -125,7 +147,16 @@ export const useResumeStep = () => {
 
       const skills = mapParsedSkills(parsed.skills);
 
-      setParsedResume({ fileName: parsed.fileName, skills });
+      setParsedResume({
+        resumeId: parsed.resumeId,
+        fileName: parsed.fileName,
+        name: parsed.name,
+        email: parsed.email,
+        phone: parsed.phone,
+        address: parsed.address,
+        skills,
+        socials: parsed.socials,
+      });
       setSelectedSkills(skills);
     } catch {
       setError(

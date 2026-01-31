@@ -8,12 +8,9 @@
 - [ ] Origin guard passes requests with matching `referer` header
 - [ ] Origin guard rejects requests with mismatched `origin` (403)
 - [ ] Origin guard skips check in development mode
-- [ ] Rate limiter allows up to 5 requests per IP within 15 minutes
+- [ ] Rate limiter allows up to 5 requests per IP within 15 minutes (Upstash sliding window)
 - [ ] Rate limiter returns 429 with `Retry-After` header on 6th request
 - [ ] Rate limiter tracks IPs independently
-- [ ] Concurrent limiter allows up to 2 simultaneous requests per IP
-- [ ] Concurrent limiter returns 429 when a 3rd concurrent request arrives
-- [ ] Concurrent limiter releases slot correctly after request completes
 - [ ] Filename guard rejects empty filename (400)
 - [ ] Filename guard rejects filenames longer than 255 characters (400)
 - [ ] Filename guard rejects filenames with null bytes (400)
@@ -35,15 +32,14 @@
 - [ ] POST returns 400 for missing file
 - [ ] POST returns 400 for unsupported MIME type
 - [ ] POST returns 400 for empty file (0 bytes)
-- [ ] POST returns 400 for file exceeding 10MB
+- [ ] POST returns 400 for file exceeding 1MB
 - [ ] POST returns 200 with `fileName` and `skills` array on valid upload
-- [ ] POST releases concurrent slot even on error (finally block)
 - [ ] POST returns cached response for duplicate file content
 
 ### Client Validation (use-resume-step)
 
 - [ ] Rejects files with non-PDF/DOC/DOCX MIME type before network call
-- [ ] Rejects files larger than 10MB before network call
+- [ ] Rejects files larger than 1MB before network call
 - [ ] Displays user-friendly error for each server error message
 - [ ] Falls back to generic error for unknown server errors
 - [ ] Clears previous error when user selects a new file
