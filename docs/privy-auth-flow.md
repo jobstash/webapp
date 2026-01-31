@@ -263,3 +263,14 @@ const apiToken = session.apiToken; // null if no active session
 ```
 
 React Query deduplicates — multiple components using `useSession` share the same `['session']` query.
+
+## Unauthenticated Endpoints
+
+The resume parse endpoint (`POST /api/onboarding/resume/parse`) does **not** use Privy authentication — users may not be logged in during onboarding when they upload a resume.
+
+**Protection:**
+
+- Origin check — validates `Origin`/`Referer` against `FRONTEND_URL`
+- Upstash IP-based rate limiting — 5 requests per 15 minutes per IP (sliding window)
+
+**Reference:** `src/lib/server/guards/rate-limit-guard.ts`
