@@ -5,6 +5,7 @@ const schema = z.object({
   MW_URL: z.url(),
   PRIVY_APP_ID: z.string().min(1),
   ALLOW_INDEXING: z.stringbool().optional().default(false),
+  GA_MEASUREMENT_ID: z.string().optional(),
 });
 
 export const clientEnv = schema.parse({
@@ -12,4 +13,5 @@ export const clientEnv = schema.parse({
   MW_URL: process.env.NEXT_PUBLIC_MW_URL,
   PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID,
   ALLOW_INDEXING: process.env.NEXT_PUBLIC_ALLOW_INDEXING,
+  GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
 });
