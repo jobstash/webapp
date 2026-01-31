@@ -141,11 +141,7 @@ export const SkillsStep = () => {
           <div className='relative'>
             <InputGroup className='h-12'>
               <InputGroupAddon>
-                {isLoading ? (
-                  <LoaderIcon className='animate-spin' />
-                ) : (
-                  <SearchIcon />
-                )}
+                <SearchIcon />
               </InputGroupAddon>
               <InputGroupInput
                 ref={searchInputRef}
