@@ -85,8 +85,17 @@ jobs:
           NEXT_PUBLIC_FRONTEND_URL: https://app.dev.jobstash.xyz
           NEXT_PUBLIC_MW_URL: https://middleware.dev.jobstash.xyz
           NEXT_PUBLIC_PRIVY_APP_ID: clyyn5fpe00j7nnq78b6dua71
+          NEXT_PUBLIC_ALLOW_INDEXING: false
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: G-VBP2TL6RJ0
           SESSION_SECRET: ci-build-dummy-secret-not-for-prod!
           PRIVY_APP_SECRET: ci-build-dummy-secret
+          R2_ENDPOINT: https://placeholder.test
+          R2_ACCESS_KEY_ID: ci-placeholder
+          R2_SECRET_ACCESS_KEY: ci-placeholder
+          R2_BUCKET_NAME: ci-placeholder
+          OPENAI_API_KEY: ci-placeholder
+          UPSTASH_REDIS_REST_URL: https://placeholder.test
+          UPSTASH_REDIS_REST_TOKEN: ci-placeholder
         run: pnpm build
 
   test:
