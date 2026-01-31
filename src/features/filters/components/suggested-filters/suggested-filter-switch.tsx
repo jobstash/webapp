@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
@@ -16,6 +17,7 @@ export const SuggestedFilterSwitch = ({ label, paramKey }: Props) => {
   const [, setFilterParam] = useFilterQueryState(paramKey);
   const [isPending, startTransition] = useTransition();
   const toggleFilter = () => {
+    trackEvent(GA_EVENT.SUGGESTED_FILTER_APPLIED, { filter_name: paramKey });
     startTransition(() => {
       setFilterParam('true');
     });
