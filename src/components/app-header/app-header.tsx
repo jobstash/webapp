@@ -1,6 +1,3 @@
-import { SlidersHorizontalIcon } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
 import { SearchHeader } from '@/features/search';
 
 import { Brand } from './brand';
@@ -16,14 +13,6 @@ export const AppHeader = () => {
 
         <div className='flex grow items-center lg:pl-3'>
           <SearchHeader />
-          <Button
-            size='icon'
-            variant='secondary'
-            aria-label='Filters'
-            className='rounded-xl border border-neutral-800 lg:hidden'
-          >
-            <SlidersHorizontalIcon className='size-5 text-muted-foreground' />
-          </Button>
         </div>
 
         <HeaderAuthButton />
