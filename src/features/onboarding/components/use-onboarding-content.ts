@@ -1,5 +1,6 @@
 import { useEffect, useTransition } from 'react';
 
+import dynamic from 'next/dynamic';
 import { useRouter } from '@bprogress/next/app';
 
 import { useLoginWithOAuth, usePrivy } from '@privy-io/react-auth';
@@ -10,10 +11,18 @@ import {
   STEP_ORDER,
 } from '@/features/onboarding/hooks/use-onboarding';
 
-import { ConnectStep } from './steps/connect-step';
-import { ResumeStep } from './steps/resume-step';
-import { SkillsStep } from './steps/skills-step';
-import { WelcomeStep } from './steps/welcome-step';
+const WelcomeStep = dynamic(() =>
+  import('./steps/welcome-step').then((mod) => mod.WelcomeStep),
+);
+const ResumeStep = dynamic(() =>
+  import('./steps/resume-step').then((mod) => mod.ResumeStep),
+);
+const SkillsStep = dynamic(() =>
+  import('./steps/skills-step').then((mod) => mod.SkillsStep),
+);
+const ConnectStep = dynamic(() =>
+  import('./steps/connect-step').then((mod) => mod.ConnectStep),
+);
 
 const STEP_COMPONENTS = {
   welcome: WelcomeStep,
