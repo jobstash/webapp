@@ -58,9 +58,10 @@ export const OnboardingContent = () => {
         </Button>
       </div>
 
-      <div className='flex flex-1 items-start justify-center overflow-y-auto px-4 py-6 sm:items-center sm:px-6'>
-        <div className='w-full max-w-lg'>
-          {isLoginView ? <LoginView /> : <StepComponent />}
+      <div className='flex flex-1 items-center justify-center overflow-y-auto px-4 py-6 sm:px-6'>
+        <div className='-mt-[60px] w-full max-w-lg sm:mt-0'>
+          {isLoginView && <LoginView />}
+          {!isLoginView && <StepComponent />}
         </div>
       </div>
     </div>
