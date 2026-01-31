@@ -1,4 +1,7 @@
+'use client';
+
 import { cn } from '@/lib/utils';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { ImageWithFallback } from '@/components/image-with-fallback';
 import { type SimilarJobSchema } from '@/features/jobs/schemas';
@@ -12,9 +15,17 @@ export const SimilarJobItem = ({ job }: SimilarJobItemProps) => {
 
   const subtitle = [companyName, timestampText].filter(Boolean).join(' · ');
 
+  const handleClick = () => {
+    trackEvent(GA_EVENT.SIMILAR_JOB_CLICKED, {
+      job_id: job.id,
+      source: 'similar_jobs',
+    });
+  };
+
   return (
     <LinkWithLoader
       href={href}
+      onClick={handleClick}
       className={cn(
         'flex items-start gap-2.5 rounded-lg p-2',
         'transition-colors hover:bg-muted/50',

@@ -14,7 +14,13 @@ export const JobDetailsSidebar = ({ job }: JobDetailsSidebarProps) => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <CtaCard applyUrl={applyUrl} isExpertJob={isExpertJob} />
+      <CtaCard
+        applyUrl={applyUrl}
+        isExpertJob={isExpertJob}
+        jobId={job.id}
+        jobTitle={job.title}
+        organization={organization?.name ?? null}
+      />
       {organization && <OrgInfoCard organization={organization} />}
       <SimilarJobsCard jobs={similarJobs} />
     </div>

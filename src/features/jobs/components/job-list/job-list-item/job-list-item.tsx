@@ -1,6 +1,9 @@
+'use client';
+
 import { ArrowRightIcon, ExternalLinkIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +28,14 @@ export const JobListItem = ({ job }: JobListItemProps) => {
   const { title, href, organization, infoTags, tags, badge, timestampText } =
     job;
 
+  const handleJobClick = () => {
+    trackEvent(GA_EVENT.JOB_CARD_CLICKED, {
+      job_id: job.id,
+      job_title: title,
+      organization: organization?.name ?? '',
+    });
+  };
+
   return (
     <article
       className={cn(
@@ -34,7 +45,6 @@ export const JobListItem = ({ job }: JobListItemProps) => {
         'hover:border-border hover:shadow-md',
       )}
     >
-      {/* Subtle gradient accent on hover */}
       <div
         className={cn(
           'absolute inset-x-0 top-0 h-px',
@@ -45,7 +55,6 @@ export const JobListItem = ({ job }: JobListItemProps) => {
       />
 
       <div className='p-5 pb-3'>
-        {/* Badge row */}
         {badge && (
           <div className='mb-3 flex items-center gap-2'>
             <JobListItemBadge badge={badge} />
@@ -72,9 +81,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
           </div>
         )}
 
-        {/* Content */}
         <div className='space-y-4'>
-          {/* Title with logo and timestamp */}
           <div className='flex items-stretch gap-3'>
             {organization && (
               <ImageWithFallback
@@ -100,6 +107,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
             <div className='flex flex-col justify-center gap-0.5'>
               <LinkWithLoader
                 href={href}
+                onClick={handleJobClick}
                 className={cn(
                   'text-lg leading-tight font-semibold text-foreground',
                   'transition-colors duration-150',
@@ -125,17 +133,14 @@ export const JobListItem = ({ job }: JobListItemProps) => {
             </div>
           </div>
 
-          {/* Info Tags */}
           <JobListItemInfoTags tags={infoTags} />
 
-          {/* Org details + Tech */}
           <div className='space-y-0'>
             {organization && <JobListItemOrg organization={organization} />}
             <JobListItemTechTags tags={tags} />
           </div>
         </div>
 
-        {/* View Details - Desktop (top-right badge) */}
         <div className='absolute top-5 right-5 hidden md:block'>
           <Badge
             asChild
@@ -145,14 +150,13 @@ export const JobListItem = ({ job }: JobListItemProps) => {
               'bg-muted text-muted-foreground ring-1 ring-border',
             )}
           >
-            <LinkWithLoader href={href}>
+            <LinkWithLoader href={href} onClick={handleJobClick}>
               <ExternalLinkIcon className='size-3' />
               View Details
             </LinkWithLoader>
           </Badge>
         </div>
 
-        {/* View Details - Mobile (full-width CTA) */}
         <div className='mt-4 md:hidden'>
           <Button
             asChild
@@ -164,7 +168,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
               'transition-all duration-150',
             )}
           >
-            <LinkWithLoader href={href}>
+            <LinkWithLoader href={href} onClick={handleJobClick}>
               View Job Details
               <ArrowRightIcon className='size-4' />
             </LinkWithLoader>

@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 
 import { type Option } from '@/lib/types';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import {
   Popover,
   PopoverContent,
@@ -26,6 +27,7 @@ export const SuggestedFilterSearch = ({ label, paramKey, options }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const handleSelect = (value: string) => {
+    trackEvent(GA_EVENT.SUGGESTED_FILTER_APPLIED, { filter_name: paramKey });
     setOpen(false);
     startTransition(() => {
       setFilterParam(value);

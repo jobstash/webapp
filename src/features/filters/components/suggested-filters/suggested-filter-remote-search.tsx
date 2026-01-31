@@ -4,14 +4,15 @@ import { useState, useTransition } from 'react';
 
 import { type Option } from '@/lib/types';
 import { capitalizeSlug } from '@/lib/utils';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { RemoteVirtualizedCommand } from '@/components/remote-virtualized-command';
 import { FILTER_POPOVER_CONTENT_CLASS } from '@/features/filters/constants';
 import { getRemoteFilterEndpoint } from '@/features/filters/utils';
-import { RemoteVirtualizedCommand } from '@/components/remote-virtualized-command';
 import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 
@@ -34,6 +35,7 @@ export const SuggestedFilterRemoteSearch = ({
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const handleSelect = (value: string) => {
+    trackEvent(GA_EVENT.SUGGESTED_FILTER_APPLIED, { filter_name: paramKey });
     setOpen(false);
     startTransition(() => {
       setFilterParam(value);

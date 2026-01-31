@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
+
 import { SearchButton } from './search-button';
 import { SearchOverlay } from './search-overlay';
 import { SearchSuggestions } from './search-suggestions';
@@ -25,6 +27,23 @@ export const SearchHeaderClient = () => {
   const closeMobileOverlay = () => {
     setInputValue('');
     setIsMobileOverlayOpen(false);
+  };
+
+  const trackSearchQuery = () => {
+    const trimmed = inputValue.trim();
+    if (trimmed) {
+      trackEvent(GA_EVENT.SEARCH_QUERY, { search_query: trimmed });
+    }
+  };
+
+  const handleItemSelect = () => {
+    trackSearchQuery();
+    closeDropdown();
+  };
+
+  const handleMobileItemSelect = () => {
+    trackSearchQuery();
+    closeMobileOverlay();
   };
 
   const handleOpenDropdown = () => setIsOpen(true);
@@ -87,7 +106,7 @@ export const SearchHeaderClient = () => {
           <SearchSuggestions
             query={inputValue}
             {...suggestions}
-            onClose={closeDropdown}
+            onClose={handleItemSelect}
           />
         )}
       </div>
@@ -113,7 +132,7 @@ export const SearchHeaderClient = () => {
         query={inputValue}
         {...suggestions}
         onQueryChange={setInputValue}
-        onItemSelect={closeMobileOverlay}
+        onItemSelect={handleMobileItemSelect}
         onClose={closeMobileOverlay}
       />
     </>

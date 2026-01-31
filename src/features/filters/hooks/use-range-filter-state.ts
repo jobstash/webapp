@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useProgress } from '@bprogress/next';
 import { useQueryState } from 'nuqs';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import {
   calculateSliderStep,
   roundToNiceNumber,
@@ -73,15 +74,10 @@ export const useRangeFilterState = ({
   const hasChanges =
     localValues[0] !== urlLowest || localValues[1] !== urlHighest;
 
-  // Valid range: min must be less than max
   const isValidRange = displayValues[0] < displayValues[1];
-
-  // Full range: selecting the entire range is essentially "no filter"
   const isFullRange =
     displayValues[0] === roundedDefaultLowest &&
     displayValues[1] === roundedDefaultHighest;
-
-  // Can apply when: has changes, valid range, and not selecting full range (no-op)
   const canApply = hasChanges && isValidRange && !isFullRange;
 
   const apply = (): void => {
@@ -90,6 +86,11 @@ export const useRangeFilterState = ({
     setPage(null);
     setLowestParam(String(displayValues[0]));
     setHighestParam(String(displayValues[1]));
+    trackEvent(GA_EVENT.FILTER_APPLIED, {
+      filter_name: lowestParamKey,
+      filter_value: `${displayValues[0]}-${displayValues[1]}`,
+      filter_type: 'RANGE',
+    });
   };
 
   const reset = (): void => {

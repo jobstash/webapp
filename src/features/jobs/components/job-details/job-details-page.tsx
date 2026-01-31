@@ -33,7 +33,13 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
         </div>
       </main>
 
-      <MobileApplyBar applyUrl={job.applyUrl} isExpertJob={isExpertJob} />
+      <MobileApplyBar
+        applyUrl={job.applyUrl}
+        isExpertJob={isExpertJob}
+        jobId={job.id}
+        jobTitle={job.title}
+        organization={job.organization?.name ?? null}
+      />
     </>
   );
 };

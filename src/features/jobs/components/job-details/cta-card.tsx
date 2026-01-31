@@ -3,9 +3,18 @@ import { ApplyButton } from './apply-button';
 interface CtaCardProps {
   applyUrl: string | null;
   isExpertJob: boolean;
+  jobId: string;
+  jobTitle: string;
+  organization: string | null;
 }
 
-export const CtaCard = ({ applyUrl, isExpertJob }: CtaCardProps) => {
+export const CtaCard = ({
+  applyUrl,
+  isExpertJob,
+  jobId,
+  jobTitle,
+  organization,
+}: CtaCardProps) => {
   if (!applyUrl && !isExpertJob) return null;
 
   return (
@@ -13,6 +22,9 @@ export const CtaCard = ({ applyUrl, isExpertJob }: CtaCardProps) => {
       <ApplyButton
         applyUrl={applyUrl}
         isExpertJob={isExpertJob}
+        jobId={jobId}
+        jobTitle={jobTitle}
+        organization={organization}
         className='w-full'
       />
     </div>

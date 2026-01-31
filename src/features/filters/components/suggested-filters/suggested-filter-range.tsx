@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -41,6 +42,9 @@ export const SuggestedFilterRange = ({ config }: Props) => {
   const step = calculateSliderStep(lowest.value, highest.value);
 
   const handleApply = () => {
+    trackEvent(GA_EVENT.SUGGESTED_FILTER_APPLIED, {
+      filter_name: config.label,
+    });
     setOpen(false);
     startTransition(() => {
       apply();

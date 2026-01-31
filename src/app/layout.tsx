@@ -1,6 +1,7 @@
 import './globals.css';
 
 import type { Metadata, Viewport } from 'next';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 import { interTight } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
@@ -42,6 +43,9 @@ const RootLayout = ({ children }: Props) => (
     <body className='antialiased'>
       <RootProviders>{children}</RootProviders>
     </body>
+    {clientEnv.GA_MEASUREMENT_ID && (
+      <GoogleAnalytics gaId={clientEnv.GA_MEASUREMENT_ID} />
+    )}
   </html>
 );
 

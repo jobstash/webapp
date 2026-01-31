@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
 import type { SuggestedPillar } from '@/features/pillar/schemas';
 import {
@@ -26,6 +29,15 @@ const CATEGORY_HOVER_STYLES: Record<PillarCategory, string> = {
 };
 
 export const SuggestedPillars = ({ items }: Props) => {
+  const handlePillarClick = (item: SuggestedPillar) => {
+    const category = getPillarCategory(item.href.slice(1));
+    trackEvent(GA_EVENT.PILLAR_CLICKED, {
+      pillar_slug: item.href.slice(1),
+      pillar_category: category,
+      source: 'suggested_pillars',
+    });
+  };
+
   if (items.length === 0) return null;
 
   return (
@@ -40,6 +52,7 @@ export const SuggestedPillars = ({ items }: Props) => {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => handlePillarClick(item)}
               className={cn(
                 'group flex max-w-full items-center gap-1.5 rounded-full border border-border/60 bg-card/40 px-3 py-1.5 text-xs font-medium',
                 'transition-all duration-200',
