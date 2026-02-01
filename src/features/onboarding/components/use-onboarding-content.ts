@@ -11,6 +11,7 @@ import {
   STEP_ORDER,
 } from '@/features/onboarding/hooks/use-onboarding';
 import { useOnboardingSync } from '@/features/onboarding/hooks/use-onboarding-sync';
+import { useOnboardingStore } from '@/features/onboarding/stores/onboarding-store';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
 const WelcomeStep = dynamic(() =>
@@ -55,7 +56,13 @@ export const useOnboardingContent = () => {
   const hasTrackedCompletion = useRef(false);
 
   useEffect(() => {
-    reset();
+    const isOAuthReturn =
+      typeof window !== 'undefined' &&
+      /[?&]privy_oauth_/.test(window.location.search);
+
+    if (!isOAuthReturn) {
+      reset();
+    }
   }, [reset]);
 
   useEffect(() => {
@@ -79,11 +86,13 @@ export const useOnboardingContent = () => {
 
   useEffect(() => {
     if (syncStatus === 'done') {
+      useOnboardingStore.persist.clearStorage();
+      reset();
       startTransition(() => {
         router.replace('/profile');
       });
     }
-  }, [syncStatus, router]);
+  }, [syncStatus, router, reset]);
 
   const handleClose = () => {
     startTransition(() => {
