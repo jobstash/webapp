@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -40,22 +40,33 @@ export const useSession = () => {
 
   const isAuthenticated = ready && authenticated;
 
-  const { data: session, isPending } = useQuery({
+  const {
+    data: session,
+    isPending,
+    refetch,
+  } = useQuery({
     queryKey: SESSION_KEY,
     queryFn: async () => {
+      // Phase 1: Read iron-session cookie (no Privy dependency)
       const current = await fetchSession();
-
       const isExpiringSoon =
         current.expiresAt !== null &&
         current.expiresAt - Date.now() < REFRESH_BUFFER;
 
       if (current.apiToken && !isExpiringSoon) return current;
 
+      // Phase 2: Need token exchange — requires Privy
+      if (!ready || !authenticated) {
+        return current.apiToken
+          ? current
+          : ({ apiToken: null, expiresAt: null } as SessionResponse);
+      }
+
       const privyToken = await getAccessToken();
       if (!privyToken) throw new Error('No Privy access token');
       return createSession(privyToken);
     },
-    enabled: isAuthenticated,
+    enabled: true,
     staleTime: STALE_TIME,
     retry: 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
@@ -69,6 +80,14 @@ export const useSession = () => {
   });
 
   const apiToken = session?.apiToken ?? null;
+
+  // Refetch when Privy becomes authenticated but session has no token
+  useEffect(() => {
+    if (isAuthenticated && !apiToken) {
+      void refetch();
+    }
+  }, [isAuthenticated, apiToken, refetch]);
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const logout = async (): Promise<void> => {
@@ -86,7 +105,7 @@ export const useSession = () => {
     apiToken,
     isAuthenticated,
     isSessionReady: apiToken !== null,
-    isLoading: isAuthenticated && isPending,
+    isLoading: isPending,
     isLoggingOut,
     logout,
   };

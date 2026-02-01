@@ -6,7 +6,7 @@
 
 - [ ] Displays "Danger Zone" section with delete account description
 - [ ] Renders "Delete account" button in the danger zone section
-- [ ] Shows loading state when session is loading or user is not authenticated
+- [ ] Shows loading state when session is loading
 
 ### Delete Account Dialog
 
@@ -24,7 +24,7 @@
 
 - [ ] Calls POST /api/profile/delete when user confirms deletion
 - [ ] Calls logout after successful account deletion
-- [ ] Resets deleting state after completion
+- [ ] Dialog stays frozen (uncloseable, buttons disabled) until navigation completes
 
 ### Delete Account - Error Handling
 
@@ -51,3 +51,15 @@
 ### Schema - messageResponseSchema
 
 - [ ] Validates response with success boolean and non-empty message string
+
+## Bugs / Issues Encountered
+
+### Dialog briefly unfreezes on successful deletion
+
+**Symptom:** After successful `POST /api/profile/delete`, the dialog flickers back to an interactive state (buttons re-enabled, closeable) before the page navigates to `/`.
+
+**Root cause:** `finally { setIsDeleting(false) }` ran on both success and error paths. `window.location.href = '/'` does not stop JS execution — the assignment triggers an async navigation, so `finally` runs immediately after, resetting `isDeleting` before the browser navigates away.
+
+**Fix:** Removed the `finally` block. `setIsDeleting(false)` is now called only in the two error paths (API error response and `catch` block). On success, `isDeleting` stays `true` and the dialog remains frozen until the hard redirect completes.
+
+**File:** `src/features/profile/components/use-delete-account-dialog.ts`

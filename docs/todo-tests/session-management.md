@@ -33,9 +33,14 @@
 
 - [ ] Returns `isAuthenticated: false` when Privy is not ready or not authenticated
 - [ ] Returns `isLoading: true` while session query is pending (initial fetch)
-- [ ] `queryFn` calls GET first, then POST if no `apiToken` or session nearing expiry
+- [ ] Query is always enabled (`enabled: true`) — reads cookie without waiting for Privy
+- [ ] Phase 1: `queryFn` calls GET to read iron-session cookie (no Privy dependency)
+- [ ] Phase 1: Returns valid session immediately if `apiToken` exists and not expiring soon
+- [ ] Phase 2: If token missing or expiring, attempts Privy token exchange only when `ready && authenticated`
+- [ ] Phase 2: If Privy not ready, returns current session (if still valid) or `{ apiToken: null, expiresAt: null }`
 - [ ] `queryFn` sends Privy token via `Authorization: Bearer` header in POST
 - [ ] `queryFn` returns session data directly from POST response (no extra GET)
+- [ ] Refetches when Privy becomes authenticated but session has no token (`useEffect`)
 - [ ] Returns `isSessionReady: true` once `apiToken` is non-null
 - [ ] Returns `apiToken` from the session query response
 - [ ] `refetchInterval` schedules refetch 15 minutes before `expiresAt`
@@ -48,7 +53,7 @@
 
 - [ ] Profile page wraps content with `AuthGuard`
 - [ ] Unauthenticated user visiting `/profile` is redirected to `/onboarding` server-side
-- [ ] Authenticated user sees profile content without flash of unauthenticated state
+- [ ] Authenticated user sees profile content immediately (cookie read, no Privy dependency)
 - [ ] Profile page displays "Exchanging token..." while session is being created
 - [ ] Profile page displays the API token once session is ready
 - [ ] Logout button destroys session, logs out of Privy, and redirects to `/`
@@ -66,3 +71,25 @@
 - [ ] Server env validates `PRIVY_APP_ID` is non-empty
 - [ ] Server env validates `PRIVY_APP_SECRET` is non-empty
 - [ ] Build fails with clear error if any required server env var is missing
+
+## Bugs / Issues Encountered
+
+### Infinite spinner on /profile after OAuth navigation
+
+**Symptom:** After completing Google OAuth on `/onboarding`, navigating to `/profile` shows an infinite spinner. `isAuthenticated` stays `false` and the session query never runs.
+
+**Root cause:** `PrivyProvider` lives in route-specific layouts, not the root layout. When navigating from `/onboarding` to `/(main)/profile`, the provider remounts fresh (`ready=false`, `authenticated=false`). The session query had `enabled: isAuthenticated` which blocked it from running. `ProfileContent` also gated rendering on `!isAuthenticated`. Meanwhile, the iron-session cookie was valid (AuthGuard passed server-side), but the client ignored it.
+
+```
+RootLayout → RootProviders (ReactQueryProvider persists)
+├── /onboarding → AuthProviders → PrivyProvider (Instance A, unmounts)
+└── /(main)/profile → AuthProviders → PrivyProvider (Instance B, fresh)
+```
+
+**Fix (3 changes):**
+
+1. `use-session.ts`: Changed `enabled: isAuthenticated` → `enabled: true`. The `queryFn` now reads the iron-session cookie first (Phase 1, no Privy dependency). Only attempts Privy token exchange (Phase 2) when Privy is ready. Added `useEffect` to refetch when Privy becomes authenticated but session has no token.
+2. `use-session.ts`: Changed `isLoading: isAuthenticated && isPending` → `isLoading: isPending`.
+3. `profile-content.tsx`: Changed `if (isLoading || !isAuthenticated)` → `if (isLoading)`. AuthGuard already guarantees authentication server-side.
+
+**Files:** `src/features/auth/hooks/use-session.ts`, `src/features/profile/components/profile-content.tsx`

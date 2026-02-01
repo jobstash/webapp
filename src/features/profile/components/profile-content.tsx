@@ -10,16 +10,10 @@ import { DeleteAccountDialog } from './delete-account-dialog';
 
 export const ProfileContent = () => {
   const { user } = usePrivy();
-  const {
-    apiToken,
-    isAuthenticated,
-    isSessionReady,
-    isLoading,
-    isLoggingOut,
-    logout,
-  } = useSession();
+  const { apiToken, isSessionReady, isLoading, isLoggingOut, logout } =
+    useSession();
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
         <p className='text-muted-foreground'>Loading...</p>

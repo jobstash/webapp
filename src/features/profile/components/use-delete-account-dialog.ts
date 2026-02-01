@@ -37,13 +37,13 @@ export const useDeleteAccountDialog = ({
 
       if (!res.ok || !('success' in data) || !data.success) {
         setError(getErrorMessage(data));
+        setIsDeleting(false);
         return;
       }
 
       await logout();
     } catch {
       setError('Something went wrong. Please try again.');
-    } finally {
       setIsDeleting(false);
     }
   };
