@@ -6,8 +6,6 @@ export const SENIORITY_MAPPING = {
   '5': 'Head',
 } as const;
 
-// Reverse mapping: label (lowercase) → numeric key
-// Used by pillar pages to convert slug values (e.g., "senior") to API keys (e.g., "3")
 export const SENIORITY_LABEL_TO_KEY: Record<string, string> =
   Object.fromEntries(
     Object.entries(SENIORITY_MAPPING).map(([key, label]) => [
@@ -15,3 +13,5 @@ export const SENIORITY_LABEL_TO_KEY: Record<string, string> =
       key,
     ]),
   );
+
+export const MAX_MATCH_SKILLS = 30;
