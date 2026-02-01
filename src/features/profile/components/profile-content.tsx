@@ -5,6 +5,8 @@ import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
+import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
 import { DeleteAccountDialog } from './delete-account-dialog';
 
@@ -12,6 +14,9 @@ export const ProfileContent = () => {
   const { user } = usePrivy();
   const { apiToken, isSessionReady, isLoading, isLoggingOut, logout } =
     useSession();
+
+  const skills = useProfileSkills(isSessionReady);
+  const showcase = useProfileShowcase(isSessionReady);
 
   if (isLoading) {
     return (
@@ -36,6 +41,28 @@ export const ProfileContent = () => {
         <h2 className='text-lg font-semibold'>API Token</h2>
         <pre className='overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm break-all whitespace-pre-wrap text-zinc-100'>
           {isSessionReady ? apiToken : 'Exchanging token...'}
+        </pre>
+      </section>
+
+      <section className='flex flex-col gap-2'>
+        <h2 className='text-lg font-semibold'>Skills</h2>
+        <pre className='overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100'>
+          {skills.isPending
+            ? 'Loading...'
+            : skills.error
+              ? `Error: ${skills.error.message}`
+              : JSON.stringify(skills.data, null, 2)}
+        </pre>
+      </section>
+
+      <section className='flex flex-col gap-2'>
+        <h2 className='text-lg font-semibold'>Showcases</h2>
+        <pre className='overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100'>
+          {showcase.isPending
+            ? 'Loading...'
+            : showcase.error
+              ? `Error: ${showcase.error.message}`
+              : JSON.stringify(showcase.data, null, 2)}
         </pre>
       </section>
 

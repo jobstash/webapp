@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import type {
   OnboardingData,
@@ -38,34 +39,49 @@ interface OnboardingStore {
   reset: () => void;
 }
 
-export const useOnboardingStore = create<OnboardingStore>()((set) => ({
-  ...INITIAL_STATE,
+export const useOnboardingStore = create<OnboardingStore>()(
+  persist(
+    (set) => ({
+      ...INITIAL_STATE,
 
-  nextStep: () =>
-    set((state) => {
-      const i = STEP_ORDER.indexOf(state.currentStep);
-      return i < STEP_ORDER.length - 1
-        ? { currentStep: STEP_ORDER[i + 1] }
-        : state;
+      nextStep: () =>
+        set((state) => {
+          const i = STEP_ORDER.indexOf(state.currentStep);
+          return i < STEP_ORDER.length - 1
+            ? { currentStep: STEP_ORDER[i + 1] }
+            : state;
+        }),
+
+      prevStep: () =>
+        set((state) => {
+          const i = STEP_ORDER.indexOf(state.currentStep);
+          return i > 0 ? { currentStep: STEP_ORDER[i - 1] } : state;
+        }),
+
+      showLogin: () => set({ isLoginView: true }),
+      hideLogin: () => set({ isLoginView: false }),
+
+      setResumeFile: (resumeFile) =>
+        set((state) => ({ data: { ...state.data, resumeFile } })),
+
+      setParsedResume: (parsedResume) =>
+        set((state) => ({ data: { ...state.data, parsedResume } })),
+
+      setSelectedSkills: (selectedSkills) =>
+        set((state) => ({ data: { ...state.data, selectedSkills } })),
+
+      reset: () => set(INITIAL_STATE),
     }),
-
-  prevStep: () =>
-    set((state) => {
-      const i = STEP_ORDER.indexOf(state.currentStep);
-      return i > 0 ? { currentStep: STEP_ORDER[i - 1] } : state;
-    }),
-
-  showLogin: () => set({ isLoginView: true }),
-  hideLogin: () => set({ isLoginView: false }),
-
-  setResumeFile: (resumeFile) =>
-    set((state) => ({ data: { ...state.data, resumeFile } })),
-
-  setParsedResume: (parsedResume) =>
-    set((state) => ({ data: { ...state.data, parsedResume } })),
-
-  setSelectedSkills: (selectedSkills) =>
-    set((state) => ({ data: { ...state.data, selectedSkills } })),
-
-  reset: () => set(INITIAL_STATE),
-}));
+    {
+      name: 'onboarding-store',
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: ({ isLoginView: _isLoginView, data, ...rest }) => ({
+        ...rest,
+        data: {
+          ...data,
+          resumeFile: null,
+        },
+      }),
+    },
+  ),
+);

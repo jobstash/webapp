@@ -1,6 +1,6 @@
 import { type DragEvent, type ChangeEvent, useState, useRef } from 'react';
 
-import { getColorIndex } from '@/features/onboarding/constants';
+import { getTagColorIndex } from '@/lib/utils';
 import { useOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 import {
   type UserSkill,
@@ -83,12 +83,12 @@ const preventAndStop = (e: DragEvent<HTMLDivElement>): void => {
 };
 
 const mapParsedSkills = (
-  skills: { name: string; normalizedName: string }[],
+  skills: { id: string; name: string; normalizedName: string }[],
 ): UserSkill[] =>
   skills.map((tag) => ({
-    id: tag.normalizedName,
+    id: tag.id,
     name: tag.name,
-    colorIndex: getColorIndex(tag.normalizedName),
+    colorIndex: getTagColorIndex(tag.id),
     isFromResume: true,
   }));
 
@@ -132,11 +132,8 @@ export const useResumeStep = () => {
       });
 
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const serverError =
-          body && typeof body === 'object' && 'error' in body
-            ? String(body.error)
-            : '';
+        const body = await res.json().catch(() => null);
+        const serverError = String(body?.error ?? '');
         setError(getErrorMessage(serverError));
         setResumeFile(null);
         return;
@@ -147,16 +144,7 @@ export const useResumeStep = () => {
 
       const skills = mapParsedSkills(parsed.skills);
 
-      setParsedResume({
-        resumeId: parsed.resumeId,
-        fileName: parsed.fileName,
-        name: parsed.name,
-        email: parsed.email,
-        phone: parsed.phone,
-        address: parsed.address,
-        skills,
-        socials: parsed.socials,
-      });
+      setParsedResume({ ...parsed, skills });
       setSelectedSkills(skills);
     } catch {
       setError(

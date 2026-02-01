@@ -14,15 +14,21 @@ export const OnboardingContent = () => {
     currentIndex,
     isLoginView,
     isLoading,
+    isSyncing,
     isNavigating,
     StepComponent,
     handleClose,
   } = useOnboardingContent();
 
-  if (isLoading) {
+  if (isLoading || isSyncing) {
     return (
-      <div className='flex h-dvh items-center justify-center bg-background'>
+      <div className='flex h-dvh flex-col items-center justify-center gap-3 bg-background'>
         <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
+        {isSyncing && (
+          <p className='text-sm text-muted-foreground'>
+            Setting up your profile...
+          </p>
+        )}
       </div>
     );
   }
@@ -60,8 +66,7 @@ export const OnboardingContent = () => {
 
       <div className='flex flex-1 items-center justify-center overflow-y-auto px-4 py-6 sm:px-6'>
         <div className='-mt-[60px] w-full max-w-lg sm:mt-0'>
-          {isLoginView && <LoginView />}
-          {!isLoginView && <StepComponent />}
+          {isLoginView ? <LoginView /> : <StepComponent />}
         </div>
       </div>
     </div>

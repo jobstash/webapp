@@ -1,15 +1,3 @@
-import type { UserSkill } from '@/features/onboarding/schemas';
-
-const COLOR_COUNT = 12;
-
-export const getColorIndex = (id: string): number => {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
-  }
-  return ((hash % COLOR_COUNT) + COLOR_COUNT) % COLOR_COUNT;
-};
-
 export const TAG_COLORS: Record<number, string> = {
   0: 'bg-red-500/10 text-red-600 dark:text-red-400 ring-red-500/20',
   1: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 ring-orange-500/20',
@@ -24,23 +12,3 @@ export const TAG_COLORS: Record<number, string> = {
   10: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-blue-500/20',
   11: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 ring-violet-500/20',
 };
-
-const suggestedSkill = (id: string, name: string): UserSkill => ({
-  id,
-  name,
-  colorIndex: getColorIndex(id),
-  isFromResume: false,
-});
-
-export const SUGGESTED_SKILLS: UserSkill[] = [
-  suggestedSkill('react', 'React'),
-  suggestedSkill('typescript', 'TypeScript'),
-  suggestedSkill('solidity', 'Solidity'),
-  suggestedSkill('nextjs', 'Next.js'),
-  suggestedSkill('rust', 'Rust'),
-  suggestedSkill('python', 'Python'),
-  suggestedSkill('defi', 'DeFi'),
-  suggestedSkill('smart-contracts', 'Smart Contracts'),
-  suggestedSkill('go', 'Go'),
-  suggestedSkill('graphql', 'GraphQL'),
-];

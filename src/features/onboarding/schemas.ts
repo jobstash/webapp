@@ -5,7 +5,7 @@ import { addressSchema, type Address } from '@/lib/schemas';
 export type OnboardingStep = 'welcome' | 'resume' | 'skills' | 'connect';
 
 export interface UserSkill {
-  id: string;
+  id: string; // MW UUID
   name: string;
   colorIndex: number;
   isFromResume: boolean;

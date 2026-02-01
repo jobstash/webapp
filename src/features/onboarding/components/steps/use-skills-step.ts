@@ -1,8 +1,8 @@
 import { type KeyboardEvent, type MouseEvent, useState, useRef } from 'react';
 
-import { SUGGESTED_SKILLS } from '@/features/onboarding/constants';
 import { useOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 import { useSkillsSearch } from '@/features/onboarding/hooks/use-skills-search';
+import { useSuggestedSkills } from '@/features/onboarding/hooks/use-suggested-skills';
 import type { UserSkill } from '@/features/onboarding/schemas';
 
 export const useSkillsStep = () => {
@@ -23,6 +23,8 @@ export const useSkillsStep = () => {
     loadMore,
     hasQuery,
   } = useSkillsSearch(selectedIds, isDropdownOpen);
+  const { suggestedSkills, isLoading: isSuggestedLoading } =
+    useSuggestedSkills(selectedIds);
 
   const handleInputFocus = () => setIsDropdownOpen(true);
   const handleInputBlur = () => setIsDropdownOpen(false);
@@ -51,10 +53,6 @@ export const useSkillsStep = () => {
     setSelectedSkills(data.selectedSkills.filter((s) => s.id !== skillId));
   };
 
-  const suggestedSkills = SUGGESTED_SKILLS.filter(
-    (s) => !selectedIds.has(s.id),
-  );
-
   const subtext = data.parsedResume
     ? `We pulled ${data.parsedResume.skills.length} skills from your resume. Add more or remove any that don't fit.`
     : 'Search or pick from available skills/tags for jobs.';
@@ -72,6 +70,7 @@ export const useSkillsStep = () => {
     loadMore,
     hasQuery,
     suggestedSkills,
+    isSuggestedLoading,
     subtext,
     setSkillSearch,
     handleInputFocus,

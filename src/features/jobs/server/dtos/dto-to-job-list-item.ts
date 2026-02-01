@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { capitalize } from '@/lib/utils';
+import { capitalize, getTagColorIndex } from '@/lib/utils';
 import {
   lookupAddresses,
   type AddressLookupResult,
@@ -209,25 +209,6 @@ const getSalaryText = (dto: JobListItemDto) => {
   return null;
 };
 
-const getJobTechColorIndex = (uuid: string) => {
-  const COLOR_COUNT = 12;
-
-  let pseudorandomBytes =
-    uuid.slice(0, 14) + uuid.slice(15, 19) + uuid.slice(20);
-  pseudorandomBytes = pseudorandomBytes.replaceAll('-', '');
-  let accumulator = 0;
-
-  const pseudoMatch = pseudorandomBytes.match(/.{1,8}/g);
-  if (!pseudoMatch) return 0;
-
-  for (const a of pseudoMatch) {
-    accumulator =
-      (accumulator + (Number.parseInt(a, 16) % COLOR_COUNT)) % COLOR_COUNT;
-  }
-
-  return accumulator;
-};
-
 const dtoToJobItemTag = (
   dto: JobListItemDto['tags'],
 ): JobListItemSchema['tags'] => {
@@ -235,7 +216,7 @@ const dtoToJobItemTag = (
     id: tag.id,
     name: titleCase(tag.name),
     normalizedName: tag.normalizedName,
-    colorIndex: getJobTechColorIndex(tag.id),
+    colorIndex: getTagColorIndex(tag.id),
   }));
 };
 
