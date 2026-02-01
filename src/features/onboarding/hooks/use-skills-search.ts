@@ -4,7 +4,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
 import { useDebounce, useMinDuration } from '@/hooks';
 import { clientEnv } from '@/lib/env/client';
-import { getColorIndex } from '@/features/onboarding/constants';
+import { getTagColorIndex } from '@/lib/utils';
 import {
   popularTagsResponseSchema,
   type PopularTagItem,
@@ -16,28 +16,16 @@ const MIN_LOADING_MS = 300;
 const LIMIT = 20;
 
 const tagToSkill = (tag: PopularTagItem): UserSkill => ({
-  id: tag.normalizedName,
+  id: tag.id,
   name: tag.name,
-  colorIndex: getColorIndex(tag.normalizedName),
+  colorIndex: getTagColorIndex(tag.id),
   isFromResume: false,
 });
-
-interface SkillsSearchResult {
-  searchValue: string;
-  setSearchValue: (value: string) => void;
-  isInitialLoading: boolean;
-  isLoading: boolean;
-  isFetchingMore: boolean;
-  availableSkills: UserSkill[];
-  hasMore: boolean;
-  loadMore: () => void;
-  hasQuery: boolean;
-}
 
 export const useSkillsSearch = (
   selectedSkillIds: Set<string>,
   isOpen: boolean,
-): SkillsSearchResult => {
+) => {
   const [searchValue, setSearchValue] = useState('');
   const debouncedSearch = useDebounce(searchValue, DEBOUNCE_MS);
 

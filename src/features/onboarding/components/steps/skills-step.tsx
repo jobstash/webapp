@@ -118,6 +118,7 @@ export const SkillsStep = () => {
     loadMore,
     hasQuery,
     suggestedSkills,
+    isSuggestedLoading,
     subtext,
     setSkillSearch,
     handleInputFocus,
@@ -196,23 +197,30 @@ export const SkillsStep = () => {
             </span>
           ))}
 
-          {suggestedSkills.map((skill) => (
-            <button
-              key={skill.id}
-              type='button'
-              className={cn(
-                'inline-flex items-center rounded-md border border-dashed border-current px-2.5 py-1 text-sm font-medium transition-opacity',
-                isDropdownOpen
-                  ? 'pointer-events-none opacity-0'
-                  : 'opacity-50 hover:opacity-80',
-                TAG_COLORS[skill.colorIndex] ?? TAG_COLORS[0],
-                'bg-transparent ring-0 hover:bg-transparent',
-              )}
-              onClick={() => handleAddSkill(skill)}
-            >
-              {skill.name}
-            </button>
-          ))}
+          {isSuggestedLoading ? (
+            <span className='inline-flex items-center gap-1.5 py-1 text-sm text-muted-foreground'>
+              <LoaderIcon className='size-3 animate-spin' />
+              Loading suggestions...
+            </span>
+          ) : (
+            suggestedSkills.map((skill) => (
+              <button
+                key={skill.id}
+                type='button'
+                className={cn(
+                  'inline-flex items-center rounded-md border border-dashed border-current px-2.5 py-1 text-sm font-medium transition-opacity',
+                  isDropdownOpen
+                    ? 'pointer-events-none opacity-0'
+                    : 'opacity-50 hover:opacity-80',
+                  TAG_COLORS[skill.colorIndex] ?? TAG_COLORS[0],
+                  'bg-transparent ring-0 hover:bg-transparent',
+                )}
+                onClick={() => handleAddSkill(skill)}
+              >
+                {skill.name}
+              </button>
+            ))
+          )}
         </div>
       </section>
 
