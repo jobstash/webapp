@@ -54,7 +54,9 @@ export const JobListItem = ({ job }: JobListItemProps) => {
         {badge && (
           <div className='mb-3 flex items-center gap-2'>
             <JobListItemBadge badge={badge} />
-            {badge === JOB_ITEM_BADGE.URGENTLY_HIRING && <EligibilityCta />}
+            {badge === JOB_ITEM_BADGE.URGENTLY_HIRING && (
+              <EligibilityCta jobId={job.id} />
+            )}
           </div>
         )}
 
@@ -112,7 +114,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
 
           <JobListItemInfoTags tags={infoTags} />
 
-          <div className='space-y-0'>
+          <div>
             {organization && <JobListItemOrg organization={organization} />}
             <JobListItemTechTags tags={tags} />
           </div>

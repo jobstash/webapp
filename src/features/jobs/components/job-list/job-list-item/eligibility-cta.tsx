@@ -4,24 +4,58 @@ import { ArrowRightIcon, FlameIcon, SparklesIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { LinkWithLoader } from '@/components/link-with-loader';
-import { useEligibility } from '@/hooks/use-eligibility';
+
+import { useJobMatch } from './use-job-match';
 
 const BADGE_BASE = 'rounded-md border-transparent py-1 tracking-wide';
 
-export const EligibilityCta = () => {
-  const { isAuthenticated, isExpert, isLoading } = useEligibility();
+const MATCH_BADGES = {
+  strong_fit: {
+    label: 'Strong Match',
+    tooltip: 'Your profile is an excellent match for this role!',
+    icon: FlameIcon,
+    iconClass: 'text-emerald-500',
+    badgeClass: cn(
+      'bg-linear-to-r from-emerald-500/15 to-green-500/15',
+      'text-emerald-600 dark:text-emerald-400',
+      'ring-1 ring-emerald-500/25',
+    ),
+  },
+  partial_fit: {
+    label: 'Good Match',
+    tooltip: 'Your profile overlaps with what this role is looking for',
+    icon: SparklesIcon,
+    iconClass: 'text-sky-500',
+    badgeClass: cn(
+      'bg-linear-to-r from-sky-500/10 to-cyan-500/10',
+      'text-sky-600 dark:text-sky-400',
+      'ring-1 ring-sky-500/20',
+    ),
+  },
+} as const;
 
-  if (isLoading) return null;
+interface EligibilityCtaProps {
+  jobId: string;
+}
 
-  if (!isAuthenticated) {
+export const EligibilityCta = ({ jobId }: EligibilityCtaProps) => {
+  const { isAuthenticated, isLoading, match } = useJobMatch(jobId);
+
+  if (!isAuthenticated && !isLoading) {
     return (
       <Badge
         asChild
         variant='outline'
         className={cn(
           BADGE_BASE,
-          'bg-gradient-to-r from-teal-500/10 to-emerald-500/10',
+          'bg-linear-to-r from-teal-500/10 to-emerald-500/10',
           'text-teal-600 dark:text-teal-400',
           'ring-1 ring-teal-500/20',
           'cursor-pointer transition-all duration-200',
@@ -37,40 +71,30 @@ export const EligibilityCta = () => {
     );
   }
 
-  if (isExpert) {
-    return (
-      <Badge
-        variant='outline'
-        className={cn(
-          BADGE_BASE,
-          'bg-gradient-to-r from-violet-500/15 to-purple-500/15',
-          'text-violet-600 dark:text-violet-400',
-          'ring-1 ring-violet-500/25',
-        )}
-      >
-        <FlameIcon className='size-3 text-orange-500' />
-        Strong candidate
-      </Badge>
-    );
+  if (isLoading) {
+    return <Skeleton className='h-6 w-24 rounded-md' />;
   }
 
+  const matchBadge =
+    match && match.category in MATCH_BADGES
+      ? MATCH_BADGES[match.category as keyof typeof MATCH_BADGES]
+      : null;
+  if (!matchBadge) return null;
+
+  const Icon = matchBadge.icon;
+
   return (
-    <Badge
-      asChild
-      variant='outline'
-      className={cn(
-        BADGE_BASE,
-        'bg-gradient-to-r from-amber-500/10 to-yellow-500/10',
-        'text-amber-600 dark:text-amber-400',
-        'ring-1 ring-amber-500/15',
-        'cursor-pointer transition-all duration-200',
-        'hover:from-amber-500/15 hover:to-yellow-500/15 hover:ring-amber-500/25',
-      )}
-    >
-      <LinkWithLoader href='/profile'>
-        Almost eligible
-        <ArrowRightIcon className='size-3' />
-      </LinkWithLoader>
-    </Badge>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Badge
+          variant='outline'
+          className={cn(BADGE_BASE, matchBadge.badgeClass)}
+        >
+          <Icon className={cn('size-3', matchBadge.iconClass)} />
+          {matchBadge.label}
+        </Badge>
+      </TooltipTrigger>
+      <TooltipContent>{matchBadge.tooltip}</TooltipContent>
+    </Tooltip>
   );
 };
