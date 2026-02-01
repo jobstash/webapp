@@ -10,6 +10,7 @@ import {
   useOnboarding,
   STEP_ORDER,
 } from '@/features/onboarding/hooks/use-onboarding';
+import { useOnboardingSync } from '@/features/onboarding/hooks/use-onboarding-sync';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
 const WelcomeStep = dynamic(() =>
@@ -37,15 +38,19 @@ export const useOnboardingContent = () => {
   const [isNavigating, startTransition] = useTransition();
   const { ready, authenticated } = usePrivy();
   const { isSessionReady } = useSession();
-  const { currentStep, isLoginView, reset } = useOnboarding();
+  const { currentStep, isLoginView, data, reset } = useOnboarding();
   const { loading: isOAuthLoading } = useLoginWithOAuth();
+  const { status: syncStatus, sync } = useOnboardingSync();
 
   const currentIndex = STEP_ORDER.indexOf(currentStep);
   const StepComponent = STEP_COMPONENTS[currentStep];
-  const hasOAuthParams =
-    typeof window !== 'undefined' &&
-    /[?&]privy_oauth_/.test(window.location.search);
-  const isLoading = !ready || hasOAuthParams || isOAuthLoading || authenticated;
+  const isLoading =
+    !ready ||
+    isOAuthLoading ||
+    authenticated ||
+    (typeof window !== 'undefined' &&
+      /[?&]privy_oauth_/.test(window.location.search));
+  const isSyncing = syncStatus === 'syncing';
 
   const hasTrackedCompletion = useRef(false);
 
@@ -68,11 +73,17 @@ export const useOnboardingContent = () => {
         hasTrackedCompletion.current = true;
         trackEvent(GA_EVENT.ONBOARDING_COMPLETED, {});
       }
+      sync(data);
+    }
+  }, [ready, authenticated, isSessionReady, data, sync]);
+
+  useEffect(() => {
+    if (syncStatus === 'done') {
       startTransition(() => {
         router.replace('/profile');
       });
     }
-  }, [ready, authenticated, isSessionReady, router]);
+  }, [syncStatus, router]);
 
   const handleClose = () => {
     startTransition(() => {
@@ -85,6 +96,7 @@ export const useOnboardingContent = () => {
     currentIndex,
     isLoginView,
     isLoading,
+    isSyncing,
     isNavigating,
     StepComponent,
     handleClose,
