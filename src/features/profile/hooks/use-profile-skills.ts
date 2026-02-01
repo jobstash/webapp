@@ -2,10 +2,18 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-const fetchProfileSkills = async (): Promise<unknown> => {
+import {
+  type ProfileSkill,
+  profileSkillsResponseSchema,
+} from '@/features/profile/schemas';
+
+const fetchProfileSkills = async (): Promise<ProfileSkill[]> => {
   const res = await fetch('/api/profile/skills');
   if (!res.ok) throw new Error(`GET /api/profile/skills failed: ${res.status}`);
-  return res.json() as Promise<unknown>;
+
+  const json: unknown = await res.json();
+  const parsed = profileSkillsResponseSchema.parse(json);
+  return parsed.data;
 };
 
 export const useProfileSkills = (enabled: boolean) =>
@@ -13,4 +21,5 @@ export const useProfileSkills = (enabled: boolean) =>
     queryKey: ['profile-skills'],
     queryFn: fetchProfileSkills,
     enabled,
+    staleTime: 5 * 60 * 1000,
   });
