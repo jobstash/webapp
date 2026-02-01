@@ -9,6 +9,7 @@ const SESSION_EXPIRY = 55 * 60 * 1000; // 55 min (safety margin under 1hr Privy 
 
 const checkWalletResponseSchema = z.object({
   token: z.string().min(1),
+  cryptoNative: z.boolean(),
 });
 
 /** Exchange Privy token for API token and create iron-session. */
@@ -76,11 +77,13 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   const session = await getSession();
   session.apiToken = parsed.data.token;
   session.expiresAt = Date.now() + SESSION_EXPIRY;
+  session.isExpert = parsed.data.cryptoNative;
   await session.save();
 
   return NextResponse.json({
     apiToken: session.apiToken,
     expiresAt: session.expiresAt,
+    isExpert: session.isExpert,
   });
 };
 
@@ -99,11 +102,16 @@ export const GET = async (): Promise<NextResponse> => {
 
   if (isExpired) {
     session.destroy();
-    return NextResponse.json({ apiToken: null, expiresAt: null });
+    return NextResponse.json({
+      apiToken: null,
+      expiresAt: null,
+      isExpert: null,
+    });
   }
 
   return NextResponse.json({
     apiToken: session.apiToken ?? null,
     expiresAt,
+    isExpert: session.isExpert ?? null,
   });
 };

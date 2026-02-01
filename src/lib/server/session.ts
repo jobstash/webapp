@@ -8,6 +8,7 @@ import { serverEnv } from '@/lib/env/server';
 export interface SessionData {
   apiToken?: string;
   expiresAt?: number; // Unix timestamp (ms) when API token expires
+  isExpert?: boolean;
 }
 
 const SESSION_OPTIONS = {
