@@ -6,11 +6,6 @@ import { cn } from '@/lib/utils';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { ImageWithFallback } from '@/components/image-with-fallback';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
@@ -19,6 +14,7 @@ import { JobListItemBadge } from './job-list-item-badge';
 import { JobListItemOrg } from './job-list-item-org';
 import { JobListItemInfoTags } from './job-list-item-info-tags';
 import { JobListItemTechTags } from './job-list-item-tech-tags';
+import { EligibilityCta } from './eligibility-cta.lazy';
 
 interface JobListItemProps {
   job: JobListItemSchema;
@@ -58,26 +54,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
         {badge && (
           <div className='mb-3 flex items-center gap-2'>
             <JobListItemBadge badge={badge} />
-            {badge === JOB_ITEM_BADGE.EXPERT && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant='outline'
-                    className={cn(
-                      'rounded-md border-transparent py-1 tracking-wide',
-                      'bg-gradient-to-r from-amber-500/15 to-orange-500/15',
-                      'text-amber-600 dark:text-amber-400',
-                      'ring-1 ring-amber-500/20',
-                    )}
-                  >
-                    Urgently Hiring
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  This role needs to be filled quickly
-                </TooltipContent>
-              </Tooltip>
-            )}
+            {badge === JOB_ITEM_BADGE.URGENTLY_HIRING && <EligibilityCta />}
           </div>
         )}
 

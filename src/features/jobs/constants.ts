@@ -1,6 +1,6 @@
 export const JOB_ITEM_BADGE = {
   FEATURED: 'Featured',
-  EXPERT: 'Job for Experts',
+  URGENTLY_HIRING: 'Urgently Hiring',
   BEGINNER: 'Job for Web3 Beginners',
 } as const;
 

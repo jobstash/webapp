@@ -1,6 +1,5 @@
 import type { Address, MappedInfoTagSchema } from '@/lib/schemas';
 import type { JobDetailsSchema } from '@/features/jobs/schemas';
-import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
 
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
 
@@ -15,7 +14,6 @@ interface OgImageData {
   commitment: string | null;
   description: string | null;
   badge: string | null;
-  isUrgentlyHiring: boolean;
 }
 
 export const truncateText = (text: string, maxLength: number): string => {
@@ -32,10 +30,10 @@ export const formatLocationText = (
   }
 
   const firstAddress = addresses?.find((addr) => addr.locality || addr.country);
-  if (firstAddress) {
-    if (firstAddress.locality) {
-      return `${firstAddress.locality}, ${firstAddress.country}`;
-    }
+  if (firstAddress?.locality) {
+    return `${firstAddress.locality}, ${firstAddress.country}`;
+  }
+  if (firstAddress?.country) {
     return firstAddress.country;
   }
 
@@ -61,6 +59,5 @@ export const extractOgImageData = (job: JobDetailsSchema): OgImageData => {
     commitment: getInfoTagLabel(job.infoTags, 'commitment'),
     description: job.summary ?? job.description ?? null,
     badge: job.badge,
-    isUrgentlyHiring: job.badge === JOB_ITEM_BADGE.EXPERT,
   };
 };

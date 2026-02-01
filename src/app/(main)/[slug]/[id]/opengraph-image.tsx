@@ -26,7 +26,6 @@ const COLORS = {
   textMuted: '#9CA3AF',
   pillText: '#E5E7EB',
   badgeFeatured: { bg: 'rgba(245, 158, 11, 0.15)', text: '#fbbf24' },
-  badgeExpert: { bg: 'rgba(139, 92, 246, 0.15)', text: '#a78bfa' },
   badgeBeginner: { bg: 'rgba(16, 185, 129, 0.15)', text: '#34d399' },
   badgeUrgent: { bg: 'rgba(245, 158, 11, 0.15)', text: '#fbbf24' },
 } as const;
@@ -100,7 +99,6 @@ const Pill = ({ children }: PillProps) => (
 
 const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   Featured: COLORS.badgeFeatured,
-  'Job for Experts': COLORS.badgeExpert,
   'Job for Web3 Beginners': COLORS.badgeBeginner,
   'Urgently Hiring': COLORS.badgeUrgent,
 };
@@ -157,7 +155,6 @@ const OpengraphImage = async ({ params }: Props) => {
     commitment,
     description,
     badge,
-    isUrgentlyHiring,
   } = extractOgImageData(job);
 
   const locationHasRemote = location?.toLowerCase().includes('remote');
@@ -303,7 +300,7 @@ const OpengraphImage = async ({ params }: Props) => {
         </span>
       )}
 
-      {(badge || isUrgentlyHiring || pills.length > 0) && (
+      {(badge || pills.length > 0) && (
         <div
           style={{
             display: 'flex',
@@ -312,7 +309,6 @@ const OpengraphImage = async ({ params }: Props) => {
           }}
         >
           {badge && <BadgePill badge={badge} />}
-          {isUrgentlyHiring && <BadgePill badge='Urgently Hiring' />}
           {pills.map((pill, index) => (
             <Pill key={index}>{pill}</Pill>
           ))}

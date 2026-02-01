@@ -10,7 +10,8 @@ interface JobDetailsPageProps {
 }
 
 export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
-  const isExpertJob = job.badge === JOB_ITEM_BADGE.EXPERT;
+  const isExpertJob = job.badge === JOB_ITEM_BADGE.URGENTLY_HIRING;
+  const orgName = job.organization?.name ?? null;
 
   return (
     <>
@@ -24,12 +25,12 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
           </article>
 
           <aside className='sticky top-20 hidden max-h-[calc(100vh-5rem)] w-80 shrink-0 flex-col gap-4 self-start overflow-y-auto lg:top-24 lg:flex lg:max-h-[calc(100vh-6rem)]'>
-            <JobDetailsSidebar job={job} />
+            <JobDetailsSidebar job={job} isExpertJob={isExpertJob} />
           </aside>
         </div>
 
         <div className='mt-6 space-y-4 lg:hidden'>
-          <JobDetailsSidebar job={job} />
+          <JobDetailsSidebar job={job} isExpertJob={isExpertJob} />
         </div>
       </main>
 
@@ -38,7 +39,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
         isExpertJob={isExpertJob}
         jobId={job.id}
         jobTitle={job.title}
-        organization={job.organization?.name ?? null}
+        organization={orgName}
       />
     </>
   );

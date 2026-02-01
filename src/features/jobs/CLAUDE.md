@@ -10,7 +10,7 @@ Job listing with server-side rendering and URL-based pagination.
 // constants.ts
 JOB_ITEM_BADGE = {
   FEATURED: 'Featured',
-  EXPERT: 'Job for Experts',
+  URGENTLY_HIRING: 'Urgently Hiring',
   BEGINNER: 'Job for Web3 Beginners',
 };
 
@@ -51,4 +51,4 @@ Each job has:
 - `tags` (skills/technologies with colorIndex)
 - `infoTags` (metadata like salary, commitment)
 - `timestampText` (relative time)
-- `badge` (Featured, Expert, Beginner, or null)
+- `badge` (Featured, Urgently Hiring, Beginner, or null)
