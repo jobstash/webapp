@@ -3,20 +3,17 @@
 import { usePrivy } from '@privy-io/react-auth';
 
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { useSession } from '@/features/auth/hooks/use-session';
+
+import { DeleteAccountDialog } from './delete-account-dialog';
 
 export const ProfileContent = () => {
   const { user } = usePrivy();
-  const {
-    apiToken,
-    isAuthenticated,
-    isSessionReady,
-    isLoading,
-    isLoggingOut,
-    logout,
-  } = useSession();
+  const { apiToken, isSessionReady, isLoading, isLoggingOut, logout } =
+    useSession();
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
         <p className='text-muted-foreground'>Loading...</p>
@@ -50,6 +47,16 @@ export const ProfileContent = () => {
       >
         Log out
       </Button>
+
+      <Separator />
+
+      <section className='flex flex-col gap-2'>
+        <h2 className='text-lg font-semibold'>Danger Zone</h2>
+        <p className='text-sm text-muted-foreground'>
+          Permanently delete your account and all associated data.
+        </p>
+        <DeleteAccountDialog logout={logout} />
+      </section>
     </div>
   );
 };
