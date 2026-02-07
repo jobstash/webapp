@@ -14,3 +14,15 @@ export const profileSkillsResponseSchema = z.object({
   message: z.string(),
   data: profileSkillSchema.array(),
 });
+
+export const showcaseItemSchema = z.object({
+  label: nonEmptyStringSchema,
+  url: nonEmptyStringSchema,
+});
+export type ShowcaseItem = z.infer<typeof showcaseItemSchema>;
+
+export const profileShowcaseResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: showcaseItemSchema.array(),
+});

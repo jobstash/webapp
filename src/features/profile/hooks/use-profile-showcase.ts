@@ -2,11 +2,19 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-const fetchProfileShowcase = async (): Promise<unknown> => {
+import {
+  type ShowcaseItem,
+  profileShowcaseResponseSchema,
+} from '@/features/profile/schemas';
+
+const fetchProfileShowcase = async (): Promise<ShowcaseItem[]> => {
   const res = await fetch('/api/profile/showcase');
   if (!res.ok)
     throw new Error(`GET /api/profile/showcase failed: ${res.status}`);
-  return res.json() as Promise<unknown>;
+
+  const json: unknown = await res.json();
+  const parsed = profileShowcaseResponseSchema.parse(json);
+  return parsed.data;
 };
 
 export const useProfileShowcase = (enabled: boolean) =>
@@ -14,4 +22,5 @@ export const useProfileShowcase = (enabled: boolean) =>
     queryKey: ['profile-showcase'],
     queryFn: fetchProfileShowcase,
     enabled,
+    staleTime: 5 * 60 * 1000,
   });
