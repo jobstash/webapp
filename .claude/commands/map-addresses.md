@@ -131,6 +131,7 @@ Common errors:
 - `countryCode "XX"` - Region not expanded to countries
 - Missing `label` - Every mapping needs a display label
 - Invalid `addresses` - Must be array or null
+- `> 6 addresses` - Broad locations (regions, timezone ranges) must be capped at 6 addresses. Pick the most relevant. Strings that naturally produce fewer than 6 are fine.
 
 ## Files
 

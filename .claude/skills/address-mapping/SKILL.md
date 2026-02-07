@@ -133,59 +133,23 @@ For regional locations, expand to actual countries:
 
 ```typescript
 const REGION_TO_COUNTRIES: Record<string, string[]> = {
-  APAC: [
-    'AU',
-    'JP',
-    'SG',
-    'IN',
-    'KR',
-    'NZ',
-    'HK',
-    'TW',
-    'PH',
-    'MY',
-    'TH',
-    'VN',
-    'ID',
-  ],
-  EMEA: [
-    'GB',
-    'DE',
-    'FR',
-    'NL',
-    'ES',
-    'IT',
-    'IE',
-    'SE',
-    'PL',
-    'AE',
-    'IL',
-    'ZA',
-  ],
+  APAC: ['AU', 'JP', 'SG', 'IN', 'KR', 'HK'],
+  EMEA: ['GB', 'DE', 'FR', 'NL', 'AE', 'IE'],
   'North America': ['US', 'CA', 'MX'],
-  Europe: [
-    'GB',
-    'DE',
-    'FR',
-    'NL',
-    'ES',
-    'IT',
-    'IE',
-    'SE',
-    'NO',
-    'DK',
-    'FI',
-    'PL',
-    'PT',
-    'BE',
-    'AT',
-    'CH',
-  ],
-  Worldwide: ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'NL', 'SG', 'IE'],
+  Europe: ['GB', 'DE', 'FR', 'NL', 'CH', 'IE'],
+  Worldwide: ['US', 'GB', 'CA', 'AU', 'DE', 'SG'],
 };
 ```
 
-Include at least 5 major countries for each region.
+## Maximum 6 Addresses Per Mapping
+
+**CRITICAL:** Each mapping MUST have at most 6 addresses. If a location string spans multiple regions or many cities, pick the 6 most relevant. If a string naturally produces fewer than 6, leave it as-is.
+
+**How to pick the most relevant:**
+
+1. **Explicitly named cities/countries always take priority** — if the string says "Warsaw, Bucharest", those must be in the final 6
+2. **Major crypto/tech hubs** — US, UK, Singapore, Germany, Switzerland, UAE
+3. **Regional balance** — if a string spans APAC + Europe, pick top entries from each rather than all from one
 
 ## Remote Detection
 
