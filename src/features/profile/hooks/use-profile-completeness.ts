@@ -3,6 +3,7 @@
 import { useSession } from '@/features/auth/hooks/use-session';
 import {
   COMPLETENESS_ITEMS,
+  type CtaType,
   PROFILE_TIERS,
   type ProfileTier,
 } from '@/features/profile/constants';
@@ -13,10 +14,11 @@ interface NextStep {
   label: string;
   action: string;
   unlocks: string;
-  href: string;
+  ctaType: CtaType;
 }
 
 interface ProfileCompleteness {
+  isPending: boolean;
   tier: ProfileTier;
   completedCount: number;
   nextStep: NextStep | null;
@@ -33,8 +35,12 @@ const getTier = (completedCount: number): ProfileTier => {
 
 export const useProfileCompleteness = (): ProfileCompleteness => {
   const { isSessionReady } = useSession();
-  const { data: skills } = useProfileSkills(isSessionReady);
-  const { data: showcase } = useProfileShowcase(isSessionReady);
+  const { data: skills, isPending: isSkillsPending } =
+    useProfileSkills(isSessionReady);
+  const { data: showcase, isPending: isShowcasePending } =
+    useProfileShowcase(isSessionReady);
+
+  const isPending = !isSessionReady || isSkillsPending || isShowcasePending;
 
   const showcaseItems = showcase ?? [];
   const completionMap: Record<string, boolean> = {
@@ -55,5 +61,5 @@ export const useProfileCompleteness = (): ProfileCompleteness => {
   const nextStep =
     COMPLETENESS_ITEMS.find((item) => !completionMap[item.key]) ?? null;
 
-  return { tier, completedCount, nextStep };
+  return { isPending, tier, completedCount, nextStep };
 };
