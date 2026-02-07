@@ -1,7 +1,7 @@
 import { SearchHeader } from '@/features/search';
 
 import { Brand } from './brand';
-import { HeaderAuthButton } from './header-auth-button';
+import { HeaderAuthButton } from './header-auth-button.lazy';
 
 export const AppHeader = () => {
   return (

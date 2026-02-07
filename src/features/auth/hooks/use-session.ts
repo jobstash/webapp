@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 interface SessionResponse {
   apiToken: string | null;
   expiresAt: number | null;
+  isExpert: boolean | null;
 }
 
 const SESSION_KEY = ['session'];
@@ -59,7 +60,11 @@ export const useSession = () => {
       if (!ready || !authenticated) {
         return current.apiToken
           ? current
-          : ({ apiToken: null, expiresAt: null } as SessionResponse);
+          : ({
+              apiToken: null,
+              expiresAt: null,
+              isExpert: null,
+            } as SessionResponse);
       }
 
       const privyToken = await getAccessToken();
@@ -96,6 +101,7 @@ export const useSession = () => {
     queryClient.setQueryData(SESSION_KEY, {
       apiToken: null,
       expiresAt: null,
+      isExpert: null,
     });
     await privyLogout();
     window.location.href = '/';
@@ -103,6 +109,7 @@ export const useSession = () => {
 
   return {
     apiToken,
+    isExpert: session?.isExpert ?? null,
     isAuthenticated,
     isSessionReady: apiToken !== null,
     isLoading: isPending,

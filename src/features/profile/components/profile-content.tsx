@@ -1,7 +1,5 @@
 'use client';
 
-import { usePrivy } from '@privy-io/react-auth';
-
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -11,9 +9,14 @@ import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 import { DeleteAccountDialog } from './delete-account-dialog';
 
 export const ProfileContent = () => {
-  const { user } = usePrivy();
-  const { apiToken, isSessionReady, isLoading, isLoggingOut, logout } =
-    useSession();
+  const {
+    apiToken,
+    isExpert,
+    isSessionReady,
+    isLoading,
+    isLoggingOut,
+    logout,
+  } = useSession();
 
   const skills = useProfileSkills(isSessionReady);
   const showcase = useProfileShowcase(isSessionReady);
@@ -32,15 +35,8 @@ export const ProfileContent = () => {
 
       <section className='flex flex-col gap-2'>
         <h2 className='text-lg font-semibold'>Session Details</h2>
-        <pre className='overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100'>
-          {JSON.stringify(user, null, 2)}
-        </pre>
-      </section>
-
-      <section className='flex flex-col gap-2'>
-        <h2 className='text-lg font-semibold'>API Token</h2>
         <pre className='overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm break-all whitespace-pre-wrap text-zinc-100'>
-          {isSessionReady ? apiToken : 'Exchanging token...'}
+          {JSON.stringify({ apiToken, isExpert, isSessionReady }, null, 2)}
         </pre>
       </section>
 

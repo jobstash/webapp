@@ -274,7 +274,7 @@ const dtoToJobItemBadge = (dto: JobListItemDto): JobListItemSchema['badge'] => {
   const { featured, access, onboardIntoWeb3 } = dto;
 
   if (featured) return JOB_ITEM_BADGE.FEATURED;
-  if (access === 'protected') return JOB_ITEM_BADGE.EXPERT;
+  if (access === 'protected') return JOB_ITEM_BADGE.URGENTLY_HIRING;
   if (onboardIntoWeb3) return JOB_ITEM_BADGE.BEGINNER;
 
   return null;
