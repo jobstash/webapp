@@ -12,3 +12,5 @@ const privyClient = new PrivyClient(
 
 export const verifyPrivyToken = (token: string) =>
   privyClient.verifyAuthToken(token);
+
+export const getPrivyUser = (did: string) => privyClient.getUser(did);

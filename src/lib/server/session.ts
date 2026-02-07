@@ -9,6 +9,7 @@ export interface SessionData {
   apiToken?: string;
   expiresAt?: number; // Unix timestamp (ms) when API token expires
   isExpert?: boolean;
+  privyDid?: string;
 }
 
 const SESSION_OPTIONS = {
