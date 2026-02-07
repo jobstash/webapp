@@ -140,16 +140,14 @@ export const ProfileSkillsEditor = ({
   handleSave,
 }: EditorProps) => (
   <Dialog open={isOpen} onOpenChange={setIsOpen}>
-    <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-lg'>
-      <DialogHeader>
+    <DialogContent className='flex max-h-[92vh] min-h-[40vh] flex-col overflow-hidden sm:max-w-lg'>
+      <DialogHeader className='flex-1 overflow-y-auto'>
         <DialogTitle>Edit Skills</DialogTitle>
         <DialogDescription>
           Search and add skills to your profile
         </DialogDescription>
-      </DialogHeader>
 
-      <div className='flex flex-col gap-4'>
-        <div className='relative'>
+        <div className='relative py-2'>
           <InputGroup className='h-12'>
             <InputGroupAddon>
               <SearchIcon />
@@ -230,9 +228,9 @@ export const ProfileSkillsEditor = ({
             ))
           )}
         </div>
-      </div>
+      </DialogHeader>
 
-      <DialogFooter>
+      <DialogFooter className='shrink-0 border-t border-border pt-4'>
         <Button
           variant='outline'
           onClick={() => setIsOpen(false)}
