@@ -8,7 +8,7 @@ interface Props {
   children: ReactNode;
 }
 
-const handleSearchError = (error: Error): void => {
+const handleSearchError = (error: unknown): void => {
   console.error('[SearchHeader] Failed to load search:', error);
 };
 
