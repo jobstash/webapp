@@ -68,7 +68,7 @@ export const PROFILE_TIERS = [
     name: 'All-Star',
     color: 'text-emerald-500',
     bgColor: 'bg-emerald-500',
-    message: "Maximum visibility — you're all set",
+    message: 'Maximum visibility across all recruiters',
     minItems: 4,
   },
 ] as const;
