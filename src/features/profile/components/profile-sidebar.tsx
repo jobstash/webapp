@@ -3,7 +3,6 @@
 import { cn } from '@/lib/utils';
 import { LinkWithLoader } from '@/components/link-with-loader';
 
-import { JobsForYou } from './jobs-for-you/jobs-for-you';
 import { ProfileStrengthCard } from './profile-strength-card';
 import { useProfileSidebar } from './use-profile-sidebar';
 
@@ -32,7 +31,6 @@ export const ProfileSidebar = () => {
       </div>
 
       <ProfileStrengthCard />
-      <JobsForYou />
     </nav>
   );
 };
