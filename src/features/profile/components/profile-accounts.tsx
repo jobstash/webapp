@@ -1,0 +1,64 @@
+'use client';
+
+import { CheckCircle2Icon } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { ProfileCard } from './profile-card';
+import { useProfileAccounts } from './use-profile-accounts';
+
+export const ProfileAccounts = () => {
+  const { accounts, isLoading, linkGoogle } = useProfileAccounts();
+
+  if (isLoading) {
+    return (
+      <div className='flex flex-col gap-4'>
+        <Skeleton className='h-20 w-full rounded-2xl' />
+      </div>
+    );
+  }
+
+  const linkHandlers: Record<string, () => void> = {
+    google_oauth: linkGoogle,
+  };
+
+  return (
+    <div className='flex flex-col gap-4'>
+      {accounts.map((account) => {
+        const Icon = account.icon;
+
+        return (
+          <ProfileCard key={account.type}>
+            <div className='flex items-center gap-3'>
+              <div className='flex size-10 items-center justify-center rounded-full bg-accent'>
+                <Icon className='size-5 text-muted-foreground' />
+              </div>
+
+              <div className='flex min-w-0 grow flex-col gap-0.5'>
+                <span className='text-sm font-medium'>{account.label}</span>
+                <span className='truncate text-xs text-muted-foreground'>
+                  {account.isConnected
+                    ? (account.connectedEmail ?? 'Connected')
+                    : 'Not connected'}
+                </span>
+              </div>
+
+              {account.isConnected ? (
+                <CheckCircle2Icon className='size-5 shrink-0 text-emerald-500' />
+              ) : (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={linkHandlers[account.type]}
+                >
+                  Connect
+                </Button>
+              )}
+            </div>
+          </ProfileCard>
+        );
+      })}
+    </div>
+  );
+};
