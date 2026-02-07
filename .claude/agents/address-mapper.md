@@ -54,6 +54,7 @@ After writing the file, return a brief status message:
    - Generate addresses array with valid country codes (NO XX)
    - Make sure each city/region/country has an entry in addresses array
    - Set isRemote: `true` if string starts with `[REMOTE]` OR contains "Remote"
+   - **Cap addresses at 6 max** — if a string produces more than 6, pick the most relevant (explicitly named locations first, then major crypto/tech hubs). If it produces fewer than 6, leave as-is.
 3. Track uncertain mappings (ambiguous locations)
 4. Write consolidated JSON to the output file path
 5. Return status message
