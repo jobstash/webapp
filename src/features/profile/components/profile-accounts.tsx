@@ -19,18 +19,14 @@ export const ProfileAccounts = () => {
     );
   }
 
-  const linkHandlers: Record<string, () => void> = {
-    google_oauth: linkGoogle,
-  };
-
   return (
-    <div className='flex flex-col gap-4'>
-      {accounts.map((account) => {
-        const Icon = account.icon;
+    <ProfileCard title='Linked Accounts'>
+      <div className='flex flex-col gap-4'>
+        {accounts.map((account) => {
+          const Icon = account.icon;
 
-        return (
-          <ProfileCard key={account.type}>
-            <div className='flex items-center gap-3'>
+          return (
+            <div key={account.type} className='flex items-center gap-3'>
               <div className='flex size-10 items-center justify-center rounded-full bg-accent'>
                 <Icon className='size-5 text-muted-foreground' />
               </div>
@@ -47,18 +43,14 @@ export const ProfileAccounts = () => {
               {account.isConnected ? (
                 <CheckCircle2Icon className='size-5 shrink-0 text-emerald-500' />
               ) : (
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={linkHandlers[account.type]}
-                >
+                <Button variant='outline' size='sm' onClick={linkGoogle}>
                   Connect
                 </Button>
               )}
             </div>
-          </ProfileCard>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </ProfileCard>
   );
 };
