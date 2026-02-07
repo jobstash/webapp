@@ -19,7 +19,6 @@ export const PROFILE_NAV_ITEMS = [
   { label: 'Settings', href: '/profile/settings', icon: SettingsIcon },
 ] as const;
 
-/** Keyed by showcase item label from API (title-case, e.g. "Github") */
 export const SHOWCASE_ICON_MAP: Record<
   string,
   ComponentType<{ className?: string }>
@@ -75,33 +74,78 @@ export const PROFILE_TIERS = [
 
 export type ProfileTier = (typeof PROFILE_TIERS)[number];
 
-export const COMPLETENESS_ITEMS = [
+export const SOCIAL_URL_TEMPLATES: Record<string, (handle: string) => string> =
+  {
+    github: (h) => (h.startsWith('http') ? h : `https://github.com/${h}`),
+    linkedin: (h) =>
+      h.startsWith('http') ? h : `https://linkedin.com/in/${h}`,
+    twitter: (h) => (h.startsWith('http') ? h : `https://x.com/${h}`),
+    telegram: (h) => (h.startsWith('http') ? h : `https://t.me/${h}`),
+    discord: (h) => h,
+    website: (h) => (h.startsWith('http') ? h : `https://${h}`),
+    farcaster: (h) => (h.startsWith('http') ? h : `https://warpcast.com/${h}`),
+    lens: (h) => (h.startsWith('http') ? h : `https://hey.xyz/profile/${h}`),
+  };
+
+export const extractHandleFromUrl = (
+  kind: string,
+  url: string,
+): string | null => {
+  const patterns: Record<string, RegExp> = {
+    github: /github\.com\/([^/?#]+)/,
+    linkedin: /linkedin\.com\/in\/([^/?#]+)/,
+    twitter: /x\.com\/([^/?#]+)/,
+    telegram: /t\.me\/([^/?#]+)/,
+    farcaster: /warpcast\.com\/([^/?#]+)/,
+    lens: /hey\.xyz\/profile\/([^/?#]+)/,
+  };
+
+  const pattern = patterns[kind];
+  if (!pattern) return url; // discord, website — handle IS the url
+
+  const match = url.match(pattern);
+  return match?.[1] ?? null;
+};
+
+export type CtaType =
+  | 'skills-editor'
+  | 'resume-upload'
+  | 'contact-info-editor'
+  | 'socials-editor';
+
+export const COMPLETENESS_ITEMS: readonly {
+  key: string;
+  label: string;
+  action: string;
+  unlocks: string;
+  ctaType: CtaType;
+}[] = [
   {
     key: 'skills',
     label: 'Add your skills',
     action: 'Add Skills',
     unlocks: 'Unlock personalized job matches',
-    href: '/profile',
+    ctaType: 'skills-editor',
   },
   {
     key: 'resume',
     label: 'Upload your resume',
     action: 'Add Resume',
     unlocks: 'Stand out to recruiters',
-    href: '/profile',
+    ctaType: 'resume-upload',
   },
   {
     key: 'social',
     label: 'Connect your socials',
     action: 'Add Socials',
     unlocks: 'Show your professional presence',
-    href: '/profile',
+    ctaType: 'socials-editor',
   },
   {
     key: 'email',
     label: 'Add your email',
     action: 'Add Email',
     unlocks: 'Let recruiters reach you directly',
-    href: '/profile',
+    ctaType: 'contact-info-editor',
   },
-] as const;
+];
