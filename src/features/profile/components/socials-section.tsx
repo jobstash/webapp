@@ -20,6 +20,9 @@ import { SHOWCASE_ICON_MAP } from '@/features/profile/constants';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import type { ShowcaseItem } from '@/features/profile/schemas';
 
+const ensureProtocol = (url: string): string =>
+  url.startsWith('http') ? url : `https://${url}`;
+
 const getIcon = (label: string): React.ComponentType<{ className?: string }> =>
   SHOWCASE_ICON_MAP[label] ?? Link2Icon;
 
@@ -101,7 +104,7 @@ export const SocialsSection = () => {
         return (
           <Link
             key={`${item.label}-${item.url}`}
-            href={item.url}
+            href={ensureProtocol(item.url)}
             target='_blank'
             rel='noopener noreferrer'
             className={PILL_CLASS}

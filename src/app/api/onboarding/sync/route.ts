@@ -28,14 +28,14 @@ const syncRequestSchema = z.object({
 });
 
 const SOCIAL_URL_TEMPLATES: Record<string, (handle: string) => string> = {
-  github: (h) => `https://github.com/${h}`,
+  github: (h) => (h.startsWith('http') ? h : `https://github.com/${h}`),
   linkedin: (h) => (h.startsWith('http') ? h : `https://linkedin.com/in/${h}`),
-  twitter: (h) => `https://x.com/${h}`,
-  telegram: (h) => `https://t.me/${h}`,
+  twitter: (h) => (h.startsWith('http') ? h : `https://x.com/${h}`),
+  telegram: (h) => (h.startsWith('http') ? h : `https://t.me/${h}`),
   discord: (h) => h,
-  website: (h) => h,
-  farcaster: (h) => `https://warpcast.com/${h}`,
-  lens: (h) => `https://hey.xyz/profile/${h}`,
+  website: (h) => (h.startsWith('http') ? h : `https://${h}`),
+  farcaster: (h) => (h.startsWith('http') ? h : `https://warpcast.com/${h}`),
+  lens: (h) => (h.startsWith('http') ? h : `https://hey.xyz/profile/${h}`),
 };
 
 const buildShowcase = (
