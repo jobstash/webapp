@@ -1,9 +1,13 @@
 'use client';
 
 import { useLinkAccount } from '@privy-io/react-auth';
-import { usePrivy } from '@privy-io/react-auth';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { GoogleIcon } from '@/components/svg/google-icon';
+import {
+  LINKED_ACCOUNTS_QUERY_KEY,
+  useLinkedAccounts,
+} from '@/features/profile/hooks/use-linked-accounts';
 
 const ACCOUNT_TYPES = [
   {
@@ -14,21 +18,26 @@ const ACCOUNT_TYPES = [
 ];
 
 export const useProfileAccounts = () => {
-  const { user, ready } = usePrivy();
-  const { linkGoogle } = useLinkAccount();
+  const { data: linkedAccounts, isPending } = useLinkedAccounts();
+  const queryClient = useQueryClient();
+
+  const { linkGoogle } = useLinkAccount({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: LINKED_ACCOUNTS_QUERY_KEY,
+      });
+    },
+  });
 
   const accounts = ACCOUNT_TYPES.map((account) => {
-    const linked = user?.linkedAccounts?.find((a) => a.type === account.type);
-
-    const connectedEmail =
-      linked && 'email' in linked ? (linked.email as string) : null;
+    const linked = linkedAccounts?.find((a) => a.type === account.type);
 
     return {
       ...account,
       isConnected: !!linked,
-      connectedEmail,
+      connectedEmail: linked?.email ?? null,
     };
   });
 
-  return { accounts, isLoading: !ready, linkGoogle };
+  return { accounts, isLoading: isPending, linkGoogle };
 };
