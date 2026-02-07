@@ -4,7 +4,6 @@ import { ArrowRightIcon, FlameIcon, SparklesIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
@@ -41,11 +40,11 @@ const MATCH_BADGES = {
   },
 } as const;
 
-interface EligibilityCtaProps {
+interface EligibilityBadgeProps {
   jobId: string;
 }
 
-export const EligibilityCta = ({ jobId }: EligibilityCtaProps) => {
+export const EligibilityBadge = ({ jobId }: EligibilityBadgeProps) => {
   const { isAuthenticated, isLoading, match } = useJobMatch(jobId);
 
   if (!isAuthenticated && !isLoading) {
@@ -71,30 +70,20 @@ export const EligibilityCta = ({ jobId }: EligibilityCtaProps) => {
     );
   }
 
-  if (isLoading) {
-    return <Skeleton className='h-6 w-24 rounded-md' />;
-  }
+  if (isLoading) return null;
 
-  const matchBadge =
-    match && match.category in MATCH_BADGES
-      ? MATCH_BADGES[match.category as keyof typeof MATCH_BADGES]
-      : null;
-  if (!matchBadge) return null;
-
-  const Icon = matchBadge.icon;
+  if (!match || !(match.category in MATCH_BADGES)) return null;
+  const config = MATCH_BADGES[match.category as keyof typeof MATCH_BADGES];
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Badge
-          variant='outline'
-          className={cn(BADGE_BASE, matchBadge.badgeClass)}
-        >
-          <Icon className={cn('size-3', matchBadge.iconClass)} />
-          {matchBadge.label}
+        <Badge variant='outline' className={cn(BADGE_BASE, config.badgeClass)}>
+          <config.icon className={cn('size-3', config.iconClass)} />
+          {config.label}
         </Badge>
       </TooltipTrigger>
-      <TooltipContent>{matchBadge.tooltip}</TooltipContent>
+      <TooltipContent>{config.tooltip}</TooltipContent>
     </Tooltip>
   );
 };

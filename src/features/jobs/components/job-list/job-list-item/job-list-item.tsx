@@ -14,7 +14,7 @@ import { JobListItemBadge } from './job-list-item-badge';
 import { JobListItemOrg } from './job-list-item-org';
 import { JobListItemInfoTags } from './job-list-item-info-tags';
 import { JobListItemTechTags } from './job-list-item-tech-tags';
-import { EligibilityCta } from './eligibility-cta.lazy';
+import { EligibilityBadge } from './eligibility-badge.lazy';
 
 interface JobListItemProps {
   job: JobListItemSchema;
@@ -55,7 +55,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
           <div className='mb-3 flex items-center gap-2'>
             <JobListItemBadge badge={badge} />
             {badge === JOB_ITEM_BADGE.URGENTLY_HIRING && (
-              <EligibilityCta jobId={job.id} />
+              <EligibilityBadge jobId={job.id} />
             )}
           </div>
         )}
