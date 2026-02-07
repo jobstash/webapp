@@ -26,3 +26,13 @@ export const profileShowcaseResponseSchema = z.object({
   message: z.string(),
   data: showcaseItemSchema.array(),
 });
+
+export const linkedAccountSchema = z.object({
+  type: z.enum(['google_oauth']),
+  email: z.string().nullable(),
+});
+export type LinkedAccount = z.infer<typeof linkedAccountSchema>;
+
+export const linkedAccountsResponseSchema = z.object({
+  data: linkedAccountSchema.array(),
+});
