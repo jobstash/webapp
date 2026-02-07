@@ -67,7 +67,7 @@ export const ProfileSkills = () => {
         <div className='flex flex-col items-center gap-2 rounded-lg border border-dashed border-border py-8'>
           <TagsIcon className='size-8 text-muted-foreground/50' />
           <p className='text-sm text-muted-foreground'>
-            No skills yet — add your first skill
+            Add your skills to unlock personalized job matches
           </p>
         </div>
       )}

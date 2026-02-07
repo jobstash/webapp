@@ -3,9 +3,15 @@
 import {
   DownloadIcon,
   ExternalLinkIcon,
+  GithubIcon,
   Link2Icon,
+  LinkedinIcon,
   MailIcon,
 } from 'lucide-react';
+
+import { TwitterIcon } from '@/components/svg/twitter-icon';
+
+import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -68,9 +74,21 @@ export const SocialsSection = () => {
 
   if (items.length === 0) {
     return (
-      <p className='text-sm text-muted-foreground'>
-        No socials yet — complete onboarding to add yours
-      </p>
+      <div className='flex flex-col items-center gap-3 py-4'>
+        <div className='flex items-center gap-3'>
+          {[GithubIcon, LinkedinIcon, TwitterIcon].map((Icon, i) => (
+            <div
+              key={i}
+              className='flex size-8 items-center justify-center rounded-lg bg-accent/50'
+            >
+              <Icon className='size-4 text-muted-foreground/30' />
+            </div>
+          ))}
+        </div>
+        <p className='text-sm text-muted-foreground'>
+          Connect your socials to show your professional presence
+        </p>
+      </div>
     );
   }
 
@@ -81,7 +99,7 @@ export const SocialsSection = () => {
       {socials.map((item) => {
         const Icon = getIcon(item.label);
         return (
-          <a
+          <Link
             key={`${item.label}-${item.url}`}
             href={item.url}
             target='_blank'
@@ -90,19 +108,19 @@ export const SocialsSection = () => {
           >
             <Icon className='size-3.5 text-muted-foreground' />
             {getDisplayLabel(item)}
-          </a>
+          </Link>
         );
       })}
 
       {email && (
-        <a href={`mailto:${email.url}`} className={PILL_CLASS}>
+        <Link href={`mailto:${email.url}`} className={PILL_CLASS}>
           <MailIcon className='size-3.5 text-muted-foreground' />
           {email.url}
-        </a>
+        </Link>
       )}
 
       {resume && (
-        <a
+        <Link
           href={resume.url}
           target='_blank'
           rel='noopener noreferrer'
@@ -111,7 +129,7 @@ export const SocialsSection = () => {
           <DownloadIcon className='size-3.5 text-muted-foreground' />
           Resume
           <ExternalLinkIcon className='size-3 text-muted-foreground/50' />
-        </a>
+        </Link>
       )}
     </div>
   );
