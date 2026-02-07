@@ -1,5 +1,6 @@
+import type { ComponentType } from 'react';
+
 import {
-  BriefcaseIcon,
   GithubIcon,
   GlobeIcon,
   LinkedinIcon,
@@ -7,7 +8,6 @@ import {
   MessageCircleIcon,
   SettingsIcon,
   UserIcon,
-  UsersIcon,
 } from 'lucide-react';
 
 import { FarcasterIcon } from '@/components/svg/farcaster-icon';
@@ -15,9 +15,7 @@ import { TelegramIcon } from '@/components/svg/telegram-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
 
 export const PROFILE_NAV_ITEMS = [
-  { label: 'Profile', href: '/profile', icon: UserIcon },
-  { label: 'Jobs', href: '/profile/jobs', icon: BriefcaseIcon },
-  { label: 'Accounts', href: '/profile/accounts', icon: UsersIcon },
+  { label: 'Overview', href: '/profile', icon: UserIcon },
   { label: 'Settings', href: '/profile/settings', icon: SettingsIcon },
 ] as const;
 
@@ -33,10 +31,25 @@ export const SOCIAL_PLATFORMS = {
   email: { label: 'Email', icon: MailIcon },
 } as const;
 
+/** Keyed by showcase item label from API (title-case, e.g. "Github") */
+export const SHOWCASE_ICON_MAP: Record<
+  string,
+  ComponentType<{ className?: string }>
+> = {
+  Github: GithubIcon,
+  Linkedin: LinkedinIcon,
+  Twitter: TwitterIcon,
+  Telegram: TelegramIcon,
+  Discord: MessageCircleIcon,
+  Farcaster: FarcasterIcon,
+  Lens: GlobeIcon,
+  Website: GlobeIcon,
+  Email: MailIcon,
+};
+
 export const COMPLETENESS_WEIGHTS = {
-  hasSkills: 30,
+  hasSkills: 35,
   hasResume: 25,
-  hasSocial: 20,
+  hasSocial: 25,
   hasEmail: 15,
-  isExpert: 10,
 } as const;
