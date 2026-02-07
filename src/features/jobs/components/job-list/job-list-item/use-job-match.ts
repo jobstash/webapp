@@ -50,6 +50,7 @@ export const useJobMatch = (jobId: string) => {
   const hasSkills = sortedSkills.length > 0;
 
   const { data: match, isPending: isMatchPending } = useQuery({
+    // isExpert: backend reads from session, but key must invalidate when status changes
     queryKey: ['job-match', jobId, sortedSkills, isExpert],
     queryFn: () => fetchJobMatch(jobId, sortedSkills),
     enabled: isAuthenticated && hasSkills,

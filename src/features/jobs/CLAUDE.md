@@ -52,3 +52,16 @@ Each job has:
 - `infoTags` (metadata like salary, commitment)
 - `timestampText` (relative time)
 - `badge` (Featured, Urgently Hiring, Beginner, or null)
+
+## Job Match
+
+Skill-based match scoring for authenticated users. Shows "Strong Match" / "Good Match" badges.
+
+**Data flow:**
+
+1. `useEligibility` → fetches session status (auth + `isExpert`)
+2. `useProfileSkills` → fetches user skills
+3. `useJobMatch` → calls `/api/jobs/match/[uuid]` with skills
+4. API route reads `isExpert` from server session and forwards to backend
+
+**Note:** `isExpert` affects backend scoring but is read server-side from session, not sent by the client. It must remain in the React Query key to invalidate cache when expert status changes.
