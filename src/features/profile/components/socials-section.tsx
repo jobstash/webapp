@@ -5,6 +5,7 @@ import {
   Link2Icon,
   LinkedinIcon,
   PencilIcon,
+  PlusIcon,
   SquarePenIcon,
 } from 'lucide-react';
 
@@ -55,7 +56,7 @@ const SectionHeader = ({ onEdit }: { onEdit?: () => void }) => (
     {onEdit && (
       <button
         type='button'
-        className='mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground/50 transition-colors hover:text-muted-foreground'
+        className='mt-0.5 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground/60 transition-colors hover:bg-accent/50 hover:text-muted-foreground'
         onClick={onEdit}
       >
         <SquarePenIcon className='size-3.5' />
@@ -117,7 +118,7 @@ export const SocialsSection = () => {
   return (
     <div className='flex flex-col gap-3'>
       <SectionHeader onEdit={openSocialsEditor} />
-      <div className='flex flex-wrap gap-2'>
+      <div className='flex flex-wrap items-center gap-2'>
         {socials.map((item) => {
           const Icon = getIcon(item.label);
           return (
@@ -133,6 +134,14 @@ export const SocialsSection = () => {
             </Link>
           );
         })}
+        <button
+          type='button'
+          className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+          onClick={openSocialsEditor}
+        >
+          <PlusIcon className='size-3' />
+          Add social
+        </button>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 'use client';
 
 import {
-  ExternalLinkIcon,
   FileTextIcon,
   GlobeIcon,
   MailIcon,
   PencilIcon,
+  PlusIcon,
   SquarePenIcon,
 } from 'lucide-react';
 
@@ -98,14 +98,14 @@ export const ContactSection = () => {
         </div>
         <button
           type='button'
-          className='mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground/50 transition-colors hover:text-muted-foreground'
+          className='mt-0.5 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground/60 transition-colors hover:bg-accent/50 hover:text-muted-foreground'
           onClick={openContactInfoEditor}
         >
           <SquarePenIcon className='size-3.5' />
           <span className='hidden sm:inline'>Edit</span>
         </button>
       </div>
-      <div className='flex flex-wrap gap-2'>
+      <div className='flex flex-wrap items-center gap-2'>
         {email && (
           <Link href={`mailto:${email.url}`} className={PILL_CLASS}>
             <MailIcon className='size-3.5 text-muted-foreground' />
@@ -134,9 +134,17 @@ export const ContactSection = () => {
           >
             <FileTextIcon className='size-3.5 text-muted-foreground' />
             Resume
-            <ExternalLinkIcon className='size-3 text-muted-foreground/50' />
           </Link>
         )}
+
+        <button
+          type='button'
+          className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+          onClick={openContactInfoEditor}
+        >
+          <PlusIcon className='size-3' />
+          Add contact
+        </button>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { PencilIcon, SquarePenIcon, TagsIcon } from 'lucide-react';
+import { PencilIcon, PlusIcon, SquarePenIcon, TagsIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
@@ -22,7 +22,7 @@ const SectionHeader = ({ onEdit }: { onEdit?: () => void }) => (
     {onEdit && (
       <button
         type='button'
-        className='mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground/50 transition-colors hover:text-muted-foreground'
+        className='mt-0.5 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground/60 transition-colors hover:bg-accent/50 hover:text-muted-foreground'
         onClick={onEdit}
       >
         <SquarePenIcon className='size-3.5' />
@@ -73,7 +73,7 @@ export const ProfileSkills = () => {
   return (
     <div className='flex flex-col gap-3'>
       <SectionHeader onEdit={openSkillsEditor} />
-      <div className='flex flex-wrap gap-2'>
+      <div className='flex flex-wrap items-center gap-2'>
         {skills.map((skill) => (
           <span
             key={skill.id}
@@ -85,6 +85,14 @@ export const ProfileSkills = () => {
             {skill.name}
           </span>
         ))}
+        <button
+          type='button'
+          className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+          onClick={openSkillsEditor}
+        >
+          <PlusIcon className='size-3' />
+          Add skill
+        </button>
       </div>
     </div>
   );
