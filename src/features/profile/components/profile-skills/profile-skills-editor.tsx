@@ -140,7 +140,10 @@ export const ProfileSkillsEditor = ({
   handleSave,
 }: EditorProps) => (
   <Dialog open={isOpen} onOpenChange={setIsOpen}>
-    <DialogContent className='flex max-h-[92vh] min-h-[40vh] flex-col overflow-hidden sm:max-w-lg'>
+    <DialogContent
+      className='flex max-h-[92vh] min-h-[40vh] flex-col overflow-hidden sm:max-w-lg'
+      onOpenAutoFocus={(e) => e.preventDefault()}
+    >
       <DialogHeader className='flex-1 overflow-y-auto'>
         <DialogTitle>Edit Skills</DialogTitle>
         <DialogDescription>
