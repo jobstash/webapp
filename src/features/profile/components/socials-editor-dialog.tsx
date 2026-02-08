@@ -96,7 +96,7 @@ export const SocialsEditorDialog = ({
 
         <DialogFooter>
           <Button
-            variant='outline'
+            variant='ghost'
             onClick={() => onOpenChange(false)}
             disabled={isSaving}
           >

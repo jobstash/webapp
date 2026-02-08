@@ -235,7 +235,7 @@ export const ProfileSkillsEditor = ({
 
       <DialogFooter className='shrink-0 border-t border-border pt-4'>
         <Button
-          variant='outline'
+          variant='ghost'
           onClick={() => setIsOpen(false)}
           disabled={isSaving}
         >
