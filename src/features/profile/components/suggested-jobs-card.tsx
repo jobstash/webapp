@@ -61,7 +61,7 @@ export const SuggestedJobsCard = () => {
   if (isSkillsPending) {
     return (
       <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>
-        <h3 className='mb-3 font-medium'>Your Job Matches</h3>
+        <h3 className='mb-3 font-medium'>Jobs For You</h3>
         <div className={cn(CARD_HEIGHT, 'space-y-1')}>
           {Array.from({ length: 5 }).map((_, i) => (
             <JobSkeleton key={i} />
@@ -74,7 +74,7 @@ export const SuggestedJobsCard = () => {
   if (!hasSkills) {
     return (
       <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>
-        <h3 className='mb-3 font-medium'>Your Job Matches</h3>
+        <h3 className='mb-3 font-medium'>Jobs For You</h3>
         <div className='flex flex-col items-center gap-3 py-6'>
           <TagsIcon className='size-8 text-muted-foreground/50' />
           <p className='text-center text-sm text-muted-foreground'>
@@ -87,7 +87,7 @@ export const SuggestedJobsCard = () => {
 
   return (
     <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>
-      <h3 className='mb-3 font-medium'>Your Job Matches</h3>
+      <h3 className='mb-3 font-medium'>Jobs For You</h3>
 
       {isPending ? (
         <div className={cn(CARD_HEIGHT, 'space-y-1')}>

@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 
 import {
+  BriefcaseBusinessIcon,
   GithubIcon,
   GlobeIcon,
   LinkedinIcon,
@@ -16,6 +17,7 @@ import { TwitterIcon } from '@/components/svg/twitter-icon';
 
 export const PROFILE_NAV_ITEMS = [
   { label: 'Overview', href: '/profile', icon: UserIcon },
+  { label: 'Jobs For You', href: '/profile/jobs', icon: BriefcaseBusinessIcon },
   { label: 'Settings', href: '/profile/settings', icon: SettingsIcon },
 ] as const;
 

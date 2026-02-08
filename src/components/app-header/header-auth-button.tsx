@@ -19,8 +19,8 @@ export const HeaderAuthButton = () => {
   if (isAuthenticated) {
     return (
       <PrimaryCTA asChild className={CTA_CLASS}>
-        <LinkWithLoader href='/profile' onClick={handleClick}>
-          My Profile
+        <LinkWithLoader href='/profile/jobs' onClick={handleClick}>
+          Jobs For You
         </LinkWithLoader>
       </PrimaryCTA>
     );
