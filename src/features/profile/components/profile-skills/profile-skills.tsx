@@ -2,6 +2,7 @@
 
 import { PencilIcon, PlusIcon, SquarePenIcon, TagsIcon } from 'lucide-react';
 
+import { MAX_MATCH_SKILLS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import { Button } from '@/components/ui/button';
@@ -11,12 +12,23 @@ import { useSession } from '@/features/auth/hooks/use-session';
 import { useProfileEditor } from '@/features/profile/components/profile-editor-provider';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
-const SectionHeader = ({ onEdit }: { onEdit?: () => void }) => (
+const SectionHeader = ({
+  onEdit,
+  count,
+}: {
+  onEdit?: () => void;
+  count?: number;
+}) => (
   <div className='flex items-start justify-between'>
     <div>
       <h3 className='text-base font-semibold'>Skills</h3>
       <p className='text-xs text-muted-foreground'>
         Used for matching you with relevant jobs
+        {count != null && (
+          <span className='ml-1.5 text-muted-foreground/40'>
+            ({count}/{MAX_MATCH_SKILLS})
+          </span>
+        )}
       </p>
     </div>
     {onEdit && (
@@ -72,7 +84,7 @@ export const ProfileSkills = () => {
 
   return (
     <div className='flex flex-col gap-3'>
-      <SectionHeader onEdit={openSkillsEditor} />
+      <SectionHeader onEdit={openSkillsEditor} count={skills.length} />
       <div className='flex flex-wrap items-center gap-2'>
         {skills.map((skill) => (
           <span
@@ -85,14 +97,16 @@ export const ProfileSkills = () => {
             {skill.name}
           </span>
         ))}
-        <button
-          type='button'
-          className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
-          onClick={openSkillsEditor}
-        >
-          <PlusIcon className='size-3' />
-          Add skill
-        </button>
+        {skills.length < MAX_MATCH_SKILLS && (
+          <button
+            type='button'
+            className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+            onClick={openSkillsEditor}
+          >
+            <PlusIcon className='size-3' />
+            Add skill
+          </button>
+        )}
       </div>
     </div>
   );

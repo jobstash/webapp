@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 
 import { LoaderIcon, SearchIcon, XIcon } from 'lucide-react';
 
+import { MAX_MATCH_SKILLS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -147,7 +148,10 @@ export const ProfileSkillsEditor = ({
       <DialogHeader className='flex-1 overflow-y-auto'>
         <DialogTitle>Edit Skills</DialogTitle>
         <DialogDescription>
-          Search and add skills to your profile
+          Search and add skills to your profile{' '}
+          <span className='text-muted-foreground/40'>
+            ({editedSkills.length}/{MAX_MATCH_SKILLS})
+          </span>
         </DialogDescription>
 
         <div className='relative py-2'>
