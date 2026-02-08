@@ -1,10 +1,18 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { z } from 'zod';
+
 import { MAX_MATCH_SKILLS } from '@/lib/constants';
 import { clientEnv } from '@/lib/env/client';
 import { getSession } from '@/lib/server/session';
-import { similarJobDto } from '@/features/jobs/server/dtos/similar-job.dto';
-import { dtoToSimilarJob } from '@/features/jobs/server/dtos/dto-to-job-details';
+import { jobListPageDto } from '@/features/jobs/server/dtos/job-list-page.dto';
+import { dtoToJobListPage } from '@/features/jobs/server/dtos/dto-to-job-list-page';
+
+const mwResponseDto = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: jobListPageDto,
+});
 
 const jsonError = (error: string, status: number) =>
   NextResponse.json({ error }, { status });
@@ -27,9 +35,12 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       return jsonError('No skills provided', 400);
     }
 
+    const page = Math.max(1, Number(req.nextUrl.searchParams.get('page')) || 1);
+
     const url = new URL(`${clientEnv.MW_URL}/jobs/suggested`);
     url.searchParams.set('skills', skills.join(','));
     url.searchParams.set('isExpert', String(session.isExpert ?? false));
+    url.searchParams.set('page', String(page));
 
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${session.apiToken}` },
@@ -47,14 +58,21 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
 
     const json: unknown = await res.json().catch(() => null);
-    const parsed = similarJobDto.safeParse(json);
+    const parsed = mwResponseDto.safeParse(json);
 
     if (!parsed.success) {
       return jsonError('Invalid response from backend', 502);
     }
 
+    const { page: mwPage, count, total } = parsed.data.data;
+    const jobListPage = dtoToJobListPage(parsed.data.data);
+    const hasMore = mwPage * count < total;
+
     return NextResponse.json({
-      jobs: parsed.data.data.map(dtoToSimilarJob),
+      page: mwPage,
+      total,
+      data: jobListPage.data,
+      hasMore,
     });
   } catch {
     return jsonError('Internal server error', 500);

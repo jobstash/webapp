@@ -1,39 +1,34 @@
 'use client';
 
-import { TagsIcon } from 'lucide-react';
+import { Loader2Icon, TagsIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { SimilarJobItem } from '@/features/jobs/components/job-details/similar-job-item';
+import { JobListItem } from '@/features/jobs/components/job-list/job-list-item/job-list-item';
+import { JobListItemSkeleton } from '@/features/jobs/components/job-list/job-list-item/job-list-item.skeleton';
 
 import { ProfileCard } from './profile-card';
 import { useProfileEditor } from './profile-editor-provider';
 import { useSuggestedJobsCard } from './use-suggested-jobs-card';
 
-const JobSkeleton = () => (
-  <div className='flex items-start gap-2.5 p-2'>
-    <Skeleton className='mt-0.5 size-8 shrink-0 rounded-md' />
-    <div className='flex min-w-0 flex-1 flex-col gap-1.5'>
-      <Skeleton className='h-4 w-3/4' />
-      <Skeleton className='h-3 w-1/2' />
-    </div>
-  </div>
-);
-
 export const ProfileJobs = () => {
   const { openSkillsEditor } = useProfileEditor();
-  const { jobs, isPending, hasSkills, isSkillsPending } =
-    useSuggestedJobsCard();
+  const {
+    jobs,
+    isPending,
+    hasSkills,
+    isSkillsPending,
+    hasMore,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useSuggestedJobsCard();
 
   if (isSkillsPending) {
     return (
-      <ProfileCard title='Jobs For You'>
-        <div className='space-y-1'>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <JobSkeleton key={i} />
-          ))}
-        </div>
-      </ProfileCard>
+      <div className='space-y-4'>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <JobListItemSkeleton key={i} />
+        ))}
+      </div>
     );
   }
 
@@ -55,23 +50,37 @@ export const ProfileJobs = () => {
 
   if (isPending) {
     return (
-      <ProfileCard title='Jobs For You'>
-        <div className='space-y-1'>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <JobSkeleton key={i} />
-          ))}
-        </div>
-      </ProfileCard>
+      <div className='space-y-4'>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <JobListItemSkeleton key={i} />
+        ))}
+      </div>
     );
   }
 
   return (
-    <ProfileCard title='Jobs For You'>
-      <div className='space-y-1'>
-        {jobs.map((job) => (
-          <SimilarJobItem key={job.id} job={job} target='_blank' />
-        ))}
-      </div>
-    </ProfileCard>
+    <div className='space-y-4'>
+      {jobs.map((job) => (
+        <JobListItem key={job.id} job={job} />
+      ))}
+
+      {hasMore && (
+        <Button
+          variant='ghost'
+          className='w-full'
+          disabled={isFetchingNextPage}
+          onClick={() => fetchNextPage()}
+        >
+          {isFetchingNextPage ? (
+            <>
+              <Loader2Icon className='size-4 animate-spin' />
+              Loading...
+            </>
+          ) : (
+            'Load More'
+          )}
+        </Button>
+      )}
+    </div>
   );
 };

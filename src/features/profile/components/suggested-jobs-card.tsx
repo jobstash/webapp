@@ -1,12 +1,14 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Link from 'next/link';
 import { TagsIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { Skeleton } from '@/components/ui/skeleton';
-import { type SimilarJobSchema } from '@/features/jobs/schemas';
-import { SimilarJobItem } from '@/features/jobs/components/job-details/similar-job-item';
+import { ImageWithFallback } from '@/components/image-with-fallback';
+import { type JobListItemSchema } from '@/features/jobs/schemas';
 
 import { useSuggestedJobsCard } from './use-suggested-jobs-card';
 
@@ -22,7 +24,63 @@ const JobSkeleton = () => (
   </div>
 );
 
-const ScrollableJobList = ({ jobs }: { jobs: SimilarJobSchema[] }) => {
+const LINK_CLASS = cn(
+  'flex items-start gap-2.5 rounded-lg p-2',
+  'transition-colors hover:bg-muted/50',
+);
+
+const FALLBACK_CLASS = cn(
+  'mt-0.5 flex size-8 items-center justify-center rounded-md',
+  'bg-linear-to-br from-muted to-muted/50',
+  'text-xs font-medium text-muted-foreground',
+  'ring-1 ring-border/50',
+);
+
+const CompactJobItem = ({ job }: { job: JobListItemSchema }) => {
+  const { title, href, timestampText, organization } = job;
+  const companyName = organization?.name ?? null;
+  const companyLogo = organization?.logo ?? null;
+  const subtitle = [companyName, timestampText].filter(Boolean).join(' · ');
+
+  const handleClick = () => {
+    trackEvent(GA_EVENT.JOB_CARD_CLICKED, {
+      job_id: job.id,
+      job_title: title,
+      organization: companyName ?? '',
+    });
+  };
+
+  return (
+    <Link
+      href={href}
+      target='_blank'
+      rel='noopener noreferrer'
+      onClick={handleClick}
+      className={LINK_CLASS}
+    >
+      <ImageWithFallback
+        src={companyLogo ?? ''}
+        alt={companyName ?? 'Company'}
+        width={32}
+        height={32}
+        className='mt-0.5 shrink-0 rounded-md ring-1 ring-border/50'
+        fallback={
+          <div className={FALLBACK_CLASS}>
+            {companyName?.charAt(0).toUpperCase() ?? '?'}
+          </div>
+        }
+      />
+      <div className='min-w-0 flex-1'>
+        <p className='truncate text-sm font-medium text-foreground'>{title}</p>
+        {subtitle && (
+          <p className='truncate text-xs text-muted-foreground'>{subtitle}</p>
+        )}
+      </div>
+    </Link>
+  );
+};
+
+const ScrollableJobList = ({ jobs }: { jobs: JobListItemSchema[] }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
 
@@ -40,12 +98,12 @@ const ScrollableJobList = ({ jobs }: { jobs: SimilarJobSchema[] }) => {
         className={cn(CARD_HEIGHT, 'space-y-1 overflow-y-auto')}
       >
         {jobs.map((job) => (
-          <SimilarJobItem key={job.id} job={job} target='_blank' />
+          <CompactJobItem key={job.id} job={job} />
         ))}
       </div>
       <div
         className={cn(
-          'pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-sidebar to-transparent transition-opacity',
+          'pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-sidebar to-transparent transition-opacity',
           isAtBottom ? 'opacity-0' : 'opacity-100',
         )}
       />
