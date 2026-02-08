@@ -24,18 +24,20 @@ const fetchSuggestedJobs = async (skills: string[]) => {
 };
 
 interface UseSuggestedJobsParams {
+  enabled: boolean;
   skills: string[];
   isExpert: boolean | null;
 }
 
 export const useSuggestedJobs = ({
+  enabled,
   skills,
   isExpert,
 }: UseSuggestedJobsParams) =>
   useQuery({
     queryKey: ['profile-suggested-jobs', skills, isExpert],
     queryFn: () => fetchSuggestedJobs(skills),
-    enabled: skills.length > 0,
+    enabled: enabled && skills.length > 0,
     staleTime: STALE_TIME,
     placeholderData: keepPreviousData,
   });

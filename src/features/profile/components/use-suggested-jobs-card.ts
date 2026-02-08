@@ -11,7 +11,11 @@ export const useSuggestedJobsCard = () => {
 
   const skills = profileSkills?.map((s) => s.normalizedName) ?? [];
   const hasSkills = skills.length > 0;
-  const { data: jobs = [], isPending } = useSuggestedJobs({ skills, isExpert });
+  const { data: jobs = [], isPending } = useSuggestedJobs({
+    enabled: isSessionReady,
+    skills,
+    isExpert,
+  });
 
   return {
     jobs,
