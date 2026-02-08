@@ -66,8 +66,8 @@ export const ProfileJobs = () => {
 
       {hasMore && (
         <Button
-          variant='ghost'
-          className='w-full'
+          variant='link'
+          className='w-full text-muted-foreground hover:text-foreground'
           disabled={isFetchingNextPage}
           onClick={() => fetchNextPage()}
         >

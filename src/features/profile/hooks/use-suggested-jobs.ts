@@ -52,7 +52,10 @@ export const useSuggestedJobs = ({
       placeholderData: keepPreviousData,
     });
 
-  const jobs = data?.pages.flatMap((p) => p.data) ?? [];
+  const allJobs = data?.pages.flatMap((p) => p.data) ?? [];
+  const jobs = allJobs.filter(
+    (job, i) => allJobs.findIndex((j) => j.id === job.id) === i,
+  );
 
   return {
     jobs,

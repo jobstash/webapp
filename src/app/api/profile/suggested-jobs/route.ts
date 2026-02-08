@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { MAX_MATCH_SKILLS } from '@/lib/constants';
 import { clientEnv } from '@/lib/env/client';
 import { getSession } from '@/lib/server/session';
+import { JOBS_PER_PAGE } from '@/features/jobs/constants';
 import { jobListPageDto } from '@/features/jobs/server/dtos/job-list-page.dto';
 import { dtoToJobListPage } from '@/features/jobs/server/dtos/dto-to-job-list-page';
 
@@ -64,15 +65,28 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       return jsonError('Invalid response from backend', 502);
     }
 
-    const { page: mwPage, count, total } = parsed.data.data;
+    const { page: mwPage, total } = parsed.data.data;
     const jobListPage = dtoToJobListPage(parsed.data.data);
-    const hasMore = mwPage * count < total;
+    const actualCount = jobListPage.data.length;
+    const hasMore =
+      actualCount >= JOBS_PER_PAGE && mwPage * JOBS_PER_PAGE < total;
+
+    const debug = {
+      mwPage,
+      total,
+      actualCount,
+      pageSize: JOBS_PER_PAGE,
+      hasMore,
+      jobIds: jobListPage.data.map((j) => j.id),
+    };
+    console.log('[suggested-jobs] debug:', JSON.stringify(debug, null, 2));
 
     return NextResponse.json({
       page: mwPage,
       total,
       data: jobListPage.data,
       hasMore,
+      debug,
     });
   } catch {
     return jsonError('Internal server error', 500);
