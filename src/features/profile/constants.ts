@@ -36,6 +36,12 @@ export const SHOWCASE_ICON_MAP: Record<
   Email: MailIcon,
 };
 
+const CONTACT_LABELS = new Set(['Email', 'CV', 'Website']);
+
+export const SOCIAL_LABELS = Object.keys(SHOWCASE_ICON_MAP).filter(
+  (label) => !CONTACT_LABELS.has(label),
+);
+
 export const PROFILE_TIERS = [
   {
     name: 'Lurker',
