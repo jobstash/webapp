@@ -1,8 +1,5 @@
 'use client';
 
-import { UserIcon } from 'lucide-react';
-
-import { cn } from '@/lib/utils';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { useEligibility } from '@/hooks/use-eligibility';
 import { LinkWithLoader } from '@/components/link-with-loader';
@@ -22,22 +19,8 @@ export const HeaderAuthButton = () => {
   if (isAuthenticated) {
     return (
       <PrimaryCTA asChild className={CTA_CLASS}>
-        <LinkWithLoader href='/profile' onClick={handleClick}>
-          <span className='relative flex size-3'>
-            <span
-              className={cn(
-                'absolute inline-flex size-full animate-ping rounded-full',
-                'bg-violet-400 opacity-50',
-              )}
-            />
-            <span
-              className={cn(
-                'relative inline-flex size-3 rounded-full bg-violet-500',
-              )}
-            />
-          </span>
-          <UserIcon className='size-4' />
-          My Profile
+        <LinkWithLoader href='/profile/jobs' onClick={handleClick}>
+          Jobs For You
         </LinkWithLoader>
       </PrimaryCTA>
     );
@@ -45,8 +28,8 @@ export const HeaderAuthButton = () => {
 
   return (
     <PrimaryCTA asChild className={CTA_CLASS}>
-      <LinkWithLoader href='/onboarding' onClick={handleClick}>
-        Get Hired Now
+      <LinkWithLoader href='/login' onClick={handleClick}>
+        Jobs For You
       </LinkWithLoader>
     </PrimaryCTA>
   );

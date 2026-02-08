@@ -19,11 +19,14 @@ export const getCachedResult = (hash: string): Response | null => {
   const entry = cache.get(hash);
   if (!entry) return null;
 
-  // LRU: move to end by re-inserting
-  cache.delete(hash);
-  cache.set(hash, entry);
+  // Clone before consuming — store fresh clone back so future hits work
+  const clone = entry.result.clone();
 
-  return entry.result.clone();
+  // LRU: move to end by re-inserting (with fresh clone for next hit)
+  cache.delete(hash);
+  cache.set(hash, { result: clone, timestamp: entry.timestamp });
+
+  return entry.result;
 };
 
 export const setCachedResult = (hash: string, result: Response): void => {

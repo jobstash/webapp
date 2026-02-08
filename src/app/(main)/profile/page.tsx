@@ -1,10 +1,4 @@
-import { AuthGuard } from '@/features/auth/components/auth-guard';
-import { ProfileContent } from '@/features/profile/components/profile-content';
+import { ProfileOverview } from '@/features/profile/components/profile-overview';
 
-export default function ProfilePage() {
-  return (
-    <AuthGuard>
-      <ProfileContent />
-    </AuthGuard>
-  );
-}
+const ProfilePage = () => <ProfileOverview />;
+export default ProfilePage;

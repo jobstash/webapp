@@ -3,7 +3,13 @@ import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
 import { socialKindSchema } from '@/features/onboarding/schemas';
+import { SOCIAL_URL_TEMPLATES } from '@/features/profile/constants';
 import { getSession } from '@/lib/server/session';
+
+const ROUTE_TAG = '[POST /api/onboarding/sync]';
+
+const jsonError = (error: string, status: number) =>
+  NextResponse.json({ success: false, error }, { status });
 
 const syncRequestSchema = z.object({
   skills: z.array(
@@ -26,17 +32,6 @@ const syncRequestSchema = z.object({
     })
     .nullable(),
 });
-
-const SOCIAL_URL_TEMPLATES: Record<string, (handle: string) => string> = {
-  github: (h) => `https://github.com/${h}`,
-  linkedin: (h) => (h.startsWith('http') ? h : `https://linkedin.com/in/${h}`),
-  twitter: (h) => `https://x.com/${h}`,
-  telegram: (h) => `https://t.me/${h}`,
-  discord: (h) => h,
-  website: (h) => h,
-  farcaster: (h) => `https://warpcast.com/${h}`,
-  lens: (h) => `https://hey.xyz/profile/${h}`,
-};
 
 const buildShowcase = (
   socials: { kind: string; handle: string }[],
@@ -69,29 +64,27 @@ const buildShowcase = (
 
 export const POST = async (request: Request): Promise<NextResponse> => {
   try {
-    const session = await getSession();
-    const apiToken = session.apiToken;
+    const { apiToken } = await getSession();
 
     if (!apiToken) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+      return jsonError('Not authenticated', 401);
     }
 
     let body: unknown;
     try {
       body = await request.json();
     } catch {
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+      return jsonError('Invalid JSON', 400);
     }
 
     const parsed = syncRequestSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+      return jsonError('Invalid request', 400);
     }
 
     const { skills, socials, email, resume } = parsed.data;
 
     const [skillsResult, showcaseResult] = await Promise.allSettled([
-      // Sync skills
       (async () => {
         if (skills.length === 0) return 'skipped' as const;
 
@@ -110,10 +103,13 @@ export const POST = async (request: Request): Promise<NextResponse> => {
           }),
         });
 
+        if (!res.ok) {
+          console.error(`${ROUTE_TAG} Skills sync failed: ${res.status}`);
+        }
+
         return res.ok ? ('synced' as const) : ('failed' as const);
       })(),
 
-      // Sync showcase
       (async () => {
         const showcase = buildShowcase(socials, email, resume);
         if (showcase.length === 0) return 'skipped' as const;
@@ -127,6 +123,10 @@ export const POST = async (request: Request): Promise<NextResponse> => {
           body: JSON.stringify({ showcase }),
         });
 
+        if (!res.ok) {
+          console.error(`${ROUTE_TAG} Showcase sync failed: ${res.status}`);
+        }
+
         return res.ok ? ('synced' as const) : ('failed' as const);
       })(),
     ]);
@@ -138,14 +138,22 @@ export const POST = async (request: Request): Promise<NextResponse> => {
         showcaseResult.status === 'fulfilled' ? showcaseResult.value : 'failed',
     };
 
+    if (skillsResult.status === 'rejected') {
+      console.error(`${ROUTE_TAG} Skills sync threw:`, skillsResult.reason);
+    }
+    if (showcaseResult.status === 'rejected') {
+      console.error(`${ROUTE_TAG} Showcase sync threw:`, showcaseResult.reason);
+    }
+
     const hasFailure =
       summary.skills === 'failed' || summary.showcase === 'failed';
 
-    return NextResponse.json({ success: !hasFailure, results: summary });
-  } catch {
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
+      { success: !hasFailure, results: summary },
+      hasFailure ? { status: 207 } : undefined,
     );
+  } catch (error) {
+    console.error(`${ROUTE_TAG} Unexpected error:`, error);
+    return jsonError('Internal server error', 500);
   }
 };

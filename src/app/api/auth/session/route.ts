@@ -23,8 +23,9 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     return NextResponse.json({ error: 'No Privy token' }, { status: 401 });
   }
 
+  let privyClaims: Awaited<ReturnType<typeof verifyPrivyToken>>;
   try {
-    await verifyPrivyToken(privyToken);
+    privyClaims = await verifyPrivyToken(privyToken);
   } catch {
     return NextResponse.json({ error: 'Invalid Privy token' }, { status: 401 });
   }
@@ -78,6 +79,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   session.apiToken = parsed.data.token;
   session.expiresAt = Date.now() + SESSION_EXPIRY;
   session.isExpert = parsed.data.cryptoNative;
+  session.privyDid = privyClaims.userId;
   await session.save();
 
   return NextResponse.json({

@@ -61,7 +61,7 @@ export const EligibilityBadge = ({ jobId }: EligibilityBadgeProps) => {
           'hover:from-teal-500/20 hover:to-emerald-500/20 hover:ring-teal-500/30',
         )}
       >
-        <LinkWithLoader href='/onboarding'>
+        <LinkWithLoader href='/login'>
           <SparklesIcon className='size-3' />
           Check eligibility
           <ArrowRightIcon className='size-3' />

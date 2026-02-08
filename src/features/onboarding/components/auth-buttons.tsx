@@ -1,83 +1,92 @@
 'use client';
 
-import {
-  ChromeIcon,
-  GithubIcon,
-  LoaderIcon,
-  MailIcon,
-  WalletIcon,
-} from 'lucide-react';
+import { ChromeIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
-import { useAuthButtons } from './use-auth-buttons';
+import { type AuthMethod, useAuthButtons } from './use-auth-buttons';
+
+type MethodConfig = {
+  key: AuthMethod;
+  icon: typeof WalletIcon;
+  label: string;
+};
+
+const AUTH_METHODS: MethodConfig[] = [
+  { key: 'google', icon: ChromeIcon, label: 'Google' },
+  { key: 'github', icon: GithubIcon, label: 'GitHub' },
+  { key: 'wallet', icon: WalletIcon, label: 'Wallet' },
+  { key: 'email', icon: MailIcon, label: 'Email' },
+];
+
+const HANDLERS: Record<
+  AuthMethod,
+  'handleGoogle' | 'handleGithub' | 'handleWallet' | 'handleEmail'
+> = {
+  google: 'handleGoogle',
+  github: 'handleGithub',
+  wallet: 'handleWallet',
+  email: 'handleEmail',
+};
 
 export const AuthButtons = () => {
-  const {
-    isGoogleLoading,
-    handleWallet,
-    handleGithub,
-    handleGoogle,
-    handleEmail,
-  } = useAuthButtons();
+  const auth = useAuthButtons();
+  const { isLoading, preferredMethod } = auth;
+
+  const primary = AUTH_METHODS.find((m) => m.key === preferredMethod)!;
+  const secondary = AUTH_METHODS.filter((m) => m.key !== preferredMethod);
+  const PrimaryIcon = primary.icon;
 
   return (
-    <div className='flex w-full flex-col items-center gap-4'>
-      <div className='flex w-full max-w-xs flex-col'>
+    <div className='flex w-full flex-col items-center gap-5'>
+      <div className='w-fit rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-px'>
         <Button
           size='lg'
-          className='w-full gap-3'
-          onClick={handleWallet}
-          disabled={isGoogleLoading}
-        >
-          <WalletIcon className='size-5' />
-          Connect Wallet
-        </Button>
-      </div>
-
-      <div className='flex w-full max-w-xs items-center gap-3'>
-        <div className='h-px flex-1 bg-border' />
-        <span className='text-xs text-muted-foreground'>or</span>
-        <div className='h-px flex-1 bg-border' />
-      </div>
-
-      <div className='flex w-full max-w-xs flex-col gap-3'>
-        <Button
-          variant='outline'
-          size='lg'
-          className='w-full gap-3'
-          onClick={handleGithub}
-          disabled={isGoogleLoading}
-        >
-          <GithubIcon className='size-5' />
-          Continue with GitHub
-        </Button>
-
-        <Button
-          variant='outline'
-          size='lg'
-          className='w-full gap-3'
-          onClick={handleGoogle}
-          disabled={isGoogleLoading}
-        >
-          {isGoogleLoading ? (
-            <LoaderIcon className='size-5 animate-spin' />
-          ) : (
-            <ChromeIcon className='size-5' />
+          className={cn(
+            'gap-3 rounded-[calc(var(--radius-lg)-1px)]',
+            'bg-sidebar font-semibold text-white',
+            'hover:bg-sidebar/80',
           )}
-          Continue with Google
-        </Button>
-
-        <Button
-          variant='outline'
-          size='lg'
-          className='w-full gap-3'
-          onClick={handleEmail}
-          disabled={isGoogleLoading}
+          onClick={auth[HANDLERS[primary.key]]}
+          disabled={isLoading}
         >
-          <MailIcon className='size-5' />
-          Continue with Email
+          <PrimaryIcon className='size-5' />
+          Continue with {primary.label}
         </Button>
+      </div>
+
+      <div className='flex w-full items-center gap-3'>
+        <div className='h-px flex-1 bg-linear-to-r from-transparent to-border' />
+        <span className='text-xs text-muted-foreground/60'>or</span>
+        <div className='h-px flex-1 bg-linear-to-l from-transparent to-border' />
+      </div>
+
+      <div className='flex items-center gap-3'>
+        {secondary.map(({ key, icon: Icon, label }) => (
+          <Tooltip key={key}>
+            <TooltipTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon-lg'
+                className='rounded-full'
+                onClick={auth[HANDLERS[key]]}
+                disabled={isLoading}
+              >
+                <Icon className='size-5' />
+                <span className='sr-only'>{label}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{label}</p>
+            </TooltipContent>
+          </Tooltip>
+        ))}
       </div>
     </div>
   );

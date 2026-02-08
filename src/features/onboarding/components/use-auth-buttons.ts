@@ -1,11 +1,39 @@
 import { useState } from 'react';
 
 import { useLoginWithOAuth } from '@privy-io/react-auth';
+import { useProgress } from '@bprogress/next';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
+export type AuthMethod = 'google' | 'github' | 'wallet' | 'email';
+
+const STORAGE_KEY = 'jobstash:last-auth-method';
+const DEFAULT_METHOD: AuthMethod = 'google';
+
+const getLastAuthMethod = (): AuthMethod => {
+  if (typeof window === 'undefined') return DEFAULT_METHOD;
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (
+    stored === 'google' ||
+    stored === 'github' ||
+    stored === 'wallet' ||
+    stored === 'email'
+  ) {
+    return stored;
+  }
+
+  return DEFAULT_METHOD;
+};
+
+const saveAuthMethod = (method: AuthMethod): void => {
+  localStorage.setItem(STORAGE_KEY, method);
+};
+
 export const useAuthButtons = () => {
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { start } = useProgress();
+  const [isLoading, setIsLoading] = useState(false);
+  const [preferredMethod] = useState(getLastAuthMethod);
 
   const { initOAuth } = useLoginWithOAuth({
     onComplete: ({ loginMethod }) => {
@@ -17,28 +45,41 @@ export const useAuthButtons = () => {
 
   const handleGoogle = async () => {
     trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'google' });
-    setIsGoogleLoading(true);
+    saveAuthMethod('google');
+    setIsLoading(true);
+    start();
     try {
       await initOAuth({ provider: 'google' });
     } catch {
-      setIsGoogleLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handleGithub = async () => {
+    trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'github' });
+    saveAuthMethod('github');
+    setIsLoading(true);
+    start();
+    try {
+      await initOAuth({ provider: 'github' });
+    } catch {
+      setIsLoading(false);
     }
   };
 
   const handleWallet = () => {
     trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'wallet' });
-  };
-
-  const handleGithub = () => {
-    trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'github' });
+    saveAuthMethod('wallet');
   };
 
   const handleEmail = () => {
     trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'email' });
+    saveAuthMethod('email');
   };
 
   return {
-    isGoogleLoading,
+    isLoading,
+    preferredMethod,
     handleWallet,
     handleGithub,
     handleGoogle,

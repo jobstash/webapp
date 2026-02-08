@@ -8,7 +8,7 @@ interface Props {
   fallback: ReactNode;
 }
 
-const handlePillarError = (error: Error) => {
+const handlePillarError = (error: unknown) => {
   console.error('[PillarItems] Failed to load pillar items:', error);
 };
 

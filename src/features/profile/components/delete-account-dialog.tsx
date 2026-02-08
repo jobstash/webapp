@@ -42,7 +42,7 @@ export const DeleteAccountDialog = ({ logout }: DeleteAccountDialogProps) => {
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant='outline' disabled={isDeleting}>
+            <Button variant='ghost' disabled={isDeleting}>
               Cancel
             </Button>
           </DialogClose>

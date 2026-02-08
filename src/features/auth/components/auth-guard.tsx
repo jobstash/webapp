@@ -11,7 +11,7 @@ interface AuthGuardProps {
 
 export const AuthGuard = async ({
   children,
-  fallbackUrl = '/onboarding',
+  fallbackUrl = '/login',
 }: AuthGuardProps) => {
   const session = await getSession();
 

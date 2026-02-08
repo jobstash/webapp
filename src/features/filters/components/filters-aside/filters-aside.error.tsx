@@ -8,7 +8,7 @@ interface Props {
   fallback: ReactNode;
 }
 
-const handleFilterError = (error: Error) => {
+const handleFilterError = (error: unknown) => {
   console.error('[FiltersAside] Failed to load filters:', error);
 };
 
