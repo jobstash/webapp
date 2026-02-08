@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -9,6 +9,7 @@ interface SessionResponse {
   apiToken: string | null;
   expiresAt: number | null;
   isExpert: boolean | null;
+  isLoggingOut?: boolean;
 }
 
 const SESSION_KEY = ['session'];
@@ -93,16 +94,14 @@ export const useSession = () => {
     }
   }, [isAuthenticated, apiToken, refetch]);
 
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
   const logout = async (): Promise<void> => {
-    setIsLoggingOut(true);
-    await fetch('/api/auth/session', { method: 'DELETE' });
     queryClient.setQueryData(SESSION_KEY, {
       apiToken: null,
       expiresAt: null,
       isExpert: null,
+      isLoggingOut: true,
     });
+    await fetch('/api/auth/session', { method: 'DELETE' });
     await privyLogout();
     window.location.href = '/';
   };
@@ -113,7 +112,7 @@ export const useSession = () => {
     isAuthenticated,
     isSessionReady: apiToken !== null,
     isLoading: isPending,
-    isLoggingOut,
+    isLoggingOut: session?.isLoggingOut ?? false,
     logout,
   };
 };
