@@ -1,10 +1,11 @@
 'use client';
 
-import { ChevronDownIcon, TagsIcon } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { TagsIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { type SimilarJobSchema } from '@/features/jobs/schemas';
 import { SimilarJobItem } from '@/features/jobs/components/job-details/similar-job-item';
 
 import { useSuggestedJobsCard } from './use-suggested-jobs-card';
@@ -21,15 +22,40 @@ const JobSkeleton = () => (
   </div>
 );
 
+const ScrollableJobList = ({ jobs }: { jobs: SimilarJobSchema[] }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+
+  const handleScroll = () => {
+    const el = ref.current;
+    if (!el) return;
+    setIsAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 8);
+  };
+
+  return (
+    <div className='relative'>
+      <div
+        ref={ref}
+        onScroll={handleScroll}
+        className={cn(CARD_HEIGHT, 'space-y-1 overflow-y-auto')}
+      >
+        {jobs.map((job) => (
+          <SimilarJobItem key={job.id} job={job} target='_blank' />
+        ))}
+      </div>
+      <div
+        className={cn(
+          'pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-sidebar to-transparent transition-opacity',
+          isAtBottom ? 'opacity-0' : 'opacity-100',
+        )}
+      />
+    </div>
+  );
+};
+
 export const SuggestedJobsCard = () => {
-  const {
-    jobs,
-    isPending,
-    hasSkills,
-    isSkillsPending,
-    isExpanded,
-    toggleExpanded,
-  } = useSuggestedJobsCard();
+  const { jobs, isPending, hasSkills, isSkillsPending } =
+    useSuggestedJobsCard();
 
   // Still loading skills — show skeleton to avoid empty-state flash
   if (isSkillsPending) {
@@ -70,43 +96,7 @@ export const SuggestedJobsCard = () => {
           ))}
         </div>
       ) : (
-        <>
-          <div className='relative'>
-            <div
-              className={cn(
-                'space-y-1',
-                isExpanded
-                  ? 'max-h-[480px] overflow-y-auto'
-                  : cn(CARD_HEIGHT, 'overflow-hidden'),
-              )}
-            >
-              {jobs.map((job) => (
-                <SimilarJobItem key={job.id} job={job} target='_blank' />
-              ))}
-            </div>
-
-            {!isExpanded && jobs.length > 3 && (
-              <div className='pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-sidebar to-transparent' />
-            )}
-          </div>
-
-          {jobs.length > 3 && (
-            <Button
-              variant='ghost'
-              size='sm'
-              className='mt-2 w-full text-muted-foreground'
-              onClick={toggleExpanded}
-            >
-              {isExpanded ? 'Show less' : 'Show all'}
-              <ChevronDownIcon
-                className={cn(
-                  'size-3.5 transition-transform',
-                  isExpanded && 'rotate-180',
-                )}
-              />
-            </Button>
-          )}
-        </>
+        <ScrollableJobList jobs={jobs} />
       )}
     </div>
   );

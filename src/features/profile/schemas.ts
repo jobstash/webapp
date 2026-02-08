@@ -22,8 +22,6 @@ export const showcaseItemSchema = z.object({
 export type ShowcaseItem = z.infer<typeof showcaseItemSchema>;
 
 export const profileShowcaseResponseSchema = z.object({
-  success: z.boolean(),
-  message: z.string(),
   data: showcaseItemSchema.array(),
 });
 

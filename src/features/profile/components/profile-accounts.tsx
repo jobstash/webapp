@@ -13,9 +13,16 @@ export const ProfileAccounts = () => {
 
   if (isLoading) {
     return (
-      <div className='flex flex-col gap-4'>
-        <Skeleton className='h-20 w-full rounded-2xl' />
-      </div>
+      <ProfileCard title='Linked Accounts'>
+        <div className='flex items-center gap-3'>
+          <Skeleton className='size-10 shrink-0 rounded-full' />
+          <div className='flex min-w-0 grow flex-col gap-0.5'>
+            <Skeleton className='h-4 w-16' />
+            <Skeleton className='h-3 w-28' />
+          </div>
+          <Skeleton className='h-8 w-20 rounded-md' />
+        </div>
+      </ProfileCard>
     );
   }
 
