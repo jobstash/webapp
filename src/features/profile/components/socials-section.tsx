@@ -30,12 +30,22 @@ const ensureProtocol = (url: string): string =>
 const getIcon = (label: string): React.ComponentType<{ className?: string }> =>
   SHOWCASE_ICON_MAP[label] ?? Link2Icon;
 
-const getDisplayLabel = (item: ShowcaseItem): string => {
-  if (item.label === 'Github') {
-    const match = item.url.match(/github\.com\/([^/?#]+)/);
+const getHandle = (item: ShowcaseItem): string | null => {
+  const patterns: Record<string, RegExp> = {
+    Github: /github\.com\/([^/?#]+)/,
+    Linkedin: /linkedin\.com\/in\/([^/?#]+)/,
+    Twitter: /(?:twitter|x)\.com\/([^/?#]+)/,
+    Telegram: /t\.me\/([^/?#]+)/,
+    Farcaster: /warpcast\.com\/([^/?#]+)/,
+  };
+
+  const pattern = patterns[item.label];
+  if (pattern) {
+    const match = item.url.match(pattern);
     if (match) return match[1];
   }
-  return item.label;
+
+  return null;
 };
 
 const PILL_CLASS = cn(
@@ -121,6 +131,7 @@ export const SocialsSection = () => {
       <div className='flex flex-wrap items-center gap-2'>
         {socials.map((item) => {
           const Icon = getIcon(item.label);
+          const handle = getHandle(item);
           return (
             <Link
               key={`${item.label}-${item.url}`}
@@ -130,7 +141,16 @@ export const SocialsSection = () => {
               className={PILL_CLASS}
             >
               <Icon className='size-3.5 text-muted-foreground' />
-              {getDisplayLabel(item)}
+              {handle ? (
+                <span className='flex flex-col leading-tight'>
+                  <span className='text-[10px] text-muted-foreground'>
+                    {item.label}
+                  </span>
+                  <span className='text-sm'>{handle}</span>
+                </span>
+              ) : (
+                item.label
+              )}
             </Link>
           );
         })}

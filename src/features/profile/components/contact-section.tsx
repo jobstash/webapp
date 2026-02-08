@@ -35,9 +35,9 @@ export const ContactSection = () => {
     return (
       <div className='flex flex-col gap-3'>
         <div>
-          <h3 className='text-base font-semibold'>Contact</h3>
+          <h3 className='text-base font-semibold'>Contact & Resume</h3>
           <p className='text-xs text-muted-foreground'>
-            How recruiters reach out to you
+            Your email, website, and resume for recruiters
           </p>
         </div>
         <div className='flex flex-wrap gap-2'>
@@ -59,9 +59,9 @@ export const ContactSection = () => {
     return (
       <div className='flex flex-col gap-3'>
         <div>
-          <h3 className='text-base font-semibold'>Contact</h3>
+          <h3 className='text-base font-semibold'>Contact & Resume</h3>
           <p className='text-xs text-muted-foreground'>
-            How recruiters reach out to you
+            Your email, website, and resume for recruiters
           </p>
         </div>
         <div className='flex flex-col items-center gap-3 py-4'>
@@ -91,9 +91,9 @@ export const ContactSection = () => {
     <div className='flex flex-col gap-3'>
       <div className='flex items-start justify-between'>
         <div>
-          <h3 className='text-base font-semibold'>Contact</h3>
+          <h3 className='text-base font-semibold'>Contact & Resume</h3>
           <p className='text-xs text-muted-foreground'>
-            How recruiters reach out to you
+            Your email, website, and resume for recruiters
           </p>
         </div>
         <button
