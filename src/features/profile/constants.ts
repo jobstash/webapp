@@ -73,9 +73,10 @@ export const PROFILE_TIERS = [
   },
   {
     name: 'All-Star',
-    color: 'text-emerald-500',
-    bgColor: 'bg-emerald-500',
-    message: 'Maximum visibility across all recruiters',
+    color:
+      'bg-linear-to-r from-[#f5a00d] to-[#8743FF] bg-clip-text text-transparent',
+    bgColor: 'bg-linear-to-r from-[#D68800] to-[#8743FF]',
+    message: 'Fully optimized — recruiters see you first',
     minItems: 4,
   },
 ] as const;

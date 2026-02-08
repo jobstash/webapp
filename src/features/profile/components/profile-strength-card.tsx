@@ -33,14 +33,12 @@ const ProgressBar = ({
 const CompleteBadge = ({ className }: { className?: string }) => (
   <div
     className={cn(
-      'flex items-center gap-2 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/20',
+      'flex items-center gap-2 rounded-lg bg-linear-to-r from-[#D68800]/10 to-[#8743FF]/10 ring-1 ring-[#8743FF]/20',
       className,
     )}
   >
-    <SparklesIcon className='size-4 shrink-0 text-emerald-500' />
-    <span className='text-sm font-medium text-emerald-400'>
-      Profile complete
-    </span>
+    <SparklesIcon className='size-4 shrink-0 text-[#D68800]' />
+    <span className='text-sm font-medium text-[#f5a00d]'>Profile complete</span>
   </div>
 );
 
