@@ -26,6 +26,9 @@ const PILL_CLASS = cn(
   'transition-colors hover:bg-accent hover:ring-neutral-600/50',
 );
 
+const SECTION_TITLE = 'Contact & Resume';
+const SECTION_SUBTITLE = 'Your email, website, and resume for recruiters';
+
 export const ContactSection = () => {
   const { isSessionReady } = useSession();
   const { data: showcase, isPending } = useProfileShowcase(isSessionReady);
@@ -35,10 +38,8 @@ export const ContactSection = () => {
     return (
       <div className='flex flex-col gap-3'>
         <div>
-          <h3 className='text-base font-semibold'>Contact & Resume</h3>
-          <p className='text-xs text-muted-foreground'>
-            Your email, website, and resume for recruiters
-          </p>
+          <h3 className='text-base font-semibold'>{SECTION_TITLE}</h3>
+          <p className='text-xs text-muted-foreground'>{SECTION_SUBTITLE}</p>
         </div>
         <div className='flex flex-wrap gap-2'>
           {Array.from({ length: 2 }).map((_, i) => (
@@ -59,10 +60,8 @@ export const ContactSection = () => {
     return (
       <div className='flex flex-col gap-3'>
         <div>
-          <h3 className='text-base font-semibold'>Contact & Resume</h3>
-          <p className='text-xs text-muted-foreground'>
-            Your email, website, and resume for recruiters
-          </p>
+          <h3 className='text-base font-semibold'>{SECTION_TITLE}</h3>
+          <p className='text-xs text-muted-foreground'>{SECTION_SUBTITLE}</p>
         </div>
         <div className='flex flex-col items-center gap-3 py-4'>
           <div className='flex items-center gap-3'>
@@ -91,10 +90,8 @@ export const ContactSection = () => {
     <div className='flex flex-col gap-3'>
       <div className='flex items-start justify-between'>
         <div>
-          <h3 className='text-base font-semibold'>Contact & Resume</h3>
-          <p className='text-xs text-muted-foreground'>
-            Your email, website, and resume for recruiters
-          </p>
+          <h3 className='text-base font-semibold'>{SECTION_TITLE}</h3>
+          <p className='text-xs text-muted-foreground'>{SECTION_SUBTITLE}</p>
         </div>
         <button
           type='button'
@@ -137,14 +134,16 @@ export const ContactSection = () => {
           </Link>
         )}
 
-        <button
-          type='button'
-          className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
-          onClick={openContactInfoEditor}
-        >
-          <PlusIcon className='size-3' />
-          Add contact
-        </button>
+        {!(email && website && resume) && (
+          <button
+            type='button'
+            className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+            onClick={openContactInfoEditor}
+          >
+            <PlusIcon className='size-3' />
+            Add contact
+          </button>
+        )}
       </div>
     </div>
   );

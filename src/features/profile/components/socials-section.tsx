@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
 import { useSession } from '@/features/auth/hooks/use-session';
-import { SHOWCASE_ICON_MAP } from '@/features/profile/constants';
+import { SHOWCASE_ICON_MAP, SOCIAL_LABELS } from '@/features/profile/constants';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import type { ShowcaseItem } from '@/features/profile/schemas';
 
@@ -141,27 +141,20 @@ export const SocialsSection = () => {
               className={PILL_CLASS}
             >
               <Icon className='size-3.5 text-muted-foreground' />
-              {handle ? (
-                <span className='flex flex-col leading-tight'>
-                  <span className='text-[10px] text-muted-foreground'>
-                    {item.label}
-                  </span>
-                  <span className='text-sm'>{handle}</span>
-                </span>
-              ) : (
-                item.label
-              )}
+              {handle ?? item.label}
             </Link>
           );
         })}
-        <button
-          type='button'
-          className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
-          onClick={openSocialsEditor}
-        >
-          <PlusIcon className='size-3' />
-          Add social
-        </button>
+        {socials.length < SOCIAL_LABELS.length && (
+          <button
+            type='button'
+            className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+            onClick={openSocialsEditor}
+          >
+            <PlusIcon className='size-3' />
+            Add social
+          </button>
+        )}
       </div>
     </div>
   );
