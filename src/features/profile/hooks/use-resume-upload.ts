@@ -2,10 +2,17 @@ import { type ChangeEvent, type DragEvent, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { MAX_MATCH_SKILLS } from '@/lib/constants';
 import { clientEnv } from '@/lib/env/client';
-import { resumeParseResponseSchema } from '@/features/onboarding/schemas';
+import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
+import {
+  type PopularTagItem,
+  type UserSkill,
+  resumeParseResponseSchema,
+} from '@/features/onboarding/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
+import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
 const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx';
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
@@ -73,18 +80,33 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   const queryClient = useQueryClient();
   const { isSessionReady } = useSession();
   const { data: showcase } = useProfileShowcase(isSessionReady);
+  const { data: profileSkills } = useProfileSkills(isSessionReady);
 
   const [isParsing, setIsParsing] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [resumeId, setResumeId] = useState<string | null>(null);
+  const [detectedSkills, setDetectedSkills] = useState<PopularTagItem[]>([]);
+  const [includeSkills, setIncludeSkills] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editedSkills, setEditedSkills] = useState<UserSkill[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const newSkillCount = detectedSkills.length;
+  const existingSkillCount = (profileSkills ?? []).length;
+  const isOverCap = existingSkillCount + newSkillCount > MAX_MATCH_SKILLS;
+  const skillCount = editedSkills.length;
+  const canSave = !isOverCap || skillCount <= MAX_MATCH_SKILLS;
+
   const handleFile = async (file: File): Promise<void> => {
     setError(null);
-    setIsSuccess(false);
+    setIsAnalyzed(false);
+    setDetectedSkills([]);
+    setIncludeSkills(true);
+    setResumeId(null);
 
     const validationError = validateFile(file);
     if (validationError) {
@@ -115,11 +137,59 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       const json: unknown = await parseRes.json();
       const parsed = resumeParseResponseSchema.parse(json);
 
+      setResumeId(parsed.resumeId);
+
+      // Filter out skills the user already has
+      const existingIds = new Set(
+        (profileSkills ?? []).map((skill) => skill.id),
+      );
+      const newSkills = parsed.skills.filter(
+        (skill) => !existingIds.has(skill.id),
+      );
+      setDetectedSkills(newSkills);
+
+      // Build merged skill list for over-cap editing
+      const existingAsUserSkills: UserSkill[] = (profileSkills ?? []).map(
+        (s) => ({
+          id: s.id,
+          name: s.name,
+          colorIndex: getTagColorIndex(s.id),
+          isFromResume: false,
+        }),
+      );
+      const newAsUserSkills: UserSkill[] = newSkills.map((s) => ({
+        id: s.id,
+        name: s.name,
+        colorIndex: getTagColorIndex(s.id),
+        isFromResume: true,
+      }));
+      setEditedSkills([...existingAsUserSkills, ...newAsUserSkills]);
+
+      setIsAnalyzed(true);
+    } catch {
+      setError(
+        'Something went wrong while processing your resume. Please try again.',
+      );
+      setFileName(null);
+    } finally {
+      setIsParsing(false);
+    }
+  };
+
+  const removeSkill = (skillId: string): void => {
+    setEditedSkills((prev) => prev.filter((s) => s.id !== skillId));
+  };
+
+  const save = async (): Promise<void> => {
+    if (!resumeId) return;
+
+    setIsSaving(true);
+    try {
+      // Save CV showcase entry
       const cvEntry = {
         label: 'CV',
-        url: `${clientEnv.FRONTEND_URL}/api/resume/${parsed.resumeId}`,
+        url: `${clientEnv.FRONTEND_URL}/api/resume/${resumeId}`,
       };
-
       const existingItems = (showcase ?? []).filter(
         (item) => item.label !== 'CV',
       );
@@ -134,14 +204,55 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       if (!saveRes.ok) throw new Error('Failed to save showcase');
 
       await queryClient.invalidateQueries({ queryKey: ['profile-showcase'] });
-      setIsSuccess(true);
-    } catch {
-      setError(
-        'Something went wrong while processing your resume. Please try again.',
-      );
-      setFileName(null);
+
+      // Save skills: over-cap uses curated editedSkills, under-cap merges
+      if (isOverCap) {
+        const skills = editedSkills.map((s) => ({ id: s.id, name: s.name }));
+
+        const res = await fetch('/api/onboarding/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            skills,
+            socials: [],
+            email: null,
+            resume: null,
+          }),
+        });
+
+        if (!res.ok) throw new Error('Failed to save skills');
+
+        await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
+      } else if (includeSkills && detectedSkills.length > 0) {
+        const existingSkills = (profileSkills ?? []).map((s) => ({
+          id: s.id,
+          name: s.name,
+        }));
+        const newSkills = detectedSkills.map((s) => ({
+          id: s.id,
+          name: s.name,
+        }));
+        const mergedSkills = [...existingSkills, ...newSkills];
+
+        const res = await fetch('/api/onboarding/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            skills: mergedSkills,
+            socials: [],
+            email: null,
+            resume: null,
+          }),
+        });
+
+        if (!res.ok) throw new Error('Failed to save skills');
+
+        await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
+      }
+
+      handleOpenChange(false);
     } finally {
-      setIsParsing(false);
+      setIsSaving(false);
     }
   };
 
@@ -171,16 +282,21 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     fileInputRef.current?.click();
   };
 
-  const reset = () => {
+  const reset = (): void => {
     setError(null);
-    setIsSuccess(false);
+    setIsAnalyzed(false);
     setFileName(null);
     setIsParsing(false);
     setIsDragActive(false);
+    setResumeId(null);
+    setDetectedSkills([]);
+    setIncludeSkills(true);
+    setIsSaving(false);
+    setEditedSkills([]);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = (open: boolean): void => {
     if (!open) reset();
     onOpenChange(open);
   };
@@ -189,10 +305,20 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     isParsing,
     isDragActive,
     error,
-    isSuccess,
+    isAnalyzed,
     fileName,
     acceptedFileTypes: ACCEPTED_FILE_TYPES,
     fileInputRef,
+    includeSkills,
+    setIncludeSkills,
+    isSaving,
+    newSkillCount,
+    isOverCap,
+    editedSkills,
+    removeSkill,
+    skillCount,
+    canSave,
+    save,
     handleDragOver,
     handleDragLeave,
     handleDrop,
