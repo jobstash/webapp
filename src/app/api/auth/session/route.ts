@@ -14,39 +14,24 @@ const checkWalletResponseSchema = z.object({
 
 /** Exchange Privy token for API token and create iron-session. */
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
-  console.log(
-    `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] received token exchange request`,
-  );
   const authHeader = req.headers.get('authorization') ?? '';
   const privyToken = authHeader.startsWith('Bearer ')
     ? authHeader.slice(7)
     : '';
 
   if (!privyToken) {
-    console.log(
-      `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] no privy token in header`,
-    );
     return NextResponse.json({ error: 'No Privy token' }, { status: 401 });
   }
 
   let privyClaims: Awaited<ReturnType<typeof verifyPrivyToken>>;
   try {
     privyClaims = await verifyPrivyToken(privyToken);
-    console.log(
-      `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] privy verified, userId=${privyClaims.userId}`,
-    );
   } catch {
-    console.log(
-      `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] privy token verification failed`,
-    );
     return NextResponse.json({ error: 'Invalid Privy token' }, { status: 401 });
   }
 
   let res: Response;
   try {
-    console.log(
-      `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] calling ${clientEnv.MW_URL}/privy/check-wallet`,
-    );
     res = await fetch(`${clientEnv.MW_URL}/privy/check-wallet`, {
       headers: { Authorization: `Bearer ${privyToken}` },
     });
@@ -57,10 +42,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
       { status: 502 },
     );
   }
-
-  console.log(
-    `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] backend response status=${String(res.status)}`,
-  );
 
   if (!res.ok) {
     console.error(
@@ -94,20 +75,12 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
-  console.log(
-    `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] parsed response: hasToken=${String(!!parsed.data.token)}`,
-  );
-
   const session = await getSession();
   session.apiToken = parsed.data.token;
   session.expiresAt = Date.now() + SESSION_EXPIRY;
   session.isExpert = parsed.data.cryptoNative;
   session.privyDid = privyClaims.userId;
   await session.save();
-
-  console.log(
-    `[DEBUG:SessionAPI:POST][${new Date().toISOString()}] session saved, expiresAt=${String(session.expiresAt)}`,
-  );
 
   return NextResponse.json({
     apiToken: session.apiToken,
@@ -125,21 +98,11 @@ export const DELETE = async (): Promise<NextResponse> => {
 
 /** Check current session status. */
 export const GET = async (): Promise<NextResponse> => {
-  console.log(
-    `[DEBUG:SessionAPI:GET][${new Date().toISOString()}] checking session`,
-  );
   const session = await getSession();
   const expiresAt = session.expiresAt ?? null;
   const isExpired = expiresAt !== null && expiresAt <= Date.now();
 
-  console.log(
-    `[DEBUG:SessionAPI:GET][${new Date().toISOString()}] hasToken=${String(!!session.apiToken)}, expiresAt=${String(expiresAt)}, isExpired=${String(isExpired)}`,
-  );
-
   if (isExpired) {
-    console.log(
-      `[DEBUG:SessionAPI:GET][${new Date().toISOString()}] session expired, destroying`,
-    );
     session.destroy();
     return NextResponse.json({
       apiToken: null,

@@ -16,9 +16,6 @@ const fetchLinkedAccounts = async (): Promise<LinkedAccount[]> => {
   if (res.status === 401) return [];
 
   if (res.status >= 500) {
-    console.log(
-      `[DEBUG:useLinkedAccounts] server error ${res.status}, returning empty`,
-    );
     return [];
   }
 

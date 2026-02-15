@@ -30,10 +30,6 @@ const SettingsRow = ({
 export const ProfileSettings = () => {
   const { isLoggingOut, logout } = useSession();
 
-  console.log(
-    `[DEBUG:ProfileSettings][${new Date().toISOString()}] rendered, isLoggingOut=${String(isLoggingOut)}`,
-  );
-
   return (
     <div className='flex flex-col gap-4'>
       <ProfileAccounts />
