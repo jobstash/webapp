@@ -31,25 +31,11 @@ export const useLoginContent = () => {
     authenticated || // Already logged in, waiting for session before redirect
     hasOAuthParams; // First render before useLoginWithOAuth reports loading
 
-  console.log(
-    `[DEBUG:useLoginContent][${new Date().toISOString()}] ready=${String(ready)}, authenticated=${String(authenticated)}, isOAuthLoading=${String(isOAuthLoading)}, isSessionReady=${String(isSessionReady)}`,
-  );
-  console.log(
-    `[DEBUG:useLoginContent][${new Date().toISOString()}] isLoading=${String(isLoading)}, hasOAuthParams=${String(hasOAuthParams)}`,
-  );
-
   useEffect(() => {
     if (ready && authenticated && isSessionReady) {
-      console.log(
-        `[DEBUG:useLoginContent][${new Date().toISOString()}] redirect effect: all conditions met, redirecting to ${redirectTo}`,
-      );
       startTransition(() => {
         router.replace(redirectTo);
       });
-    } else {
-      console.log(
-        `[DEBUG:useLoginContent][${new Date().toISOString()}] redirect effect: conditions not met (ready=${String(ready)}, authenticated=${String(authenticated)}, isSessionReady=${String(isSessionReady)})`,
-      );
     }
   }, [ready, authenticated, isSessionReady, redirectTo, router]);
 

@@ -11,7 +11,7 @@ interface Props {
 }
 
 const handleProfileError = (error: unknown): void => {
-  console.log('[DEBUG:ProfileErrorBoundary]', error);
+  console.error('[ProfileErrorBoundary]', error);
 };
 
 export const ProfileErrorBoundary = ({ children }: Props) => (

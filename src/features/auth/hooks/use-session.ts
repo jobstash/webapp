@@ -49,32 +49,18 @@ export const useSession = () => {
   } = useQuery({
     queryKey: SESSION_KEY,
     queryFn: async () => {
-      console.log(
-        `[DEBUG:useSession][${new Date().toISOString()}] queryFn called, ready=${String(ready)}, authenticated=${String(authenticated)}`,
-      );
-
       // Phase 1: Read iron-session cookie (no Privy dependency)
       const current = await fetchSession();
       const isExpiringSoon =
         current.expiresAt !== null &&
         current.expiresAt - Date.now() < REFRESH_BUFFER;
 
-      console.log(
-        `[DEBUG:useSession][${new Date().toISOString()}] phase1: hasToken=${String(!!current.apiToken)}, expiresAt=${String(current.expiresAt)}, isExpiringSoon=${String(isExpiringSoon)}`,
-      );
-
       if (current.apiToken && !isExpiringSoon) {
-        console.log(
-          `[DEBUG:useSession][${new Date().toISOString()}] phase1 sufficient, returning`,
-        );
         return current;
       }
 
       // Phase 2: Need token exchange — requires Privy
       if (!ready || !authenticated) {
-        console.log(
-          `[DEBUG:useSession][${new Date().toISOString()}] phase2 skipped: privy not ready`,
-        );
         return current.apiToken
           ? current
           : ({
@@ -84,24 +70,9 @@ export const useSession = () => {
             } as SessionResponse);
       }
 
-      console.log(
-        `[DEBUG:useSession][${new Date().toISOString()}] phase2: exchanging privy token`,
-      );
-
-      try {
-        const privyToken = await getAccessToken();
-        if (!privyToken) throw new Error('No Privy access token');
-        const result = await createSession(privyToken);
-        console.log(
-          `[DEBUG:useSession][${new Date().toISOString()}] phase2: session created, hasToken=${String(!!result.apiToken)}`,
-        );
-        return result;
-      } catch (error) {
-        console.log(
-          `[DEBUG:useSession][${new Date().toISOString()}] phase2 error: ${String(error)}`,
-        );
-        throw error;
-      }
+      const privyToken = await getAccessToken();
+      if (!privyToken) throw new Error('No Privy access token');
+      return await createSession(privyToken);
     },
     enabled: true,
     staleTime: STALE_TIME,
@@ -121,9 +92,6 @@ export const useSession = () => {
   // Refetch when Privy becomes authenticated but session has no token
   useEffect(() => {
     if (isAuthenticated && !apiToken) {
-      console.log(
-        `[DEBUG:useSession][${new Date().toISOString()}] effect: isAuthenticated=${String(isAuthenticated)}, hasToken=${String(!!apiToken)}, triggering refetch`,
-      );
       void refetch();
     }
   }, [isAuthenticated, apiToken, refetch]);
@@ -141,10 +109,6 @@ export const useSession = () => {
   };
 
   const isSessionReady = apiToken !== null;
-
-  console.log(
-    `[DEBUG:useSession][${new Date().toISOString()}] returning: isSessionReady=${String(isSessionReady)}, isPending=${String(isPending)}`,
-  );
 
   return {
     apiToken,
