@@ -2,6 +2,7 @@ import { AuthProviders } from '@/components/providers/auth-providers';
 import { AuthGuard } from '@/features/auth/components/auth-guard';
 import { ProfileBottomNav } from '@/features/profile/components/profile-bottom-nav';
 import { ProfileEditorProvider } from '@/features/profile/components/profile-editor-provider';
+import { ProfileErrorBoundary } from '@/features/profile/components/profile-error-boundary';
 import { ProfileLogoutOverlay } from '@/features/profile/components/profile-logout-overlay';
 import { ProfileSidebar } from '@/features/profile/components/profile-sidebar';
 
@@ -15,7 +16,7 @@ const ProfileLayout = ({ children }: React.PropsWithChildren) => (
             <ProfileSidebar />
           </aside>
           <section className='flex min-w-0 grow flex-col gap-4 pb-16 lg:pb-0'>
-            {children}
+            <ProfileErrorBoundary>{children}</ProfileErrorBoundary>
           </section>
         </div>
         <ProfileBottomNav />
