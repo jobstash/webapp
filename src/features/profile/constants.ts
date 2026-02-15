@@ -130,18 +130,18 @@ export const COMPLETENESS_ITEMS: readonly {
   ctaType: CtaType;
 }[] = [
   {
+    key: 'resume',
+    label: 'Upload your resume',
+    action: 'Add Resume',
+    unlocks: 'Auto-detect skills and stand out to recruiters',
+    ctaType: 'resume-upload',
+  },
+  {
     key: 'skills',
     label: 'Add your skills',
     action: 'Add Skills',
     unlocks: 'Unlock personalized job matches',
     ctaType: 'skills-editor',
-  },
-  {
-    key: 'resume',
-    label: 'Upload your resume',
-    action: 'Add Resume',
-    unlocks: 'Stand out to recruiters',
-    ctaType: 'resume-upload',
   },
   {
     key: 'social',
