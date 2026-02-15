@@ -20,8 +20,8 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import { TAG_COLORS } from '@/features/onboarding/constants';
-import type { UserSkill } from '@/features/onboarding/schemas';
+import { TAG_COLORS } from '@/features/profile/constants';
+import type { UserSkill } from '@/features/profile/schemas';
 
 import type { useProfileSkillsEditor } from './use-profile-skills-editor';
 

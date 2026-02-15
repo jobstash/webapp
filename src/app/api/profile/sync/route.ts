@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
-import { socialKindSchema } from '@/features/onboarding/schemas';
+import { socialKindSchema } from '@/features/profile/schemas';
 import { SOCIAL_URL_TEMPLATES } from '@/features/profile/constants';
 import { getSession } from '@/lib/server/session';
 
-const ROUTE_TAG = '[POST /api/onboarding/sync]';
+const ROUTE_TAG = '[POST /api/profile/sync]';
 
 const jsonError = (error: string, status: number) =>
   NextResponse.json({ success: false, error }, { status });

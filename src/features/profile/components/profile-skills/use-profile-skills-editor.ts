@@ -3,9 +3,9 @@ import { type KeyboardEvent, type MouseEvent, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
-import { useSkillsSearch } from '@/features/onboarding/hooks/use-skills-search';
-import { useSuggestedSkills } from '@/features/onboarding/hooks/use-suggested-skills';
-import type { UserSkill } from '@/features/onboarding/schemas';
+import { useSkillsSearch } from '@/features/profile/hooks/use-skills-search';
+import { useSuggestedSkills } from '@/features/profile/hooks/use-suggested-skills';
+import type { UserSkill } from '@/features/profile/schemas';
 import type { ProfileSkill } from '@/features/profile/schemas';
 
 const toUserSkill = (skill: ProfileSkill): UserSkill => ({
@@ -79,7 +79,7 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const res = await fetch('/api/onboarding/sync', {
+      const res = await fetch('/api/profile/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

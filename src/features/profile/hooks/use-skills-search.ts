@@ -9,7 +9,7 @@ import {
   popularTagsResponseSchema,
   type PopularTagItem,
   type UserSkill,
-} from '@/features/onboarding/schemas';
+} from '@/features/profile/schemas';
 
 const DEBOUNCE_MS = 300;
 const MIN_LOADING_MS = 300;
@@ -38,7 +38,7 @@ export const useSkillsSearch = (
     isPending,
     isPlaceholderData,
   } = useInfiniteQuery({
-    queryKey: ['onboarding-skills', debouncedSearch],
+    queryKey: ['skills-search', debouncedSearch],
     queryFn: async ({ pageParam }) => {
       const url = new URL('/search/tags/suggestions', clientEnv.MW_URL);
       url.searchParams.set('q', debouncedSearch);

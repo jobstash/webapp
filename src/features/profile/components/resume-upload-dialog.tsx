@@ -22,7 +22,7 @@ import {
 import { FieldError } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { TAG_COLORS } from '@/features/onboarding/constants';
+import { TAG_COLORS } from '@/features/profile/constants';
 import { useResumeUpload } from '@/features/profile/hooks/use-resume-upload';
 
 interface ResumeUploadDialogProps {

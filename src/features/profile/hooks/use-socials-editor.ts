@@ -12,7 +12,7 @@ import {
 import { FarcasterIcon } from '@/components/svg/farcaster-icon';
 import { TelegramIcon } from '@/components/svg/telegram-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
-import type { SocialKind } from '@/features/onboarding/schemas';
+import type { SocialKind } from '@/features/profile/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
 import {
   extractHandleFromUrl,

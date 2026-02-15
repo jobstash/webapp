@@ -10,7 +10,7 @@ import {
   type PopularTagItem,
   popularTagItemSchema,
   socialKindSchema,
-} from '@/features/onboarding/schemas';
+} from '@/features/profile/schemas';
 
 export { extractText, type ExtractedText } from '@/lib/server/extract-text';
 

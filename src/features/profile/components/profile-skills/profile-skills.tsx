@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TAG_COLORS } from '@/features/onboarding/constants';
+import { TAG_COLORS } from '@/features/profile/constants';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useProfileEditor } from '@/features/profile/components/profile-editor-provider';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';

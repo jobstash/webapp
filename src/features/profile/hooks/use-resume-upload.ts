@@ -9,7 +9,7 @@ import {
   type PopularTagItem,
   type UserSkill,
   resumeParseResponseSchema,
-} from '@/features/onboarding/schemas';
+} from '@/features/profile/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
@@ -121,7 +121,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const parseRes = await fetch('/api/onboarding/resume/parse', {
+      const parseRes = await fetch('/api/profile/resume/parse', {
         method: 'POST',
         body: formData,
       });
@@ -209,7 +209,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       if (isOverCap) {
         const skills = editedSkills.map((s) => ({ id: s.id, name: s.name }));
 
-        const res = await fetch('/api/onboarding/sync', {
+        const res = await fetch('/api/profile/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -234,7 +234,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
         }));
         const mergedSkills = [...existingSkills, ...newSkills];
 
-        const res = await fetch('/api/onboarding/sync', {
+        const res = await fetch('/api/profile/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
