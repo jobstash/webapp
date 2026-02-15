@@ -37,6 +37,9 @@ export const useAuthButtons = () => {
 
   const { initOAuth } = useLoginWithOAuth({
     onComplete: ({ loginMethod }) => {
+      console.log(
+        `[DEBUG:useAuthButtons][${new Date().toISOString()}] OAuth complete, method=${String(loginMethod ?? 'google')}`,
+      );
       trackEvent(GA_EVENT.LOGIN_COMPLETED, {
         login_method: loginMethod ?? 'google',
       });
@@ -44,6 +47,9 @@ export const useAuthButtons = () => {
   });
 
   const handleGoogle = async () => {
+    console.log(
+      `[DEBUG:useAuthButtons][${new Date().toISOString()}] initiating Google OAuth`,
+    );
     trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'google' });
     saveAuthMethod('google');
     setIsLoading(true);
@@ -51,6 +57,9 @@ export const useAuthButtons = () => {
     try {
       await initOAuth({ provider: 'google' });
     } catch {
+      console.log(
+        `[DEBUG:useAuthButtons][${new Date().toISOString()}] OAuth error`,
+      );
       setIsLoading(false);
     }
   };

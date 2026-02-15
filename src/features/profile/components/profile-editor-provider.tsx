@@ -38,6 +38,10 @@ export const ProfileEditorProvider = ({
   const { data: skills } = useProfileSkills(isSessionReady);
   const editor = useProfileSkillsEditor(skills ?? []);
 
+  console.log(
+    `[DEBUG:ProfileEditorProvider][${new Date().toISOString()}] isSessionReady=${String(isSessionReady)}, hasSkills=${String(!!skills)}`,
+  );
+
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
   const [isSocialsOpen, setIsSocialsOpen] = useState(false);
