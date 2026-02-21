@@ -33,7 +33,7 @@ export const ProfileLogoutButton = () => {
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Log out</DialogTitle>
             <DialogDescription>
