@@ -53,6 +53,7 @@ export const jobListItemSchema = z.object({
   tags: jobTagSchema.array(),
   organization: jobOrganizationSchema.nullable(),
   timestampText: nonEmptyStringSchema,
+  datePosted: nonEmptyStringSchema,
   badge: z.nullable(
     z.enum(Object.values(JOB_ITEM_BADGE) as [string, ...string[]]),
   ),
