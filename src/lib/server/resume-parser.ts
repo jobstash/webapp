@@ -37,9 +37,16 @@ const resumeExtractionSchema = z.object({
         .describe('ISO 3166-1 alpha-2 country code'),
     })
     .nullable(),
+  roleCategory: z
+    .string()
+    .describe(
+      'Inferred professional role based on experience and summary. Examples: "Frontend Developer", "Backend Engineer", "Full-Stack Developer", "DevOps Engineer", "Smart Contract Developer", "Data Engineer", "Designer"',
+    ),
   skills: z
     .array(z.string())
-    .describe('Technical skills, programming languages, frameworks, tools'),
+    .describe(
+      'Core skills relevant to the inferred role, based on actual work experience',
+    ),
   socials: z
     .array(
       z.object({
@@ -56,18 +63,29 @@ export const parseResume = async (text: string): Promise<ResumeExtraction> => {
   const result = await generateObject({
     model: openai('gpt-4.1-nano'),
     schema: resumeExtractionSchema,
-    system: `You are a resume parser. Extract structured data from resume text.
+    system: `You are a resume parser that extracts structured data from resume text.
 
-First, determine if the document is actually a resume or CV. Set isResume to false if the content is clearly not a resume. If isResume is false, you may return null/empty for all other fields.
+## Step 1: Validate
+Determine if this is actually a resume/CV. Set isResume to false for non-resume content (jokes, random text, troll content). If false, return null/empty for all other fields.
 
-Extract the following:
-- Full name, email address, phone number (with country code if present)
-- Location: city, state/province, country, and infer the ISO 3166-1 alpha-2 country code
-- All technical skills, programming languages, frameworks, and tools mentioned
-- Social profiles: GitHub, LinkedIn, Twitter/X, Telegram, Discord, Farcaster, Lens, and personal website URLs. Extract the handle or URL as-is.
+## Step 2: Extract contact info
+- Full name, email, phone (with country code if present)
+- Location: city, state/province, country, ISO 3166-1 alpha-2 country code
+- Social profiles: GitHub, LinkedIn, Twitter/X, Telegram, Discord, Farcaster, Lens, personal website. Extract handle or URL as-is.
 
-Return null for any fields that are not found in the resume.
-Return empty arrays for skills or socials if none are found.`,
+## Step 3: Infer role category
+Read the full resume holistically — summary/objective, job titles, and what the candidate actually built or worked on in their experience bullet points. Determine what kind of professional this person is (e.g. "Frontend Developer", "Full-Stack Developer", "Backend Engineer", "Smart Contract Developer", "DevOps Engineer", "Designer", "Data Engineer"). Set roleCategory accordingly.
+
+## Step 4: Extract skills (role-aware)
+For each skill mentioned in the resume, ask: "Would a recruiter hiring for this candidate's role consider this skill a core part of their profile?" If the answer is no, leave it out.
+
+Guidelines:
+- Prioritize skills the candidate actively used in their work experience, not just listed in a tools section.
+- Skills should be coherent with the inferred role. A frontend developer's skill list should read like a frontend developer's profile.
+- Peripheral skills (mentioned once, tangential to the role) should be excluded. The candidate can always add more skills later.
+- Fewer, high-signal skills are better than an exhaustive list. Aim for around 10 at most.
+
+Return null for fields not found. Return empty arrays for skills/socials if none found.`,
     prompt: text,
   });
 
