@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 import { LoaderIcon, SearchIcon, XIcon } from 'lucide-react';
 
-import { MAX_MATCH_SKILLS } from '@/lib/constants';
+import { SKILL_STATUS_MESSAGE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -97,7 +97,7 @@ const DropdownContent = ({
         <button
           type='button'
           className='flex items-center justify-center gap-2 border-t border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50'
-          onClick={() => loadMore()}
+          onClick={loadMore}
           disabled={isFetchingMore}
         >
           {isFetchingMore ? (
@@ -136,6 +136,8 @@ export const ProfileSkillsEditor = ({
   handleInputBlur,
   handleSearchKeyDown,
   handleDropdownMouseDown,
+  skillStatus,
+  isAtErrorCap,
   handleAddSkill,
   handleRemoveSkill,
   handleSave,
@@ -147,14 +149,16 @@ export const ProfileSkillsEditor = ({
     >
       <DialogHeader className='flex-1 overflow-y-auto'>
         <DialogTitle>Edit Skills</DialogTitle>
-        <DialogDescription>
-          Search and add skills to your profile{' '}
-          <span className='text-muted-foreground/40'>
-            ({editedSkills.length}/{MAX_MATCH_SKILLS})
-          </span>
+        <DialogDescription
+          className={cn(
+            skillStatus === 'warning' && 'text-amber-600 dark:text-amber-400',
+            skillStatus === 'error' && 'text-destructive',
+          )}
+        >
+          {SKILL_STATUS_MESSAGE[skillStatus]}
         </DialogDescription>
 
-        <div className='relative py-2'>
+        <div className={cn('relative py-2', isAtErrorCap && 'opacity-50')}>
           <InputGroup className='h-12'>
             <InputGroupAddon>
               <SearchIcon />
@@ -167,10 +171,11 @@ export const ProfileSkillsEditor = ({
               onBlur={handleInputBlur}
               onKeyDown={handleSearchKeyDown}
               placeholder='Search skills...'
+              disabled={isAtErrorCap}
             />
           </InputGroup>
 
-          {isDropdownOpen && (
+          {isDropdownOpen && !isAtErrorCap && (
             <div
               className='absolute top-full left-0 z-50 mt-2 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-lg'
               onMouseDown={handleDropdownMouseDown}
@@ -210,30 +215,31 @@ export const ProfileSkillsEditor = ({
             </span>
           ))}
 
-          {isSuggestedLoading ? (
-            <span className='inline-flex items-center gap-1.5 py-1 text-sm text-muted-foreground'>
-              <LoaderIcon className='size-3 animate-spin' />
-              Loading suggestions...
-            </span>
-          ) : (
-            suggestedSkills.map((skill) => (
-              <button
-                key={skill.id}
-                type='button'
-                className={cn(
-                  'inline-flex items-center rounded-md border border-dashed border-current px-2.5 py-1 text-sm font-medium transition-opacity',
-                  isDropdownOpen
-                    ? 'pointer-events-none opacity-0'
-                    : 'opacity-50 hover:opacity-80',
-                  TAG_COLORS[skill.colorIndex] ?? TAG_COLORS[0],
-                  'bg-transparent ring-0 hover:bg-transparent',
-                )}
-                onClick={() => handleAddSkill(skill)}
-              >
-                {skill.name}
-              </button>
-            ))
-          )}
+          {!isAtErrorCap &&
+            (isSuggestedLoading ? (
+              <span className='inline-flex items-center gap-1.5 py-1 text-sm text-muted-foreground'>
+                <LoaderIcon className='size-3 animate-spin' />
+                Loading suggestions...
+              </span>
+            ) : (
+              suggestedSkills.map((skill) => (
+                <button
+                  key={skill.id}
+                  type='button'
+                  className={cn(
+                    'inline-flex items-center rounded-md border border-dashed border-current px-2.5 py-1 text-sm font-medium transition-opacity',
+                    isDropdownOpen
+                      ? 'pointer-events-none opacity-0'
+                      : 'opacity-50 hover:opacity-80',
+                    TAG_COLORS[skill.colorIndex] ?? TAG_COLORS[0],
+                    'bg-transparent ring-0 hover:bg-transparent',
+                  )}
+                  onClick={() => handleAddSkill(skill)}
+                >
+                  {skill.name}
+                </button>
+              ))
+            ))}
         </div>
       </DialogHeader>
 
@@ -245,7 +251,7 @@ export const ProfileSkillsEditor = ({
         >
           Cancel
         </Button>
-        <Button onClick={handleSave} disabled={isSaving}>
+        <Button onClick={handleSave} disabled={isSaving || isAtErrorCap}>
           {isSaving ? (
             <>
               <LoaderIcon className='size-4 animate-spin' />

@@ -82,8 +82,7 @@ export const POST = async (request: Request): Promise<Response> => {
   let pageCount: number;
   try {
     ({ text, pageCount } = await extractText(buffer.slice(0), file.type));
-  } catch (error) {
-    console.error('[resume-parse] extractText failed:', error);
+  } catch {
     return Response.json(
       { error: 'Could not extract text from file' },
       { status: 400 },
