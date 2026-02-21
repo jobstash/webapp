@@ -20,6 +20,14 @@ const SESSION_KEY = ['session'];
 const STALE_TIME = 5 * 60 * 1000;
 const REFRESH_BUFFER = 15 * 60 * 1000;
 
+const EMPTY_SESSION: SessionResponse = {
+  apiToken: null,
+  expiresAt: null,
+  isExpert: null,
+  displayName: null,
+  identityType: null,
+};
+
 const fetchSession = async (): Promise<SessionResponse> => {
   const res = await fetch('/api/auth/session');
   if (!res.ok) throw new Error(`GET /api/auth/session failed: ${res.status}`);
@@ -27,9 +35,18 @@ const fetchSession = async (): Promise<SessionResponse> => {
 };
 
 const createSession = async (privyToken: string): Promise<SessionResponse> => {
+  const loginMethod =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('jobstash:last-auth-method')
+      : null;
+
   const res = await fetch('/api/auth/session', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${privyToken}` },
+    headers: {
+      Authorization: `Bearer ${privyToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ loginMethod }),
   });
   if (!res.ok) throw new Error(`POST /api/auth/session failed: ${res.status}`);
   return (await res.json()) as SessionResponse;
@@ -60,47 +77,22 @@ export const useSession = () => {
 
       if (current.apiToken && !isExpiringSoon) return current;
 
-      // Privy SDK still initializing — return current session until it resolves
-      if (!ready) {
-        if (current.apiToken) return current;
-        return {
-          apiToken: null,
-          expiresAt: null,
-          isExpert: null,
-          displayName: null,
-          identityType: null,
-        };
-      }
+      if (!ready) return current.apiToken ? current : EMPTY_SESSION;
 
-      // Privy access token expired — attempt silent refresh via long-lived refresh token
-      if (!authenticated) {
-        const privyToken = await getAccessToken();
+      const privyToken = await getAccessToken();
 
-        if (privyToken) {
-          // Refresh token was still valid — renew server session to stay in sync
-          const refreshedSession = await createSession(privyToken);
-          void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
-          return refreshedSession;
-        }
-
-        // Refresh token also expired — both auth layers are dead, clean up server session
+      if (!authenticated && !privyToken) {
         if (current.apiToken) {
           await fetch('/api/auth/session', { method: 'DELETE' });
         }
-        return {
-          apiToken: null,
-          expiresAt: null,
-          isExpert: null,
-          displayName: null,
-          identityType: null,
-        };
+        return EMPTY_SESSION;
       }
 
-      const privyToken = await getAccessToken();
       if (!privyToken) throw new Error('No Privy access token');
-      const session = await createSession(privyToken);
+
+      const refreshed = await createSession(privyToken);
       void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
-      return session;
+      return refreshed;
     },
     staleTime: STALE_TIME,
     retry: 3,
@@ -125,19 +117,10 @@ export const useSession = () => {
 
   const logout = async (): Promise<void> => {
     queryClient.setQueryData(SESSION_KEY, {
-      apiToken: null,
-      expiresAt: null,
-      isExpert: null,
-      displayName: null,
-      identityType: null,
+      ...EMPTY_SESSION,
       isLoggingOut: true,
     });
-    queryClient.setQueryData(ELIGIBILITY_KEY, {
-      apiToken: null,
-      isExpert: null,
-      displayName: null,
-      identityType: null,
-    });
+    queryClient.setQueryData(ELIGIBILITY_KEY, EMPTY_SESSION);
     try {
       await fetch('/api/auth/session', { method: 'DELETE' });
       await privyLogout();
