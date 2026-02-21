@@ -47,7 +47,7 @@ export const HeaderAuthButton = () => {
   }
 
   return (
-    <PrimaryCTA asChild className={CTA_CLASS}>
+    <PrimaryCTA asChild className='px-3 text-sm lg:px-6 lg:text-base'>
       <LinkWithLoader href='/login' onClick={handleClick}>
         Jobs For You
       </LinkWithLoader>
