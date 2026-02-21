@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
-import { verifyPrivyToken } from '@/lib/server/privy';
+import { getPrivyUser, verifyPrivyToken } from '@/lib/server/privy';
 import { getSession } from '@/lib/server/session';
+import { getDisplayName } from '@/features/auth/server/get-display-name';
 
 const SESSION_EXPIRY = 55 * 60 * 1000; // 55 min (safety margin under 1hr Privy token TTL)
 
@@ -75,17 +76,34 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
+  let displayName: string | null = null;
+  let identityType: string | null = null;
+  try {
+    const privyUser = await getPrivyUser(privyClaims.userId);
+    const identity = getDisplayName(privyUser);
+    if (identity) {
+      displayName = identity.displayName;
+      identityType = identity.identityType;
+    }
+  } catch {
+    // Non-critical — session works without display name
+  }
+
   const session = await getSession();
   session.apiToken = parsed.data.token;
   session.expiresAt = Date.now() + SESSION_EXPIRY;
   session.isExpert = parsed.data.cryptoNative;
   session.privyDid = privyClaims.userId;
+  if (displayName) session.displayName = displayName;
+  if (identityType) session.identityType = identityType;
   await session.save();
 
   return NextResponse.json({
     apiToken: session.apiToken,
     expiresAt: session.expiresAt,
     isExpert: session.isExpert,
+    displayName: session.displayName ?? null,
+    identityType: session.identityType ?? null,
   });
 };
 
@@ -108,6 +126,8 @@ export const GET = async (): Promise<NextResponse> => {
       apiToken: null,
       expiresAt: null,
       isExpert: null,
+      displayName: null,
+      identityType: null,
     });
   }
 
@@ -115,5 +135,7 @@ export const GET = async (): Promise<NextResponse> => {
     apiToken: session.apiToken ?? null,
     expiresAt,
     isExpert: session.isExpert ?? null,
+    displayName: session.displayName ?? null,
+    identityType: session.identityType ?? null,
   });
 };

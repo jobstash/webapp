@@ -5,6 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 interface EligibilityResponse {
   apiToken: string | null;
   isExpert: boolean | null;
+  displayName: string | null;
+  identityType: string | null;
 }
 
 // Lightweight session check (no Privy dependency required).
@@ -25,6 +27,8 @@ export const useEligibility = () => {
   return {
     isAuthenticated: !!data?.apiToken,
     isExpert: data?.isExpert ?? null,
+    displayName: data?.displayName ?? null,
+    identityType: data?.identityType ?? null,
     isLoading: isPending,
   };
 };
