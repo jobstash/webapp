@@ -23,6 +23,13 @@ const nextConfig: NextConfig = {
     staticGenerationMaxConcurrency: 1,
     staticGenerationMinPagesPerWorker: 13000,
   },
+  redirects: async () => [
+    {
+      source: '/jobs',
+      destination: '/',
+      permanent: true,
+    },
+  ],
 };
 
 export default nextConfig;
