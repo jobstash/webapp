@@ -3,6 +3,7 @@ import { ImageResponse } from 'next/og';
 
 import {
   extractOgImageData,
+  getTitleFontSize,
   OG_IMAGE_SIZE,
   truncateText,
 } from '@/features/jobs/lib/og-image-utils';
@@ -155,17 +156,18 @@ const OpengraphImage = async ({ params }: Props) => {
     commitment,
     description,
     badge,
+    timestampText,
   } = extractOgImageData(job);
 
   const locationHasRemote = location?.toLowerCase().includes('remote');
-  const formattedSalary = salary?.startsWith('$') ? salary : `$${salary}`;
 
   const pills: string[] = [
-    seniority && `Role: ${seniority}`,
-    salary && formattedSalary,
-    location && `Location: ${location}`,
-    workMode && !locationHasRemote && `Mode: ${workMode}`,
-    commitment && `Contract: ${commitment}`,
+    timestampText,
+    salary,
+    seniority,
+    commitment,
+    workMode && !locationHasRemote && workMode,
+    location,
   ].filter((pill): pill is string => Boolean(pill));
 
   return new ImageResponse(
@@ -275,7 +277,7 @@ const OpengraphImage = async ({ params }: Props) => {
           display: 'flex',
           flexWrap: 'wrap',
           maxWidth: '100%',
-          fontSize: 72,
+          fontSize: getTitleFontSize(title),
           fontWeight: 900,
           color: COLORS.text,
           lineHeight: 1.1,
