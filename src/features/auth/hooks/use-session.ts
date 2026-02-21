@@ -60,8 +60,33 @@ export const useSession = () => {
 
       if (current.apiToken && !isExpiringSoon) return current;
 
-      if (!ready || !authenticated) {
+      // Privy SDK still initializing — return current session until it resolves
+      if (!ready) {
         if (current.apiToken) return current;
+        return {
+          apiToken: null,
+          expiresAt: null,
+          isExpert: null,
+          displayName: null,
+          identityType: null,
+        };
+      }
+
+      // Privy access token expired — attempt silent refresh via long-lived refresh token
+      if (!authenticated) {
+        const privyToken = await getAccessToken();
+
+        if (privyToken) {
+          // Refresh token was still valid — renew server session to stay in sync
+          const refreshedSession = await createSession(privyToken);
+          void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
+          return refreshedSession;
+        }
+
+        // Refresh token also expired — both auth layers are dead, clean up server session
+        if (current.apiToken) {
+          await fetch('/api/auth/session', { method: 'DELETE' });
+        }
         return {
           apiToken: null,
           expiresAt: null,
@@ -107,9 +132,18 @@ export const useSession = () => {
       identityType: null,
       isLoggingOut: true,
     });
-    await fetch('/api/auth/session', { method: 'DELETE' });
-    await privyLogout();
-    window.location.href = '/';
+    queryClient.setQueryData(ELIGIBILITY_KEY, {
+      apiToken: null,
+      isExpert: null,
+      displayName: null,
+      identityType: null,
+    });
+    try {
+      await fetch('/api/auth/session', { method: 'DELETE' });
+      await privyLogout();
+    } finally {
+      window.location.href = '/';
+    }
   };
 
   const isSessionReady = apiToken !== null;
