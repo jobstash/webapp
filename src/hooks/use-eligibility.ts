@@ -5,10 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 interface EligibilityResponse {
   apiToken: string | null;
   isExpert: boolean | null;
+  displayName: string | null;
+  identityType: string | null;
 }
 
-// Lightweight session check (no Privy dependency required).
-// Separate from useSession which manages full auth lifecycle.
+export const ELIGIBILITY_KEY = ['session-status'];
+
 const fetchEligibility = async (): Promise<EligibilityResponse> => {
   const res = await fetch('/api/auth/session');
   if (!res.ok) throw new Error(`GET /api/auth/session failed: ${res.status}`);
@@ -17,7 +19,7 @@ const fetchEligibility = async (): Promise<EligibilityResponse> => {
 
 export const useEligibility = () => {
   const { data, isPending } = useQuery({
-    queryKey: ['session-status'],
+    queryKey: ELIGIBILITY_KEY,
     queryFn: fetchEligibility,
     staleTime: 5 * 60 * 1000,
   });
@@ -25,6 +27,8 @@ export const useEligibility = () => {
   return {
     isAuthenticated: !!data?.apiToken,
     isExpert: data?.isExpert ?? null,
+    displayName: data?.displayName ?? null,
+    identityType: data?.identityType ?? null,
     isLoading: isPending,
   };
 };

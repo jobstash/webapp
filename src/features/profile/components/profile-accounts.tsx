@@ -9,7 +9,7 @@ import { ProfileCard } from './profile-card';
 import { useProfileAccounts } from './use-profile-accounts';
 
 export const ProfileAccounts = () => {
-  const { accounts, isLoading, linkGoogle } = useProfileAccounts();
+  const { accounts, isLoading } = useProfileAccounts();
 
   if (isLoading) {
     return (
@@ -42,7 +42,7 @@ export const ProfileAccounts = () => {
                 <span className='text-sm font-medium'>{account.label}</span>
                 <span className='truncate text-xs text-muted-foreground'>
                   {account.isConnected
-                    ? (account.connectedEmail ?? 'Connected')
+                    ? (account.subtitle ?? 'Connected')
                     : 'Not connected'}
                 </span>
               </div>
@@ -50,7 +50,7 @@ export const ProfileAccounts = () => {
               {account.isConnected ? (
                 <CheckCircle2Icon className='size-5 shrink-0 text-emerald-500' />
               ) : (
-                <Button variant='outline' size='sm' onClick={linkGoogle}>
+                <Button variant='outline' size='sm' onClick={account.onLink}>
                   Connect
                 </Button>
               )}

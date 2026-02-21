@@ -2,33 +2,45 @@
 
 import { PencilIcon, PlusIcon, SquarePenIcon, TagsIcon } from 'lucide-react';
 
-import { MAX_MATCH_SKILLS } from '@/lib/constants';
+import {
+  SKILL_ERROR_THRESHOLD,
+  SKILL_STATUS_MESSAGE,
+  type SkillStatus,
+  getSkillStatus,
+} from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TAG_COLORS } from '@/features/onboarding/constants';
+import { TAG_COLORS } from '@/features/profile/constants';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useProfileEditor } from '@/features/profile/components/profile-editor-provider';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
+const getStatusColor = (status?: SkillStatus) => {
+  if (!status || status === 'ok') return 'text-muted-foreground';
+  if (status === 'warning') return 'text-amber-600 dark:text-amber-400';
+  return 'text-destructive';
+};
+
+const getStatusText = (status?: SkillStatus) => {
+  if (!status || status === 'ok')
+    return 'Used for matching you with relevant jobs';
+  return SKILL_STATUS_MESSAGE[status];
+};
+
 const SectionHeader = ({
   onEdit,
-  count,
+  skillStatus,
 }: {
   onEdit?: () => void;
-  count?: number;
+  skillStatus?: SkillStatus;
 }) => (
   <div className='flex items-start justify-between'>
     <div>
       <h3 className='text-base font-semibold'>Skills</h3>
-      <p className='text-xs text-muted-foreground'>
-        Used for matching you with relevant jobs
-        {count != null && (
-          <span className='ml-1.5 text-muted-foreground/40'>
-            ({count}/{MAX_MATCH_SKILLS})
-          </span>
-        )}
+      <p className={cn('text-xs', getStatusColor(skillStatus))}>
+        {getStatusText(skillStatus)}
       </p>
     </div>
     {onEdit && (
@@ -84,7 +96,10 @@ export const ProfileSkills = () => {
 
   return (
     <div className='flex flex-col gap-3'>
-      <SectionHeader onEdit={openSkillsEditor} count={skills.length} />
+      <SectionHeader
+        onEdit={openSkillsEditor}
+        skillStatus={getSkillStatus(skills.length)}
+      />
       <div className='flex flex-wrap items-center gap-2'>
         {skills.map((skill) => (
           <span
@@ -97,7 +112,7 @@ export const ProfileSkills = () => {
             {skill.name}
           </span>
         ))}
-        {skills.length < MAX_MATCH_SKILLS && (
+        {skills.length < SKILL_ERROR_THRESHOLD && (
           <button
             type='button'
             className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
-import { verifyPrivyToken } from '@/lib/server/privy';
+import { getPrivyUser, verifyPrivyToken } from '@/lib/server/privy';
 import { getSession } from '@/lib/server/session';
+import { getDisplayName } from '@/features/auth/server/get-display-name';
 
 const SESSION_EXPIRY = 55 * 60 * 1000; // 55 min (safety margin under 1hr Privy token TTL)
 
@@ -12,7 +13,6 @@ const checkWalletResponseSchema = z.object({
   cryptoNative: z.boolean(),
 });
 
-/** Exchange Privy token for API token and create iron-session. */
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
   const authHeader = req.headers.get('authorization') ?? '';
   const privyToken = authHeader.startsWith('Bearer ')
@@ -75,28 +75,46 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
+  let identity: { displayName: string; identityType: string } | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const privyUser = await getPrivyUser(privyClaims.userId);
+      identity = getDisplayName(privyUser);
+      break;
+    } catch (error) {
+      console.error(
+        `[POST /api/auth/session] getPrivyUser attempt ${String(attempt + 1)} failed:`,
+        error,
+      );
+    }
+  }
+
   const session = await getSession();
   session.apiToken = parsed.data.token;
   session.expiresAt = Date.now() + SESSION_EXPIRY;
   session.isExpert = parsed.data.cryptoNative;
   session.privyDid = privyClaims.userId;
+  if (identity) {
+    session.displayName = identity.displayName;
+    session.identityType = identity.identityType;
+  }
   await session.save();
 
   return NextResponse.json({
     apiToken: session.apiToken,
     expiresAt: session.expiresAt,
     isExpert: session.isExpert,
+    displayName: session.displayName ?? null,
+    identityType: session.identityType ?? null,
   });
 };
 
-/** Destroy iron-session (logout). */
 export const DELETE = async (): Promise<NextResponse> => {
   const session = await getSession();
   session.destroy();
   return NextResponse.json({ ok: true });
 };
 
-/** Check current session status. */
 export const GET = async (): Promise<NextResponse> => {
   const session = await getSession();
   const expiresAt = session.expiresAt ?? null;
@@ -108,6 +126,8 @@ export const GET = async (): Promise<NextResponse> => {
       apiToken: null,
       expiresAt: null,
       isExpert: null,
+      displayName: null,
+      identityType: null,
     });
   }
 
@@ -115,5 +135,7 @@ export const GET = async (): Promise<NextResponse> => {
     apiToken: session.apiToken ?? null,
     expiresAt,
     isExpert: session.isExpert ?? null,
+    displayName: session.displayName ?? null,
+    identityType: session.identityType ?? null,
   });
 };

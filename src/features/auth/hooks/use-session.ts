@@ -5,10 +5,14 @@ import { useEffect } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { ELIGIBILITY_KEY } from '@/hooks/use-eligibility';
+
 interface SessionResponse {
   apiToken: string | null;
   expiresAt: number | null;
   isExpert: boolean | null;
+  displayName: string | null;
+  identityType: string | null;
   isLoggingOut?: boolean;
 }
 
@@ -49,32 +53,55 @@ export const useSession = () => {
   } = useQuery({
     queryKey: SESSION_KEY,
     queryFn: async () => {
-      // Phase 1: Read iron-session cookie (no Privy dependency)
       const current = await fetchSession();
       const isExpiringSoon =
         current.expiresAt !== null &&
         current.expiresAt - Date.now() < REFRESH_BUFFER;
 
-      if (current.apiToken && !isExpiringSoon) {
-        return current;
+      if (current.apiToken && !isExpiringSoon) return current;
+
+      // Privy SDK still initializing — return current session until it resolves
+      if (!ready) {
+        if (current.apiToken) return current;
+        return {
+          apiToken: null,
+          expiresAt: null,
+          isExpert: null,
+          displayName: null,
+          identityType: null,
+        };
       }
 
-      // Phase 2: Need token exchange — requires Privy
-      if (!ready || !authenticated) {
-        return current.apiToken
-          ? current
-          : ({
-              apiToken: null,
-              expiresAt: null,
-              isExpert: null,
-            } as SessionResponse);
+      // Privy access token expired — attempt silent refresh via long-lived refresh token
+      if (!authenticated) {
+        const privyToken = await getAccessToken();
+
+        if (privyToken) {
+          // Refresh token was still valid — renew server session to stay in sync
+          const refreshedSession = await createSession(privyToken);
+          void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
+          return refreshedSession;
+        }
+
+        // Refresh token also expired — both auth layers are dead, clean up server session
+        if (current.apiToken) {
+          await fetch('/api/auth/session', { method: 'DELETE' });
+        }
+        return {
+          apiToken: null,
+          expiresAt: null,
+          isExpert: null,
+          displayName: null,
+          identityType: null,
+        };
       }
 
       const privyToken = await getAccessToken();
       if (!privyToken) throw new Error('No Privy access token');
-      return await createSession(privyToken);
+      const session = await createSession(privyToken);
+      void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
+      return session;
     },
-    enabled: true,
     staleTime: STALE_TIME,
     retry: 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
@@ -101,11 +128,22 @@ export const useSession = () => {
       apiToken: null,
       expiresAt: null,
       isExpert: null,
+      displayName: null,
+      identityType: null,
       isLoggingOut: true,
     });
-    await fetch('/api/auth/session', { method: 'DELETE' });
-    await privyLogout();
-    window.location.href = '/';
+    queryClient.setQueryData(ELIGIBILITY_KEY, {
+      apiToken: null,
+      isExpert: null,
+      displayName: null,
+      identityType: null,
+    });
+    try {
+      await fetch('/api/auth/session', { method: 'DELETE' });
+      await privyLogout();
+    } finally {
+      window.location.href = '/';
+    }
   };
 
   const isSessionReady = apiToken !== null;
@@ -113,6 +151,8 @@ export const useSession = () => {
   return {
     apiToken,
     isExpert: session?.isExpert ?? null,
+    displayName: session?.displayName ?? null,
+    identityType: session?.identityType ?? null,
     isAuthenticated,
     isSessionReady,
     isLoading: isPending,

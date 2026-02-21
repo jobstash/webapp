@@ -7,7 +7,7 @@ import { getTagColorIndex } from '@/lib/utils';
 import {
   popularTagsResponseSchema,
   type UserSkill,
-} from '@/features/onboarding/schemas';
+} from '@/features/profile/schemas';
 
 const LIMIT = 10;
 
@@ -33,7 +33,7 @@ const fetchSuggestedSkills = async (): Promise<UserSkill[]> => {
 
 export const useSuggestedSkills = (selectedIds: Set<string>) => {
   const { data, isPending } = useQuery({
-    queryKey: ['onboarding-suggested-skills'],
+    queryKey: ['suggested-skills'],
     queryFn: fetchSuggestedSkills,
     staleTime: Infinity,
   });

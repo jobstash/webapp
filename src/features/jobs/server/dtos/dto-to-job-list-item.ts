@@ -74,11 +74,12 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const addressLookup = lookupAddresses(lookupKey);
   const title = dto.title ?? getDefaultTitle(dto);
   const href = createJobItemHref(title, dto);
-  const infoTags = createJobInfoTags(dto, addressLookup);
+  const infoTags = createJobInfoTags(dto, addressLookup, timestamp);
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemOrg(organization);
   const badge = dtoToJobItemBadge(dto);
   const timestampText = prettyTimestamp(timestamp);
+  const datePosted = new Date(timestamp).toISOString().split('T')[0];
 
   return {
     id: shortUUID,
@@ -92,6 +93,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     organization: mappedOrg,
     badge,
     timestampText,
+    datePosted,
   };
 };
 
@@ -104,6 +106,7 @@ const createJobItemHref = (title: string, dto: JobListItemDto) => {
 const createJobInfoTags = (
   dto: JobListItemDto,
   addressLookup: AddressLookupResult | null,
+  timestamp: number,
 ) => {
   const {
     seniority,
@@ -117,6 +120,11 @@ const createJobInfoTags = (
   } = dto;
 
   const tags: MappedInfoTagSchema[] = [];
+
+  tags.push({
+    iconKey: 'posted',
+    label: prettyTimestamp(timestamp),
+  });
 
   if (seniority && seniority in SENIORITY_MAPPING) {
     const label =

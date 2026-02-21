@@ -7,6 +7,7 @@ import {
   PencilIcon,
   PlusIcon,
   SquarePenIcon,
+  UploadIcon,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -32,7 +33,7 @@ const SECTION_SUBTITLE = 'Your email, website, and resume for recruiters';
 export const ContactSection = () => {
   const { isSessionReady } = useSession();
   const { data: showcase, isPending } = useProfileShowcase(isSessionReady);
-  const { openContactInfoEditor } = useProfileEditor();
+  const { openContactInfoEditor, openResumeUpload } = useProfileEditor();
 
   if (isPending) {
     return (
@@ -77,10 +78,16 @@ export const ContactSection = () => {
           <p className='text-sm text-muted-foreground'>
             Add your email and website so recruiters can reach you
           </p>
-          <Button variant='ghost' size='sm' onClick={openContactInfoEditor}>
-            <PencilIcon className='size-3.5' />
-            Add Contact Info
-          </Button>
+          <div className='flex items-center gap-2'>
+            <Button variant='ghost' size='sm' onClick={openContactInfoEditor}>
+              <PencilIcon className='size-3.5' />
+              Add Contact Info
+            </Button>
+            <Button variant='ghost' size='sm' onClick={openResumeUpload}>
+              <UploadIcon className='size-3.5' />
+              Upload Resume
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -134,7 +141,7 @@ export const ContactSection = () => {
           </Link>
         )}
 
-        {!(email && website && resume) && (
+        {!(email && website) && (
           <button
             type='button'
             className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
@@ -142,6 +149,17 @@ export const ContactSection = () => {
           >
             <PlusIcon className='size-3' />
             Add contact
+          </button>
+        )}
+
+        {!resume && (
+          <button
+            type='button'
+            className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+            onClick={openResumeUpload}
+          >
+            <UploadIcon className='size-3' />
+            Upload Resume
           </button>
         )}
       </div>

@@ -3,12 +3,12 @@
 import {
   FileTextIcon,
   LoaderIcon,
-  ScanSearchIcon,
+  PlusIcon,
   UploadIcon,
   XIcon,
 } from 'lucide-react';
 
-import { MAX_MATCH_SKILLS } from '@/lib/constants';
+import { SKILL_STATUS_MESSAGE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,9 +20,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { FieldError } from '@/components/ui/field';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { TAG_COLORS } from '@/features/onboarding/constants';
+import { TAG_COLORS } from '@/features/profile/constants';
 import { useResumeUpload } from '@/features/profile/hooks/use-resume-upload';
 
 interface ResumeUploadDialogProps {
@@ -50,14 +48,14 @@ export const ResumeUploadDialog = ({
     fileName,
     acceptedFileTypes,
     fileInputRef,
-    includeSkills,
-    setIncludeSkills,
+    toggleSkill,
+    detectedSkillChips,
     isSaving,
     newSkillCount,
     isOverCap,
     editedSkills,
     removeSkill,
-    skillCount,
+    skillStatus,
     canSave,
     save,
     handleDragOver,
@@ -94,22 +92,15 @@ export const ResumeUploadDialog = ({
                   <p
                     className={cn(
                       'text-sm font-medium',
-                      skillCount > MAX_MATCH_SKILLS
-                        ? 'text-destructive'
-                        : 'text-muted-foreground',
+                      skillStatus === 'warning' &&
+                        'text-amber-600 dark:text-amber-400',
+                      skillStatus === 'error' && 'text-destructive',
+                      skillStatus === 'ok' && 'text-muted-foreground',
                     )}
                   >
-                    {skillCount}/{MAX_MATCH_SKILLS}
+                    {SKILL_STATUS_MESSAGE[skillStatus]}
                   </p>
                 </div>
-
-                {skillCount > MAX_MATCH_SKILLS && (
-                  <p className='text-sm text-destructive'>
-                    Remove {skillCount - MAX_MATCH_SKILLS} skill
-                    {skillCount - MAX_MATCH_SKILLS !== 1 && 's'} to continue
-                    (max {MAX_MATCH_SKILLS})
-                  </p>
-                )}
 
                 <div className='flex max-h-48 flex-wrap content-start gap-2 overflow-y-auto'>
                   {editedSkills.map((skill) => (
@@ -134,20 +125,40 @@ export const ResumeUploadDialog = ({
                 </div>
               </div>
             ) : (
-              newSkillCount > 0 && (
-                <div className='flex items-center justify-between rounded-lg border border-border px-4 py-3'>
-                  <Label
-                    htmlFor='include-skills'
-                    className='flex cursor-pointer items-center gap-2 text-sm'
-                  >
-                    <ScanSearchIcon className='size-4 shrink-0 text-muted-foreground' />
-                    {newSkillCount} new skill{newSkillCount !== 1 && 's'} found
-                  </Label>
-                  <Switch
-                    id='include-skills'
-                    checked={includeSkills}
-                    onCheckedChange={setIncludeSkills}
-                  />
+              detectedSkillChips.length > 0 && (
+                <div className='flex flex-col gap-3'>
+                  <div>
+                    <p className='text-sm font-medium'>
+                      {newSkillCount} new skill{newSkillCount !== 1 && 's'}{' '}
+                      found
+                    </p>
+                    <p className='text-xs text-muted-foreground'>
+                      Tap to exclude unwanted skills
+                    </p>
+                  </div>
+                  <div className='flex flex-wrap gap-2'>
+                    {detectedSkillChips.map((skill) => (
+                      <button
+                        key={skill.id}
+                        type='button'
+                        onClick={() => toggleSkill(skill.id)}
+                        className={cn(
+                          'group inline-flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-sm font-medium transition-all',
+                          skill.isExcluded
+                            ? 'border border-dashed border-current bg-transparent opacity-50 ring-0 hover:opacity-70'
+                            : 'border border-transparent ring-1 hover:opacity-80',
+                          TAG_COLORS[skill.colorIndex] ?? TAG_COLORS[0],
+                        )}
+                      >
+                        {skill.name}
+                        {skill.isExcluded ? (
+                          <PlusIcon className='size-3 opacity-60' />
+                        ) : (
+                          <XIcon className='size-3 opacity-40 transition-opacity sm:opacity-0 sm:group-hover:opacity-60' />
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )
             )}

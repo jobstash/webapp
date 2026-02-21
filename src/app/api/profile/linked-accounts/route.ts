@@ -14,9 +14,27 @@ export const GET = async (): Promise<NextResponse> => {
   try {
     const user = await getPrivyUser(privyDid);
 
-    const data = user.google
-      ? [{ type: 'google_oauth' as const, email: user.google.email ?? null }]
-      : [];
+    const data: {
+      type: string;
+      email: string | null;
+      username: string | null;
+    }[] = [];
+
+    if (user.google) {
+      data.push({
+        type: 'google_oauth',
+        email: user.google.email ?? null,
+        username: null,
+      });
+    }
+
+    if (user.github) {
+      data.push({
+        type: 'github_oauth',
+        email: user.github.email ?? null,
+        username: user.github.username ?? null,
+      });
+    }
 
     return NextResponse.json({ data });
   } catch {

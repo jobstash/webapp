@@ -23,7 +23,9 @@ export const JobDetailsContent = ({ job, tags }: JobDetailsContentProps) => {
   ];
 
   return (
-    <div className='mt-8 space-y-8'>
+    <div className='mt-6 space-y-6'>
+      <JobDetailsSkills tags={tags} />
+
       {description && (
         <DescriptionSection title='About the Role' description={description} />
       )}
@@ -31,8 +33,6 @@ export const JobDetailsContent = ({ job, tags }: JobDetailsContentProps) => {
       {bulletSections.map(({ title, items }) => (
         <BulletSection key={title} title={title} items={items} />
       ))}
-
-      <JobDetailsSkills tags={tags} />
     </div>
   );
 };

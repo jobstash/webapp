@@ -13,6 +13,10 @@ afterEach(() => {
   cleanup();
 });
 
+vi.mock('@/components/hero-cta-button', () => ({
+  HeroCtaButton: () => <button>Jobs For You</button>,
+}));
+
 vi.mock('next/link', () => ({
   default: ({
     children,
@@ -100,9 +104,9 @@ describe('HeroWithPillars', () => {
   it('renders primary CTA buttons', async () => {
     render(await HeroWithPillars());
 
-    // Browse Jobs is a button (scrolls to jobs section)
+    // Jobs For You is a button (mocked HeroCtaButton)
     expect(
-      screen.getByRole('button', { name: /browse jobs/i }),
+      screen.getByRole('button', { name: /jobs for you/i }),
     ).toBeInTheDocument();
     // Post a Job is a link
     expect(

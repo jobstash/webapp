@@ -1,12 +1,14 @@
+'use client';
+
 import { type KeyboardEvent, type MouseEvent, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { SKILL_ERROR_THRESHOLD, getSkillStatus } from '@/lib/constants';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
-import { useSkillsSearch } from '@/features/onboarding/hooks/use-skills-search';
-import { useSuggestedSkills } from '@/features/onboarding/hooks/use-suggested-skills';
-import type { UserSkill } from '@/features/onboarding/schemas';
-import type { ProfileSkill } from '@/features/profile/schemas';
+import { useSkillsSearch } from '@/features/profile/hooks/use-skills-search';
+import { useSuggestedSkills } from '@/features/profile/hooks/use-suggested-skills';
+import type { ProfileSkill, UserSkill } from '@/features/profile/schemas';
 
 const toUserSkill = (skill: ProfileSkill): UserSkill => ({
   id: skill.id,
@@ -61,11 +63,13 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
     }
   };
 
-  const handleDropdownMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
+  const preventBlur = (e: MouseEvent<HTMLDivElement>) => e.preventDefault();
+
+  const skillStatus = getSkillStatus(editedSkills.length);
+  const isAtErrorCap = skillStatus === 'error';
 
   const handleAddSkill = (skill: UserSkill) => {
+    if (editedSkills.length >= SKILL_ERROR_THRESHOLD) return;
     setEditedSkills((prev) => [...prev, skill]);
     setSkillSearch('');
     setIsDropdownOpen(false);
@@ -77,9 +81,10 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
   };
 
   const handleSave = async () => {
+    if (isAtErrorCap) return;
     setIsSaving(true);
     try {
-      const res = await fetch('/api/onboarding/sync', {
+      const res = await fetch('/api/profile/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -123,7 +128,9 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
     handleInputFocus,
     handleInputBlur,
     handleSearchKeyDown,
-    handleDropdownMouseDown,
+    handleDropdownMouseDown: preventBlur,
+    skillStatus,
+    isAtErrorCap,
     handleAddSkill,
     handleRemoveSkill,
     handleSave,

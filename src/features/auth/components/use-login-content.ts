@@ -18,7 +18,7 @@ export const useLoginContent = () => {
   const { loading: isOAuthLoading } = useLoginWithOAuth();
   const { isSessionReady } = useSession();
 
-  const redirectTo = searchParams.get('redirect') ?? '/';
+  const redirectTo = searchParams.get('redirect') ?? '/profile/jobs';
 
   const hasOAuthParams =
     typeof window !== 'undefined' &&

@@ -1,10 +1,5 @@
 'use client';
 
-import { LogOutIcon } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { useSession } from '@/features/auth/hooks/use-session';
-
 import { DeleteAccountDialog } from './delete-account-dialog';
 import { ProfileAccounts } from './profile-accounts';
 import { ProfileCard } from './profile-card';
@@ -28,29 +23,9 @@ const SettingsRow = ({
 );
 
 export const ProfileSettings = () => {
-  const { isLoggingOut, logout } = useSession();
-
   return (
     <div className='flex flex-col gap-4'>
       <ProfileAccounts />
-
-      <ProfileCard title='Session'>
-        <SettingsRow
-          title='Log out of your account'
-          description='You will be redirected to the home page'
-          action={
-            <Button
-              variant='outline'
-              size='sm'
-              disabled={isLoggingOut}
-              onClick={logout}
-            >
-              <LogOutIcon className='size-3.5' />
-              {isLoggingOut ? 'Logging out...' : 'Log out'}
-            </Button>
-          }
-        />
-      </ProfileCard>
 
       <ProfileCard
         title='Danger Zone'
@@ -59,7 +34,7 @@ export const ProfileSettings = () => {
         <SettingsRow
           title='Delete your account'
           description='Permanently delete your account and all associated data'
-          action={<DeleteAccountDialog logout={logout} />}
+          action={<DeleteAccountDialog />}
         />
       </ProfileCard>
     </div>

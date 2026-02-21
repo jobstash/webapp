@@ -4,8 +4,7 @@ import { LoaderIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { JobstashLogo } from '@/components/jobstash-logo';
-import { AuthButtons } from '@/features/onboarding/components/auth-buttons';
-
+import { AuthButtons } from './auth-buttons';
 import { useLoginContent } from './use-login-content';
 
 export const LoginContent = () => {

@@ -20,10 +20,6 @@ export const GA_EVENT = {
   // Auth
   LOGIN_STARTED: 'login_started',
   LOGIN_COMPLETED: 'login_completed',
-  ONBOARDING_STEP_VIEWED: 'onboarding_step_viewed',
-  ONBOARDING_COMPLETED: 'onboarding_completed',
-  ONBOARDING_PROFILE_SYNCED: 'onboarding_profile_synced',
-
   // Navigation
   HERO_CTA_CLICKED: 'hero_cta_clicked',
   SUGGESTED_FILTER_APPLIED: 'suggested_filter_applied',
@@ -80,17 +76,6 @@ export type GaEventParams = {
   };
   [GA_EVENT.LOGIN_COMPLETED]: {
     login_method: string;
-  };
-  [GA_EVENT.ONBOARDING_STEP_VIEWED]: {
-    step_number: number;
-    step_name: string;
-  };
-  [GA_EVENT.ONBOARDING_COMPLETED]: Record<string, never>;
-  [GA_EVENT.ONBOARDING_PROFILE_SYNCED]: {
-    skills_count: number;
-    socials_count: number;
-    has_resume: boolean;
-    success: boolean;
   };
   [GA_EVENT.HERO_CTA_CLICKED]: {
     source: string;

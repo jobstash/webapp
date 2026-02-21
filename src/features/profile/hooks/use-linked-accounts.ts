@@ -15,9 +15,7 @@ const fetchLinkedAccounts = async (): Promise<LinkedAccount[]> => {
   // 401 = session missing privyDid (pre-migration login). Return empty until next login.
   if (res.status === 401) return [];
 
-  if (res.status >= 500) {
-    return [];
-  }
+  if (res.status >= 500) return [];
 
   if (!res.ok)
     throw new Error(`GET /api/profile/linked-accounts failed: ${res.status}`);
