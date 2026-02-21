@@ -4,8 +4,8 @@ import { CircleUserIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { useEligibility } from '@/hooks/use-eligibility';
+import { Button } from '@/components/ui/button';
 import { LinkWithLoader } from '@/components/link-with-loader';
-import { PrimaryCTA } from '@/components/primary-cta';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const AUTH_BUTTON_SKELETON = (
@@ -22,7 +22,7 @@ const IDENTITY_ICONS: Record<string, typeof CircleUserIcon> = {
   wallet: WalletIcon,
 };
 
-const CTA_CLASS = 'gap-2 px-3 text-sm lg:px-6';
+const CTA_CLASS = 'gap-2 bg-input/30 px-3 text-sm lg:px-6';
 
 export const HeaderAuthButton = () => {
   const { isAuthenticated, displayName, identityType, isLoading } =
@@ -35,22 +35,26 @@ export const HeaderAuthButton = () => {
       (identityType && IDENTITY_ICONS[identityType]) || CircleUserIcon;
 
     return (
-      <PrimaryCTA asChild className={CTA_CLASS}>
+      <Button variant='secondary' asChild className={CTA_CLASS}>
         <LinkWithLoader href='/profile'>
           <Icon className='size-4 shrink-0' />
           <span className='max-w-32 truncate leading-tight lg:max-w-44'>
             {displayName ?? 'Account'}
           </span>
         </LinkWithLoader>
-      </PrimaryCTA>
+      </Button>
     );
   }
 
   return (
-    <PrimaryCTA asChild className='px-3 text-sm lg:px-6 lg:text-base'>
+    <Button
+      variant='secondary'
+      asChild
+      className='bg-input/30 px-3 text-sm lg:px-6 lg:text-base'
+    >
       <LinkWithLoader href='/login' onClick={handleClick}>
-        Jobs For You
+        Log in
       </LinkWithLoader>
-    </PrimaryCTA>
+    </Button>
   );
 };

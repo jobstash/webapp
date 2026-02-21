@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { ChevronDownIcon } from 'lucide-react';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
+import { POST_JOB_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { BrowseJobsButton } from '@/components/browse-jobs-button';
 import { Button } from '@/components/ui/button';
+import { HeroCtaButton } from '@/components/hero-cta-button';
 
 type PillarCategory = 'role' | 'skill' | 'location' | 'commitment';
 
@@ -72,10 +73,15 @@ export const HeroSection = ({ pillarItems }: Props) => {
             </p>
           </div>
 
-          <div className='flex flex-col gap-3 sm:flex-row'>
-            <BrowseJobsButton />
-            <Button size='lg' variant='ghost' asChild>
-              <Link href='/signup' onClick={handlePostJobClick}>
+          <div className='flex flex-col items-center gap-3 sm:flex-row'>
+            <HeroCtaButton />
+            <Button
+              size='lg'
+              variant='secondary'
+              className='bg-input/30 text-base'
+              asChild
+            >
+              <Link href={POST_JOB_URL} onClick={handlePostJobClick}>
                 Post a Job
               </Link>
             </Button>

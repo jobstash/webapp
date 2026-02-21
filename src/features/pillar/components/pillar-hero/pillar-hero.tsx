@@ -3,9 +3,10 @@
 import Link from 'next/link';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
+import { POST_JOB_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { BrowseJobsButton } from '@/components/browse-jobs-button';
 import { Button } from '@/components/ui/button';
+import { HeroCtaButton } from '@/components/hero-cta-button';
 import type { PillarDetails } from '@/features/pillar/schemas';
 import {
   PILLAR_CATEGORY_CONFIG,
@@ -93,10 +94,15 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
             </p>
           </div>
 
-          <div className='flex flex-col gap-3 sm:flex-row'>
-            <BrowseJobsButton />
-            <Button size='lg' variant='ghost' asChild>
-              <Link href='/signup' onClick={handlePostJobClick}>
+          <div className='flex flex-col items-center gap-3 sm:flex-row'>
+            <HeroCtaButton />
+            <Button
+              size='lg'
+              variant='secondary'
+              className='bg-input/30 text-base'
+              asChild
+            >
+              <Link href={POST_JOB_URL} onClick={handlePostJobClick}>
                 Post a Job
               </Link>
             </Button>
