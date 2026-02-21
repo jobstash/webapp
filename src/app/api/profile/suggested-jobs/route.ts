@@ -71,22 +71,11 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     const hasMore =
       actualCount >= JOBS_PER_PAGE && mwPage * JOBS_PER_PAGE < total;
 
-    const debug = {
-      mwPage,
-      total,
-      actualCount,
-      pageSize: JOBS_PER_PAGE,
-      hasMore,
-      jobIds: jobListPage.data.map((j) => j.id),
-    };
-    console.log('[suggested-jobs] debug:', JSON.stringify(debug, null, 2));
-
     return NextResponse.json({
       page: mwPage,
       total,
       data: jobListPage.data,
       hasMore,
-      debug,
     });
   } catch {
     return jsonError('Internal server error', 500);
