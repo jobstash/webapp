@@ -1,8 +1,10 @@
+'use client';
+
 import { type ChangeEvent, type DragEvent, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import { MAX_MATCH_SKILLS } from '@/lib/constants';
+import { SKILL_ERROR_THRESHOLD, getSkillStatus } from '@/lib/constants';
 import { clientEnv } from '@/lib/env/client';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import {
@@ -89,7 +91,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   const [fileName, setFileName] = useState<string | null>(null);
   const [resumeId, setResumeId] = useState<string | null>(null);
   const [detectedSkills, setDetectedSkills] = useState<PopularTagItem[]>([]);
-  const [includeSkills, setIncludeSkills] = useState(true);
+  const [excludedSkillIds, setExcludedSkillIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [editedSkills, setEditedSkills] = useState<UserSkill[]>([]);
 
@@ -97,15 +101,22 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
 
   const newSkillCount = detectedSkills.length;
   const existingSkillCount = (profileSkills ?? []).length;
-  const isOverCap = existingSkillCount + newSkillCount > MAX_MATCH_SKILLS;
-  const skillCount = editedSkills.length;
-  const canSave = !isOverCap || skillCount <= MAX_MATCH_SKILLS;
+  const isOverCap = existingSkillCount + newSkillCount > SKILL_ERROR_THRESHOLD;
+  const canSave = !isOverCap || editedSkills.length <= SKILL_ERROR_THRESHOLD;
+  const skillStatus = getSkillStatus(editedSkills.length);
+
+  const detectedSkillChips = detectedSkills.map((s) => ({
+    id: s.id,
+    name: s.name,
+    colorIndex: getTagColorIndex(s.id),
+    isExcluded: excludedSkillIds.has(s.id),
+  }));
 
   const handleFile = async (file: File): Promise<void> => {
     setError(null);
     setIsAnalyzed(false);
     setDetectedSkills([]);
-    setIncludeSkills(true);
+    setExcludedSkillIds(new Set());
     setResumeId(null);
 
     const validationError = validateFile(file);
@@ -180,6 +191,15 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     setEditedSkills((prev) => prev.filter((s) => s.id !== skillId));
   };
 
+  const toggleSkill = (skillId: string): void => {
+    setExcludedSkillIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(skillId)) next.delete(skillId);
+      else next.add(skillId);
+      return next;
+    });
+  };
+
   const save = async (): Promise<void> => {
     if (!resumeId) return;
 
@@ -223,31 +243,38 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
         if (!res.ok) throw new Error('Failed to save skills');
 
         await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
-      } else if (includeSkills && detectedSkills.length > 0) {
-        const existingSkills = (profileSkills ?? []).map((s) => ({
-          id: s.id,
-          name: s.name,
-        }));
-        const newSkills = detectedSkills.map((s) => ({
-          id: s.id,
-          name: s.name,
-        }));
-        const mergedSkills = [...existingSkills, ...newSkills];
+      } else if (detectedSkills.length > 0) {
+        const includedNewSkills = detectedSkills.filter(
+          (s) => !excludedSkillIds.has(s.id),
+        );
+        if (includedNewSkills.length > 0) {
+          const existingSkills = (profileSkills ?? []).map((s) => ({
+            id: s.id,
+            name: s.name,
+          }));
+          const newSkills = includedNewSkills.map((s) => ({
+            id: s.id,
+            name: s.name,
+          }));
+          const mergedSkills = [...existingSkills, ...newSkills];
 
-        const res = await fetch('/api/profile/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            skills: mergedSkills,
-            socials: [],
-            email: null,
-            resume: null,
-          }),
-        });
+          const res = await fetch('/api/profile/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              skills: mergedSkills,
+              socials: [],
+              email: null,
+              resume: null,
+            }),
+          });
 
-        if (!res.ok) throw new Error('Failed to save skills');
+          if (!res.ok) throw new Error('Failed to save skills');
 
-        await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
+          await queryClient.invalidateQueries({
+            queryKey: ['profile-skills'],
+          });
+        }
       }
 
       handleOpenChange(false);
@@ -290,7 +317,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     setIsDragActive(false);
     setResumeId(null);
     setDetectedSkills([]);
-    setIncludeSkills(true);
+    setExcludedSkillIds(new Set());
     setIsSaving(false);
     setEditedSkills([]);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -309,14 +336,14 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     fileName,
     acceptedFileTypes: ACCEPTED_FILE_TYPES,
     fileInputRef,
-    includeSkills,
-    setIncludeSkills,
+    toggleSkill,
+    detectedSkillChips,
     isSaving,
     newSkillCount,
     isOverCap,
     editedSkills,
     removeSkill,
-    skillCount,
+    skillStatus,
     canSave,
     save,
     handleDragOver,
