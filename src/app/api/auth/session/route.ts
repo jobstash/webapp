@@ -13,7 +13,6 @@ const checkWalletResponseSchema = z.object({
   cryptoNative: z.boolean(),
 });
 
-/** Exchange Privy token for API token and create iron-session. */
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
   const authHeader = req.headers.get('authorization') ?? '';
   const privyToken = authHeader.startsWith('Bearer ')
@@ -76,17 +75,18 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
-  let displayName: string | null = null;
-  let identityType: string | null = null;
-  try {
-    const privyUser = await getPrivyUser(privyClaims.userId);
-    const identity = getDisplayName(privyUser);
-    if (identity) {
-      displayName = identity.displayName;
-      identityType = identity.identityType;
+  let identity: { displayName: string; identityType: string } | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const privyUser = await getPrivyUser(privyClaims.userId);
+      identity = getDisplayName(privyUser);
+      break;
+    } catch (error) {
+      console.error(
+        `[POST /api/auth/session] getPrivyUser attempt ${String(attempt + 1)} failed:`,
+        error,
+      );
     }
-  } catch {
-    // Non-critical — session works without display name
   }
 
   const session = await getSession();
@@ -94,8 +94,10 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   session.expiresAt = Date.now() + SESSION_EXPIRY;
   session.isExpert = parsed.data.cryptoNative;
   session.privyDid = privyClaims.userId;
-  if (displayName) session.displayName = displayName;
-  if (identityType) session.identityType = identityType;
+  if (identity) {
+    session.displayName = identity.displayName;
+    session.identityType = identity.identityType;
+  }
   await session.save();
 
   return NextResponse.json({
@@ -107,14 +109,12 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   });
 };
 
-/** Destroy iron-session (logout). */
 export const DELETE = async (): Promise<NextResponse> => {
   const session = await getSession();
   session.destroy();
   return NextResponse.json({ ok: true });
 };
 
-/** Check current session status. */
 export const GET = async (): Promise<NextResponse> => {
   const session = await getSession();
   const expiresAt = session.expiresAt ?? null;

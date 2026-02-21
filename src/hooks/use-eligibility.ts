@@ -9,8 +9,8 @@ interface EligibilityResponse {
   identityType: string | null;
 }
 
-// Lightweight session check (no Privy dependency required).
-// Separate from useSession which manages full auth lifecycle.
+export const ELIGIBILITY_KEY = ['session-status'];
+
 const fetchEligibility = async (): Promise<EligibilityResponse> => {
   const res = await fetch('/api/auth/session');
   if (!res.ok) throw new Error(`GET /api/auth/session failed: ${res.status}`);
@@ -19,7 +19,7 @@ const fetchEligibility = async (): Promise<EligibilityResponse> => {
 
 export const useEligibility = () => {
   const { data, isPending } = useQuery({
-    queryKey: ['session-status'],
+    queryKey: ELIGIBILITY_KEY,
     queryFn: fetchEligibility,
     staleTime: 5 * 60 * 1000,
   });
