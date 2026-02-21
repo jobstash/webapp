@@ -8,7 +8,7 @@ export const DescriptionSection = ({
   description,
 }: DescriptionSectionProps) => (
   <section>
-    <h2 className='mb-4 text-lg font-semibold'>{title}</h2>
+    <h2 className='mb-2 text-lg font-semibold'>{title}</h2>
     <p className='text-base leading-relaxed text-foreground/60'>
       {description}
     </p>
@@ -25,7 +25,7 @@ export const BulletSection = ({ title, items }: BulletSectionProps) => {
 
   return (
     <section>
-      <h2 className='mb-4 text-lg font-semibold'>{title}</h2>
+      <h2 className='mb-2 text-lg font-semibold'>{title}</h2>
       <ul className='space-y-2 pl-1'>
         {items.map((item, index) => (
           <li
