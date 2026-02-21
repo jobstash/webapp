@@ -11,14 +11,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useSession } from '@/features/auth/hooks/use-session';
 
 import { useDeleteAccountDialog } from './use-delete-account-dialog';
 
-interface DeleteAccountDialogProps {
-  logout: () => Promise<void>;
-}
-
-export const DeleteAccountDialog = ({ logout }: DeleteAccountDialogProps) => {
+export const DeleteAccountDialog = () => {
+  const { logout } = useSession();
   const { isOpen, isDeleting, error, onOpenChange, onConfirm } =
     useDeleteAccountDialog({ logout });
 

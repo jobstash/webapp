@@ -5,7 +5,9 @@ import { usePathname } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
 import { PROFILE_NAV_ITEMS } from '@/features/profile/constants';
+import { Separator } from '@/components/ui/separator';
 
+import { ProfileLogoutButton } from './profile-logout-button';
 import { ProfileStrengthCard } from './profile-strength-card';
 
 const isActive = (pathname: string, href: string): boolean =>
@@ -39,6 +41,10 @@ export const ProfileSidebar = () => {
             );
           })}
         </div>
+
+        <Separator className='my-1 bg-neutral-700/50' />
+
+        <ProfileLogoutButton />
       </nav>
 
       <ProfileStrengthCard />
