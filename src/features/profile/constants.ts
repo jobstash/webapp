@@ -2,15 +2,18 @@ import type { ComponentType } from 'react';
 
 import {
   BriefcaseBusinessIcon,
+  GithubIcon,
   GlobeIcon,
   LinkedinIcon,
   MailIcon,
   MessageCircleIcon,
+  PhoneIcon,
   SettingsIcon,
   UserIcon,
 } from 'lucide-react';
 
 import { FarcasterIcon } from '@/components/svg/farcaster-icon';
+import { GoogleIcon } from '@/components/svg/google-icon';
 import { TelegramIcon } from '@/components/svg/telegram-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
 
@@ -24,15 +27,17 @@ export const SHOWCASE_ICON_MAP: Record<
   string,
   ComponentType<{ className?: string }>
 > = {
-  Github: GlobeIcon,
+  Github: GithubIcon,
+  Google: GoogleIcon,
   Linkedin: LinkedinIcon,
-  Twitter: TwitterIcon,
+  X: TwitterIcon,
   Telegram: TelegramIcon,
   Discord: MessageCircleIcon,
   Farcaster: FarcasterIcon,
   Lens: GlobeIcon,
   Website: GlobeIcon,
   Email: MailIcon,
+  Phone: PhoneIcon,
 };
 
 export const PROFILE_TIERS = [
@@ -76,33 +81,63 @@ export const PROFILE_TIERS = [
 
 export type ProfileTier = (typeof PROFILE_TIERS)[number];
 
+const SOCIAL_LABEL_OVERRIDES: Record<string, string> = { twitter: 'X' };
+
+export const getSocialLabel = (kind: string): string =>
+  SOCIAL_LABEL_OVERRIDES[kind] ?? kind.charAt(0).toUpperCase() + kind.slice(1);
+
+const withPrefix = (prefix: string) => (h: string) =>
+  h.startsWith('http') ? h : `${prefix}${h}`;
+
 export const SOCIAL_URL_TEMPLATES: Record<string, (handle: string) => string> =
   {
-    website: (h) => (h.startsWith('http') ? h : `https://${h}`),
-    lens: (h) => (h.startsWith('http') ? h : `https://hey.xyz/profile/${h}`),
-    linkedin: (h) =>
-      h.startsWith('http') ? h : `https://linkedin.com/in/${h}`,
-    twitter: (h) => (h.startsWith('http') ? h : `https://x.com/${h}`),
-    telegram: (h) => (h.startsWith('http') ? h : `https://t.me/${h}`),
+    website: withPrefix('https://'),
+    lens: withPrefix('https://hey.xyz/profile/'),
+    linkedin: withPrefix('https://linkedin.com/in/'),
+    twitter: withPrefix('https://x.com/'),
+    telegram: withPrefix('https://t.me/'),
     discord: (h) => h,
+    github: withPrefix('https://github.com/'),
+    farcaster: withPrefix('https://warpcast.com/'),
+    phone: (h) => h,
   };
+
+const HANDLE_EXTRACTION_PATTERNS: Record<string, RegExp> = {
+  lens: /hey\.xyz\/profile\/([^/?#]+)/,
+  linkedin: /linkedin\.com\/in\/([^/?#]+)/,
+  twitter: /(?:twitter|x)\.com\/([^/?#]+)/,
+  telegram: /t\.me\/([^/?#]+)/,
+  github: /github\.com\/([^/?#]+)/,
+  farcaster: /warpcast\.com\/([^/?#]+)/,
+};
 
 export const extractHandleFromUrl = (
   kind: string,
   url: string,
 ): string | null => {
-  const patterns: Record<string, RegExp> = {
-    lens: /hey\.xyz\/profile\/([^/?#]+)/,
-    linkedin: /linkedin\.com\/in\/([^/?#]+)/,
-    twitter: /(?:twitter|x)\.com\/([^/?#]+)/,
-    telegram: /t\.me\/([^/?#]+)/,
-  };
-
-  const pattern = patterns[kind];
-  if (!pattern) return url; // website, discord — handle IS the url
+  const pattern = HANDLE_EXTRACTION_PATTERNS[kind];
+  if (!pattern) return url; // website, discord, phone — handle IS the url
 
   const match = url.match(pattern);
   return match?.[1] ?? null;
+};
+
+const SHOWCASE_LABEL_TO_KIND: Record<string, string> = {
+  Github: 'github',
+  Farcaster: 'farcaster',
+  Linkedin: 'linkedin',
+  X: 'twitter',
+  Telegram: 'telegram',
+  Website: 'website',
+  Lens: 'lens',
+  Discord: 'discord',
+  Phone: 'phone',
+};
+
+export const getDisplayHandle = (label: string, url: string): string | null => {
+  const kind = SHOWCASE_LABEL_TO_KIND[label];
+  if (!kind) return null;
+  return extractHandleFromUrl(kind, url);
 };
 
 export type CtaType =

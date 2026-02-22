@@ -3,6 +3,7 @@
 import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 
+import { useProgress } from '@bprogress/next';
 import { useRouter } from '@bprogress/next/app';
 import { GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 
@@ -92,6 +93,7 @@ const privyUserToLinkedAccounts = (user: User): LinkedAccount[] => {
 
 export const useProfileAccounts = () => {
   const router = useRouter();
+  const { start } = useProgress();
   const { data: linkedAccounts, isPending } = useLinkedAccounts();
   const { ready, user } = usePrivy();
   const queryClient = useQueryClient();
@@ -134,14 +136,15 @@ export const useProfileAccounts = () => {
         const provider = PROVIDER_MAP[account.type];
         if (!provider) return;
         setLinkingType(account.type);
+        start();
         router.push(`/link?provider=${provider}`);
       },
     };
   }).sort((a, b) => {
     const priority = (item: typeof a) => {
+      if (!item.isEnabled) return 2;
       if (item.isConnected) return 0;
-      if (item.isEnabled) return 1;
-      return 2;
+      return 1;
     };
     return priority(a) - priority(b);
   });

@@ -25,7 +25,7 @@ const buildJobPostingSchema = (
     description: job.summary || job.description,
     datePosted: job.datePosted,
     employmentType,
-    directApply: !!job.applyUrl,
+    directApply: job.hasApplyUrl,
   };
 
   if (job.organization) {

@@ -9,10 +9,16 @@ import { clientEnv } from '@/lib/env/client';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import {
   type PopularTagItem,
+  type Social,
   type UserSkill,
   resumeParseResponseSchema,
 } from '@/features/profile/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
+import {
+  getSocialLabel,
+  SOCIAL_URL_TEMPLATES,
+} from '@/features/profile/constants';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
@@ -74,6 +80,39 @@ const preventAndStop = (e: DragEvent<HTMLDivElement>): void => {
   e.stopPropagation();
 };
 
+const syncSkills = async (
+  skills: { id: string; name: string }[],
+): Promise<void> => {
+  const res = await fetch('/api/profile/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ skills, socials: [], email: null, resume: null }),
+  });
+  if (!res.ok) throw new Error('Failed to save skills');
+};
+
+const toIdName = (s: { id: string; name: string }) => ({
+  id: s.id,
+  name: s.name,
+});
+
+const getSkillsToSync = (
+  isOverCap: boolean,
+  editedSkills: { id: string; name: string }[],
+  detectedSkills: { id: string; name: string }[],
+  excludedSkillIds: Set<string>,
+  profileSkills: { id: string; name: string }[],
+): { id: string; name: string }[] | null => {
+  if (isOverCap) return editedSkills.map(toIdName);
+
+  if (detectedSkills.length === 0) return null;
+
+  const includedNew = detectedSkills.filter((s) => !excludedSkillIds.has(s.id));
+  if (includedNew.length === 0) return null;
+
+  return [...profileSkills.map(toIdName), ...includedNew.map(toIdName)];
+};
+
 interface UseResumeUploadParams {
   onOpenChange: (open: boolean) => void;
 }
@@ -96,6 +135,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   );
   const [isSaving, setIsSaving] = useState(false);
   const [editedSkills, setEditedSkills] = useState<UserSkill[]>([]);
+  const [resumeEmail, setResumeEmail] = useState<string | null>(null);
+  const [resumePhone, setResumePhone] = useState<string | null>(null);
+  const [resumeSocials, setResumeSocials] = useState<Social[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -149,6 +191,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       const parsed = resumeParseResponseSchema.parse(json);
 
       setResumeId(parsed.resumeId);
+      setResumeEmail(parsed.email);
+      setResumePhone(parsed.phone);
+      setResumeSocials(parsed.socials);
 
       // Filter out skills the user already has
       const existingIds = new Set(
@@ -204,16 +249,40 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     if (!resumeId) return;
 
     setIsSaving(true);
+    setError(null);
     try {
-      // Save CV showcase entry
-      const cvEntry = {
-        label: 'CV',
-        url: `${clientEnv.FRONTEND_URL}/api/resume/${resumeId}`,
-      };
+      // Build showcase entries from resume data
+      const newEntries: { label: string; url: string }[] = [
+        {
+          label: 'CV',
+          url: `${clientEnv.FRONTEND_URL}/api/resume/${resumeId}`,
+        },
+      ];
+
+      if (resumeEmail) {
+        newEntries.push({ label: 'Email', url: resumeEmail });
+      }
+
+      if (resumePhone) {
+        newEntries.push({ label: 'Phone', url: resumePhone });
+      }
+
+      for (const { kind, handle } of resumeSocials) {
+        if (!handle) continue;
+        const template = SOCIAL_URL_TEMPLATES[kind];
+        if (!template) continue;
+        newEntries.push({
+          label: getSocialLabel(kind),
+          url: template(handle),
+        });
+      }
+
+      // Deduplicate: remove existing items whose labels match new entries
+      const newLabels = new Set(newEntries.map((e) => e.label));
       const existingItems = (showcase ?? []).filter(
-        (item) => item.label !== 'CV',
+        (item) => !newLabels.has(item.label),
       );
-      const mergedShowcase = [...existingItems, cvEntry];
+      const mergedShowcase = [...existingItems, ...newEntries];
 
       const saveRes = await fetch('/api/profile/showcase', {
         method: 'POST',
@@ -224,60 +293,26 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       if (!saveRes.ok) throw new Error('Failed to save showcase');
 
       await queryClient.invalidateQueries({ queryKey: ['profile-showcase'] });
+      queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
 
-      // Save skills: over-cap uses curated editedSkills, under-cap merges
-      if (isOverCap) {
-        const skills = editedSkills.map((s) => ({ id: s.id, name: s.name }));
+      const skillsToSync = getSkillsToSync(
+        isOverCap,
+        editedSkills,
+        detectedSkills,
+        excludedSkillIds,
+        profileSkills ?? [],
+      );
 
-        const res = await fetch('/api/profile/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            skills,
-            socials: [],
-            email: null,
-            resume: null,
-          }),
-        });
-
-        if (!res.ok) throw new Error('Failed to save skills');
-
+      if (skillsToSync) {
+        await syncSkills(skillsToSync);
         await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
-      } else if (detectedSkills.length > 0) {
-        const includedNewSkills = detectedSkills.filter(
-          (s) => !excludedSkillIds.has(s.id),
-        );
-        if (includedNewSkills.length > 0) {
-          const existingSkills = (profileSkills ?? []).map((s) => ({
-            id: s.id,
-            name: s.name,
-          }));
-          const newSkills = includedNewSkills.map((s) => ({
-            id: s.id,
-            name: s.name,
-          }));
-          const mergedSkills = [...existingSkills, ...newSkills];
-
-          const res = await fetch('/api/profile/sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              skills: mergedSkills,
-              socials: [],
-              email: null,
-              resume: null,
-            }),
-          });
-
-          if (!res.ok) throw new Error('Failed to save skills');
-
-          await queryClient.invalidateQueries({
-            queryKey: ['profile-skills'],
-          });
-        }
       }
 
       handleOpenChange(false);
+    } catch {
+      setError(
+        'Something went wrong while saving your resume data. Please try again.',
+      );
     } finally {
       setIsSaving(false);
     }
@@ -320,6 +355,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     setExcludedSkillIds(new Set());
     setIsSaving(false);
     setEditedSkills([]);
+    setResumeEmail(null);
+    setResumePhone(null);
+    setResumeSocials([]);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 

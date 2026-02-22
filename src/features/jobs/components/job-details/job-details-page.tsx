@@ -35,7 +35,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
       </main>
 
       <MobileApplyBar
-        applyUrl={job.applyUrl}
+        hasApplyUrl={job.hasApplyUrl}
         isExpertJob={isExpertJob}
         jobId={job.id}
         jobTitle={job.title}

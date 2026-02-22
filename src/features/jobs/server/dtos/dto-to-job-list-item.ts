@@ -57,7 +57,6 @@ const getDefaultSummary = (dto: JobListItemDto): string => {
 
 export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const {
-    url: applyUrl,
     shortUUID,
     timestamp,
     summary,
@@ -85,7 +84,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     id: shortUUID,
     title,
     href,
-    applyUrl,
+    hasApplyUrl: !!dto.url,
     summary: summary || getDefaultSummary(dto),
     addresses: addressLookup?.addresses ?? null,
     infoTags,
