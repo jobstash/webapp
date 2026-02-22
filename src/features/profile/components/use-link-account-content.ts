@@ -5,7 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from '@bprogress/next/app';
 import { useSearchParams } from 'next/navigation';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useLinkAccount, usePrivy } from '@privy-io/react-auth';
+
+import { LINKED_ACCOUNTS_QUERY_KEY } from '@/features/profile/hooks/use-linked-accounts';
 
 const OAUTH_PROVIDERS = ['github', 'google'] as const;
 type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
@@ -25,10 +28,12 @@ export const useLinkAccountContent = () => {
   const [error, setError] = useState<string | null>(null);
   const isLinkInitiated = useRef(false);
 
+  const queryClient = useQueryClient();
   const { ready, authenticated, user } = usePrivy();
 
   const { linkGithub, linkGoogle } = useLinkAccount({
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: LINKED_ACCOUNTS_QUERY_KEY });
       router.replace('/profile');
     },
     onError: (errorCode) => {
@@ -46,16 +51,10 @@ export const useLinkAccountContent = () => {
 
   const provider = searchParams.get('provider');
 
-  // Capture once at mount: did this page load arrive with OAuth callback params?
-  // Stored in a ref so the value is frozen for the component's lifetime — even
-  // after Privy strips the params via history.replaceState (which does NOT
-  // trigger a React re-render and would make a computed value go stale).
-  const returnedFromOAuth = useRef<boolean | null>(null);
-  if (returnedFromOAuth.current === null) {
-    returnedFromOAuth.current =
-      typeof window !== 'undefined' &&
-      /[?&]privy_oauth_/.test(window.location.search);
-  }
+  // Detect OAuth return via URL params (matches login flow pattern)
+  const hasOAuthParams =
+    typeof window !== 'undefined' &&
+    /[?&]privy_oauth_/.test(window.location.search);
 
   useEffect(() => {
     if (!ready) return;
@@ -70,25 +69,21 @@ export const useLinkAccountContent = () => {
       return;
     }
 
-    // Already linked — redirect regardless of OAuth state.
-    // This runs BEFORE the returnedFromOAuth guard so that when Privy
-    // updates user.github (even while OAuth params are still in the URL),
-    // we immediately redirect to /profile.
+    // Already linked — safety-net redirect
     if (user?.[PROVIDER_KEY[provider]]) {
       router.replace('/profile');
       return;
     }
 
-    // Returned from OAuth — Privy is processing the callback.
-    // Wait for user object to update (handled by the check above on re-render).
-    if (returnedFromOAuth.current) return;
+    // Privy is processing the OAuth callback — wait for onSuccess
+    if (hasOAuthParams) return;
 
     // Prevent double-initiation on strict-mode remount
     if (isLinkInitiated.current) return;
     isLinkInitiated.current = true;
 
     linkFnRef.current[provider]();
-  }, [ready, authenticated, user, provider, router]);
+  }, [ready, authenticated, user, provider, hasOAuthParams, router]);
 
   const isLoading = !error;
 
