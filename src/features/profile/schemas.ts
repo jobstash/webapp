@@ -1,12 +1,21 @@
 import { z } from 'zod';
 
-import { addressSchema, type Address } from '@/lib/schemas';
-import { nonEmptyStringSchema } from '@/lib/schemas';
+import {
+  addressSchema,
+  type Address,
+  nonEmptyStringSchema,
+} from '@/lib/schemas';
 
 // --- Linked accounts ---
 
 export const linkedAccountSchema = z.object({
-  type: z.enum(['google_oauth', 'github_oauth']),
+  type: z.enum([
+    'google_oauth',
+    'github_oauth',
+    'wallet',
+    'email',
+    'farcaster',
+  ]),
   email: z.string().nullable(),
   username: z.string().nullable(),
 });
