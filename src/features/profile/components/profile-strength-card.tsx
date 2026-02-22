@@ -42,20 +42,22 @@ const CompleteBadge = ({ className }: { className?: string }) => (
   </div>
 );
 
+const scrollToLinkedAccounts = () => {
+  document
+    .getElementById('linked-accounts')
+    ?.scrollIntoView({ behavior: 'smooth' });
+};
+
 const useCtaAction = () => {
-  const {
-    openSkillsEditor,
-    openResumeUpload,
-    openContactInfoEditor,
-    openSocialsEditor,
-  } = useProfileEditor();
+  const { openSkillsEditor, openResumeUpload, openManualLinksEditor } =
+    useProfileEditor();
 
   return (ctaType: CtaType) => {
     const actions: Record<CtaType, () => void> = {
       'skills-editor': openSkillsEditor,
       'resume-upload': openResumeUpload,
-      'contact-info-editor': openContactInfoEditor,
-      'socials-editor': openSocialsEditor,
+      'manual-links-editor': openManualLinksEditor,
+      'linked-accounts': scrollToLinkedAccounts,
     };
     actions[ctaType]();
   };

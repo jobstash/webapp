@@ -5,7 +5,6 @@ import { PencilIcon, PlusIcon, SquarePenIcon, TagsIcon } from 'lucide-react';
 import {
   SKILL_ERROR_THRESHOLD,
   SKILL_STATUS_MESSAGE,
-  type SkillStatus,
   getSkillStatus,
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -17,31 +16,13 @@ import { useSession } from '@/features/auth/hooks/use-session';
 import { useProfileEditor } from '@/features/profile/components/profile-editor-provider';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
-const getStatusColor = (status?: SkillStatus) => {
-  if (!status || status === 'ok') return 'text-muted-foreground';
-  if (status === 'warning') return 'text-amber-600 dark:text-amber-400';
-  return 'text-destructive';
-};
+const DEFAULT_SUBTITLE = 'Used for matching you with relevant jobs';
 
-const getStatusText = (status?: SkillStatus) => {
-  if (!status || status === 'ok')
-    return 'Used for matching you with relevant jobs';
-  return SKILL_STATUS_MESSAGE[status];
-};
-
-const SectionHeader = ({
-  onEdit,
-  skillStatus,
-}: {
-  onEdit?: () => void;
-  skillStatus?: SkillStatus;
-}) => (
+const SectionHeader = ({ onEdit }: { onEdit?: () => void }) => (
   <div className='flex items-start justify-between'>
     <div>
       <h3 className='text-base font-semibold'>Skills</h3>
-      <p className={cn('text-xs', getStatusColor(skillStatus))}>
-        {getStatusText(skillStatus)}
-      </p>
+      <p className='text-xs text-muted-foreground'>{DEFAULT_SUBTITLE}</p>
     </div>
     {onEdit && (
       <button
@@ -94,12 +75,11 @@ export const ProfileSkills = () => {
     );
   }
 
+  const status = getSkillStatus(skills.length);
+
   return (
     <div className='flex flex-col gap-3'>
-      <SectionHeader
-        onEdit={openSkillsEditor}
-        skillStatus={getSkillStatus(skills.length)}
-      />
+      <SectionHeader onEdit={openSkillsEditor} />
       <div className='flex flex-wrap items-center gap-2'>
         {skills.map((skill) => (
           <span
@@ -115,7 +95,7 @@ export const ProfileSkills = () => {
         {skills.length < SKILL_ERROR_THRESHOLD && (
           <button
             type='button'
-            className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/30 transition-colors hover:text-muted-foreground'
+            className='inline-flex items-center gap-1 rounded-full text-xs text-muted-foreground/60 transition-colors hover:text-muted-foreground'
             onClick={openSkillsEditor}
           >
             <PlusIcon className='size-3' />
@@ -123,6 +103,16 @@ export const ProfileSkills = () => {
           </button>
         )}
       </div>
+      {status === 'warning' && (
+        <p className='text-xs text-amber-600 dark:text-amber-400'>
+          Warning: {SKILL_STATUS_MESSAGE.warning}
+        </p>
+      )}
+      {status === 'error' && (
+        <p className='text-xs text-destructive'>
+          Warning: {SKILL_STATUS_MESSAGE.error}
+        </p>
+      )}
     </div>
   );
 };
