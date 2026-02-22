@@ -1,7 +1,7 @@
 import { ApplyButton } from './apply-button';
 
 interface MobileApplyBarProps {
-  applyUrl: string | null;
+  hasApplyUrl: boolean;
   isExpertJob: boolean;
   jobId: string;
   jobTitle: string;
@@ -9,18 +9,18 @@ interface MobileApplyBarProps {
 }
 
 export const MobileApplyBar = ({
-  applyUrl,
+  hasApplyUrl,
   isExpertJob,
   jobId,
   jobTitle,
   organization,
 }: MobileApplyBarProps) => {
-  if (!applyUrl && !isExpertJob) return null;
+  if (!hasApplyUrl && !isExpertJob) return null;
 
   return (
     <div className='fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 p-4 backdrop-blur-sm lg:hidden'>
       <ApplyButton
-        applyUrl={applyUrl}
+        hasApplyUrl={hasApplyUrl}
         isExpertJob={isExpertJob}
         jobId={jobId}
         jobTitle={jobTitle}
