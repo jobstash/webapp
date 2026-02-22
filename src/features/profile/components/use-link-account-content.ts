@@ -46,45 +46,50 @@ export const useLinkAccountContent = () => {
 
   const provider = searchParams.get('provider');
 
-  // Detect returning from OAuth provider (Phase 2)
-  const hasOAuthParams =
-    typeof window !== 'undefined' &&
-    /[?&]privy_oauth_/.test(window.location.search);
+  // Capture once at mount: did this page load arrive with OAuth callback params?
+  // Stored in a ref so the value is frozen for the component's lifetime — even
+  // after Privy strips the params via history.replaceState (which does NOT
+  // trigger a React re-render and would make a computed value go stale).
+  const returnedFromOAuth = useRef<boolean | null>(null);
+  if (returnedFromOAuth.current === null) {
+    returnedFromOAuth.current =
+      typeof window !== 'undefined' &&
+      /[?&]privy_oauth_/.test(window.location.search);
+  }
 
-  // Phase 1: Initiate the link flow
   useEffect(() => {
-    // Phase 2 is handled by Privy SDK automatically — just wait for callbacks
-    if (hasOAuthParams) return;
-
-    // Wait for SDK to be ready
     if (!ready) return;
 
-    // Not authenticated — redirect to profile (AuthGuard handles login redirect)
     if (!authenticated) {
       router.replace('/profile');
       return;
     }
 
-    // Invalid or missing provider — redirect back
     if (!isValidProvider(provider)) {
       router.replace('/profile');
       return;
     }
 
-    // Already linked — silent redirect
+    // Already linked — redirect regardless of OAuth state.
+    // This runs BEFORE the returnedFromOAuth guard so that when Privy
+    // updates user.github (even while OAuth params are still in the URL),
+    // we immediately redirect to /profile.
     if (user?.[PROVIDER_KEY[provider]]) {
       router.replace('/profile');
       return;
     }
+
+    // Returned from OAuth — Privy is processing the callback.
+    // Wait for user object to update (handled by the check above on re-render).
+    if (returnedFromOAuth.current) return;
 
     // Prevent double-initiation on strict-mode remount
     if (isLinkInitiated.current) return;
     isLinkInitiated.current = true;
 
     linkFnRef.current[provider]();
-  }, [ready, authenticated, user, provider, hasOAuthParams, router]);
+  }, [ready, authenticated, user, provider, router]);
 
-  // Show spinner during Phase 2 (OAuth return) — Privy is processing
   const isLoading = !error;
 
   return { isLoading, error };
