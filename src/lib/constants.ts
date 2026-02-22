@@ -16,8 +16,8 @@ export const SENIORITY_LABEL_TO_KEY: Record<string, string> =
 
 export const MAX_MATCH_SKILLS = 30;
 
-export const SKILL_WARNING_THRESHOLD = 10;
-export const SKILL_ERROR_THRESHOLD = 15;
+export const SKILL_WARNING_THRESHOLD = 12;
+export const SKILL_ERROR_THRESHOLD = 16;
 
 export type SkillStatus = 'ok' | 'warning' | 'error';
 

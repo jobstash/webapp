@@ -17,19 +17,19 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import { useSocialsEditor } from '@/features/profile/hooks/use-socials-editor';
+import { useManualLinksEditor } from '@/features/profile/hooks/use-manual-links-editor';
 
 import { PillPicker } from './pill-picker';
 
-interface SocialsEditorDialogProps {
+interface ManualLinksEditorDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export const SocialsEditorDialog = ({
+export const ManualLinksEditorDialog = ({
   isOpen,
   onOpenChange,
-}: SocialsEditorDialogProps) => {
+}: ManualLinksEditorDialogProps) => {
   const {
     pillItems,
     selectedKinds,
@@ -39,19 +39,19 @@ export const SocialsEditorDialog = ({
     isSaving,
     error,
     handleSave,
-    socialIcons,
-    socialLabels,
-    socialPlaceholders,
+    contactIcons,
+    contactPlaceholders,
+    contactLabels,
     selectedList,
-  } = useSocialsEditor({ isOpen, onOpenChange });
+  } = useManualLinksEditor({ isOpen, onOpenChange });
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className='max-h-[92vh] overflow-y-auto sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle>Edit Socials</DialogTitle>
+          <DialogTitle>Edit Contacts</DialogTitle>
           <DialogDescription>
-            Connect your professional profiles
+            Add your website and social profiles
           </DialogDescription>
         </DialogHeader>
 
@@ -67,7 +67,7 @@ export const SocialsEditorDialog = ({
               <div className='h-px bg-border' />
               <div className='flex flex-col gap-3'>
                 {selectedList.map((kind) => {
-                  const Icon = socialIcons[kind] ?? GlobeIcon;
+                  const Icon = contactIcons[kind] ?? GlobeIcon;
                   return (
                     <div
                       key={kind}
@@ -80,8 +80,8 @@ export const SocialsEditorDialog = ({
                         <InputGroupInput
                           value={handles[kind] ?? ''}
                           onChange={(e) => setHandle(kind, e.target.value)}
-                          placeholder={socialPlaceholders[kind] ?? 'handle'}
-                          aria-label={socialLabels[kind] ?? kind}
+                          placeholder={contactPlaceholders[kind] ?? 'handle'}
+                          aria-label={contactLabels[kind] ?? kind}
                         />
                       </InputGroup>
                     </div>

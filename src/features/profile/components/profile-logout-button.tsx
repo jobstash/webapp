@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-
-import { LogOutIcon } from 'lucide-react';
+import { LoaderIcon, LogOutIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,25 +12,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useSession } from '@/features/auth/hooks/use-session';
+
+import { useProfileLogoutButton } from './use-profile-logout-button';
 
 export const ProfileLogoutButton = () => {
-  const { isLoggingOut, logout } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isLoggingOut, isOpen, onOpenChange, handleOpen, logout } =
+    useProfileLogoutButton();
 
   return (
     <>
       <button
         type='button'
         disabled={isLoggingOut}
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className='flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-red-400/10 hover:text-red-400 disabled:pointer-events-none disabled:opacity-50'
       >
-        <LogOutIcon className='size-4' />
-        {isLoggingOut ? 'Logging out...' : 'Log out'}
+        {isLoggingOut && <LoaderIcon className='size-4 animate-spin' />}
+        {!isLoggingOut && <LogOutIcon className='size-4' />}
+        Log out
       </button>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Log out</DialogTitle>
@@ -52,7 +52,8 @@ export const ProfileLogoutButton = () => {
               disabled={isLoggingOut}
               onClick={logout}
             >
-              {isLoggingOut ? 'Logging out...' : 'Log out'}
+              {isLoggingOut && <LoaderIcon className='size-4 animate-spin' />}
+              Log out
             </Button>
           </DialogFooter>
         </DialogContent>

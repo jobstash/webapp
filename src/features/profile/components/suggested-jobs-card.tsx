@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { TagsIcon } from 'lucide-react';
+import { FileTextIcon, TagsIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
@@ -112,7 +112,7 @@ const ScrollableJobList = ({ jobs }: { jobs: JobListItemSchema[] }) => {
 };
 
 export const SuggestedJobsCard = () => {
-  const { jobs, isPending, hasSkills, isSkillsPending } =
+  const { jobs, isPending, hasSkills, hasResume, isSkillsPending } =
     useSuggestedJobsCard();
 
   // Still loading skills — show skeleton to avoid empty-state flash
@@ -124,6 +124,20 @@ export const SuggestedJobsCard = () => {
           {Array.from({ length: 5 }).map((_, i) => (
             <JobSkeleton key={i} />
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasSkills && !hasResume) {
+    return (
+      <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>
+        <h3 className='mb-3 font-medium'>Jobs For You</h3>
+        <div className='flex flex-col items-center gap-3 py-6'>
+          <FileTextIcon className='size-8 text-muted-foreground/50' />
+          <p className='text-center text-sm text-muted-foreground'>
+            Upload your resume to get personalized job matches
+          </p>
         </div>
       </div>
     );

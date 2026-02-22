@@ -6,7 +6,21 @@ import { getPrivyUser, verifyPrivyToken } from '@/lib/server/privy';
 import { getSession } from '@/lib/server/session';
 import { getDisplayName } from '@/features/auth/server/get-display-name';
 
-const SESSION_EXPIRY = 55 * 60 * 1000; // 55 min (safety margin under 1hr Privy token TTL)
+const SESSION_EXPIRY = 55 * 60 * 1000;
+
+const toSessionPayload = (session: {
+  apiToken?: string;
+  expiresAt?: number;
+  isExpert?: boolean;
+  displayName?: string;
+  identityType?: string;
+}) => ({
+  apiToken: session.apiToken ?? null,
+  expiresAt: session.expiresAt ?? null,
+  isExpert: session.isExpert ?? null,
+  displayName: session.displayName ?? null,
+  identityType: session.identityType ?? null,
+});
 
 const checkWalletResponseSchema = z.object({
   token: z.string().min(1),
@@ -22,6 +36,10 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   if (!privyToken) {
     return NextResponse.json({ error: 'No Privy token' }, { status: 401 });
   }
+
+  const body = await req.json().catch(() => ({}));
+  const loginMethod =
+    typeof body?.loginMethod === 'string' ? body.loginMethod : undefined;
 
   let privyClaims: Awaited<ReturnType<typeof verifyPrivyToken>>;
   try {
@@ -76,17 +94,11 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   }
 
   let identity: { displayName: string; identityType: string } | null = null;
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const privyUser = await getPrivyUser(privyClaims.userId);
-      identity = getDisplayName(privyUser);
-      break;
-    } catch (error) {
-      console.error(
-        `[POST /api/auth/session] getPrivyUser attempt ${String(attempt + 1)} failed:`,
-        error,
-      );
-    }
+  try {
+    const privyUser = await getPrivyUser(privyClaims.userId);
+    identity = getDisplayName(privyUser, loginMethod);
+  } catch (error) {
+    console.error('[POST /api/auth/session] getPrivyUser failed:', error);
   }
 
   const session = await getSession();
@@ -100,13 +112,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   }
   await session.save();
 
-  return NextResponse.json({
-    apiToken: session.apiToken,
-    expiresAt: session.expiresAt,
-    isExpert: session.isExpert,
-    displayName: session.displayName ?? null,
-    identityType: session.identityType ?? null,
-  });
+  return NextResponse.json(toSessionPayload(session));
 };
 
 export const DELETE = async (): Promise<NextResponse> => {
@@ -117,25 +123,10 @@ export const DELETE = async (): Promise<NextResponse> => {
 
 export const GET = async (): Promise<NextResponse> => {
   const session = await getSession();
-  const expiresAt = session.expiresAt ?? null;
-  const isExpired = expiresAt !== null && expiresAt <= Date.now();
+  const isExpired =
+    session.expiresAt !== undefined && session.expiresAt <= Date.now();
 
-  if (isExpired) {
-    session.destroy();
-    return NextResponse.json({
-      apiToken: null,
-      expiresAt: null,
-      isExpert: null,
-      displayName: null,
-      identityType: null,
-    });
-  }
+  if (isExpired) session.destroy();
 
-  return NextResponse.json({
-    apiToken: session.apiToken ?? null,
-    expiresAt,
-    isExpert: session.isExpert ?? null,
-    displayName: session.displayName ?? null,
-    identityType: session.identityType ?? null,
-  });
+  return NextResponse.json(toSessionPayload(isExpired ? {} : session));
 };

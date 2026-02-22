@@ -2,7 +2,6 @@ import type { ComponentType } from 'react';
 
 import {
   BriefcaseBusinessIcon,
-  GithubIcon,
   GlobeIcon,
   LinkedinIcon,
   MailIcon,
@@ -25,7 +24,7 @@ export const SHOWCASE_ICON_MAP: Record<
   string,
   ComponentType<{ className?: string }>
 > = {
-  Github: GithubIcon,
+  Github: GlobeIcon,
   Linkedin: LinkedinIcon,
   Twitter: TwitterIcon,
   Telegram: TelegramIcon,
@@ -35,12 +34,6 @@ export const SHOWCASE_ICON_MAP: Record<
   Website: GlobeIcon,
   Email: MailIcon,
 };
-
-const CONTACT_LABELS = new Set(['Email', 'CV', 'Website']);
-
-export const SOCIAL_LABELS = Object.keys(SHOWCASE_ICON_MAP).filter(
-  (label) => !CONTACT_LABELS.has(label),
-);
 
 export const PROFILE_TIERS = [
   {
@@ -85,15 +78,13 @@ export type ProfileTier = (typeof PROFILE_TIERS)[number];
 
 export const SOCIAL_URL_TEMPLATES: Record<string, (handle: string) => string> =
   {
-    github: (h) => (h.startsWith('http') ? h : `https://github.com/${h}`),
+    website: (h) => (h.startsWith('http') ? h : `https://${h}`),
+    lens: (h) => (h.startsWith('http') ? h : `https://hey.xyz/profile/${h}`),
     linkedin: (h) =>
       h.startsWith('http') ? h : `https://linkedin.com/in/${h}`,
     twitter: (h) => (h.startsWith('http') ? h : `https://x.com/${h}`),
     telegram: (h) => (h.startsWith('http') ? h : `https://t.me/${h}`),
     discord: (h) => h,
-    website: (h) => (h.startsWith('http') ? h : `https://${h}`),
-    farcaster: (h) => (h.startsWith('http') ? h : `https://warpcast.com/${h}`),
-    lens: (h) => (h.startsWith('http') ? h : `https://hey.xyz/profile/${h}`),
   };
 
 export const extractHandleFromUrl = (
@@ -101,16 +92,14 @@ export const extractHandleFromUrl = (
   url: string,
 ): string | null => {
   const patterns: Record<string, RegExp> = {
-    github: /github\.com\/([^/?#]+)/,
-    linkedin: /linkedin\.com\/in\/([^/?#]+)/,
-    twitter: /x\.com\/([^/?#]+)/,
-    telegram: /t\.me\/([^/?#]+)/,
-    farcaster: /warpcast\.com\/([^/?#]+)/,
     lens: /hey\.xyz\/profile\/([^/?#]+)/,
+    linkedin: /linkedin\.com\/in\/([^/?#]+)/,
+    twitter: /(?:twitter|x)\.com\/([^/?#]+)/,
+    telegram: /t\.me\/([^/?#]+)/,
   };
 
   const pattern = patterns[kind];
-  if (!pattern) return url; // discord, website — handle IS the url
+  if (!pattern) return url; // website, discord — handle IS the url
 
   const match = url.match(pattern);
   return match?.[1] ?? null;
@@ -119,8 +108,8 @@ export const extractHandleFromUrl = (
 export type CtaType =
   | 'skills-editor'
   | 'resume-upload'
-  | 'contact-info-editor'
-  | 'socials-editor';
+  | 'manual-links-editor'
+  | 'linked-accounts';
 
 export const COMPLETENESS_ITEMS: readonly {
   key: string;
@@ -144,18 +133,18 @@ export const COMPLETENESS_ITEMS: readonly {
     ctaType: 'skills-editor',
   },
   {
-    key: 'social',
-    label: 'Connect your socials',
-    action: 'Add Socials',
-    unlocks: 'Show your professional presence',
-    ctaType: 'socials-editor',
+    key: 'linked-accounts',
+    label: 'Link an account',
+    action: 'Link Account',
+    unlocks: 'Verify your identity and boost visibility',
+    ctaType: 'linked-accounts',
   },
   {
-    key: 'email',
-    label: 'Add your email',
-    action: 'Add Email',
-    unlocks: 'Let recruiters reach you directly',
-    ctaType: 'contact-info-editor',
+    key: 'manual-links',
+    label: 'Add your contacts',
+    action: 'Add Contacts',
+    unlocks: 'Help recruiters find your work',
+    ctaType: 'manual-links-editor',
   },
 ];
 

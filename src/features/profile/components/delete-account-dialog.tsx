@@ -1,5 +1,7 @@
 'use client';
 
+import { LoaderIcon } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -49,7 +51,8 @@ export const DeleteAccountDialog = () => {
             disabled={isDeleting}
             onClick={onConfirm}
           >
-            {isDeleting ? 'Deleting...' : 'Delete account'}
+            {isDeleting && <LoaderIcon className='size-4 animate-spin' />}
+            Delete account
           </Button>
         </DialogFooter>
       </DialogContent>

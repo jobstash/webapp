@@ -1,7 +1,6 @@
 'use client';
 
 import { DeleteAccountDialog } from './delete-account-dialog';
-import { ProfileAccounts } from './profile-accounts';
 import { ProfileCard } from './profile-card';
 
 const SettingsRow = ({
@@ -22,21 +21,17 @@ const SettingsRow = ({
   </div>
 );
 
-export const ProfileSettings = () => {
-  return (
-    <div className='flex flex-col gap-4'>
-      <ProfileAccounts />
-
-      <ProfileCard
-        title='Danger Zone'
-        className='border-destructive/30 [&>h2]:text-destructive'
-      >
-        <SettingsRow
-          title='Delete your account'
-          description='Permanently delete your account and all associated data'
-          action={<DeleteAccountDialog />}
-        />
-      </ProfileCard>
-    </div>
-  );
-};
+export const ProfileSettings = () => (
+  <div className='flex flex-col gap-4'>
+    <ProfileCard
+      title='Danger Zone'
+      className='border-destructive/30 [&>h2]:text-destructive'
+    >
+      <SettingsRow
+        title='Delete your account'
+        description='Permanently delete your account and all associated data'
+        action={<DeleteAccountDialog />}
+      />
+    </ProfileCard>
+  </div>
+);

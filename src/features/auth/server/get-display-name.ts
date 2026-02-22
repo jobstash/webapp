@@ -9,26 +9,46 @@ interface DisplayIdentity {
   identityType: IdentityType;
 }
 
-/**
- * Derive a display identity from a Privy user's linked accounts.
- * Priority: GitHub username → Google email → email → truncated wallet.
- */
-export const getDisplayName = (user: User): DisplayIdentity | null => {
-  if (user.github?.username) {
+const truncateAddress = (addr: string) =>
+  `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+
+const resolveIdentity = (
+  user: User,
+  method: string,
+): DisplayIdentity | null => {
+  if (method === 'github' && user.github?.username) {
     return { displayName: user.github.username, identityType: 'github' };
   }
-  if (user.google?.email) {
+  if (method === 'google' && user.google?.email) {
     return { displayName: user.google.email, identityType: 'email' };
   }
-  if (user.email?.address) {
+  if (method === 'email' && user.email?.address) {
     return { displayName: user.email.address, identityType: 'email' };
   }
-  if (user.wallet?.address) {
-    const addr = user.wallet.address;
+  if (method === 'wallet' && user.wallet?.address) {
     return {
-      displayName: `${addr.slice(0, 6)}...${addr.slice(-4)}`,
+      displayName: truncateAddress(user.wallet.address),
       identityType: 'wallet',
     };
   }
+  return null;
+};
+
+const FALLBACK_ORDER = ['github', 'google', 'email', 'wallet'] as const;
+
+export const getDisplayName = (
+  user: User,
+  loginMethod?: string,
+): DisplayIdentity | null => {
+  if (loginMethod) {
+    const match = resolveIdentity(user, loginMethod);
+    if (match) return match;
+  }
+
+  for (const method of FALLBACK_ORDER) {
+    const match = resolveIdentity(user, method);
+    if (match) return match;
+  }
+
   return null;
 };

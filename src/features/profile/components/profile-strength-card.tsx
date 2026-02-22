@@ -42,20 +42,22 @@ const CompleteBadge = ({ className }: { className?: string }) => (
   </div>
 );
 
+const scrollToLinkedAccounts = () => {
+  document
+    .getElementById('linked-accounts')
+    ?.scrollIntoView({ behavior: 'smooth' });
+};
+
 const useCtaAction = () => {
-  const {
-    openSkillsEditor,
-    openResumeUpload,
-    openContactInfoEditor,
-    openSocialsEditor,
-  } = useProfileEditor();
+  const { openSkillsEditor, openResumeUpload, openManualLinksEditor } =
+    useProfileEditor();
 
   return (ctaType: CtaType) => {
     const actions: Record<CtaType, () => void> = {
       'skills-editor': openSkillsEditor,
       'resume-upload': openResumeUpload,
-      'contact-info-editor': openContactInfoEditor,
-      'socials-editor': openSocialsEditor,
+      'manual-links-editor': openManualLinksEditor,
+      'linked-accounts': scrollToLinkedAccounts,
     };
     actions[ctaType]();
   };
@@ -138,16 +140,18 @@ export const ProfileStrengthCard = () => {
               className='group block w-full text-left'
               onClick={() => handleCta(nextStep.ctaType)}
             >
-              <div className='flex flex-col gap-1.5 rounded-lg bg-accent/50 p-3 transition-colors group-hover:bg-accent'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-sm font-medium'>
-                    Next: {nextStep.label}
+              <div className='rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-0.5'>
+                <div className='flex flex-col gap-1.5 rounded-[calc(var(--radius-lg)-2px)] bg-accent p-3 transition-colors group-hover:bg-accent/90'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-sm font-bold'>
+                      Next: {nextStep.label}
+                    </span>
+                    <ArrowRightIcon className='size-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5' />
+                  </div>
+                  <span className='text-xs text-muted-foreground'>
+                    {nextStep.unlocks}
                   </span>
-                  <ArrowRightIcon className='size-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5' />
                 </div>
-                <span className='text-xs text-muted-foreground'>
-                  {nextStep.unlocks}
-                </span>
               </div>
             </button>
           )
@@ -179,15 +183,17 @@ export const ProfileStrengthCard = () => {
               <span className='min-w-0 truncate text-sm font-medium'>
                 Next: {nextStep.label}
               </span>
-              <Button
-                size='sm'
-                variant='secondary'
-                className='shrink-0'
-                onClick={() => handleCta(nextStep.ctaType)}
-              >
-                {nextStep.action}
-                <ArrowRightIcon className='size-3' />
-              </Button>
+              <div className='shrink-0 rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-0.5'>
+                <Button
+                  size='sm'
+                  variant='secondary'
+                  className='rounded-[calc(var(--radius-lg)-2px)]'
+                  onClick={() => handleCta(nextStep.ctaType)}
+                >
+                  {nextStep.action}
+                  <ArrowRightIcon className='size-3' />
+                </Button>
+              </div>
             </div>
           )
         )}

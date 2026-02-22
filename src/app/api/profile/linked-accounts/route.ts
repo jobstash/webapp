@@ -3,15 +3,16 @@ import { NextResponse } from 'next/server';
 import { getPrivyUser } from '@/lib/server/privy';
 import { getSession } from '@/lib/server/session';
 
+const ROUTE_TAG = '[GET /api/profile/linked-accounts]';
+
 export const GET = async (): Promise<NextResponse> => {
-  const session = await getSession();
-  const privyDid = session.privyDid;
-
-  if (!privyDid) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  }
-
   try {
+    const { privyDid } = await getSession();
+
+    if (!privyDid) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
     const user = await getPrivyUser(privyDid);
 
     const data: {
@@ -36,8 +37,33 @@ export const GET = async (): Promise<NextResponse> => {
       });
     }
 
+    if (user.wallet) {
+      data.push({
+        type: 'wallet',
+        email: null,
+        username: user.wallet.address ?? null,
+      });
+    }
+
+    if (user.email) {
+      data.push({
+        type: 'email',
+        email: user.email.address ?? null,
+        username: null,
+      });
+    }
+
+    if (user.farcaster) {
+      data.push({
+        type: 'farcaster',
+        email: null,
+        username: user.farcaster.username ?? null,
+      });
+    }
+
     return NextResponse.json({ data });
-  } catch {
+  } catch (error) {
+    console.error(`${ROUTE_TAG} Unexpected error:`, error);
     return NextResponse.json(
       { error: 'Failed to fetch linked accounts' },
       { status: 502 },

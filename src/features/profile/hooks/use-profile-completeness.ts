@@ -7,10 +7,12 @@ import {
   PROFILE_TIERS,
   type ProfileTier,
 } from '@/features/profile/constants';
+import { useLinkedAccounts } from '@/features/profile/hooks/use-linked-accounts';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
 interface NextStep {
+  key: string;
   label: string;
   action: string;
   unlocks: string;
@@ -39,17 +41,23 @@ export const useProfileCompleteness = (): ProfileCompleteness => {
     useProfileSkills(isSessionReady);
   const { data: showcase, isPending: isShowcasePending } =
     useProfileShowcase(isSessionReady);
+  const { data: linkedAccounts, isPending: isLinkedAccountsPending } =
+    useLinkedAccounts();
 
-  const isPending = !isSessionReady || isSkillsPending || isShowcasePending;
+  const isPending =
+    !isSessionReady ||
+    isSkillsPending ||
+    isShowcasePending ||
+    isLinkedAccountsPending;
 
   const showcaseItems = showcase ?? [];
   const completionMap: Record<string, boolean> = {
     skills: (skills ?? []).length > 0,
     resume: showcaseItems.some((item) => item.label === 'CV'),
-    social: showcaseItems.some(
-      (item) => item.label !== 'CV' && item.label !== 'Email',
+    'linked-accounts': (linkedAccounts ?? []).length > 0,
+    'manual-links': showcaseItems.some(
+      (item) => item.label === 'Website' || item.label === 'Lens',
     ),
-    email: showcaseItems.some((item) => item.label === 'Email'),
   };
 
   const completedCount = COMPLETENESS_ITEMS.filter(
