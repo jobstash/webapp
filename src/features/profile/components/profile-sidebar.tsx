@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 
 import { ProfileLogoutButton } from './profile-logout-button';
 import { ProfileStrengthCard } from './profile-strength-card';
+import { ResumeSection } from './resume-section';
 
 const isActive = (pathname: string, href: string): boolean =>
   href === '/profile' ? pathname === '/profile' : pathname.startsWith(href);
@@ -48,6 +49,8 @@ export const ProfileSidebar = () => {
       </nav>
 
       <ProfileStrengthCard />
+
+      <ResumeSection />
     </div>
   );
 };
