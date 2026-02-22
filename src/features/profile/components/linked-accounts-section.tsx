@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2Icon, ClockIcon } from 'lucide-react';
+import { CheckCircle2Icon, ClockIcon, LoaderIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,67 +25,84 @@ const PILL_DISABLED = cn(
   'bg-accent/30 opacity-50 ring-neutral-700/30',
 );
 
-export const LinkedAccountsSection = () => {
-  const { accounts, isLoading } = useProfileAccounts();
+const SectionLayout = ({ children }: React.PropsWithChildren) => (
+  <div className='flex flex-col gap-3'>
+    <div>
+      <h3 className='text-base font-semibold'>Linked Accounts</h3>
+      <p className='text-xs text-muted-foreground'>
+        Connect accounts to verify your identity
+      </p>
+    </div>
+    {children}
+  </div>
+);
 
-  if (isLoading) {
+interface AccountPillProps {
+  account: ReturnType<typeof useProfileAccounts>['accounts'][number];
+}
+
+const AccountPill = ({ account }: AccountPillProps) => {
+  const Icon = account.icon;
+
+  if (!account.isEnabled) {
     return (
-      <div className='flex flex-col gap-3'>
-        <h3 className='text-base font-semibold'>Linked Accounts</h3>
+      <span className={PILL_DISABLED}>
+        <Icon className='size-3.5 text-muted-foreground/50' />
+        <span className='text-muted-foreground'>{account.label}</span>
+        <ClockIcon className='size-3 text-muted-foreground/50' />
+      </span>
+    );
+  }
+
+  if (account.isConnected) {
+    return (
+      <span className={PILL_CONNECTED}>
+        <Icon className='size-3.5 text-muted-foreground' />
+        {account.subtitle ?? account.label}
+        <CheckCircle2Icon className='size-3.5 text-emerald-500' />
+      </span>
+    );
+  }
+
+  if (account.isLinking) {
+    return (
+      <span className={cn(PILL_CONNECT, 'pointer-events-none opacity-70')}>
+        <LoaderIcon className='size-3.5 animate-spin text-muted-foreground' />
+        {account.label}
+      </span>
+    );
+  }
+
+  return (
+    <button type='button' className={PILL_CONNECT} onClick={account.onLink}>
+      <Icon className='size-3.5 text-muted-foreground' />
+      {account.label}
+    </button>
+  );
+};
+
+export const LinkedAccountsSection = () => {
+  const { accounts, isPending } = useProfileAccounts();
+
+  if (isPending) {
+    return (
+      <SectionLayout>
         <div className='flex flex-wrap gap-2'>
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className='h-8 w-24 rounded-full' />
           ))}
         </div>
-      </div>
+      </SectionLayout>
     );
   }
 
   return (
-    <div className='flex flex-col gap-3'>
-      <div>
-        <h3 className='text-base font-semibold'>Linked Accounts</h3>
-        <p className='text-xs text-muted-foreground'>
-          Connect accounts to verify your identity
-        </p>
-      </div>
+    <SectionLayout>
       <div className='flex flex-wrap items-center gap-2'>
-        {accounts.map((account) => {
-          const Icon = account.icon;
-
-          if (!account.isEnabled) {
-            return (
-              <span key={account.type} className={PILL_DISABLED}>
-                <Icon className='size-3.5 text-muted-foreground/50' />
-                <span className='text-muted-foreground'>{account.label}</span>
-                <ClockIcon className='size-3 text-muted-foreground/50' />
-              </span>
-            );
-          }
-
-          if (account.isConnected) {
-            return (
-              <span key={account.type} className={PILL_CONNECTED}>
-                <Icon className='size-3.5 text-muted-foreground' />
-                {account.subtitle ?? account.label}
-                <CheckCircle2Icon className='size-3.5 text-emerald-500' />
-              </span>
-            );
-          }
-
-          return (
-            <button
-              key={account.type}
-              type='button'
-              className={PILL_CONNECT}
-              onClick={account.onLink}
-            >
-              <Icon className='size-3.5 text-muted-foreground' />
-              {account.label}
-            </button>
-          );
-        })}
+        {accounts.map((account) => (
+          <AccountPill key={account.type} account={account} />
+        ))}
       </div>
-    </div>
+    </SectionLayout>
   );
 };
