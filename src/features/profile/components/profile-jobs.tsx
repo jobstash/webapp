@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2Icon, TagsIcon } from 'lucide-react';
+import { FileTextIcon, Loader2Icon, TagsIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { JobListItem } from '@/features/jobs/components/job-list/job-list-item/job-list-item';
@@ -11,11 +11,12 @@ import { useProfileEditor } from './profile-editor-provider';
 import { useSuggestedJobsCard } from './use-suggested-jobs-card';
 
 export const ProfileJobs = () => {
-  const { openSkillsEditor } = useProfileEditor();
+  const { openSkillsEditor, openResumeUpload } = useProfileEditor();
   const {
     jobs,
     isPending,
     hasSkills,
+    hasResume,
     isSkillsPending,
     hasMore,
     fetchNextPage,
@@ -29,6 +30,22 @@ export const ProfileJobs = () => {
           <JobListItemSkeleton key={i} />
         ))}
       </div>
+    );
+  }
+
+  if (!hasSkills && !hasResume) {
+    return (
+      <ProfileCard title='Jobs For You'>
+        <div className='flex flex-col items-center gap-3 py-6'>
+          <FileTextIcon className='size-8 text-muted-foreground/50' />
+          <p className='text-center text-sm text-muted-foreground'>
+            Upload your resume to get personalized job matches
+          </p>
+          <Button size='sm' variant='secondary' onClick={openResumeUpload}>
+            Upload Resume
+          </Button>
+        </div>
+      </ProfileCard>
     );
   }
 
