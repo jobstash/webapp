@@ -9,10 +9,15 @@ import { clientEnv } from '@/lib/env/client';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import {
   type PopularTagItem,
+  type Social,
   type UserSkill,
   resumeParseResponseSchema,
 } from '@/features/profile/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
+import {
+  getSocialLabel,
+  SOCIAL_URL_TEMPLATES,
+} from '@/features/profile/constants';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
@@ -96,6 +101,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   );
   const [isSaving, setIsSaving] = useState(false);
   const [editedSkills, setEditedSkills] = useState<UserSkill[]>([]);
+  const [resumeEmail, setResumeEmail] = useState<string | null>(null);
+  const [resumePhone, setResumePhone] = useState<string | null>(null);
+  const [resumeSocials, setResumeSocials] = useState<Social[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -149,6 +157,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       const parsed = resumeParseResponseSchema.parse(json);
 
       setResumeId(parsed.resumeId);
+      setResumeEmail(parsed.email);
+      setResumePhone(parsed.phone);
+      setResumeSocials(parsed.socials);
 
       // Filter out skills the user already has
       const existingIds = new Set(
@@ -204,16 +215,40 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     if (!resumeId) return;
 
     setIsSaving(true);
+    setError(null);
     try {
-      // Save CV showcase entry
-      const cvEntry = {
-        label: 'CV',
-        url: `${clientEnv.FRONTEND_URL}/api/resume/${resumeId}`,
-      };
+      // Build showcase entries from resume data
+      const newEntries: { label: string; url: string }[] = [
+        {
+          label: 'CV',
+          url: `${clientEnv.FRONTEND_URL}/api/resume/${resumeId}`,
+        },
+      ];
+
+      if (resumeEmail) {
+        newEntries.push({ label: 'Email', url: resumeEmail });
+      }
+
+      if (resumePhone) {
+        newEntries.push({ label: 'Phone', url: resumePhone });
+      }
+
+      for (const { kind, handle } of resumeSocials) {
+        if (!handle) continue;
+        const template = SOCIAL_URL_TEMPLATES[kind];
+        if (!template) continue;
+        newEntries.push({
+          label: getSocialLabel(kind),
+          url: template(handle),
+        });
+      }
+
+      // Deduplicate: remove existing items whose labels match new entries
+      const newLabels = new Set(newEntries.map((e) => e.label));
       const existingItems = (showcase ?? []).filter(
-        (item) => item.label !== 'CV',
+        (item) => !newLabels.has(item.label),
       );
-      const mergedShowcase = [...existingItems, cvEntry];
+      const mergedShowcase = [...existingItems, ...newEntries];
 
       const saveRes = await fetch('/api/profile/showcase', {
         method: 'POST',
@@ -278,6 +313,10 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       }
 
       handleOpenChange(false);
+    } catch {
+      setError(
+        'Something went wrong while saving your resume data. Please try again.',
+      );
     } finally {
       setIsSaving(false);
     }
@@ -320,6 +359,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     setExcludedSkillIds(new Set());
     setIsSaving(false);
     setEditedSkills([]);
+    setResumeEmail(null);
+    setResumePhone(null);
+    setResumeSocials([]);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 

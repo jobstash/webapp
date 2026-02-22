@@ -13,37 +13,45 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useSession } from '@/features/auth/hooks/use-session';
-import { SHOWCASE_ICON_MAP } from '@/features/profile/constants';
+import {
+  getDisplayHandle,
+  SHOWCASE_ICON_MAP,
+} from '@/features/profile/constants';
+import { useLinkedAccounts } from '@/features/profile/hooks/use-linked-accounts';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import type { ShowcaseItem } from '@/features/profile/schemas';
 
 import { useProfileEditor } from './profile-editor-provider';
 
-const EXCLUDED_LABELS = new Set(['Email', 'CV', 'Github', 'Farcaster']);
+const EXCLUDED_LABELS = new Set(['CV']);
 const EDITABLE_LABELS = new Set(['Website', 'Lens']);
+const PLAIN_TEXT_LABELS = new Set(['Email', 'Phone']);
 
-const PILL_CLASS = cn(
+const PILL_BASE = cn(
   'inline-flex items-center gap-2 rounded-full px-3 py-1.5',
   'bg-accent/60 text-sm font-medium',
   'ring-1 ring-neutral-700/50',
+);
+
+const PILL_LINK_CLASS = cn(
+  PILL_BASE,
   'transition-colors hover:bg-accent hover:ring-neutral-600/50',
 );
 
 const ensureProtocol = (url: string): string =>
   url.startsWith('http') ? url : `https://${url}`;
 
-const HANDLE_PATTERNS: Record<string, RegExp> = {
-  Linkedin: /linkedin\.com\/in\/([^/?#]+)/,
-  Twitter: /(?:twitter|x)\.com\/([^/?#]+)/,
-  Telegram: /t\.me\/([^/?#]+)/,
-};
-
-const getHandle = (item: ShowcaseItem): string | null => {
-  const pattern = HANDLE_PATTERNS[item.label];
-  if (!pattern) return null;
-  return item.url.match(pattern)?.[1] ?? null;
-};
+const PRIVY_CONTACT_MAP: Record<string, { label: string; urlPrefix: string }> =
+  {
+    github_oauth: { label: 'Github', urlPrefix: 'https://github.com/' },
+    farcaster: { label: 'Farcaster', urlPrefix: 'https://warpcast.com/' },
+  };
 
 const SectionHeader = () => (
   <div>
@@ -55,6 +63,7 @@ const SectionHeader = () => (
 export const ManualLinksSection = () => {
   const { isSessionReady } = useSession();
   const { data: showcase, isPending } = useProfileShowcase(isSessionReady);
+  const { data: linkedAccounts } = useLinkedAccounts();
   const { openManualLinksEditor } = useProfileEditor();
 
   if (isPending) {
@@ -70,9 +79,23 @@ export const ManualLinksSection = () => {
     );
   }
 
-  const contacts = (showcase ?? []).filter(
+  const contacts: ShowcaseItem[] = (showcase ?? []).filter(
     (item) => !EXCLUDED_LABELS.has(item.label),
   );
+
+  const existingLabels = new Set(contacts.map((c) => c.label));
+
+  for (const account of linkedAccounts ?? []) {
+    const mapping = PRIVY_CONTACT_MAP[account.type];
+    if (!mapping || !account.username || existingLabels.has(mapping.label))
+      continue;
+    contacts.push({
+      label: mapping.label,
+      url: `${mapping.urlPrefix}${account.username}`,
+    });
+    existingLabels.add(mapping.label);
+  }
+
   const editableCount = contacts.filter((item) =>
     EDITABLE_LABELS.has(item.label),
   ).length;
@@ -111,14 +134,30 @@ export const ManualLinksSection = () => {
       <div className='flex flex-wrap items-center gap-2'>
         {contacts.map((item) => {
           const Icon = SHOWCASE_ICON_MAP[item.label] ?? GlobeIcon;
-          const handle = getHandle(item);
+          const handle = getDisplayHandle(item.label, item.url);
+          const isPlainText = PLAIN_TEXT_LABELS.has(item.label);
+
+          if (isPlainText) {
+            return (
+              <Tooltip key={`${item.label}-${item.url}`}>
+                <TooltipTrigger asChild>
+                  <span className={PILL_BASE}>
+                    <Icon className='size-3.5 text-muted-foreground' />
+                    {item.url}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{item.label}</TooltipContent>
+              </Tooltip>
+            );
+          }
+
           return (
             <Link
               key={`${item.label}-${item.url}`}
               href={ensureProtocol(item.url)}
               target='_blank'
               rel='noopener noreferrer'
-              className={PILL_CLASS}
+              className={PILL_LINK_CLASS}
             >
               <Icon className='size-3.5 text-muted-foreground' />
               {handle ?? item.url.replace(/^https?:\/\//, '')}
