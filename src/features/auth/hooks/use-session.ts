@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,7 +13,6 @@ interface SessionResponse {
   isExpert: boolean | null;
   displayName: string | null;
   identityType: string | null;
-  isLoggingOut?: boolean;
 }
 
 const SESSION_KEY = ['session'];
@@ -35,11 +34,7 @@ const fetchSession = async (): Promise<SessionResponse> => {
 };
 
 const createSession = async (privyToken: string): Promise<SessionResponse> => {
-  const loginMethod =
-    typeof window !== 'undefined'
-      ? localStorage.getItem('jobstash:last-auth-method')
-      : null;
-
+  const loginMethod = localStorage.getItem('jobstash:last-auth-method');
   const res = await fetch('/api/auth/session', {
     method: 'POST',
     headers: {
@@ -60,6 +55,7 @@ export const useSession = () => {
     logout: privyLogout,
   } = usePrivy();
   const queryClient = useQueryClient();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const isAuthenticated = ready && authenticated;
 
@@ -82,9 +78,8 @@ export const useSession = () => {
       const privyToken = await getAccessToken();
 
       if (!authenticated && !privyToken) {
-        if (current.apiToken) {
+        if (current.apiToken)
           await fetch('/api/auth/session', { method: 'DELETE' });
-        }
         return EMPTY_SESSION;
       }
 
@@ -94,6 +89,7 @@ export const useSession = () => {
       void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
       return refreshed;
     },
+    enabled: !isLoggingOut,
     staleTime: STALE_TIME,
     retry: 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
@@ -108,18 +104,13 @@ export const useSession = () => {
 
   const apiToken = session?.apiToken ?? null;
 
-  // Refetch when Privy becomes authenticated but session has no token
   useEffect(() => {
-    if (isAuthenticated && !apiToken) {
-      void refetch();
-    }
-  }, [isAuthenticated, apiToken, refetch]);
+    if (isAuthenticated && !apiToken && !isLoggingOut) void refetch();
+  }, [isAuthenticated, apiToken, isLoggingOut, refetch]);
 
   const logout = async (): Promise<void> => {
-    queryClient.setQueryData(SESSION_KEY, {
-      ...EMPTY_SESSION,
-      isLoggingOut: true,
-    });
+    setIsLoggingOut(true);
+    queryClient.setQueryData(SESSION_KEY, EMPTY_SESSION);
     queryClient.setQueryData(ELIGIBILITY_KEY, EMPTY_SESSION);
     try {
       await fetch('/api/auth/session', { method: 'DELETE' });
@@ -129,17 +120,15 @@ export const useSession = () => {
     }
   };
 
-  const isSessionReady = apiToken !== null;
-
   return {
     apiToken,
     isExpert: session?.isExpert ?? null,
     displayName: session?.displayName ?? null,
     identityType: session?.identityType ?? null,
     isAuthenticated,
-    isSessionReady,
+    isSessionReady: apiToken !== null,
     isLoading: isPending,
-    isLoggingOut: session?.isLoggingOut ?? false,
+    isLoggingOut,
     logout,
   };
 };

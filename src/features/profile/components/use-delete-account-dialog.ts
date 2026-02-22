@@ -1,15 +1,5 @@
 import { useState } from 'react';
 
-import type { MessageResponse } from '@/lib/schemas';
-
-const DEFAULT_ERROR = 'Failed to delete account';
-
-const getErrorMessage = (data: MessageResponse | { error: string }): string => {
-  if ('error' in data) return data.error;
-  if ('message' in data) return data.message;
-  return DEFAULT_ERROR;
-};
-
 interface UseDeleteAccountDialogParams {
   logout: () => Promise<void>;
 }
@@ -33,10 +23,14 @@ export const useDeleteAccountDialog = ({
 
     try {
       const res = await fetch('/api/profile/delete', { method: 'POST' });
-      const data = (await res.json()) as MessageResponse | { error: string };
+      const data = (await res.json()) as Record<string, unknown>;
 
-      if (!res.ok || !('success' in data) || !data.success) {
-        setError(getErrorMessage(data));
+      if (!res.ok || !data.success) {
+        const message =
+          (data.error as string) ??
+          (data.message as string) ??
+          'Failed to delete account';
+        setError(message);
         setIsDeleting(false);
         return;
       }
