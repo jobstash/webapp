@@ -1,4 +1,12 @@
-import { ApplyButton } from './apply-button';
+'use client';
+
+import { Suspense, lazy } from 'react';
+
+import { ApplyButtonBoundary } from './apply-button.error';
+
+const ApplyButton = lazy(() =>
+  import('./apply-button').then((mod) => ({ default: mod.ApplyButton })),
+);
 
 interface CtaCardProps {
   hasApplyUrl: boolean;
@@ -19,14 +27,18 @@ export const CtaCard = ({
 
   return (
     <div className='hidden rounded-2xl border border-neutral-800/50 bg-sidebar p-4 lg:block'>
-      <ApplyButton
-        hasApplyUrl={hasApplyUrl}
-        isExpertJob={isExpertJob}
-        jobId={jobId}
-        jobTitle={jobTitle}
-        organization={organization}
-        className='w-full'
-      />
+      <ApplyButtonBoundary>
+        <Suspense>
+          <ApplyButton
+            hasApplyUrl={hasApplyUrl}
+            isExpertJob={isExpertJob}
+            jobId={jobId}
+            jobTitle={jobTitle}
+            organization={organization}
+            className='w-full'
+          />
+        </Suspense>
+      </ApplyButtonBoundary>
     </div>
   );
 };

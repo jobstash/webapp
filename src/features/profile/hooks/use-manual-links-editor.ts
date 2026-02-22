@@ -17,6 +17,7 @@ import { GoogleIcon } from '@/components/svg/google-icon';
 import { TelegramIcon } from '@/components/svg/telegram-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 import {
   extractHandleFromUrl,
   getSocialLabel,
@@ -80,10 +81,8 @@ const labelToKind = (label: string): ContactKind | null => {
   return CONTACT_KINDS.includes(lower) ? lower : null;
 };
 
-/** Labels that are preserved (not editable here) when saving */
 const PRESERVED_LABELS = new Set(['CV', 'Email', 'Github', 'Farcaster']);
 
-/** Linked account types that appear as disabled pills in the editor */
 const DISABLED_ACCOUNT_ITEMS: {
   type: string;
   key: string;
@@ -200,6 +199,7 @@ export const useManualLinksEditor = ({
       if (!res.ok) throw new Error('Failed to save');
 
       await queryClient.invalidateQueries({ queryKey: ['profile-showcase'] });
+      queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
       onOpenChange(false);
     } catch {
       setError('Failed to save contacts. Please try again.');
@@ -208,31 +208,23 @@ export const useManualLinksEditor = ({
     }
   };
 
-  // Editable contact pills
-  const editablePills: ContactPillItem[] = CONTACT_KINDS.map((kind) => ({
-    key: kind,
-    label: CONTACT_LABELS[kind],
-    icon: CONTACT_ICONS[kind],
-  }));
+  const pillItems: ContactPillItem[] = [
+    ...CONTACT_KINDS.map((kind) => ({
+      key: kind,
+      label: CONTACT_LABELS[kind],
+      icon: CONTACT_ICONS[kind],
+    })),
+    ...DISABLED_ACCOUNT_ITEMS.map((item) => ({
+      key: item.key,
+      label: item.label,
+      icon: item.icon,
+      disabled: true as const,
+      tooltip: 'Manage in Linked Accounts',
+      isConnected: !!linkedAccounts?.find((a) => a.type === item.type),
+    })),
+  ];
 
-  // Disabled linked-account pills (Google, GitHub, Farcaster)
-  const disabledPills: ContactPillItem[] = DISABLED_ACCOUNT_ITEMS.map(
-    (item) => {
-      const linked = linkedAccounts?.find((a) => a.type === item.type);
-      return {
-        key: item.key,
-        label: item.label,
-        icon: item.icon,
-        disabled: true,
-        tooltip: 'Manage in Linked Accounts',
-        isConnected: !!linked,
-      };
-    },
-  );
-
-  const pillItems: ContactPillItem[] = [...editablePills, ...disabledPills];
-
-  const disabledKeys = new Set(disabledPills.map((p) => p.key));
+  const disabledKeys = new Set(DISABLED_ACCOUNT_ITEMS.map((item) => item.key));
 
   const selectedList = CONTACT_KINDS.filter((kind) => selectedKinds.has(kind));
 

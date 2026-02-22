@@ -14,6 +14,7 @@ import {
   resumeParseResponseSchema,
 } from '@/features/profile/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 import {
   getSocialLabel,
   SOCIAL_URL_TEMPLATES,
@@ -77,6 +78,39 @@ const validateFile = (file: File): string | null => {
 const preventAndStop = (e: DragEvent<HTMLDivElement>): void => {
   e.preventDefault();
   e.stopPropagation();
+};
+
+const syncSkills = async (
+  skills: { id: string; name: string }[],
+): Promise<void> => {
+  const res = await fetch('/api/profile/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ skills, socials: [], email: null, resume: null }),
+  });
+  if (!res.ok) throw new Error('Failed to save skills');
+};
+
+const toIdName = (s: { id: string; name: string }) => ({
+  id: s.id,
+  name: s.name,
+});
+
+const getSkillsToSync = (
+  isOverCap: boolean,
+  editedSkills: { id: string; name: string }[],
+  detectedSkills: { id: string; name: string }[],
+  excludedSkillIds: Set<string>,
+  profileSkills: { id: string; name: string }[],
+): { id: string; name: string }[] | null => {
+  if (isOverCap) return editedSkills.map(toIdName);
+
+  if (detectedSkills.length === 0) return null;
+
+  const includedNew = detectedSkills.filter((s) => !excludedSkillIds.has(s.id));
+  if (includedNew.length === 0) return null;
+
+  return [...profileSkills.map(toIdName), ...includedNew.map(toIdName)];
 };
 
 interface UseResumeUploadParams {
@@ -259,57 +293,19 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       if (!saveRes.ok) throw new Error('Failed to save showcase');
 
       await queryClient.invalidateQueries({ queryKey: ['profile-showcase'] });
+      queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
 
-      // Save skills: over-cap uses curated editedSkills, under-cap merges
-      if (isOverCap) {
-        const skills = editedSkills.map((s) => ({ id: s.id, name: s.name }));
+      const skillsToSync = getSkillsToSync(
+        isOverCap,
+        editedSkills,
+        detectedSkills,
+        excludedSkillIds,
+        profileSkills ?? [],
+      );
 
-        const res = await fetch('/api/profile/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            skills,
-            socials: [],
-            email: null,
-            resume: null,
-          }),
-        });
-
-        if (!res.ok) throw new Error('Failed to save skills');
-
+      if (skillsToSync) {
+        await syncSkills(skillsToSync);
         await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
-      } else if (detectedSkills.length > 0) {
-        const includedNewSkills = detectedSkills.filter(
-          (s) => !excludedSkillIds.has(s.id),
-        );
-        if (includedNewSkills.length > 0) {
-          const existingSkills = (profileSkills ?? []).map((s) => ({
-            id: s.id,
-            name: s.name,
-          }));
-          const newSkills = includedNewSkills.map((s) => ({
-            id: s.id,
-            name: s.name,
-          }));
-          const mergedSkills = [...existingSkills, ...newSkills];
-
-          const res = await fetch('/api/profile/sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              skills: mergedSkills,
-              socials: [],
-              email: null,
-              resume: null,
-            }),
-          });
-
-          if (!res.ok) throw new Error('Failed to save skills');
-
-          await queryClient.invalidateQueries({
-            queryKey: ['profile-skills'],
-          });
-        }
       }
 
       handleOpenChange(false);

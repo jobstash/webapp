@@ -18,12 +18,15 @@ export const APPLY_RESULT = {
 const missingItemSchema = z.enum(['resume', 'socials', 'linked_accounts']);
 export type MissingItem = z.infer<typeof missingItemSchema>;
 
+const statusWithApplyUrlSchema = z.object({ applyUrl: z.string().url() });
+
 export const applyStatusResponseSchema = z.discriminatedUnion('status', [
-  z.object({
+  statusWithApplyUrlSchema.extend({
     status: z.literal(APPLY_STATUS.CAN_APPLY),
-    applyUrl: z.string().url(),
   }),
-  z.object({ status: z.literal(APPLY_STATUS.ALREADY_APPLIED) }),
+  statusWithApplyUrlSchema.extend({
+    status: z.literal(APPLY_STATUS.ALREADY_APPLIED),
+  }),
   z.object({
     status: z.literal(APPLY_STATUS.INELIGIBLE),
     missing: missingItemSchema.array(),

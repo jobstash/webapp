@@ -3,20 +3,25 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CheckIcon, ExternalLinkIcon, LoaderCircleIcon } from 'lucide-react';
+import { ExternalLinkIcon, LoaderCircleIcon } from 'lucide-react';
 
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  APPLY_RESULT,
-  APPLY_STATUS,
-  type MissingItem,
-} from '@/features/jobs/apply-schemas';
+import { APPLY_STATUS, type MissingItem } from '@/features/jobs/apply-schemas';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
 import { EligibilityNudgeDialog } from './eligibility-nudge-dialog';
 import { useJobApply } from './use-job-apply';
 import { useJobApplyStatus } from './use-job-apply-status';
+
+const GRADIENT_WRAPPER = cn(
+  'rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-0.5',
+);
+
+const GRADIENT_BUTTON = cn(
+  'w-full rounded-[calc(var(--radius-lg)-2px)] bg-sidebar font-semibold text-white hover:bg-sidebar/80',
+  'disabled:bg-sidebar disabled:text-white/50 disabled:opacity-100',
+);
 
 interface ApplyButtonProps {
   hasApplyUrl: boolean;
@@ -55,103 +60,102 @@ export const ApplyButton = ({
     setNudgeOpen(true);
   };
 
-  if (isLoading) {
-    return <Skeleton className={`h-10 w-full ${className ?? ''}`} />;
-  }
-
-  if (!isAuthLoading && !isAuthenticated) {
-    return (
-      <Button asChild className={className} size='lg'>
-        <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
-          <ExternalLinkIcon className='size-4' />
-          Apply Now
-        </Link>
-      </Button>
-    );
-  }
-
-  if (status === APPLY_STATUS.ALREADY_APPLIED) {
-    return (
-      <Button className={className} size='lg' disabled>
-        <CheckIcon className='size-4' />
-        Already Applied
-      </Button>
-    );
-  }
-
-  if (isExpertJob && status === APPLY_STATUS.INELIGIBLE && missing) {
-    return (
-      <>
-        <Button
-          className={className}
-          size='lg'
-          onClick={() => openNudge(missing)}
-        >
-          <ExternalLinkIcon className='size-4' />
-          Apply Now
-        </Button>
-        <EligibilityNudgeDialog
-          isOpen={nudgeOpen}
-          onOpenChange={setNudgeOpen}
-          missing={nudgeMissing}
-        />
-      </>
-    );
-  }
-
-  const handleApply = async () => {
+  const handleApplyClick = () => {
     trackEvent(GA_EVENT.APPLY_BUTTON_CLICKED, {
       job_id: jobId,
       job_title: jobTitle,
       organization: organization ?? '',
     });
-
-    if (isExpertJob) {
-      try {
-        const result = await apply();
-
-        if (result.status === APPLY_RESULT.ELIGIBLE && 'applyUrl' in result) {
-          window.open(result.applyUrl, '_blank', 'noopener,noreferrer');
-        } else if (
-          result.status === APPLY_RESULT.INELIGIBLE &&
-          'missing' in result
-        ) {
-          openNudge(result.missing);
-        }
-      } catch {
-        // Status hook will refetch on next window focus
-      }
-      return;
-    }
-
-    if (applyUrl) {
-      fetch('/api/jobs/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ shortUUID: jobId }),
-      }).catch(() => {});
-
-      window.open(applyUrl, '_blank', 'noopener,noreferrer');
-    }
+    apply().catch(() => {});
   };
 
-  const icon = isApplying ? (
-    <LoaderCircleIcon className='size-4 animate-spin' />
-  ) : (
-    <ExternalLinkIcon className='size-4' />
-  );
+  const spinnerIcon = <LoaderCircleIcon className='size-4 animate-spin' />;
+  const linkIcon = <ExternalLinkIcon className='size-4' />;
+
+  const resolveButtonState = () => {
+    if (isLoading) {
+      return { icon: spinnerIcon, label: 'Loading...', disabled: true };
+    }
+
+    if (!isAuthLoading && !isAuthenticated) {
+      const href = `/login?redirect=${encodeURIComponent(pathname)}`;
+      return { icon: linkIcon, label: 'Apply Now', internalHref: href };
+    }
+
+    if (status === APPLY_STATUS.ALREADY_APPLIED) {
+      return {
+        icon: linkIcon,
+        label: 'Revisit Application',
+        externalHref: applyUrl ?? undefined,
+      };
+    }
+
+    if (isExpertJob && status === APPLY_STATUS.INELIGIBLE && missing) {
+      return {
+        icon: linkIcon,
+        label: 'Unlock Application',
+        onClick: () => openNudge(missing),
+      };
+    }
+
+    if (isApplying) {
+      return { icon: spinnerIcon, label: 'Applying...', disabled: true };
+    }
+
+    return {
+      icon: linkIcon,
+      label: 'Apply Now',
+      externalHref: applyUrl ?? undefined,
+      onClick: applyUrl ? handleApplyClick : undefined,
+    };
+  };
+
+  const { icon, label, disabled, onClick, internalHref, externalHref } =
+    resolveButtonState();
+
+  let button: React.ReactNode;
+
+  if (internalHref) {
+    button = (
+      <Button asChild size='lg' className={GRADIENT_BUTTON}>
+        <Link href={internalHref}>
+          {icon}
+          {label}
+        </Link>
+      </Button>
+    );
+  } else if (externalHref) {
+    button = (
+      <Button asChild size='lg' className={GRADIENT_BUTTON}>
+        <Link
+          href={externalHref}
+          target='_blank'
+          rel='noopener noreferrer'
+          onClick={onClick}
+        >
+          {icon}
+          {label}
+        </Link>
+      </Button>
+    );
+  } else {
+    button = (
+      <Button
+        size='lg'
+        className={GRADIENT_BUTTON}
+        disabled={disabled}
+        onClick={onClick}
+      >
+        {icon}
+        {label}
+      </Button>
+    );
+  }
 
   return (
     <>
-      <Button
-        className={className}
-        size='lg'
-        disabled={isApplying}
-        onClick={handleApply}
-      >
-        {icon}
-        {isApplying ? 'Applying...' : 'Apply Now'}
-      </Button>
+      <div className={cn(GRADIENT_WRAPPER, className)}>{button}</div>
+
       <EligibilityNudgeDialog
         isOpen={nudgeOpen}
         onOpenChange={setNudgeOpen}

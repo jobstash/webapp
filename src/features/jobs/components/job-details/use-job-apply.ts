@@ -7,6 +7,7 @@ import {
   type ApplyResponse,
   applyResponseSchema,
 } from '@/features/jobs/apply-schemas';
+import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 
 const postApply = async (shortUUID: string): Promise<ApplyResponse> => {
   const res = await fetch('/api/jobs/apply', {
@@ -30,7 +31,7 @@ export const useJobApply = (shortUUID: string) => {
     try {
       const result = await postApply(shortUUID);
       await queryClient.invalidateQueries({
-        queryKey: ['job-apply-status', shortUUID],
+        queryKey: [JOB_APPLY_STATUS_KEY, shortUUID],
       });
       return result;
     } finally {

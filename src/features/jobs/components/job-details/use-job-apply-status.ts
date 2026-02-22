@@ -8,6 +8,8 @@ import {
 } from '@/features/jobs/apply-schemas';
 import { useEligibility } from '@/hooks/use-eligibility';
 
+export const JOB_APPLY_STATUS_KEY = 'job-apply-status';
+
 const fetchApplyStatus = async (
   shortUUID: string,
 ): Promise<ApplyStatusResponse> => {
@@ -23,7 +25,7 @@ export const useJobApplyStatus = (shortUUID: string) => {
   const { isAuthenticated, isLoading: isAuthLoading } = useEligibility();
 
   const { data, isPending } = useQuery({
-    queryKey: ['job-apply-status', shortUUID],
+    queryKey: [JOB_APPLY_STATUS_KEY, shortUUID],
     queryFn: () => fetchApplyStatus(shortUUID),
     enabled: isAuthenticated,
     staleTime: 2 * 60 * 1000,
@@ -36,7 +38,7 @@ export const useJobApplyStatus = (shortUUID: string) => {
     isAuthLoading,
     isLoading,
     status: data?.status ?? null,
-    applyUrl: data?.status === 'can_apply' ? data.applyUrl : null,
+    applyUrl: data && 'applyUrl' in data ? data.applyUrl : null,
     missing: data && 'missing' in data ? data.missing : null,
   };
 };

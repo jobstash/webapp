@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLinkAccount, usePrivy } from '@privy-io/react-auth';
 
+import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 import { LINKED_ACCOUNTS_QUERY_KEY } from '@/features/profile/hooks/use-linked-accounts';
 
 const OAUTH_PROVIDERS = ['github', 'google'] as const;
@@ -15,12 +16,6 @@ type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
 const isValidProvider = (value: string | null): value is OAuthProvider =>
   OAUTH_PROVIDERS.includes(value as OAuthProvider);
-
-/** Key on Privy's `user` object that indicates whether the provider is already linked. */
-const PROVIDER_KEY: Record<OAuthProvider, 'github' | 'google'> = {
-  github: 'github',
-  google: 'google',
-};
 
 export const useLinkAccountContent = () => {
   const router = useRouter();
@@ -34,6 +29,7 @@ export const useLinkAccountContent = () => {
   const { linkGithub, linkGoogle } = useLinkAccount({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: LINKED_ACCOUNTS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
       router.replace('/profile');
     },
     onError: (errorCode) => {
@@ -51,7 +47,6 @@ export const useLinkAccountContent = () => {
 
   const provider = searchParams.get('provider');
 
-  // Detect OAuth return via URL params (matches login flow pattern)
   const hasOAuthParams =
     typeof window !== 'undefined' &&
     /[?&]privy_oauth_/.test(window.location.search);
@@ -69,16 +64,13 @@ export const useLinkAccountContent = () => {
       return;
     }
 
-    // Already linked — safety-net redirect
-    if (user?.[PROVIDER_KEY[provider]]) {
+    if (user?.[provider]) {
       router.replace('/profile');
       return;
     }
 
-    // Privy is processing the OAuth callback — wait for onSuccess
     if (hasOAuthParams) return;
 
-    // Prevent double-initiation on strict-mode remount
     if (isLinkInitiated.current) return;
     isLinkInitiated.current = true;
 
