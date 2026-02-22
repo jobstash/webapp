@@ -12,6 +12,7 @@ import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcas
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
 interface NextStep {
+  key: string;
   label: string;
   action: string;
   unlocks: string;

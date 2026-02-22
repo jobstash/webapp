@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { useProfileCompleteness } from '@/features/profile/hooks/use-profile-completeness';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 
 import { useProfileEditor } from './profile-editor-provider';
@@ -25,6 +26,7 @@ const SectionHeader = () => (
 export const ResumeSection = () => {
   const { isSessionReady } = useSession();
   const { data: showcase, isPending } = useProfileShowcase(isSessionReady);
+  const { nextStep } = useProfileCompleteness();
   const { openResumeUpload } = useProfileEditor();
 
   if (isPending) {
@@ -35,6 +37,9 @@ export const ResumeSection = () => {
       </div>
     );
   }
+
+  // Hide when profile strength card already shows the resume upload CTA
+  if (nextStep?.key === 'resume') return null;
 
   const resume = (showcase ?? []).find((i) => i.label === 'CV');
 
