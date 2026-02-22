@@ -1,6 +1,12 @@
 'use client';
 
-import { GlobeIcon, PencilIcon, PlusIcon, SquarePenIcon } from 'lucide-react';
+import {
+  ContactIcon,
+  GlobeIcon,
+  PencilIcon,
+  PlusIcon,
+  SquarePenIcon,
+} from 'lucide-react';
 
 import Link from 'next/link';
 
@@ -76,9 +82,7 @@ export const ManualLinksSection = () => {
       <div className='flex flex-col gap-3'>
         <SectionHeader />
         <div className='flex flex-col items-center gap-3 py-4'>
-          <div className='flex size-8 items-center justify-center rounded-lg bg-accent/50'>
-            <GlobeIcon className='size-4 text-muted-foreground/30' />
-          </div>
+          <ContactIcon className='size-8 text-muted-foreground/50' />
           <p className='text-sm text-muted-foreground'>
             Add your website or social profiles
           </p>

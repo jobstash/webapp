@@ -1,6 +1,6 @@
 'use client';
 
-import { PencilIcon, PlusIcon, SquarePenIcon, TagsIcon } from 'lucide-react';
+import { CodeIcon, PencilIcon, PlusIcon, SquarePenIcon } from 'lucide-react';
 
 import {
   SKILL_ERROR_THRESHOLD,
@@ -62,7 +62,7 @@ export const ProfileSkills = () => {
       <div className='flex flex-col gap-3'>
         <SectionHeader />
         <div className='flex flex-col items-center gap-3 py-4'>
-          <TagsIcon className='size-8 text-muted-foreground/50' />
+          <CodeIcon className='size-8 text-muted-foreground/50' />
           <p className='text-sm text-muted-foreground'>
             Add your skills to unlock personalized job matches
           </p>
