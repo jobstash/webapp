@@ -86,8 +86,6 @@ const syncSkills = async (
   apiToken: string,
   skills: { id: string; name: string }[],
 ): Promise<SyncStatus> => {
-  if (skills.length === 0) return 'skipped';
-
   const res = await mwPost(apiToken, '/profile/skills', {
     skills: skills.map((s) => ({ id: s.id, name: s.name, canTeach: false })),
   });
