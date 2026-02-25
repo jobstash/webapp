@@ -12,7 +12,8 @@ import {
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import { FarcasterIcon } from '@/components/svg/farcaster-icon';
+// TODO: Farcaster temporarily hidden
+// import { FarcasterIcon } from '@/components/svg/farcaster-icon';
 import { GoogleIcon } from '@/components/svg/google-icon';
 import { TelegramIcon } from '@/components/svg/telegram-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
@@ -91,12 +92,13 @@ const DISABLED_ACCOUNT_ITEMS: {
 }[] = [
   { type: 'google_oauth', key: 'google', label: 'Google', icon: GoogleIcon },
   { type: 'github_oauth', key: 'github', label: 'GitHub', icon: GithubIcon },
-  {
-    type: 'farcaster',
-    key: 'farcaster',
-    label: 'Farcaster',
-    icon: FarcasterIcon,
-  },
+  // TODO: Farcaster temporarily hidden
+  // {
+  //   type: 'farcaster',
+  //   key: 'farcaster',
+  //   label: 'Farcaster',
+  //   icon: FarcasterIcon,
+  // },
 ];
 
 interface UseManualLinksEditorParams {

@@ -50,7 +50,8 @@ const ensureProtocol = (url: string): string =>
 const PRIVY_CONTACT_MAP: Record<string, { label: string; urlPrefix: string }> =
   {
     github_oauth: { label: 'Github', urlPrefix: 'https://github.com/' },
-    farcaster: { label: 'Farcaster', urlPrefix: 'https://warpcast.com/' },
+    // TODO: Farcaster temporarily hidden
+    // farcaster: { label: 'Farcaster', urlPrefix: 'https://warpcast.com/' },
   };
 
 const SectionHeader = () => (
