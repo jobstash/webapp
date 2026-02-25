@@ -29,9 +29,9 @@ import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcas
 import type { ShowcaseItem } from '@/features/profile/schemas';
 
 const CONTACT_KINDS = [
+  'linkedin',
   'website',
   'lens',
-  'linkedin',
   'twitter',
   'telegram',
   'discord',
@@ -113,6 +113,7 @@ export interface ContactPillItem {
   disabled?: boolean;
   tooltip?: string;
   isConnected?: boolean;
+  required?: boolean;
 }
 
 export const useManualLinksEditor = ({
@@ -174,6 +175,13 @@ export const useManualLinksEditor = ({
     setIsSaving(true);
     setError(null);
 
+    const linkedinHandle = handles['linkedin']?.trim();
+    if (!linkedinHandle) {
+      setError('LinkedIn profile is required.');
+      setIsSaving(false);
+      return;
+    }
+
     try {
       const items = showcase ?? [];
 
@@ -215,6 +223,7 @@ export const useManualLinksEditor = ({
       key: kind,
       label: CONTACT_LABELS[kind],
       icon: CONTACT_ICONS[kind],
+      required: kind === 'linkedin',
     })),
     ...DISABLED_ACCOUNT_ITEMS.map((item) => ({
       key: item.key,

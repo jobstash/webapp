@@ -18,6 +18,7 @@ export interface PillPickerItem {
   disabled?: boolean;
   tooltip?: string;
   isConnected?: boolean;
+  required?: boolean;
 }
 
 interface PillPickerProps {
@@ -76,6 +77,11 @@ export const PillPicker = ({
         >
           <Icon className='size-3.5' />
           {item.label}
+          {item.required && (
+            <span className='leading-none text-rose-400' aria-hidden='true'>
+              *
+            </span>
+          )}
           {isSelected && <CheckIcon className='size-3' />}
         </button>
       );

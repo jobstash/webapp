@@ -55,9 +55,7 @@ export const useProfileCompleteness = (): ProfileCompleteness => {
     skills: (skills ?? []).length > 0,
     resume: showcaseItems.some((item) => item.label === 'CV'),
     'linked-accounts': (linkedAccounts ?? []).length > 0,
-    'manual-links': showcaseItems.some(
-      (item) => item.label === 'Website' || item.label === 'Lens',
-    ),
+    'manual-links': showcaseItems.some((item) => item.label === 'LinkedIn'),
   };
 
   const completedCount = COMPLETENESS_ITEMS.filter(
