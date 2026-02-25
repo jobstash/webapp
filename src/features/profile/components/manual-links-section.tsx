@@ -31,7 +31,7 @@ import { useProfileEditor } from './profile-editor-provider';
 
 const EXCLUDED_LABELS = new Set(['CV']);
 const EDITABLE_LABELS = new Set(['Website', 'Lens']);
-const PLAIN_TEXT_LABELS = new Set(['Email', 'Phone']);
+const PLAIN_TEXT_LABELS = new Set(['Email', 'Phone', 'Google']);
 
 const PILL_BASE = cn(
   'inline-flex items-center gap-2 rounded-full px-3 py-1.5',
@@ -47,12 +47,23 @@ const PILL_LINK_CLASS = cn(
 const ensureProtocol = (url: string): string =>
   url.startsWith('http') ? url : `https://${url}`;
 
-const PRIVY_CONTACT_MAP: Record<string, { label: string; urlPrefix: string }> =
-  {
-    github_oauth: { label: 'Github', urlPrefix: 'https://github.com/' },
-    // TODO: Farcaster temporarily hidden
-    // farcaster: { label: 'Farcaster', urlPrefix: 'https://warpcast.com/' },
-  };
+type ContactMapping = {
+  label: string;
+  urlPrefix: string;
+  field: 'username' | 'email';
+};
+
+const PRIVY_CONTACT_MAP: Record<string, ContactMapping> = {
+  github_oauth: {
+    label: 'Github',
+    urlPrefix: 'https://github.com/',
+    field: 'username',
+  },
+  google_oauth: { label: 'Google', urlPrefix: '', field: 'email' },
+  email: { label: 'Email', urlPrefix: '', field: 'email' },
+  // TODO: Farcaster temporarily hidden
+  // farcaster: { label: 'Farcaster', urlPrefix: 'https://warpcast.com/', field: 'username' },
+};
 
 const SectionHeader = () => (
   <div>
@@ -88,11 +99,12 @@ export const ManualLinksSection = () => {
 
   for (const account of linkedAccounts ?? []) {
     const mapping = PRIVY_CONTACT_MAP[account.type];
-    if (!mapping || !account.username || existingLabels.has(mapping.label))
-      continue;
+    if (!mapping) continue;
+    const value = mapping.field === 'email' ? account.email : account.username;
+    if (!value || existingLabels.has(mapping.label)) continue;
     contacts.push({
       label: mapping.label,
-      url: `${mapping.urlPrefix}${account.username}`,
+      url: `${mapping.urlPrefix}${value}`,
     });
     existingLabels.add(mapping.label);
   }

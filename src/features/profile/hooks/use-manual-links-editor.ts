@@ -6,6 +6,7 @@ import {
   GithubIcon,
   GlobeIcon,
   LinkedinIcon,
+  MailIcon,
   MessageCircleIcon,
   PhoneIcon,
 } from 'lucide-react';
@@ -82,7 +83,13 @@ const labelToKind = (label: string): ContactKind | null => {
   return CONTACT_KINDS.includes(lower) ? lower : null;
 };
 
-const PRESERVED_LABELS = new Set(['CV', 'Email', 'Github', 'Farcaster']);
+const PRESERVED_LABELS = new Set([
+  'CV',
+  'Email',
+  'Github',
+  'Farcaster',
+  'Google',
+]);
 
 const DISABLED_ACCOUNT_ITEMS: {
   type: string;
@@ -92,6 +99,7 @@ const DISABLED_ACCOUNT_ITEMS: {
 }[] = [
   { type: 'google_oauth', key: 'google', label: 'Google', icon: GoogleIcon },
   { type: 'github_oauth', key: 'github', label: 'GitHub', icon: GithubIcon },
+  { type: 'email', key: 'email', label: 'Email', icon: MailIcon },
   // TODO: Farcaster temporarily hidden
   // {
   //   type: 'farcaster',

@@ -1,16 +1,29 @@
 'use client';
 
-import { ChromeIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
+import { useState } from 'react';
+
+import {
+  ArrowLeftIcon,
+  ChromeIcon,
+  GithubIcon,
+  MailIcon,
+  WalletIcon,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import { type AuthMethod, useAuthButtons } from './use-auth-buttons';
+import {
+  type AuthMethod,
+  type EmailStep,
+  useAuthButtons,
+} from './use-auth-buttons';
 
 type MethodConfig = {
   key: AuthMethod;
@@ -35,9 +48,119 @@ const HANDLERS: Record<
   email: 'handleEmail',
 };
 
+interface EmailFormProps {
+  step: Exclude<EmailStep, 'idle'>;
+  emailAddress: string;
+  isLoading: boolean;
+  onEmailSubmit: (email: string) => void;
+  onCodeSubmit: (code: string) => void;
+  onBack: () => void;
+}
+
+const EmailForm = ({
+  step,
+  emailAddress,
+  isLoading,
+  onEmailSubmit,
+  onCodeSubmit,
+  onBack,
+}: EmailFormProps) => {
+  const [value, setValue] = useState('');
+
+  if (step === 'entering-email') {
+    return (
+      <form
+        className='flex w-full flex-col gap-4'
+        onSubmit={(e) => {
+          e.preventDefault();
+          onEmailSubmit(value);
+        }}
+      >
+        <Input
+          type='email'
+          placeholder='Enter your email'
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          required
+          disabled={isLoading}
+        />
+        <Button type='submit' disabled={isLoading || !value}>
+          Send Code
+        </Button>
+        <button
+          type='button'
+          className='inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground'
+          onClick={onBack}
+        >
+          <ArrowLeftIcon className='size-3.5' />
+          Back
+        </button>
+      </form>
+    );
+  }
+
+  return (
+    <form
+      className='flex w-full flex-col gap-4'
+      onSubmit={(e) => {
+        e.preventDefault();
+        onCodeSubmit(value);
+      }}
+    >
+      <p className='text-sm text-muted-foreground'>
+        Code sent to <span className='text-foreground'>{emailAddress}</span>
+      </p>
+      <Input
+        type='text'
+        inputMode='numeric'
+        placeholder='Enter verification code'
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        required
+        disabled={isLoading}
+      />
+      <Button type='submit' disabled={isLoading || !value}>
+        Verify Code
+      </Button>
+      <button
+        type='button'
+        className='inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground'
+        onClick={onBack}
+      >
+        <ArrowLeftIcon className='size-3.5' />
+        Back
+      </button>
+    </form>
+  );
+};
+
 export const AuthButtons = () => {
   const auth = useAuthButtons();
-  const { isLoading, preferredMethod } = auth;
+  const {
+    isLoading,
+    preferredMethod,
+    emailStep,
+    emailAddress,
+    handleEmailSubmit,
+    handleCodeSubmit,
+    handleEmailBack,
+  } = auth;
+
+  if (emailStep !== 'idle') {
+    return (
+      <div className='flex w-full flex-col items-center gap-5'>
+        <EmailForm
+          key={emailStep}
+          step={emailStep}
+          emailAddress={emailAddress}
+          isLoading={isLoading}
+          onEmailSubmit={handleEmailSubmit}
+          onCodeSubmit={handleCodeSubmit}
+          onBack={handleEmailBack}
+        />
+      </div>
+    );
+  }
 
   const primary = AUTH_METHODS.find((m) => m.key === preferredMethod)!;
   const secondary = AUTH_METHODS.filter((m) => m.key !== preferredMethod);

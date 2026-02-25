@@ -30,8 +30,8 @@ interface AccountConfig {
 const ACCOUNT_TYPES: AccountConfig[] = [
   { type: 'google_oauth', label: 'Google', icon: GoogleIcon, isEnabled: true },
   { type: 'github_oauth', label: 'GitHub', icon: GithubIcon, isEnabled: true },
+  { type: 'email', label: 'Email', icon: MailIcon, isEnabled: true },
   { type: 'wallet', label: 'Wallet', icon: WalletIcon, isEnabled: false },
-  { type: 'email', label: 'Email', icon: MailIcon, isEnabled: false },
   // TODO: Farcaster temporarily hidden
   // {
   //   type: 'farcaster',
@@ -44,6 +44,7 @@ const ACCOUNT_TYPES: AccountConfig[] = [
 const PROVIDER_MAP: Record<string, string> = {
   google_oauth: 'google',
   github_oauth: 'github',
+  email: 'email',
 };
 
 /** Derives LinkedAccount[] from Privy's client User object (mirrors API route logic). */
