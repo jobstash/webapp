@@ -5,7 +5,7 @@ import { useProgress } from '@bprogress/next';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
-export type AuthMethod = 'google' | 'github' | 'wallet' | 'email';
+export type AuthMethod = 'google' | 'github' | 'email';
 export type EmailStep = 'idle' | 'entering-email' | 'code-sent';
 
 const STORAGE_KEY = 'jobstash:last-auth-method';
@@ -15,12 +15,7 @@ const getLastAuthMethod = (): AuthMethod => {
   if (typeof window === 'undefined') return DEFAULT_METHOD;
 
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (
-    stored === 'google' ||
-    stored === 'github' ||
-    stored === 'wallet' ||
-    stored === 'email'
-  ) {
+  if (stored === 'google' || stored === 'github' || stored === 'email') {
     return stored;
   }
 
@@ -78,11 +73,6 @@ export const useAuthButtons = () => {
     }
   };
 
-  const handleWallet = () => {
-    trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'wallet' });
-    saveAuthMethod('wallet');
-  };
-
   const handleEmail = () => {
     trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'email' });
     saveAuthMethod('email');
@@ -119,7 +109,6 @@ export const useAuthButtons = () => {
     preferredMethod,
     emailStep,
     emailAddress,
-    handleWallet,
     handleGithub,
     handleGoogle,
     handleEmail,

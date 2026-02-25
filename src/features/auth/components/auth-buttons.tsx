@@ -1,137 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import type { ComponentType } from 'react';
 
-import {
-  ArrowLeftIcon,
-  ChromeIcon,
-  GithubIcon,
-  MailIcon,
-  WalletIcon,
-} from 'lucide-react';
+import { GithubIcon, MailIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { GoogleIcon } from '@/components/svg/google-icon';
 
-import {
-  type AuthMethod,
-  type EmailStep,
-  useAuthButtons,
-} from './use-auth-buttons';
+import { type AuthMethod, useAuthButtons } from './use-auth-buttons';
+import { EmailLoginDialog } from './email-login-dialog';
 
 type MethodConfig = {
   key: AuthMethod;
-  icon: typeof WalletIcon;
+  icon: ComponentType<{ className?: string }>;
   label: string;
 };
 
 const AUTH_METHODS: MethodConfig[] = [
-  { key: 'google', icon: ChromeIcon, label: 'Google' },
+  { key: 'google', icon: GoogleIcon, label: 'Google' },
   { key: 'github', icon: GithubIcon, label: 'GitHub' },
-  { key: 'wallet', icon: WalletIcon, label: 'Wallet' },
   { key: 'email', icon: MailIcon, label: 'Email' },
 ];
 
 const HANDLERS: Record<
   AuthMethod,
-  'handleGoogle' | 'handleGithub' | 'handleWallet' | 'handleEmail'
+  'handleGoogle' | 'handleGithub' | 'handleEmail'
 > = {
   google: 'handleGoogle',
   github: 'handleGithub',
-  wallet: 'handleWallet',
   email: 'handleEmail',
-};
-
-interface EmailFormProps {
-  step: Exclude<EmailStep, 'idle'>;
-  emailAddress: string;
-  isLoading: boolean;
-  onEmailSubmit: (email: string) => void;
-  onCodeSubmit: (code: string) => void;
-  onBack: () => void;
-}
-
-const EmailForm = ({
-  step,
-  emailAddress,
-  isLoading,
-  onEmailSubmit,
-  onCodeSubmit,
-  onBack,
-}: EmailFormProps) => {
-  const [value, setValue] = useState('');
-
-  if (step === 'entering-email') {
-    return (
-      <form
-        className='flex w-full flex-col gap-4'
-        onSubmit={(e) => {
-          e.preventDefault();
-          onEmailSubmit(value);
-        }}
-      >
-        <Input
-          type='email'
-          placeholder='Enter your email'
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          required
-          disabled={isLoading}
-        />
-        <Button type='submit' disabled={isLoading || !value}>
-          Send Code
-        </Button>
-        <button
-          type='button'
-          className='inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground'
-          onClick={onBack}
-        >
-          <ArrowLeftIcon className='size-3.5' />
-          Back
-        </button>
-      </form>
-    );
-  }
-
-  return (
-    <form
-      className='flex w-full flex-col gap-4'
-      onSubmit={(e) => {
-        e.preventDefault();
-        onCodeSubmit(value);
-      }}
-    >
-      <p className='text-sm text-muted-foreground'>
-        Code sent to <span className='text-foreground'>{emailAddress}</span>
-      </p>
-      <Input
-        type='text'
-        inputMode='numeric'
-        placeholder='Enter verification code'
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        required
-        disabled={isLoading}
-      />
-      <Button type='submit' disabled={isLoading || !value}>
-        Verify Code
-      </Button>
-      <button
-        type='button'
-        className='inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground'
-        onClick={onBack}
-      >
-        <ArrowLeftIcon className='size-3.5' />
-        Back
-      </button>
-    </form>
-  );
 };
 
 export const AuthButtons = () => {
@@ -146,28 +49,22 @@ export const AuthButtons = () => {
     handleEmailBack,
   } = auth;
 
-  if (emailStep !== 'idle') {
-    return (
-      <div className='flex w-full flex-col items-center gap-5'>
-        <EmailForm
-          key={emailStep}
-          step={emailStep}
-          emailAddress={emailAddress}
-          isLoading={isLoading}
-          onEmailSubmit={handleEmailSubmit}
-          onCodeSubmit={handleCodeSubmit}
-          onBack={handleEmailBack}
-        />
-      </div>
-    );
-  }
-
   const primary = AUTH_METHODS.find((m) => m.key === preferredMethod)!;
   const secondary = AUTH_METHODS.filter((m) => m.key !== preferredMethod);
   const PrimaryIcon = primary.icon;
 
   return (
     <div className='flex w-full flex-col items-center gap-5'>
+      <EmailLoginDialog
+        isOpen={emailStep !== 'idle'}
+        onClose={handleEmailBack}
+        step={emailStep !== 'idle' ? emailStep : 'entering-email'}
+        emailAddress={emailAddress}
+        isLoading={isLoading}
+        onEmailSubmit={handleEmailSubmit}
+        onCodeSubmit={handleCodeSubmit}
+      />
+
       <div className='w-fit rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-px'>
         <Button
           size='lg'
@@ -179,7 +76,7 @@ export const AuthButtons = () => {
           onClick={auth[HANDLERS[primary.key]]}
           disabled={isLoading}
         >
-          <PrimaryIcon className='size-5' />
+          <PrimaryIcon className='size-4' />
           Continue with {primary.label}
         </Button>
       </div>

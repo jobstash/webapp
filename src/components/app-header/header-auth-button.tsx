@@ -1,5 +1,7 @@
 'use client';
 
+import type { ComponentType } from 'react';
+
 import { CircleUserIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
@@ -7,6 +9,7 @@ import { useEligibility } from '@/hooks/use-eligibility';
 import { Button } from '@/components/ui/button';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GoogleIcon } from '@/components/svg/google-icon';
 
 const AUTH_BUTTON_SKELETON = (
   <Skeleton className='h-10 w-32 rounded-lg lg:w-40' />
@@ -16,8 +19,9 @@ const handleClick = () => {
   trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'header_cta' });
 };
 
-const IDENTITY_ICONS: Record<string, typeof CircleUserIcon> = {
+const IDENTITY_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   github: GithubIcon,
+  google: GoogleIcon,
   email: MailIcon,
   wallet: WalletIcon,
 };
