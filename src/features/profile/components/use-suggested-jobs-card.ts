@@ -15,15 +15,22 @@ export const useSuggestedJobsCard = () => {
   const hasResume = (showcase ?? []).some((item) => item.label === 'CV');
   const skills = profileSkills?.map((s) => s.normalizedName) ?? [];
   const hasSkills = skills.length > 0;
-  const { jobs, hasMore, fetchNextPage, isFetchingNextPage, isPending } =
-    useSuggestedJobs({
-      enabled: isSessionReady,
-      skills,
-      isExpert,
-    });
+  const {
+    jobs,
+    isError,
+    hasMore,
+    fetchNextPage,
+    isFetchingNextPage,
+    isPending,
+  } = useSuggestedJobs({
+    enabled: isSessionReady,
+    skills,
+    isExpert,
+  });
 
   return {
     jobs,
+    isError,
     isPending,
     hasSkills,
     hasResume,

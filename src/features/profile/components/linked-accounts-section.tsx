@@ -4,11 +4,6 @@ import { CheckCircle2Icon, ClockIcon, LoaderIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 import { useProfileAccounts } from './use-profile-accounts';
 
@@ -61,18 +56,11 @@ const AccountPill = ({ account }: AccountPillProps) => {
 
   if (account.isConnected) {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className={PILL_CONNECTED}>
-            <Icon className='size-3.5 text-muted-foreground' />
-            {account.label}
-            <CheckCircle2Icon className='size-3.5 text-emerald-500' />
-          </span>
-        </TooltipTrigger>
-        {account.subtitle && (
-          <TooltipContent>{account.subtitle}</TooltipContent>
-        )}
-      </Tooltip>
+      <span className={PILL_CONNECTED}>
+        <Icon className='size-3.5 text-muted-foreground' />
+        {account.subtitle ?? account.label}
+        <CheckCircle2Icon className='size-3.5 text-emerald-500' />
+      </span>
     );
   }
 

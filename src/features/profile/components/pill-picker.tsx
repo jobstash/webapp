@@ -5,19 +5,14 @@ import type { ComponentType } from 'react';
 import { CheckIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 export interface PillPickerItem {
   key: string;
   label: string;
   icon: ComponentType<{ className?: string }>;
   disabled?: boolean;
-  tooltip?: string;
   isConnected?: boolean;
+  required?: boolean;
 }
 
 interface PillPickerProps {
@@ -37,8 +32,9 @@ export const PillPicker = ({
       const Icon = item.icon;
 
       if (item.disabled) {
-        const pill = (
+        return (
           <span
+            key={item.key}
             className={cn(
               'inline-flex cursor-default items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium opacity-50',
               item.isConnected
@@ -50,15 +46,6 @@ export const PillPicker = ({
             {item.label}
             {item.isConnected && <CheckIcon className='size-3' />}
           </span>
-        );
-
-        if (!item.tooltip) return <span key={item.key}>{pill}</span>;
-
-        return (
-          <Tooltip key={item.key}>
-            <TooltipTrigger asChild>{pill}</TooltipTrigger>
-            <TooltipContent>{item.tooltip}</TooltipContent>
-          </Tooltip>
         );
       }
 
@@ -76,6 +63,11 @@ export const PillPicker = ({
         >
           <Icon className='size-3.5' />
           {item.label}
+          {item.required && (
+            <span className='leading-none text-rose-400' aria-hidden='true'>
+              *
+            </span>
+          )}
           {isSelected && <CheckIcon className='size-3' />}
         </button>
       );

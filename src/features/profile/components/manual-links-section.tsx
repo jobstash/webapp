@@ -13,25 +13,23 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { useSession } from '@/features/auth/hooks/use-session';
 import {
   getDisplayHandle,
   SHOWCASE_ICON_MAP,
 } from '@/features/profile/constants';
-import { useLinkedAccounts } from '@/features/profile/hooks/use-linked-accounts';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
-import type { ShowcaseItem } from '@/features/profile/schemas';
 
 import { useProfileEditor } from './profile-editor-provider';
 
-const EXCLUDED_LABELS = new Set(['CV']);
+const EXCLUDED_LABELS = new Set([
+  'CV',
+  'Github',
+  'Google',
+  'Email',
+  'Farcaster',
+]);
 const EDITABLE_LABELS = new Set(['Website', 'Lens']);
-const PLAIN_TEXT_LABELS = new Set(['Email', 'Phone']);
 
 const PILL_BASE = cn(
   'inline-flex items-center gap-2 rounded-full px-3 py-1.5',
@@ -47,12 +45,6 @@ const PILL_LINK_CLASS = cn(
 const ensureProtocol = (url: string): string =>
   url.startsWith('http') ? url : `https://${url}`;
 
-const PRIVY_CONTACT_MAP: Record<string, { label: string; urlPrefix: string }> =
-  {
-    github_oauth: { label: 'Github', urlPrefix: 'https://github.com/' },
-    farcaster: { label: 'Farcaster', urlPrefix: 'https://warpcast.com/' },
-  };
-
 const SectionHeader = () => (
   <div>
     <h3 className='text-base font-semibold'>Contacts</h3>
@@ -63,7 +55,6 @@ const SectionHeader = () => (
 export const ManualLinksSection = () => {
   const { isSessionReady } = useSession();
   const { data: showcase, isPending } = useProfileShowcase(isSessionReady);
-  const { data: linkedAccounts } = useLinkedAccounts();
   const { openManualLinksEditor } = useProfileEditor();
 
   if (isPending) {
@@ -79,22 +70,9 @@ export const ManualLinksSection = () => {
     );
   }
 
-  const contacts: ShowcaseItem[] = (showcase ?? []).filter(
+  const contacts = (showcase ?? []).filter(
     (item) => !EXCLUDED_LABELS.has(item.label),
   );
-
-  const existingLabels = new Set(contacts.map((c) => c.label));
-
-  for (const account of linkedAccounts ?? []) {
-    const mapping = PRIVY_CONTACT_MAP[account.type];
-    if (!mapping || !account.username || existingLabels.has(mapping.label))
-      continue;
-    contacts.push({
-      label: mapping.label,
-      url: `${mapping.urlPrefix}${account.username}`,
-    });
-    existingLabels.add(mapping.label);
-  }
 
   const editableCount = contacts.filter((item) =>
     EDITABLE_LABELS.has(item.label),
@@ -135,19 +113,14 @@ export const ManualLinksSection = () => {
         {contacts.map((item) => {
           const Icon = SHOWCASE_ICON_MAP[item.label] ?? GlobeIcon;
           const handle = getDisplayHandle(item.label, item.url);
-          const isPlainText = PLAIN_TEXT_LABELS.has(item.label);
+          const isLink = item.url.startsWith('http');
 
-          if (isPlainText) {
+          if (!isLink) {
             return (
-              <Tooltip key={`${item.label}-${item.url}`}>
-                <TooltipTrigger asChild>
-                  <span className={PILL_BASE}>
-                    <Icon className='size-3.5 text-muted-foreground' />
-                    {item.url}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>{item.label}</TooltipContent>
-              </Tooltip>
+              <span key={`${item.label}-${item.url}`} className={PILL_BASE}>
+                <Icon className='size-3.5 text-muted-foreground' />
+                {item.url}
+              </span>
             );
           }
 

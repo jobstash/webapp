@@ -11,7 +11,8 @@ import type { User } from '@privy-io/react-auth';
 import { usePrivy } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { FarcasterIcon } from '@/components/svg/farcaster-icon';
+// TODO: Farcaster temporarily hidden
+// import { FarcasterIcon } from '@/components/svg/farcaster-icon';
 import { GoogleIcon } from '@/components/svg/google-icon';
 import type { LinkedAccount } from '@/features/profile/schemas';
 import {
@@ -29,19 +30,21 @@ interface AccountConfig {
 const ACCOUNT_TYPES: AccountConfig[] = [
   { type: 'google_oauth', label: 'Google', icon: GoogleIcon, isEnabled: true },
   { type: 'github_oauth', label: 'GitHub', icon: GithubIcon, isEnabled: true },
+  { type: 'email', label: 'Email', icon: MailIcon, isEnabled: true },
   { type: 'wallet', label: 'Wallet', icon: WalletIcon, isEnabled: false },
-  { type: 'email', label: 'Email', icon: MailIcon, isEnabled: false },
-  {
-    type: 'farcaster',
-    label: 'Farcaster',
-    icon: FarcasterIcon,
-    isEnabled: false,
-  },
+  // TODO: Farcaster temporarily hidden
+  // {
+  //   type: 'farcaster',
+  //   label: 'Farcaster',
+  //   icon: FarcasterIcon,
+  //   isEnabled: false,
+  // },
 ];
 
 const PROVIDER_MAP: Record<string, string> = {
   google_oauth: 'google',
   github_oauth: 'github',
+  email: 'email',
 };
 
 /** Derives LinkedAccount[] from Privy's client User object (mirrors API route logic). */
@@ -80,13 +83,14 @@ const privyUserToLinkedAccounts = (user: User): LinkedAccount[] => {
     });
   }
 
-  if (user.farcaster) {
-    accounts.push({
-      type: 'farcaster',
-      email: null,
-      username: user.farcaster.username ?? null,
-    });
-  }
+  // TODO: Farcaster temporarily hidden
+  // if (user.farcaster) {
+  //   accounts.push({
+  //     type: 'farcaster',
+  //     email: null,
+  //     username: user.farcaster.username ?? null,
+  //   });
+  // }
 
   return accounts;
 };

@@ -2,7 +2,7 @@ import 'server-only';
 
 import type { User } from '@privy-io/server-auth';
 
-export type IdentityType = 'github' | 'email' | 'wallet';
+export type IdentityType = 'github' | 'google' | 'email' | 'wallet';
 
 interface DisplayIdentity {
   displayName: string;
@@ -20,7 +20,7 @@ const resolveIdentity = (
     return { displayName: user.github.username, identityType: 'github' };
   }
   if (method === 'google' && user.google?.email) {
-    return { displayName: user.google.email, identityType: 'email' };
+    return { displayName: user.google.email, identityType: 'google' };
   }
   if (method === 'email' && user.email?.address) {
     return { displayName: user.email.address, identityType: 'email' };

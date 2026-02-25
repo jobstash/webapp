@@ -11,11 +11,11 @@ import { useLinkAccount, usePrivy } from '@privy-io/react-auth';
 import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 import { LINKED_ACCOUNTS_QUERY_KEY } from '@/features/profile/hooks/use-linked-accounts';
 
-const OAUTH_PROVIDERS = ['github', 'google'] as const;
-type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+const PROVIDERS = ['github', 'google', 'email'] as const;
+type Provider = (typeof PROVIDERS)[number];
 
-const isValidProvider = (value: string | null): value is OAuthProvider =>
-  OAUTH_PROVIDERS.includes(value as OAuthProvider);
+const isValidProvider = (value: string | null): value is Provider =>
+  PROVIDERS.includes(value as Provider);
 
 export const useLinkAccountContent = () => {
   const router = useRouter();
@@ -26,7 +26,7 @@ export const useLinkAccountContent = () => {
   const queryClient = useQueryClient();
   const { ready, authenticated, user } = usePrivy();
 
-  const { linkGithub, linkGoogle } = useLinkAccount({
+  const { linkGithub, linkGoogle, linkEmail } = useLinkAccount({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: LINKED_ACCOUNTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
@@ -39,11 +39,16 @@ export const useLinkAccountContent = () => {
     },
   });
 
-  const linkFnRef = useRef<Record<OAuthProvider, () => void>>({
+  const linkFnRef = useRef<Record<Provider, () => void>>({
     github: linkGithub,
     google: linkGoogle,
+    email: linkEmail,
   });
-  linkFnRef.current = { github: linkGithub, google: linkGoogle };
+  linkFnRef.current = {
+    github: linkGithub,
+    google: linkGoogle,
+    email: linkEmail,
+  };
 
   const provider = searchParams.get('provider');
 

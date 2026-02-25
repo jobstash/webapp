@@ -3,7 +3,6 @@
 import { type ComponentType, useEffect, useState } from 'react';
 
 import {
-  GithubIcon,
   GlobeIcon,
   LinkedinIcon,
   MessageCircleIcon,
@@ -12,8 +11,6 @@ import {
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import { FarcasterIcon } from '@/components/svg/farcaster-icon';
-import { GoogleIcon } from '@/components/svg/google-icon';
 import { TelegramIcon } from '@/components/svg/telegram-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -23,14 +20,13 @@ import {
   getSocialLabel,
   SOCIAL_URL_TEMPLATES,
 } from '@/features/profile/constants';
-import { useLinkedAccounts } from '@/features/profile/hooks/use-linked-accounts';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import type { ShowcaseItem } from '@/features/profile/schemas';
 
 const CONTACT_KINDS = [
+  'linkedin',
   'website',
   'lens',
-  'linkedin',
   'twitter',
   'telegram',
   'discord',
@@ -81,23 +77,13 @@ const labelToKind = (label: string): ContactKind | null => {
   return CONTACT_KINDS.includes(lower) ? lower : null;
 };
 
-const PRESERVED_LABELS = new Set(['CV', 'Email', 'Github', 'Farcaster']);
-
-const DISABLED_ACCOUNT_ITEMS: {
-  type: string;
-  key: string;
-  label: string;
-  icon: ComponentType<{ className?: string }>;
-}[] = [
-  { type: 'google_oauth', key: 'google', label: 'Google', icon: GoogleIcon },
-  { type: 'github_oauth', key: 'github', label: 'GitHub', icon: GithubIcon },
-  {
-    type: 'farcaster',
-    key: 'farcaster',
-    label: 'Farcaster',
-    icon: FarcasterIcon,
-  },
-];
+const PRESERVED_LABELS = new Set([
+  'CV',
+  'Email',
+  'Github',
+  'Farcaster',
+  'Google',
+]);
 
 interface UseManualLinksEditorParams {
   isOpen: boolean;
@@ -109,8 +95,8 @@ export interface ContactPillItem {
   label: string;
   icon: ComponentType<{ className?: string }>;
   disabled?: boolean;
-  tooltip?: string;
   isConnected?: boolean;
+  required?: boolean;
 }
 
 export const useManualLinksEditor = ({
@@ -120,7 +106,6 @@ export const useManualLinksEditor = ({
   const queryClient = useQueryClient();
   const { isSessionReady } = useSession();
   const { data: showcase } = useProfileShowcase(isSessionReady);
-  const { data: linkedAccounts } = useLinkedAccounts();
 
   const [selectedKinds, setSelectedKinds] = useState<Set<string>>(new Set());
   const [handles, setHandles] = useState<Record<string, string>>({});
@@ -172,6 +157,13 @@ export const useManualLinksEditor = ({
     setIsSaving(true);
     setError(null);
 
+    const linkedinHandle = handles['linkedin']?.trim();
+    if (!linkedinHandle) {
+      setError('LinkedIn profile is required.');
+      setIsSaving(false);
+      return;
+    }
+
     try {
       const items = showcase ?? [];
 
@@ -208,23 +200,12 @@ export const useManualLinksEditor = ({
     }
   };
 
-  const pillItems: ContactPillItem[] = [
-    ...CONTACT_KINDS.map((kind) => ({
-      key: kind,
-      label: CONTACT_LABELS[kind],
-      icon: CONTACT_ICONS[kind],
-    })),
-    ...DISABLED_ACCOUNT_ITEMS.map((item) => ({
-      key: item.key,
-      label: item.label,
-      icon: item.icon,
-      disabled: true as const,
-      tooltip: 'Manage in Linked Accounts',
-      isConnected: !!linkedAccounts?.find((a) => a.type === item.type),
-    })),
-  ];
-
-  const disabledKeys = new Set(DISABLED_ACCOUNT_ITEMS.map((item) => item.key));
+  const pillItems: ContactPillItem[] = CONTACT_KINDS.map((kind) => ({
+    key: kind,
+    label: CONTACT_LABELS[kind],
+    icon: CONTACT_ICONS[kind],
+    required: kind === 'linkedin',
+  }));
 
   const selectedList = CONTACT_KINDS.filter((kind) => selectedKinds.has(kind));
 
@@ -241,6 +222,5 @@ export const useManualLinksEditor = ({
     contactLabels: CONTACT_LABELS,
     contactPlaceholders: CONTACT_PLACEHOLDERS,
     selectedList,
-    disabledKeys,
   };
 };

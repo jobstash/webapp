@@ -1,6 +1,8 @@
 'use client';
 
-import { ChromeIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
+import type { ComponentType } from 'react';
+
+import { GithubIcon, MailIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -9,35 +11,43 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { GoogleIcon } from '@/components/svg/google-icon';
 
 import { type AuthMethod, useAuthButtons } from './use-auth-buttons';
+import { EmailLoginDialog } from './email-login-dialog';
 
 type MethodConfig = {
   key: AuthMethod;
-  icon: typeof WalletIcon;
+  icon: ComponentType<{ className?: string }>;
   label: string;
 };
 
 const AUTH_METHODS: MethodConfig[] = [
-  { key: 'google', icon: ChromeIcon, label: 'Google' },
+  { key: 'google', icon: GoogleIcon, label: 'Google' },
   { key: 'github', icon: GithubIcon, label: 'GitHub' },
-  { key: 'wallet', icon: WalletIcon, label: 'Wallet' },
   { key: 'email', icon: MailIcon, label: 'Email' },
 ];
 
 const HANDLERS: Record<
   AuthMethod,
-  'handleGoogle' | 'handleGithub' | 'handleWallet' | 'handleEmail'
+  'handleGoogle' | 'handleGithub' | 'handleEmail'
 > = {
   google: 'handleGoogle',
   github: 'handleGithub',
-  wallet: 'handleWallet',
   email: 'handleEmail',
 };
 
 export const AuthButtons = () => {
   const auth = useAuthButtons();
-  const { isLoading, preferredMethod } = auth;
+  const {
+    isLoading,
+    preferredMethod,
+    emailStep,
+    emailAddress,
+    handleEmailSubmit,
+    handleCodeSubmit,
+    handleEmailBack,
+  } = auth;
 
   const primary = AUTH_METHODS.find((m) => m.key === preferredMethod)!;
   const secondary = AUTH_METHODS.filter((m) => m.key !== preferredMethod);
@@ -45,6 +55,16 @@ export const AuthButtons = () => {
 
   return (
     <div className='flex w-full flex-col items-center gap-5'>
+      <EmailLoginDialog
+        isOpen={emailStep !== 'idle'}
+        onClose={handleEmailBack}
+        step={emailStep !== 'idle' ? emailStep : 'entering-email'}
+        emailAddress={emailAddress}
+        isLoading={isLoading}
+        onEmailSubmit={handleEmailSubmit}
+        onCodeSubmit={handleCodeSubmit}
+      />
+
       <div className='w-fit rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-px'>
         <Button
           size='lg'
@@ -56,7 +76,7 @@ export const AuthButtons = () => {
           onClick={auth[HANDLERS[primary.key]]}
           disabled={isLoading}
         >
-          <PrimaryIcon className='size-5' />
+          <PrimaryIcon className='size-4' />
           Continue with {primary.label}
         </Button>
       </div>

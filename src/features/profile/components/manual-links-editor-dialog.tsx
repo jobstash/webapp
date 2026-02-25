@@ -51,7 +51,7 @@ export const ManualLinksEditorDialog = ({
         <DialogHeader>
           <DialogTitle>Edit Contacts</DialogTitle>
           <DialogDescription>
-            Add your website and social profiles
+            LinkedIn is required. Add your social profiles.
           </DialogDescription>
         </DialogHeader>
 

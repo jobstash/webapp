@@ -53,13 +53,14 @@ export const GET = async (): Promise<NextResponse> => {
       });
     }
 
-    if (user.farcaster) {
-      data.push({
-        type: 'farcaster',
-        email: null,
-        username: user.farcaster.username ?? null,
-      });
-    }
+    // TODO: Farcaster temporarily hidden
+    // if (user.farcaster) {
+    //   data.push({
+    //     type: 'farcaster',
+    //     email: null,
+    //     username: user.farcaster.username ?? null,
+    //   });
+    // }
 
     return NextResponse.json({ data });
   } catch (error) {

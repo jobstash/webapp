@@ -153,14 +153,3 @@ button,
 :disabled {
   cursor: default;
 }
-
-/* Privy's useLinkAccount renders its own <dialog> during OAuth processing.
-   We hide it globally so only our custom spinner/UI is visible.
-   Login uses useLoginWithOAuth (redirect-based, no dialog). */
-#privy-dialog,
-#privy-dialog-backdrop,
-#privy-modal-content {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}

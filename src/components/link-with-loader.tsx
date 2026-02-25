@@ -52,12 +52,8 @@ export function LinkWithLoader({
     e.preventDefault();
     onClick?.(e);
 
-    if (scroll) {
-      window.scrollTo({ top: 0 });
-    }
-
     startTransition(() => {
-      router.push(href.toString(), { scroll: false });
+      router.push(href.toString(), { scroll });
     });
   };
 
