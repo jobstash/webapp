@@ -40,17 +40,23 @@ export const useSuggestedJobs = ({
   skills,
   isExpert,
 }: UseSuggestedJobsParams) => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
-    useInfiniteQuery({
-      queryKey: ['profile-suggested-jobs', skills, isExpert],
-      queryFn: ({ pageParam }) => fetchSuggestedJobs(skills, pageParam),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage) =>
-        lastPage.hasMore ? lastPage.page + 1 : undefined,
-      enabled: enabled && skills.length > 0,
-      staleTime: STALE_TIME,
-      placeholderData: keepPreviousData,
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    isError,
+  } = useInfiniteQuery({
+    queryKey: ['profile-suggested-jobs', skills, isExpert],
+    queryFn: ({ pageParam }) => fetchSuggestedJobs(skills, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? lastPage.page + 1 : undefined,
+    enabled: enabled && skills.length > 0,
+    staleTime: STALE_TIME,
+    placeholderData: keepPreviousData,
+  });
 
   const allJobs = data?.pages.flatMap((p) => p.data) ?? [];
   const jobs = allJobs.filter(
@@ -59,6 +65,7 @@ export const useSuggestedJobs = ({
 
   return {
     jobs,
+    isError,
     hasMore: hasNextPage ?? false,
     fetchNextPage,
     isFetchingNextPage,

@@ -1,6 +1,12 @@
 'use client';
 
-import { FileTextIcon, Loader2Icon, TagsIcon } from 'lucide-react';
+import {
+  AlertCircle,
+  FileTextIcon,
+  Loader2Icon,
+  SearchIcon,
+  TagsIcon,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { JobListItem } from '@/features/jobs/components/job-list/job-list-item/job-list-item';
@@ -14,6 +20,7 @@ export const ProfileJobs = () => {
   const { openSkillsEditor, openResumeUpload } = useProfileEditor();
   const {
     jobs,
+    isError,
     isPending,
     hasSkills,
     hasResume,
@@ -72,6 +79,32 @@ export const ProfileJobs = () => {
           <JobListItemSkeleton key={i} />
         ))}
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ProfileCard title='Jobs For You'>
+        <div className='flex flex-col items-center gap-3 py-6'>
+          <AlertCircle className='size-8 text-destructive' />
+          <p className='text-center text-sm text-muted-foreground'>
+            Failed to load job suggestions
+          </p>
+        </div>
+      </ProfileCard>
+    );
+  }
+
+  if (jobs.length === 0) {
+    return (
+      <ProfileCard title='Jobs For You'>
+        <div className='flex flex-col items-center gap-3 py-6'>
+          <SearchIcon className='size-8 text-muted-foreground/50' />
+          <p className='text-center text-sm text-muted-foreground'>
+            No matching jobs found. Check back soon.
+          </p>
+        </div>
+      </ProfileCard>
     );
   }
 
