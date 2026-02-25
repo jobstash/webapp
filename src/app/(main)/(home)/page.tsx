@@ -1,6 +1,10 @@
+import { Suspense } from 'react';
+
 import { SocialsAside } from '@/components/socials-aside';
 import { FiltersAside } from '@/features/filters/components/filters-aside';
 import { JobList } from '@/features/jobs/components/job-list/job-list';
+import { JobListBoundary } from '@/features/jobs/components/job-list/job-list.error';
+import { JobListSkeleton } from '@/features/jobs/components/job-list/job-list.skeleton';
 import { fetchJobListPage } from '@/features/jobs/server/data';
 
 interface Props {
@@ -34,7 +38,14 @@ const HomePage = async ({ searchParams }: Props) => {
         <SocialsAside />
       </aside>
       <section className='min-w-0 grow'>
-        <JobList currentPage={currentPage} searchParams={restSearchParams} />
+        <Suspense fallback={<JobListSkeleton />}>
+          <JobListBoundary>
+            <JobList
+              currentPage={currentPage}
+              searchParams={restSearchParams}
+            />
+          </JobListBoundary>
+        </Suspense>
       </section>
     </div>
   );
