@@ -596,6 +596,45 @@
       }
     ]
   },
+  "[REMOTE] Argentina / Remote, Vancouver / Remote, United States / Remote, São Paulo / Remote, Bogota / Remote, Ciudad de México / Remote, Toronto / Remote": {
+    "label": "Argentina, Vancouver, US, Sao Paulo, Bogota, Mexico City",
+    "addresses": [
+      {
+        "country": "Argentina",
+        "countryCode": "AR",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true,
+        "locality": "Vancouver"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Brazil",
+        "countryCode": "BR",
+        "isRemote": true,
+        "locality": "São Paulo"
+      },
+      {
+        "country": "Colombia",
+        "countryCode": "CO",
+        "isRemote": true,
+        "locality": "Bogota"
+      },
+      {
+        "country": "Mexico",
+        "countryCode": "MX",
+        "isRemote": true,
+        "locality": "Ciudad de México"
+      }
+    ]
+  },
   "[REMOTE] Asia": {
     "label": "Asia",
     "addresses": [
@@ -882,6 +921,17 @@
       }
     ]
   },
+  "[REMOTE] Belgrade (Remote)": {
+    "label": "Belgrade, Serbia",
+    "addresses": [
+      {
+        "country": "Serbia",
+        "countryCode": "RS",
+        "isRemote": true,
+        "locality": "Belgrade"
+      }
+    ]
+  },
   "[REMOTE] Berlin": {
     "label": "Berlin, Germany",
     "addresses": [
@@ -1083,6 +1133,47 @@
       }
     ]
   },
+  "[REMOTE] Brussels, New York, New Jersey, Barcelona, Paris, London, California, Florida, Illinois, Berlin, Vienna, Warsaw, Madrid, Lisbon, Milan, Rome, Amsterdam": {
+    "label": "Brussels, NY, Barcelona, Paris, London, Berlin",
+    "addresses": [
+      {
+        "country": "Belgium",
+        "countryCode": "BE",
+        "isRemote": true,
+        "locality": "Brussels"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York"
+      },
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true,
+        "locality": "Barcelona"
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true,
+        "locality": "Paris"
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true,
+        "locality": "London"
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true,
+        "locality": "Berlin"
+      }
+    ]
+  },
   "[REMOTE] Bucharest; Fully Remote (Europe)": {
     "label": "Bucharest, Europe",
     "addresses": [
@@ -1174,6 +1265,17 @@
       }
     ]
   },
+  "[REMOTE] Buenos Aires": {
+    "label": "Buenos Aires, Argentina",
+    "addresses": [
+      {
+        "country": "Argentina",
+        "countryCode": "AR",
+        "isRemote": true,
+        "locality": "Buenos Aires"
+      }
+    ]
+  },
   "[REMOTE] Buenos Aires (Completely remote)": {
     "label": "Buenos Aires, Argentina",
     "addresses": [
@@ -1241,6 +1343,16 @@
     ]
   },
   "[REMOTE] Canada": {
+    "label": "Canada",
+    "addresses": [
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Canada - Remote": {
     "label": "Canada",
     "addresses": [
       {
@@ -1382,6 +1494,41 @@
       }
     ]
   },
+  "[REMOTE] Canada; Ghana; Kenya; Remote; Spain; United Kingdom; United States": {
+    "label": "Canada, Ghana, Kenya, Spain, UK, US",
+    "addresses": [
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true
+      },
+      {
+        "country": "Ghana",
+        "countryCode": "GH",
+        "isRemote": true
+      },
+      {
+        "country": "Kenya",
+        "countryCode": "KE",
+        "isRemote": true
+      },
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] Cayman Islands": {
     "label": "Cayman Islands",
     "addresses": [
@@ -1404,6 +1551,24 @@
       }
     ]
   },
+  "[REMOTE] Chicago, IL / London, GB - Remote (any location)": {
+    "label": "Chicago, London",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Chicago",
+        "region": "Illinois"
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true,
+        "locality": "London"
+      }
+    ]
+  },
   "[REMOTE] Chicago, IL / Maimi, FL - Remote (within locations)": {
     "label": "Chicago, Miami",
     "addresses": [
@@ -1420,6 +1585,25 @@
         "isRemote": true,
         "locality": "Miami",
         "region": "Florida"
+      }
+    ]
+  },
+  "[REMOTE] Chicago, IL / New York, NY - Remote (any location)": {
+    "label": "Chicago, New York",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Chicago",
+        "region": "Illinois"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
       }
     ]
   },
@@ -1493,6 +1677,18 @@
     ]
   },
   "[REMOTE] Chicago, IL, United States - Remote (any location)": {
+    "label": "Chicago, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Chicago",
+        "region": "Illinois"
+      }
+    ]
+  },
+  "[REMOTE] Chicago, US - Remote (any location)": {
     "label": "Chicago, USA",
     "addresses": [
       {
@@ -1693,6 +1889,41 @@
       }
     ]
   },
+  "[REMOTE] EMEA - Remote": {
+    "label": "EMEA",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "United Arab Emirates",
+        "countryCode": "AE",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] EMEA - Remote, CANADA - Remote, LATAM - Remote, UNITED STATES - Remote": {
     "label": "EMEA, Canada, LATAM, US",
     "addresses": [
@@ -1829,6 +2060,41 @@
       {
         "country": "United States",
         "countryCode": "US",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] EU": {
+    "label": "Europe",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
         "isRemote": true
       }
     ]
@@ -2328,6 +2594,41 @@
       }
     ]
   },
+  "[REMOTE] Europe (Remote), USA East Coast": {
+    "label": "Europe, US East Coast",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] Europe / Israel": {
     "label": "Europe, Israel",
     "addresses": [
@@ -2634,6 +2935,41 @@
       {
         "country": "Switzerland",
         "countryCode": "CH",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Europe, USA East Coast": {
+    "label": "Europe, US East Coast",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
         "isRemote": true
       }
     ]
@@ -2968,12 +3304,107 @@
       }
     ]
   },
+  "[REMOTE] Fully remote (EU preferred, no sanctioned countries)": {
+    "label": "Europe (preferred)",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Fully Remote (Europe)": {
+    "label": "Europe",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] Germany (Remote)": {
     "label": "Germany",
     "addresses": [
       {
         "country": "Germany",
         "countryCode": "DE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Ghana; Kenya; Spain; United Kingdom": {
+    "label": "Ghana, Kenya, Spain, UK",
+    "addresses": [
+      {
+        "country": "Ghana",
+        "countryCode": "GH",
+        "isRemote": true
+      },
+      {
+        "country": "Kenya",
+        "countryCode": "KE",
+        "isRemote": true
+      },
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
         "isRemote": true
       }
     ]
@@ -3758,6 +4189,21 @@
       }
     ]
   },
+  "[REMOTE] India / Remote, Colombia / Remote": {
+    "label": "India, Colombia",
+    "addresses": [
+      {
+        "country": "India",
+        "countryCode": "IN",
+        "isRemote": true
+      },
+      {
+        "country": "Colombia",
+        "countryCode": "CO",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] India, LATAM": {
     "label": "India, LATAM",
     "addresses": [
@@ -4107,6 +4553,67 @@
       }
     ]
   },
+  "[REMOTE] Lisbon, Portugal (Fully Remote)": {
+    "label": "Lisbon, Portugal",
+    "addresses": [
+      {
+        "country": "Portugal",
+        "countryCode": "PT",
+        "isRemote": true,
+        "locality": "Lisbon"
+      }
+    ]
+  },
+  "[REMOTE] Lisbon, Vilnius, Madrid (Fully Remote)": {
+    "label": "Lisbon, Vilnius, Madrid",
+    "addresses": [
+      {
+        "country": "Portugal",
+        "countryCode": "PT",
+        "isRemote": true,
+        "locality": "Lisbon"
+      },
+      {
+        "country": "Lithuania",
+        "countryCode": "LT",
+        "isRemote": true,
+        "locality": "Vilnius"
+      },
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true,
+        "locality": "Madrid"
+      }
+    ]
+  },
+  "[REMOTE] Lisbon, Warsaw": {
+    "label": "Lisbon, Warsaw",
+    "addresses": [
+      {
+        "country": "Portugal",
+        "countryCode": "PT",
+        "isRemote": true,
+        "locality": "Lisbon"
+      },
+      {
+        "country": "Poland",
+        "countryCode": "PL",
+        "isRemote": true,
+        "locality": "Warsaw"
+      }
+    ]
+  },
+  "[REMOTE] Lithuania": {
+    "label": "Lithuania",
+    "addresses": [
+      {
+        "country": "Lithuania",
+        "countryCode": "LT",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] London": {
     "label": "London, UK",
     "addresses": [
@@ -4234,6 +4741,47 @@
         "countryCode": "CH",
         "isRemote": true,
         "locality": "Zurich"
+      }
+    ]
+  },
+  "[REMOTE] London, Amsterdam, Brussels, Barcelona, Geneva, Madrid, Paris, Zurich, Frankfurt, Luxembourg": {
+    "label": "London, Amsterdam, Brussels, Barcelona, Geneva, Paris",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true,
+        "locality": "London"
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true,
+        "locality": "Amsterdam"
+      },
+      {
+        "country": "Belgium",
+        "countryCode": "BE",
+        "isRemote": true,
+        "locality": "Brussels"
+      },
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true,
+        "locality": "Barcelona"
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true,
+        "locality": "Geneva"
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true,
+        "locality": "Paris"
       }
     ]
   },
@@ -4391,6 +4939,23 @@
         "countryCode": "GB",
         "isRemote": true,
         "locality": "London"
+      }
+    ]
+  },
+  "[REMOTE] London, New York": {
+    "label": "London, New York",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true,
+        "locality": "London"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York"
       }
     ]
   },
@@ -4988,6 +5553,57 @@
       }
     ]
   },
+  "[REMOTE] New York, NY / Boston / Toronto / Washington DC / Remote": {
+    "label": "NY, Boston, Toronto, Washington DC",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Boston",
+        "region": "Massachusetts"
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true,
+        "locality": "Toronto"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Washington",
+        "region": "District of Columbia"
+      }
+    ]
+  },
+  "[REMOTE] New York, NY / Chicago, IL - Remote (any location)": {
+    "label": "New York, Chicago",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Chicago",
+        "region": "Illinois"
+      }
+    ]
+  },
   "[REMOTE] New York, NY / Chicago, IL - Remote (within locations)": {
     "label": "New York, Chicago",
     "addresses": [
@@ -5004,6 +5620,32 @@
         "isRemote": true,
         "locality": "Chicago",
         "region": "Illinois"
+      }
+    ]
+  },
+  "[REMOTE] New York, NY / Remote, Boston / Remote, Washington DC / Remote": {
+    "label": "NY, Boston, Washington DC",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Boston",
+        "region": "Massachusetts"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Washington",
+        "region": "District of Columbia"
       }
     ]
   },
@@ -5127,6 +5769,18 @@
       }
     ]
   },
+  "[REMOTE] New York, NY, United States (Remote)": {
+    "label": "New York, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      }
+    ]
+  },
   "[REMOTE] New York, NY, US / Remote (US)": {
     "label": "New York, USA",
     "addresses": [
@@ -5240,6 +5894,21 @@
       {
         "country": "Mexico",
         "countryCode": "MX",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] North America - Remote (US and Canada)": {
+    "label": "US, Canada",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
         "isRemote": true
       }
     ]
@@ -6106,6 +6775,16 @@
       }
     ]
   },
+  "[REMOTE] Remote - Portugal": {
+    "label": "Portugal",
+    "addresses": [
+      {
+        "country": "Portugal",
+        "countryCode": "PT",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] Remote - San Francisco": {
     "label": "San Francisco, USA",
     "addresses": [
@@ -6238,6 +6917,17 @@
       }
     ]
   },
+  "[REMOTE] Remote - United Kingdom (London-based)": {
+    "label": "London, UK",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true,
+        "locality": "London"
+      }
+    ]
+  },
   "[REMOTE] Remote - United States": {
     "label": "United States",
     "addresses": [
@@ -6264,6 +6954,36 @@
     ]
   },
   "[REMOTE] Remote - United States, Remote - Canada": {
+    "label": "US, Canada",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote - US / Canada": {
+    "label": "US, Canada",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote - US & Canada": {
     "label": "US, Canada",
     "addresses": [
       {
@@ -7407,6 +8127,41 @@
       }
     ]
   },
+  "[REMOTE] Remote (EU preferred, no sanctioned countries)": {
+    "label": "Europe (preferred)",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] Remote (EU timezone preferred)": {
     "label": "Europe",
     "addresses": [
@@ -8076,6 +8831,16 @@
       }
     ]
   },
+  "[REMOTE] Remote (from Ireland)": {
+    "label": "Ireland",
+    "addresses": [
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] Remote (Global)": {
     "label": "Anywhere",
     "addresses": [
@@ -8122,6 +8887,42 @@
       {
         "country": "Ireland",
         "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote (Global) — priority hubs: Singapore, Europe; optional offices in Porto and Singapore": {
+    "label": "Singapore, Porto, Europe",
+    "addresses": [
+      {
+        "country": "Singapore",
+        "countryCode": "SG",
+        "isRemote": true
+      },
+      {
+        "country": "Portugal",
+        "countryCode": "PT",
+        "isRemote": true,
+        "locality": "Porto"
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
         "isRemote": true
       }
     ]
@@ -8232,6 +9033,41 @@
       {
         "country": "Indonesia",
         "countryCode": "ID",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote (International)": {
+    "label": "Anywhere",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true
+      },
+      {
+        "country": "Australia",
+        "countryCode": "AU",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "Singapore",
+        "countryCode": "SG",
         "isRemote": true
       }
     ]
@@ -8368,6 +9204,38 @@
       }
     ]
   },
+  "[REMOTE] Remote (offices in San Francisco, Miami, New York City, Florianópolis, Brazil)": {
+    "label": "SF, Miami, NYC, Florianopolis",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "San Francisco",
+        "region": "California"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Miami",
+        "region": "Florida"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "Brazil",
+        "countryCode": "BR",
+        "isRemote": true,
+        "locality": "Florianópolis"
+      }
+    ]
+  },
   "[REMOTE] Remote (open to candidates based in Central Europe through the Americas Eastern Time zone)": {
     "label": "Europe, Americas (East)",
     "addresses": [
@@ -8464,6 +9332,26 @@
       {
         "country": "Germany",
         "countryCode": "DE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote (Portugal, Ireland, Spain)": {
+    "label": "Portugal, Ireland, Spain",
+    "addresses": [
+      {
+        "country": "Portugal",
+        "countryCode": "PT",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      },
+      {
+        "country": "Spain",
+        "countryCode": "ES",
         "isRemote": true
       }
     ]
@@ -9988,6 +10876,46 @@
       }
     ]
   },
+  "[REMOTE] Remote, California, Illinois, Florida, New York, New Jersey, Barcelona, Brussels, London, Paris, Warsaw, Madrid, Milan, Amsterdam, Berlin, Lisbon, Dublin": {
+    "label": "US, Barcelona, Brussels, London, Paris, Berlin",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true,
+        "locality": "Barcelona"
+      },
+      {
+        "country": "Belgium",
+        "countryCode": "BE",
+        "isRemote": true,
+        "locality": "Brussels"
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true,
+        "locality": "London"
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true,
+        "locality": "Paris"
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true,
+        "locality": "Berlin"
+      }
+    ]
+  },
   "[REMOTE] Remote, Canada": {
     "label": "Canada",
     "addresses": [
@@ -10135,6 +11063,47 @@
       }
     ]
   },
+  "[REMOTE] Remote, New York, New Jersey, Illinois, Berlin, Brussels, Milan, Amsterdam, Rome, Barcelona, Madrid, Porto, Lisbon, California, Warsaw, London, Paris": {
+    "label": "NY, Berlin, Brussels, Amsterdam, London, Paris",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York"
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true,
+        "locality": "Berlin"
+      },
+      {
+        "country": "Belgium",
+        "countryCode": "BE",
+        "isRemote": true,
+        "locality": "Brussels"
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true,
+        "locality": "Amsterdam"
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true,
+        "locality": "London"
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true,
+        "locality": "Paris"
+      }
+    ]
+  },
   "[REMOTE] Remote, NY or London preferred": {
     "label": "NY, London",
     "addresses": [
@@ -10274,6 +11243,41 @@
       {
         "country": "United Arab Emirates",
         "countryCode": "AE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote, Worldwide": {
+    "label": "Anywhere",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true
+      },
+      {
+        "country": "Australia",
+        "countryCode": "AU",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "Singapore",
+        "countryCode": "SG",
         "isRemote": true
       }
     ]
@@ -10574,6 +11578,18 @@
       }
     ]
   },
+  "[REMOTE] San Francisco Bay Area, United States": {
+    "label": "San Francisco, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "San Francisco",
+        "region": "California"
+      }
+    ]
+  },
   "[REMOTE] San Francisco or New York": {
     "label": "SF, New York",
     "addresses": [
@@ -10628,6 +11644,44 @@
         "isRemote": true,
         "locality": "New York",
         "region": "NY"
+      }
+    ]
+  },
+  "[REMOTE] San Francisco, CA": {
+    "label": "San Francisco, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "San Francisco",
+        "region": "California"
+      }
+    ]
+  },
+  "[REMOTE] San Francisco, CA / Chicago, IL / New York, NY - Remote (any location)": {
+    "label": "SF, Chicago, New York",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "San Francisco",
+        "region": "California"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Chicago",
+        "region": "Illinois"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
       }
     ]
   },
@@ -10746,6 +11800,32 @@
         "countryCode": "BR",
         "isRemote": true,
         "locality": "Sao Paulo"
+      }
+    ]
+  },
+  "[REMOTE] Sao Paulo, BR (Remote within LATAM)": {
+    "label": "Sao Paulo, LATAM",
+    "addresses": [
+      {
+        "country": "Brazil",
+        "countryCode": "BR",
+        "isRemote": true,
+        "locality": "São Paulo"
+      },
+      {
+        "country": "Argentina",
+        "countryCode": "AR",
+        "isRemote": true
+      },
+      {
+        "country": "Mexico",
+        "countryCode": "MX",
+        "isRemote": true
+      },
+      {
+        "country": "Colombia",
+        "countryCode": "CO",
+        "isRemote": true
       }
     ]
   },
@@ -10985,7 +12065,28 @@
       }
     ]
   },
+  "[REMOTE] Tanzania": {
+    "label": "Tanzania",
+    "addresses": [
+      {
+        "country": "Tanzania",
+        "countryCode": "TZ",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] Texas, United States (Remote acceptable)": {
+    "label": "Texas, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "region": "Texas"
+      }
+    ]
+  },
+  "[REMOTE] Texas, USA": {
     "label": "Texas, USA",
     "addresses": [
       {
@@ -11180,6 +12281,25 @@
         "isRemote": true,
         "locality": "Toronto",
         "region": "Ontario"
+      }
+    ]
+  },
+  "[REMOTE] U.S. remote eligible; must be based in San Francisco or New York City": {
+    "label": "SF, New York",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "San Francisco",
+        "region": "California"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
       }
     ]
   },
@@ -11809,6 +12929,49 @@
       }
     ]
   },
+  "[REMOTE] United States / Remote, Remote, Vancouver / Remote, Austin / Remote, Chicago / Remote, Toronto / Remote, Boston / Remote": {
+    "label": "US, Vancouver, Austin, Chicago, Toronto, Boston",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true,
+        "locality": "Vancouver"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Austin",
+        "region": "Texas"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Chicago",
+        "region": "Illinois"
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true,
+        "locality": "Toronto"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Boston",
+        "region": "Massachusetts"
+      }
+    ]
+  },
   "[REMOTE] United States / Remote, Toronto / Remote": {
     "label": "US, Toronto",
     "addresses": [
@@ -11822,6 +12985,45 @@
         "countryCode": "CA",
         "isRemote": true,
         "locality": "Toronto"
+      }
+    ]
+  },
+  "[REMOTE] United States / Remote, Toronto / Remote, Argentina / Remote, São Paulo / Remote, Ciudad de México / Remote, Bogota / Remote": {
+    "label": "US, Toronto, Argentina, Sao Paulo, Mexico City, Bogota",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Canada",
+        "countryCode": "CA",
+        "isRemote": true,
+        "locality": "Toronto"
+      },
+      {
+        "country": "Argentina",
+        "countryCode": "AR",
+        "isRemote": true
+      },
+      {
+        "country": "Brazil",
+        "countryCode": "BR",
+        "isRemote": true,
+        "locality": "São Paulo"
+      },
+      {
+        "country": "Mexico",
+        "countryCode": "MX",
+        "isRemote": true,
+        "locality": "Ciudad de México"
+      },
+      {
+        "country": "Colombia",
+        "countryCode": "CO",
+        "isRemote": true,
+        "locality": "Bogota"
       }
     ]
   },
@@ -12205,6 +13407,41 @@
       }
     ]
   },
+  "[REMOTE] United States, Europe, Remote": {
+    "label": "US, Europe",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true
+      }
+    ]
+  },
   "[REMOTE] US": {
     "label": "United States",
     "addresses": [
@@ -12331,6 +13568,16 @@
     ]
   },
   "[REMOTE] USA": {
+    "label": "United States",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] USA - Remote": {
     "label": "United States",
     "addresses": [
       {
@@ -12479,6 +13726,42 @@
       {
         "country": "Netherlands",
         "countryCode": "NL",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Warsaw, Fully Remote (Europe)": {
+    "label": "Warsaw, Europe",
+    "addresses": [
+      {
+        "country": "Poland",
+        "countryCode": "PL",
+        "isRemote": true,
+        "locality": "Warsaw"
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
         "isRemote": true
       }
     ]
@@ -13039,6 +14322,46 @@
       }
     ]
   },
+  "Abidjan, Côte d'Ivoire; Bamako, Mali; Cameroon; Dakar, Senegal; Kinshasa, Democratic Republic of the Congo; Ouagadougou, Burkina Faso": {
+    "label": "West & Central Africa",
+    "addresses": [
+      {
+        "country": "Côte d'Ivoire",
+        "countryCode": "CI",
+        "isRemote": false,
+        "locality": "Abidjan"
+      },
+      {
+        "country": "Mali",
+        "countryCode": "ML",
+        "isRemote": false,
+        "locality": "Bamako"
+      },
+      {
+        "country": "Cameroon",
+        "countryCode": "CM",
+        "isRemote": false
+      },
+      {
+        "country": "Senegal",
+        "countryCode": "SN",
+        "isRemote": false,
+        "locality": "Dakar"
+      },
+      {
+        "country": "Democratic Republic of the Congo",
+        "countryCode": "CD",
+        "isRemote": false,
+        "locality": "Kinshasa"
+      },
+      {
+        "country": "Burkina Faso",
+        "countryCode": "BF",
+        "isRemote": false,
+        "locality": "Ouagadougou"
+      }
+    ]
+  },
   "Abidjan, Côte d'Ivoire; Dakar, Senegal": {
     "label": "Abidjan, Dakar",
     "addresses": [
@@ -13341,6 +14664,18 @@
         "countryCode": "KZ",
         "isRemote": false,
         "locality": "Astana"
+      }
+    ]
+  },
+  "Austin, Texas": {
+    "label": "Austin, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Austin",
+        "region": "Texas"
       }
     ]
   },
@@ -13747,6 +15082,18 @@
       }
     ]
   },
+  "Bouaké Vallée du Bandama Côte d'Ivoire": {
+    "label": "Bouake, Cote d'Ivoire",
+    "addresses": [
+      {
+        "country": "Côte d'Ivoire",
+        "countryCode": "CI",
+        "isRemote": false,
+        "locality": "Bouaké",
+        "region": "Vallée du Bandama"
+      }
+    ]
+  },
   "Bouaké, Vallée du Bandama, Côte d'Ivoire": {
     "label": "Bouake, Cote d'Ivoire",
     "addresses": [
@@ -14048,6 +15395,18 @@
       }
     ]
   },
+  "Dallas, TX, United States": {
+    "label": "Dallas, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Dallas",
+        "region": "Texas"
+      }
+    ]
+  },
   "Dallas, TX, United States (Remote acceptable for USA applicants)": {
     "label": "Dallas, USA",
     "addresses": [
@@ -14305,6 +15664,41 @@
       }
     ]
   },
+  "EMEA or APAC": {
+    "label": "EMEA, Asia-Pacific",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": false
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": false
+      },
+      {
+        "country": "United Arab Emirates",
+        "countryCode": "AE",
+        "isRemote": false
+      },
+      {
+        "country": "Australia",
+        "countryCode": "AU",
+        "isRemote": false
+      },
+      {
+        "country": "Singapore",
+        "countryCode": "SG",
+        "isRemote": false
+      },
+      {
+        "country": "Japan",
+        "countryCode": "JP",
+        "isRemote": false
+      }
+    ]
+  },
   "Europe": {
     "label": "Europe",
     "addresses": [
@@ -14390,6 +15784,44 @@
       }
     ]
   },
+  "Flatiron, Manhattan, New York City": {
+    "label": "New York, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "New York",
+        "region": "New York"
+      }
+    ]
+  },
+  "Flexible within the US. Miami San Francisco or New York preferred.": {
+    "label": "Miami, SF, NY",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Miami",
+        "region": "Florida"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "San Francisco",
+        "region": "California"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "New York",
+        "region": "New York"
+      }
+    ]
+  },
   "Flexible/ Hybrid": {
     "label": "Flexible",
     "addresses": null
@@ -14406,6 +15838,17 @@
       }
     ]
   },
+  "Freetown, Sierra Leone": {
+    "label": "Freetown, Sierra Leone",
+    "addresses": [
+      {
+        "country": "Sierra Leone",
+        "countryCode": "SL",
+        "isRemote": false,
+        "locality": "Freetown"
+      }
+    ]
+  },
   "Garden City, TX": {
     "label": "Garden City, USA",
     "addresses": [
@@ -14415,6 +15858,17 @@
         "isRemote": false,
         "locality": "Garden City",
         "region": "Texas"
+      }
+    ]
+  },
+  "Geneva, Switzerland": {
+    "label": "Geneva, Switzerland",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Geneva"
       }
     ]
   },
@@ -14730,6 +16184,17 @@
       }
     ]
   },
+  "Koudougou, Burkina Faso": {
+    "label": "Koudougou, Burkina Faso",
+    "addresses": [
+      {
+        "country": "Burkina Faso",
+        "countryCode": "BF",
+        "isRemote": false,
+        "locality": "Koudougou"
+      }
+    ]
+  },
   "Las Vegas, Nevada": {
     "label": "Las Vegas, Nevada, USA",
     "addresses": [
@@ -14915,6 +16380,23 @@
       }
     ]
   },
+  "London or Brussels": {
+    "label": "London, Brussels",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": false,
+        "locality": "London"
+      },
+      {
+        "country": "Belgium",
+        "countryCode": "BE",
+        "isRemote": false,
+        "locality": "Brussels"
+      }
+    ]
+  },
   "London or Zug (Switzerland)": {
     "label": "London, Zug",
     "addresses": [
@@ -14953,6 +16435,17 @@
         "isRemote": false,
         "locality": "London",
         "region": "England"
+      }
+    ]
+  },
+  "London, Great Britain, United Kingdom": {
+    "label": "London, UK",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": false,
+        "locality": "London"
       }
     ]
   },
@@ -15058,6 +16551,17 @@
       }
     ]
   },
+  "Lugano": {
+    "label": "Lugano, Switzerland",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Lugano"
+      }
+    ]
+  },
   "Lugano, Switzerland": {
     "label": "Lugano, Switzerland",
     "addresses": [
@@ -15101,6 +16605,17 @@
       }
     ]
   },
+  "Madrid, Spain (also open to full remote from Spain)": {
+    "label": "Madrid, Spain",
+    "addresses": [
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true,
+        "locality": "Madrid"
+      }
+    ]
+  },
   "Madrid, Spain (also open to full remote within Spain)": {
     "label": "Madrid, Spain",
     "addresses": [
@@ -15120,6 +16635,31 @@
         "countryCode": "ES",
         "isRemote": true,
         "locality": "Madrid"
+      }
+    ]
+  },
+  "Madrid; New York City; Miami; remote (Spain, United States)": {
+    "label": "Madrid, NY, Miami",
+    "addresses": [
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true,
+        "locality": "Madrid"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "Miami",
+        "region": "Florida"
       }
     ]
   },
@@ -15145,6 +16685,16 @@
       }
     ]
   },
+  "Malta": {
+    "label": "Malta",
+    "addresses": [
+      {
+        "country": "Malta",
+        "countryCode": "MT",
+        "isRemote": false
+      }
+    ]
+  },
   "Manhattan, New York, United States": {
     "label": "Manhattan, NY, USA",
     "addresses": [
@@ -15166,6 +16716,17 @@
         "isRemote": false,
         "locality": "Manila",
         "region": "Metro Manila"
+      }
+    ]
+  },
+  "Melbourne, Australia": {
+    "label": "Melbourne, Australia",
+    "addresses": [
+      {
+        "country": "Australia",
+        "countryCode": "AU",
+        "isRemote": false,
+        "locality": "Melbourne"
       }
     ]
   },
@@ -15532,6 +17093,37 @@
       }
     ]
   },
+  "New York City (hybrid)": {
+    "label": "New York, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "New York",
+        "region": "New York"
+      }
+    ]
+  },
+  "New York City (preferred) or Miami (Hybrid)": {
+    "label": "New York, Miami",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Miami",
+        "region": "Florida"
+      }
+    ]
+  },
   "New York City / San Francisco / Los Angeles / Remote": {
     "label": "NY, SF, LA",
     "addresses": [
@@ -15573,6 +17165,25 @@
         "countryCode": "GB",
         "isRemote": false,
         "locality": "London"
+      }
+    ]
+  },
+  "New York City or Miami": {
+    "label": "New York, Miami",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Miami",
+        "region": "Florida"
       }
     ]
   },
@@ -15621,6 +17232,18 @@
         "country": "United States",
         "countryCode": "US",
         "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      }
+    ]
+  },
+  "New York City, Hybrid": {
+    "label": "New York, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
         "locality": "New York",
         "region": "New York"
       }
@@ -16379,6 +18002,17 @@
       }
     ]
   },
+  "Prague, Czech Republic": {
+    "label": "Prague, Czech Republic",
+    "addresses": [
+      {
+        "country": "Czech Republic",
+        "countryCode": "CZ",
+        "isRemote": false,
+        "locality": "Prague"
+      }
+    ]
+  },
   "Prague, Czechia (hybrid; remote possible)": {
     "label": "Prague, Czechia",
     "addresses": [
@@ -16398,6 +18032,18 @@
         "countryCode": "IN",
         "isRemote": false,
         "locality": "Pune"
+      }
+    ]
+  },
+  "Pyote, Texas": {
+    "label": "Pyote, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Pyote",
+        "region": "Texas"
       }
     ]
   },
@@ -16457,6 +18103,16 @@
       {
         "country": "Finland",
         "countryCode": "FI",
+        "isRemote": true
+      }
+    ]
+  },
+  "Remote - USA": {
+    "label": "United States",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
         "isRemote": true
       }
     ]
@@ -16626,6 +18282,24 @@
         "isRemote": true,
         "locality": "Brooklyn",
         "region": "NY"
+      }
+    ]
+  },
+  "Remote or hubs in NYC or Berlin": {
+    "label": "NY, Berlin",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true,
+        "locality": "Berlin"
       }
     ]
   },
@@ -17143,6 +18817,18 @@
       }
     ]
   },
+  "Seattle, Washington, United States": {
+    "label": "Seattle, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Seattle",
+        "region": "Washington"
+      }
+    ]
+  },
   "Seoul, South Korea": {
     "label": "Seoul, South Korea",
     "addresses": [
@@ -17297,6 +18983,21 @@
       }
     ]
   },
+  "Spain or USA": {
+    "label": "Spain, US",
+    "addresses": [
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": false
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false
+      }
+    ]
+  },
   "Spain, Argentina, Portugal, Brazil": {
     "label": "Spain, Argentina, Portugal, Brazil",
     "addresses": [
@@ -17389,6 +19090,29 @@
         "country": "Switzerland",
         "countryCode": "CH",
         "isRemote": false
+      }
+    ]
+  },
+  "Switzerland (Zurich, Geneva, Lugano)": {
+    "label": "Switzerland",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Zurich"
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Geneva"
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Lugano"
       }
     ]
   },
@@ -17489,6 +19213,17 @@
         "countryCode": "IL",
         "isRemote": true,
         "locality": "Tel Aviv"
+      }
+    ]
+  },
+  "Texas, USA (Remote acceptable)": {
+    "label": "Texas, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "region": "Texas"
       }
     ]
   },
@@ -17596,6 +19331,35 @@
         "country": "United States",
         "countryCode": "US",
         "isRemote": false
+      }
+    ]
+  },
+  "United States - Remote": {
+    "label": "United States",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      }
+    ]
+  },
+  "United States - Remote (Hybrid - NYC or San Francisco Bay Area)": {
+    "label": "NY, SF",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "New York",
+        "region": "New York"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true,
+        "locality": "San Francisco",
+        "region": "California"
       }
     ]
   },
@@ -17855,6 +19619,47 @@
       }
     ]
   },
+  "Washington, D.C. area, United States": {
+    "label": "Washington DC, USA",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Washington",
+        "region": "District of Columbia"
+      }
+    ]
+  },
+  "Yaoundé, Bafoussam, or Maroua/Kaéle, Cameroon": {
+    "label": "Cameroon",
+    "addresses": [
+      {
+        "country": "Cameroon",
+        "countryCode": "CM",
+        "isRemote": false,
+        "locality": "Yaoundé"
+      },
+      {
+        "country": "Cameroon",
+        "countryCode": "CM",
+        "isRemote": false,
+        "locality": "Bafoussam"
+      },
+      {
+        "country": "Cameroon",
+        "countryCode": "CM",
+        "isRemote": false,
+        "locality": "Maroua"
+      },
+      {
+        "country": "Cameroon",
+        "countryCode": "CM",
+        "isRemote": false,
+        "locality": "Kaéle"
+      }
+    ]
+  },
   "Yeouido Park One Tower, 108 Yeouidaero, Yeongdeungpo-gu, Seoul, South Korea": {
     "label": "Seoul, South Korea",
     "addresses": [
@@ -17879,6 +19684,23 @@
       }
     ]
   },
+  "Zug (primary) with regular presence in Vaduz, Switzerland": {
+    "label": "Zug, Vaduz",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Zug"
+      },
+      {
+        "country": "Liechtenstein",
+        "countryCode": "LI",
+        "isRemote": false,
+        "locality": "Vaduz"
+      }
+    ]
+  },
   "Zug, Switzerland": {
     "label": "Zug, Switzerland",
     "addresses": [
@@ -17899,6 +19721,45 @@
         "isRemote": false,
         "locality": "Zug",
         "region": "Zug"
+      }
+    ]
+  },
+  "Zurich": {
+    "label": "Zurich, Switzerland",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Zurich"
+      }
+    ]
+  },
+  "Zurich, Geneva, Switzerland": {
+    "label": "Zurich, Geneva",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Zurich"
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Geneva"
+      }
+    ]
+  },
+  "Zurich, Switzerland": {
+    "label": "Zurich, Switzerland",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Zurich"
       }
     ]
   },

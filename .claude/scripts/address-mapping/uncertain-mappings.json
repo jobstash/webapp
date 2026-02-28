@@ -1,1 +1,281 @@
-{}
+{
+  "[REMOTE] Europe (Remote), USA East Coast": {
+    "label": "Europe, US East Coast",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Europe, USA East Coast": {
+    "label": "Europe, US East Coast",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Fully remote (EU preferred, no sanctioned countries)": {
+    "label": "Europe (preferred)",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote (EU preferred, no sanctioned countries)": {
+    "label": "Europe (preferred)",
+    "addresses": [
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      },
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": true
+      },
+      {
+        "country": "Ireland",
+        "countryCode": "IE",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Remote (Global) — priority hubs: Singapore, Europe; optional offices in Porto and Singapore": {
+    "label": "Singapore, Porto, Europe",
+    "addresses": [
+      {
+        "country": "Singapore",
+        "countryCode": "SG",
+        "isRemote": true
+      },
+      {
+        "country": "Portugal",
+        "countryCode": "PT",
+        "isRemote": true,
+        "locality": "Porto"
+      },
+      {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "isRemote": true
+      },
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "isRemote": true
+      },
+      {
+        "country": "France",
+        "countryCode": "FR",
+        "isRemote": true
+      },
+      {
+        "country": "Netherlands",
+        "countryCode": "NL",
+        "isRemote": true
+      }
+    ]
+  },
+  "[REMOTE] Sao Paulo, BR (Remote within LATAM)": {
+    "label": "Sao Paulo, LATAM",
+    "addresses": [
+      {
+        "country": "Brazil",
+        "countryCode": "BR",
+        "isRemote": true,
+        "locality": "São Paulo"
+      },
+      {
+        "country": "Argentina",
+        "countryCode": "AR",
+        "isRemote": true
+      },
+      {
+        "country": "Mexico",
+        "countryCode": "MX",
+        "isRemote": true
+      },
+      {
+        "country": "Colombia",
+        "countryCode": "CO",
+        "isRemote": true
+      }
+    ]
+  },
+  "Bouaké Vallée du Bandama Côte d'Ivoire": {
+    "label": "Bouake, Cote d'Ivoire",
+    "addresses": [
+      {
+        "country": "Côte d'Ivoire",
+        "countryCode": "CI",
+        "isRemote": false,
+        "locality": "Bouaké",
+        "region": "Vallée du Bandama"
+      }
+    ]
+  },
+  "Flexible within the US. Miami San Francisco or New York preferred.": {
+    "label": "Miami, SF, NY",
+    "addresses": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "Miami",
+        "region": "Florida"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "San Francisco",
+        "region": "California"
+      },
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "isRemote": false,
+        "locality": "New York",
+        "region": "New York"
+      }
+    ]
+  },
+  "Lugano": {
+    "label": "Lugano, Switzerland",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Lugano"
+      }
+    ]
+  },
+  "Madrid, Spain (also open to full remote from Spain)": {
+    "label": "Madrid, Spain",
+    "addresses": [
+      {
+        "country": "Spain",
+        "countryCode": "ES",
+        "isRemote": true,
+        "locality": "Madrid"
+      }
+    ]
+  },
+  "Zug (primary) with regular presence in Vaduz, Switzerland": {
+    "label": "Zug, Vaduz",
+    "addresses": [
+      {
+        "country": "Switzerland",
+        "countryCode": "CH",
+        "isRemote": false,
+        "locality": "Zug"
+      },
+      {
+        "country": "Liechtenstein",
+        "countryCode": "LI",
+        "isRemote": false,
+        "locality": "Vaduz"
+      }
+    ]
+  }
+}
