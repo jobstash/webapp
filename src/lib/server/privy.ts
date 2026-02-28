@@ -20,3 +20,9 @@ const isPrivyWallet = (a: { type: string }): a is WalletWithMetadata =>
 
 export const extractEmbeddedWallet = (user: User): string | undefined =>
   user.linkedAccounts?.find(isPrivyWallet)?.address;
+
+export const extractExternalWallets = (user: User): WalletWithMetadata[] =>
+  (user.linkedAccounts ?? []).filter(
+    (a): a is WalletWithMetadata =>
+      a.type === 'wallet' && a.walletClientType !== 'privy',
+  );

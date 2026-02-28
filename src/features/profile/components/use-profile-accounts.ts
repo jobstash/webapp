@@ -7,16 +7,13 @@ import { useProgress } from '@bprogress/next';
 import { useRouter } from '@bprogress/next/app';
 import { GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 
-import type { User, WalletWithMetadata } from '@privy-io/react-auth';
-import { useLinkAccount, usePrivy } from '@privy-io/react-auth';
+import { useLinkAccount } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
 
 // TODO: Farcaster temporarily hidden
 // import { FarcasterIcon } from '@/components/svg/farcaster-icon';
 import { GoogleIcon } from '@/components/svg/google-icon';
-import { useSession } from '@/features/auth/hooks/use-session';
 import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
-import type { LinkedAccount } from '@/features/profile/schemas';
 import {
   LINKED_ACCOUNTS_QUERY_KEY,
   useLinkedAccounts,
@@ -49,66 +46,10 @@ const PROVIDER_MAP: Record<string, string> = {
   email: 'email',
 };
 
-/** Derives LinkedAccount[] from Privy's client User object (mirrors API route logic). */
-const privyUserToLinkedAccounts = (user: User): LinkedAccount[] => {
-  const accounts: LinkedAccount[] = [];
-
-  if (user.google) {
-    accounts.push({
-      type: 'google_oauth',
-      email: user.google.email ?? null,
-      username: null,
-    });
-  }
-
-  if (user.github) {
-    accounts.push({
-      type: 'github_oauth',
-      email: user.github.email ?? null,
-      username: user.github.username ?? null,
-    });
-  }
-
-  // Include external wallets only (filter out embedded Privy wallet)
-  const isExternalWallet = (
-    a: (typeof user.linkedAccounts)[number],
-  ): a is WalletWithMetadata =>
-    a.type === 'wallet' && a.walletClientType !== 'privy';
-
-  for (const wallet of user.linkedAccounts?.filter(isExternalWallet) ?? []) {
-    accounts.push({
-      type: 'wallet',
-      email: null,
-      username: wallet.address ?? null,
-    });
-  }
-
-  if (user.email) {
-    accounts.push({
-      type: 'email',
-      email: user.email.address ?? null,
-      username: null,
-    });
-  }
-
-  // TODO: Farcaster temporarily hidden
-  // if (user.farcaster) {
-  //   accounts.push({
-  //     type: 'farcaster',
-  //     email: null,
-  //     username: user.farcaster.username ?? null,
-  //   });
-  // }
-
-  return accounts;
-};
-
 export const useProfileAccounts = () => {
   const router = useRouter();
   const { start } = useProgress();
   const { data: linkedAccounts, isPending } = useLinkedAccounts();
-  const { ready, user } = usePrivy();
-  const { isLoggingOut } = useSession();
   const queryClient = useQueryClient();
   const [linkingType, setLinkingType] = useState<string | null>(null);
 
@@ -122,21 +63,6 @@ export const useProfileAccounts = () => {
       setLinkingType(null);
     },
   });
-
-  // Dual-source sync: push Privy's client-side user into React Query cache
-  useEffect(() => {
-    if (!ready || !user || isLoggingOut) return;
-
-    const derived = privyUserToLinkedAccounts(user);
-
-    // Only sync if Privy has accounts (avoids overwriting with empty on initial load)
-    if (derived.length === 0) return;
-
-    queryClient.setQueryData<LinkedAccount[]>(
-      LINKED_ACCOUNTS_QUERY_KEY,
-      derived,
-    );
-  }, [ready, user, isLoggingOut, queryClient]);
 
   // Clear linking state when the linked account appears in cache
   useEffect(() => {
@@ -210,5 +136,5 @@ export const useProfileAccounts = () => {
     return priority(a) - priority(b);
   });
 
-  return { accounts, isPending: isPending && !ready, isLinking: !!linkingType };
+  return { accounts, isPending, isLinking: !!linkingType };
 };

@@ -16,7 +16,7 @@ export const useLoginContent = () => {
 
   const { ready, authenticated } = usePrivy();
   const { loading: isOAuthLoading } = useLoginWithOAuth();
-  const { isSessionReady } = useSession();
+  const { isSessionReady, isWalletError } = useSession();
 
   const redirectTo = searchParams.get('redirect') ?? '/profile/jobs';
 
@@ -25,11 +25,13 @@ export const useLoginContent = () => {
     /[?&]privy_oauth_/.test(window.location.search);
 
   // Show spinner to avoid flashing login UI during auth processing
+  // Stop showing spinner if wallet creation failed (prevents infinite loading)
   const isLoading =
-    !ready || // SDK still initializing, can't determine auth state
-    isOAuthLoading || // Privy is exchanging OAuth code for tokens
-    authenticated || // Already logged in, waiting for session before redirect
-    hasOAuthParams; // First render before useLoginWithOAuth reports loading
+    !isWalletError &&
+    (!ready || // SDK still initializing, can't determine auth state
+      isOAuthLoading || // Privy is exchanging OAuth code for tokens
+      authenticated || // Already logged in, waiting for session before redirect
+      hasOAuthParams); // First render before useLoginWithOAuth reports loading
 
   useEffect(() => {
     if (ready && authenticated && isSessionReady) {
@@ -48,6 +50,7 @@ export const useLoginContent = () => {
   return {
     isLoading,
     isNavigating,
+    isWalletError,
     redirectTo,
     handleBack,
   };

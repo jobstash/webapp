@@ -1,5 +1,6 @@
 'use client';
 
+import { DebugPrivyInfo } from './debug-privy-info';
 import { DeleteAccountDialog } from './delete-account-dialog';
 import { ProfileCard } from './profile-card';
 
@@ -23,6 +24,8 @@ const SettingsRow = ({
 
 export const ProfileSettings = () => (
   <div className='flex flex-col gap-4'>
+    <DebugPrivyInfo />
+
     <ProfileCard
       title='Danger Zone'
       className='border-destructive/30 [&>h2]:text-destructive'

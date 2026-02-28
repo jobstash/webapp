@@ -6,7 +6,12 @@ import { useCreateWallet, usePrivy, useUser } from '@privy-io/react-auth';
 
 type WalletStatus = 'idle' | 'checking' | 'creating' | 'ready' | 'error';
 
-export const useEnsureEmbeddedWallet = (): { isWalletReady: boolean } => {
+export const useEnsureEmbeddedWallet = (): {
+  isWalletReady: boolean;
+  isWalletError: boolean;
+  isWalletCreating: boolean;
+  retryWalletCreation: () => void;
+} => {
   const { ready, authenticated, user } = usePrivy();
   const { refreshUser } = useUser();
   const { createWallet } = useCreateWallet();
@@ -55,5 +60,16 @@ export const useEnsureEmbeddedWallet = (): { isWalletReady: boolean } => {
     void create();
   }, [ready, authenticated, user, createWallet, refreshUser]);
 
-  return { isWalletReady: status === 'ready' };
+  const retryWalletCreation = (): void => {
+    if (status === 'error') {
+      setStatus('idle');
+    }
+  };
+
+  return {
+    isWalletReady: status === 'ready',
+    isWalletError: status === 'error',
+    isWalletCreating: status === 'creating',
+    retryWalletCreation,
+  };
 };
