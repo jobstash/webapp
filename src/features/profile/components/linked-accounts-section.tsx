@@ -100,7 +100,7 @@ export const LinkedAccountsSection = () => {
     <SectionLayout>
       <div className='flex flex-wrap items-center gap-2'>
         {accounts.map((account) => (
-          <AccountPill key={account.type} account={account} />
+          <AccountPill key={account.key} account={account} />
         ))}
       </div>
     </SectionLayout>

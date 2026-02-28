@@ -22,12 +22,10 @@ type MethodConfig = {
   label: string;
 };
 
-const DISABLED_METHODS = new Set<AuthMethod>(['wallet']);
-
 const AUTH_METHODS: MethodConfig[] = [
   { key: 'google', icon: GoogleIcon, label: 'Google' },
   { key: 'github', icon: GithubIcon, label: 'GitHub' },
-  { key: 'wallet', icon: WalletIcon, label: 'Wallet (coming soon)' },
+  { key: 'wallet', icon: WalletIcon, label: 'Wallet' },
   { key: 'email', icon: MailIcon, label: 'Email' },
 ];
 
@@ -100,7 +98,7 @@ export const AuthButtons = () => {
                 size='icon-lg'
                 className='rounded-full'
                 onClick={auth[HANDLERS[key]]}
-                disabled={isLoading || DISABLED_METHODS.has(key)}
+                disabled={isLoading}
               >
                 <Icon className='size-5' />
                 <span className='sr-only'>{label}</span>

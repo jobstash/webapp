@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-import { useLoginWithEmail, useLoginWithOAuth } from '@privy-io/react-auth';
+import {
+  useConnectWallet,
+  useLoginWithEmail,
+  useLoginWithOAuth,
+  useWallets,
+} from '@privy-io/react-auth';
 import { useProgress } from '@bprogress/next';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
@@ -78,8 +83,31 @@ export const useAuthButtons = () => {
     }
   };
 
-  // TODO: Wallet login disabled — causes Privy embedded wallet error modals
-  const handleWallet = (): void => {};
+  const { wallets } = useWallets();
+
+  const { connectWallet } = useConnectWallet({
+    onSuccess: async (result) => {
+      // connectWallet only connects — it doesn't authenticate.
+      // We need to call loginOrLink() to trigger SIWE and set authenticated=true.
+      const address = result?.wallet?.address;
+      const connectedWallet = wallets.find((w) => w.address === address);
+
+      if (connectedWallet) {
+        try {
+          await connectedWallet.loginOrLink();
+          trackEvent(GA_EVENT.LOGIN_COMPLETED, { login_method: 'wallet' });
+        } catch {
+          // loginOrLink failed — user rejected SIWE or wallet error
+        }
+      }
+    },
+  });
+
+  const handleWallet = () => {
+    trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'wallet' });
+    saveAuthMethod('wallet');
+    connectWallet();
+  };
 
   const handleEmail = () => {
     trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'email' });

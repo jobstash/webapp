@@ -7,6 +7,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ELIGIBILITY_KEY } from '@/hooks/use-eligibility';
 
+import { useEnsureEmbeddedWallet } from './use-ensure-embedded-wallet';
+
 interface SessionResponse {
   apiToken: string | null;
   expiresAt: number | null;
@@ -18,6 +20,15 @@ interface SessionResponse {
 const SESSION_KEY = ['session'];
 const STALE_TIME = 5 * 60 * 1000;
 const REFRESH_BUFFER = 15 * 60 * 1000;
+const LOGOUT_KEY = 'jobstash:logout-pending';
+
+// Module-level flag shared across ALL useSession() instances.
+// React state is per-instance, so a single setIsLoggingOut(true) only
+// affects the component that called logout(). Other components keep
+// firing refetch → re-creating the session. This module-level flag
+// ensures every instance sees the logout immediately.
+let logoutPending =
+  typeof window !== 'undefined' && localStorage.getItem(LOGOUT_KEY) === '1';
 
 const EMPTY_SESSION: SessionResponse = {
   apiToken: null,
@@ -56,7 +67,8 @@ export const useSession = () => {
   } = usePrivy();
   const { refreshUser } = useUser();
   const queryClient = useQueryClient();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(() => logoutPending);
+  const { isWalletReady } = useEnsureEmbeddedWallet();
 
   const isAuthenticated = ready && authenticated;
 
@@ -67,7 +79,14 @@ export const useSession = () => {
   } = useQuery({
     queryKey: SESSION_KEY,
     queryFn: async () => {
+      // Hard gate: if ANY instance triggered logout, bail immediately.
+      // This catches races where `enabled` was evaluated before the flag was set.
+      if (logoutPending || localStorage.getItem(LOGOUT_KEY) === '1') {
+        return EMPTY_SESSION;
+      }
+
       const current = await fetchSession();
+
       const isExpiringSoon =
         current.expiresAt !== null &&
         current.expiresAt - Date.now() < REFRESH_BUFFER;
@@ -87,11 +106,14 @@ export const useSession = () => {
       if (!privyToken) throw new Error('No Privy access token');
 
       const refreshed = await createSession(privyToken);
+      logoutPending = false;
+      localStorage.removeItem(LOGOUT_KEY);
+      setIsLoggingOut(false);
       void refreshUser();
       void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
       return refreshed;
     },
-    enabled: !isLoggingOut,
+    enabled: !isLoggingOut && !logoutPending,
     staleTime: STALE_TIME,
     retry: 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
@@ -106,12 +128,32 @@ export const useSession = () => {
 
   const apiToken = session?.apiToken ?? null;
 
+  // Clear the logout flag once Privy confirms it's fully logged out.
+  // Without this, the flag blocks session creation permanently — including
+  // on a subsequent login attempt (deadlock).
   useEffect(() => {
-    if (isAuthenticated && !apiToken && !isLoggingOut) void refetch();
-  }, [isAuthenticated, apiToken, isLoggingOut, refetch]);
+    if (ready && !authenticated && logoutPending) {
+      logoutPending = false;
+      localStorage.removeItem(LOGOUT_KEY);
+      setIsLoggingOut(false);
+    }
+  }, [ready, authenticated]);
+
+  useEffect(() => {
+    if (
+      isAuthenticated &&
+      !apiToken &&
+      !isLoggingOut &&
+      !logoutPending &&
+      isWalletReady
+    )
+      void refetch();
+  }, [isAuthenticated, apiToken, isLoggingOut, isWalletReady, refetch]);
 
   const logout = async (): Promise<void> => {
+    logoutPending = true;
     setIsLoggingOut(true);
+    localStorage.setItem(LOGOUT_KEY, '1');
     queryClient.setQueryData(SESSION_KEY, EMPTY_SESSION);
     queryClient.setQueryData(ELIGIBILITY_KEY, EMPTY_SESSION);
     try {
@@ -130,7 +172,7 @@ export const useSession = () => {
     isAuthenticated,
     isSessionReady: apiToken !== null,
     isLoading: isPending,
-    isLoggingOut,
+    isLoggingOut: isLoggingOut || logoutPending,
     logout,
   };
 };

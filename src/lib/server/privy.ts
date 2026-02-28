@@ -20,11 +20,3 @@ const isPrivyWallet = (a: { type: string }): a is WalletWithMetadata =>
 
 export const extractEmbeddedWallet = (user: User): string | undefined =>
   user.linkedAccounts?.find(isPrivyWallet)?.address;
-
-export const createEmbeddedWallet = async (userId: string): Promise<string> => {
-  const { address } = await privyClient.walletApi.createWallet({
-    chainType: 'ethereum',
-    owner: { userId },
-  });
-  return address;
-};
