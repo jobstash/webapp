@@ -4,13 +4,21 @@ import { LoaderIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { JobstashLogo } from '@/components/jobstash-logo';
+
 import { AuthButtons } from './auth-buttons';
+import { useAuthButtons } from './use-auth-buttons';
 import { useLoginContent } from './use-login-content';
 
 export const LoginContent = () => {
-  const { isLoading, isNavigating, redirectTo, handleBack } = useLoginContent();
+  const {
+    isLoading: isContentLoading,
+    isNavigating,
+    redirectTo,
+    handleBack,
+  } = useLoginContent();
+  const auth = useAuthButtons({ redirectTo });
 
-  if (isLoading) {
+  if (isContentLoading || auth.isLoading) {
     return (
       <div className='flex h-dvh flex-col items-center justify-center bg-background'>
         <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
@@ -42,7 +50,7 @@ export const LoginContent = () => {
           </p>
         </div>
 
-        <AuthButtons />
+        <AuthButtons {...auth} />
 
         <button
           type='button'

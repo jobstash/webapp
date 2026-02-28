@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/tooltip';
 import { GoogleIcon } from '@/components/svg/google-icon';
 
-import { type AuthMethod, useAuthButtons } from './use-auth-buttons';
+import type { AuthButtonsState, AuthMethod } from './use-auth-buttons';
 import { EmailLoginDialog } from './email-login-dialog';
 
 type MethodConfig = {
@@ -39,8 +39,7 @@ const HANDLERS: Record<
   email: 'handleEmail',
 };
 
-export const AuthButtons = () => {
-  const auth = useAuthButtons();
+export const AuthButtons = (auth: AuthButtonsState) => {
   const {
     isLoading,
     preferredMethod,

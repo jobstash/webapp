@@ -2,13 +2,19 @@ import { useState } from 'react';
 
 import {
   useConnectWallet,
+  useCreateWallet,
   useLoginWithEmail,
   useLoginWithOAuth,
+  usePrivy,
   useWallets,
 } from '@privy-io/react-auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@bprogress/next/app';
 import { useProgress } from '@bprogress/next';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
+import { SESSION_KEY } from '@/features/auth/constants';
+import { createSession } from '@/features/auth/lib/create-session';
 
 export type AuthMethod = 'google' | 'github' | 'wallet' | 'email';
 export type EmailStep = 'idle' | 'entering-email' | 'code-sent';
@@ -36,18 +42,55 @@ const saveAuthMethod = (method: AuthMethod): void => {
   localStorage.setItem(STORAGE_KEY, method);
 };
 
-export const useAuthButtons = () => {
+export const useAuthButtons = ({ redirectTo }: { redirectTo: string }) => {
   const { start } = useProgress();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+  const { createWallet } = useCreateWallet();
+
   const [isLoading, setIsLoading] = useState(false);
   const [preferredMethod] = useState(getLastAuthMethod);
   const [emailStep, setEmailStep] = useState<EmailStep>('idle');
   const [emailAddress, setEmailAddress] = useState('');
 
-  const { initOAuth } = useLoginWithOAuth({
+  const postLogin = async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      // Wallet must exist before session creation (API returns 422 without it).
+      // Retry with backoff — SDK state may still be settling after OAuth.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          await createWallet();
+          break;
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (msg.includes('already has an embedded wallet')) break;
+          if (attempt < 2)
+            await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+        }
+      }
+
+      // Create server session
+      const privyToken = await getAccessToken();
+      if (!privyToken) throw new Error('No Privy access token');
+
+      const session = await createSession(privyToken);
+      queryClient.setQueryData(SESSION_KEY, session);
+
+      // Redirect
+      router.replace(redirectTo);
+    } catch {
+      setIsLoading(false);
+    }
+  };
+
+  const { initOAuth, loading: isOAuthLoading } = useLoginWithOAuth({
     onComplete: ({ loginMethod }) => {
       trackEvent(GA_EVENT.LOGIN_COMPLETED, {
         login_method: loginMethod ?? 'google',
       });
+      void postLogin();
     },
   });
 
@@ -56,6 +99,7 @@ export const useAuthButtons = () => {
       trackEvent(GA_EVENT.LOGIN_COMPLETED, {
         login_method: loginMethod ?? 'email',
       });
+      void postLogin();
     },
   });
 
@@ -87,8 +131,6 @@ export const useAuthButtons = () => {
 
   const { connectWallet } = useConnectWallet({
     onSuccess: async (result) => {
-      // connectWallet only connects — it doesn't authenticate.
-      // We need to call loginOrLink() to trigger SIWE and set authenticated=true.
       const address = result?.wallet?.address;
       const connectedWallet = wallets.find((w) => w.address === address);
 
@@ -96,6 +138,7 @@ export const useAuthButtons = () => {
         try {
           await connectedWallet.loginOrLink();
           trackEvent(GA_EVENT.LOGIN_COMPLETED, { login_method: 'wallet' });
+          await postLogin();
         } catch {
           // loginOrLink failed — user rejected SIWE or wallet error
         }
@@ -131,7 +174,7 @@ export const useAuthButtons = () => {
     setIsLoading(true);
     try {
       await loginWithCode({ code });
-      // on success: Privy sets authenticated=true → use-login-content redirects
+      // onComplete callback handles postLogin
     } catch {
       // Privy state holds error
     }
@@ -141,7 +184,7 @@ export const useAuthButtons = () => {
   const handleEmailBack = () => setEmailStep('idle');
 
   return {
-    isLoading,
+    isLoading: isLoading || isOAuthLoading,
     preferredMethod,
     emailStep,
     emailAddress,
@@ -154,3 +197,5 @@ export const useAuthButtons = () => {
     handleEmailBack,
   };
 };
+
+export type AuthButtonsState = ReturnType<typeof useAuthButtons>;

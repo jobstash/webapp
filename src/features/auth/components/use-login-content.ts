@@ -1,22 +1,18 @@
 'use client';
 
-import { useEffect, useTransition } from 'react';
+import { useTransition } from 'react';
 
 import { useRouter } from '@bprogress/next/app';
 import { useSearchParams } from 'next/navigation';
 
-import { useLoginWithOAuth, usePrivy } from '@privy-io/react-auth';
-
-import { useSession } from '@/features/auth/hooks/use-session';
+import { usePrivy } from '@privy-io/react-auth';
 
 export const useLoginContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isNavigating, startTransition] = useTransition();
 
-  const { ready, authenticated } = usePrivy();
-  const { loading: isOAuthLoading } = useLoginWithOAuth();
-  const { isSessionReady, isWalletError } = useSession();
+  const { ready } = usePrivy();
 
   const redirectTo = searchParams.get('redirect') ?? '/profile/jobs';
 
@@ -24,22 +20,10 @@ export const useLoginContent = () => {
     typeof window !== 'undefined' &&
     /[?&]privy_oauth_/.test(window.location.search);
 
-  // Show spinner to avoid flashing login UI during auth processing
-  // Stop showing spinner if wallet creation failed (prevents infinite loading)
-  const isLoading =
-    !isWalletError &&
-    (!ready || // SDK still initializing, can't determine auth state
-      isOAuthLoading || // Privy is exchanging OAuth code for tokens
-      authenticated || // Already logged in, waiting for session before redirect
-      hasOAuthParams); // First render before useLoginWithOAuth reports loading
-
-  useEffect(() => {
-    if (ready && authenticated && isSessionReady) {
-      startTransition(() => {
-        router.replace(redirectTo);
-      });
-    }
-  }, [ready, authenticated, isSessionReady, redirectTo, router]);
+  // Show spinner during SDK init or while OAuth params are in the URL.
+  // Once useAuthButtons mounts (always, via LoginContent), its isLoading
+  // covers the postLogin phase and Privy's own OAuth loading state.
+  const isLoading = !ready || hasOAuthParams;
 
   const handleBack = () => {
     startTransition(() => {
@@ -50,7 +34,6 @@ export const useLoginContent = () => {
   return {
     isLoading,
     isNavigating,
-    isWalletError,
     redirectTo,
     handleBack,
   };
