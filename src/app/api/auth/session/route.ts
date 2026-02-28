@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
-import { getPrivyUser, verifyPrivyToken } from '@/lib/server/privy';
+import type { User } from '@privy-io/server-auth';
+
+import {
+  createEmbeddedWallet,
+  extractEmbeddedWallet,
+  getPrivyUser,
+  verifyPrivyToken,
+} from '@/lib/server/privy';
 import { getSession } from '@/lib/server/session';
 import { getDisplayName } from '@/features/auth/server/get-display-name';
 
@@ -25,6 +32,7 @@ const toSessionPayload = (session: {
 const checkWalletResponseSchema = z.object({
   token: z.string().min(1),
   cryptoNative: z.boolean(),
+  permissions: z.array(z.string()).min(1),
 });
 
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
@@ -48,6 +56,32 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     return NextResponse.json({ error: 'Invalid Privy token' }, { status: 401 });
   }
 
+  let privyUser: User;
+  try {
+    privyUser = await getPrivyUser(privyClaims.userId);
+  } catch (error) {
+    console.error('[POST /api/auth/session] getPrivyUser failed:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch user' },
+      { status: 502 },
+    );
+  }
+
+  // Ensure embedded wallet exists before calling MW
+  let embeddedWallet = extractEmbeddedWallet(privyUser);
+  if (!embeddedWallet) {
+    try {
+      embeddedWallet = await createEmbeddedWallet(privyClaims.userId);
+    } catch (error) {
+      console.error('[POST /api/auth/session] Wallet creation failed:', error);
+      return NextResponse.json(
+        { error: 'Failed to create wallet. Please try again.' },
+        { status: 503 },
+      );
+    }
+  }
+
+  // Now call MW — wallet is guaranteed to exist
   let res: Response;
   try {
     res = await fetch(`${clientEnv.MW_URL}/privy/check-wallet`, {
@@ -95,10 +129,9 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   let identity: { displayName: string; identityType: string } | null = null;
   try {
-    const privyUser = await getPrivyUser(privyClaims.userId);
     identity = getDisplayName(privyUser, loginMethod);
   } catch (error) {
-    console.error('[POST /api/auth/session] getPrivyUser failed:', error);
+    console.error('[POST /api/auth/session] getDisplayName failed:', error);
   }
 
   const session = await getSession();

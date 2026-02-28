@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { usePrivy } from '@privy-io/react-auth';
+import { usePrivy, useUser } from '@privy-io/react-auth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ELIGIBILITY_KEY } from '@/hooks/use-eligibility';
@@ -54,6 +54,7 @@ export const useSession = () => {
     getAccessToken,
     logout: privyLogout,
   } = usePrivy();
+  const { refreshUser } = useUser();
   const queryClient = useQueryClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -86,6 +87,7 @@ export const useSession = () => {
       if (!privyToken) throw new Error('No Privy access token');
 
       const refreshed = await createSession(privyToken);
+      void refreshUser();
       void queryClient.invalidateQueries({ queryKey: ELIGIBILITY_KEY });
       return refreshed;
     },

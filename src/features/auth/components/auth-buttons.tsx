@@ -2,7 +2,7 @@
 
 import type { ComponentType } from 'react';
 
-import { GithubIcon, MailIcon } from 'lucide-react';
+import { GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -22,18 +22,22 @@ type MethodConfig = {
   label: string;
 };
 
+const DISABLED_METHODS = new Set<AuthMethod>(['wallet']);
+
 const AUTH_METHODS: MethodConfig[] = [
   { key: 'google', icon: GoogleIcon, label: 'Google' },
   { key: 'github', icon: GithubIcon, label: 'GitHub' },
+  { key: 'wallet', icon: WalletIcon, label: 'Wallet (coming soon)' },
   { key: 'email', icon: MailIcon, label: 'Email' },
 ];
 
 const HANDLERS: Record<
   AuthMethod,
-  'handleGoogle' | 'handleGithub' | 'handleEmail'
+  'handleGoogle' | 'handleGithub' | 'handleWallet' | 'handleEmail'
 > = {
   google: 'handleGoogle',
   github: 'handleGithub',
+  wallet: 'handleWallet',
   email: 'handleEmail',
 };
 
@@ -96,7 +100,7 @@ export const AuthButtons = () => {
                 size='icon-lg'
                 className='rounded-full'
                 onClick={auth[HANDLERS[key]]}
-                disabled={isLoading}
+                disabled={isLoading || DISABLED_METHODS.has(key)}
               >
                 <Icon className='size-5' />
                 <span className='sr-only'>{label}</span>

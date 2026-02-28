@@ -9,7 +9,7 @@ export const PrivyClientProvider = ({ children }: React.PropsWithChildren) => {
     <PrivyProvider
       appId={clientEnv.PRIVY_APP_ID}
       config={{
-        loginMethods: ['github', 'google', 'email'],
+        loginMethods: ['wallet', 'github', 'google', 'email'],
         appearance: {
           theme: 'dark',
           accentColor: '#8743FF',

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { PrivyClient } from '@privy-io/server-auth';
+import { PrivyClient, User, WalletWithMetadata } from '@privy-io/server-auth';
 
 import { clientEnv } from '@/lib/env/client';
 import { serverEnv } from '@/lib/env/server';
@@ -14,3 +14,17 @@ export const verifyPrivyToken = (token: string) =>
   privyClient.verifyAuthToken(token);
 
 export const getPrivyUser = (did: string) => privyClient.getUser(did);
+
+const isPrivyWallet = (a: { type: string }): a is WalletWithMetadata =>
+  a.type === 'wallet' && (a as WalletWithMetadata).walletClientType === 'privy';
+
+export const extractEmbeddedWallet = (user: User): string | undefined =>
+  user.linkedAccounts?.find(isPrivyWallet)?.address;
+
+export const createEmbeddedWallet = async (userId: string): Promise<string> => {
+  const { address } = await privyClient.walletApi.createWallet({
+    chainType: 'ethereum',
+    owner: { userId },
+  });
+  return address;
+};
