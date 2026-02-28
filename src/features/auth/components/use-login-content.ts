@@ -16,14 +16,7 @@ export const useLoginContent = () => {
 
   const redirectTo = searchParams.get('redirect') ?? '/profile/jobs';
 
-  const hasOAuthParams =
-    typeof window !== 'undefined' &&
-    /[?&]privy_oauth_/.test(window.location.search);
-
-  // Show spinner during SDK init or while OAuth params are in the URL.
-  // Once useAuthButtons mounts (always, via LoginContent), its isLoading
-  // covers the postLogin phase and Privy's own OAuth loading state.
-  const isLoading = !ready || hasOAuthParams;
+  const isLoading = !ready;
 
   const handleBack = () => {
     startTransition(() => {

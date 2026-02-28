@@ -1,5 +1,7 @@
 'use client';
 
+import { usePrivy } from '@privy-io/react-auth';
+
 import { useSession } from '@/features/auth/hooks/use-session';
 import {
   COMPLETENESS_ITEMS,
@@ -7,7 +9,6 @@ import {
   PROFILE_TIERS,
   type ProfileTier,
 } from '@/features/profile/constants';
-import { useLinkedAccounts } from '@/features/profile/hooks/use-linked-accounts';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
@@ -37,24 +38,25 @@ const getTier = (completedCount: number): ProfileTier => {
 
 export const useProfileCompleteness = (): ProfileCompleteness => {
   const { isSessionReady } = useSession();
+  const { user } = usePrivy();
   const { data: skills, isPending: isSkillsPending } =
     useProfileSkills(isSessionReady);
   const { data: showcase, isPending: isShowcasePending } =
     useProfileShowcase(isSessionReady);
-  const { data: linkedAccounts, isPending: isLinkedAccountsPending } =
-    useLinkedAccounts();
 
-  const isPending =
-    !isSessionReady ||
-    isSkillsPending ||
-    isShowcasePending ||
-    isLinkedAccountsPending;
+  const isPending = !isSessionReady || isSkillsPending || isShowcasePending;
+
+  // Count non-embedded linked accounts from Privy SDK
+  const linkedAccountCount =
+    user?.linkedAccounts.filter(
+      (a) => !(a.type === 'wallet' && a.walletClientType === 'privy'),
+    ).length ?? 0;
 
   const showcaseItems = showcase ?? [];
   const completionMap: Record<string, boolean> = {
     skills: (skills ?? []).length > 0,
     resume: showcaseItems.some((item) => item.label === 'CV'),
-    'linked-accounts': (linkedAccounts ?? []).length > 0,
+    'linked-accounts': linkedAccountCount > 0,
     'manual-links': showcaseItems.some((item) => item.label === 'Linkedin'),
   };
 

@@ -8,6 +8,7 @@ export const PrivyClientProvider = ({ children }: React.PropsWithChildren) => {
   return (
     <PrivyProvider
       appId={clientEnv.PRIVY_APP_ID}
+      clientId={clientEnv.PRIVY_CLIENT_ID}
       config={{
         loginMethods: ['wallet', 'github', 'google', 'email'],
         appearance: {
@@ -16,7 +17,7 @@ export const PrivyClientProvider = ({ children }: React.PropsWithChildren) => {
         },
         embeddedWallets: {
           ethereum: {
-            createOnLogin: 'off',
+            createOnLogin: 'all-users',
           },
         },
       }}

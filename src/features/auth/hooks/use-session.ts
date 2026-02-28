@@ -22,36 +22,19 @@ export const useSession = () => {
   const getAccessTokenRef = useRef(getAccessToken);
   getAccessTokenRef.current = getAccessToken;
 
-  // Track whether we ever had a valid session (prevents redirect for first-time visitors)
-  const hadSessionRef = useRef(false);
-
   const { data: session, isPending } = useQuery({
     queryKey: SESSION_KEY,
     queryFn: async (): Promise<SessionData> => {
       // Try fetching existing server session first
       const existing = await fetchSession();
-      if (existing.apiToken) {
-        hadSessionRef.current = true;
-        return existing;
-      }
+      if (existing.apiToken) return existing;
 
-      // No server session — try creating one from Privy token.
-      // This can fail (e.g. 422 if wallet not created yet), so fall back
-      // to the empty session rather than throwing into react-query retry.
+      // No server session — try creating one from Privy token (silent renewal)
       const privyToken = await getAccessTokenRef.current();
-
-      // Session expired + Privy desynced + previously had a session → unrecoverable
-      if (!privyToken && hadSessionRef.current) {
-        window.location.href = '/login';
-        return existing;
-      }
-
       if (!privyToken) return existing;
 
       try {
-        const created = await createSession(privyToken);
-        if (created.apiToken) hadSessionRef.current = true;
-        return created;
+        return await createSession(privyToken);
       } catch {
         return existing;
       }

@@ -1,12 +1,20 @@
 'use client';
 
-import { LoaderIcon } from 'lucide-react';
+import { useState } from 'react';
+
+import { useRouter } from '@bprogress/next/app';
+import { LoaderIcon, LogInIcon } from 'lucide-react';
+
+import { useLogin, usePrivy } from '@privy-io/react-auth';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { cn } from '@/lib/utils';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
+import { Button } from '@/components/ui/button';
 import { JobstashLogo } from '@/components/jobstash-logo';
+import { SESSION_KEY } from '@/features/auth/constants';
+import { createSession } from '@/features/auth/lib/create-session';
 
-import { AuthButtons } from './auth-buttons';
-import { useAuthButtons } from './use-auth-buttons';
 import { useLoginContent } from './use-login-content';
 
 export const LoginContent = () => {
@@ -16,9 +24,40 @@ export const LoginContent = () => {
     redirectTo,
     handleBack,
   } = useLoginContent();
-  const auth = useAuthButtons({ redirectTo });
 
-  if (isContentLoading || auth.isLoading) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const { login } = useLogin({
+    onComplete: async ({ wasAlreadyAuthenticated, loginMethod }) => {
+      if (wasAlreadyAuthenticated) return;
+
+      setIsLoggingIn(true);
+
+      try {
+        trackEvent(GA_EVENT.LOGIN_COMPLETED, {
+          login_method: loginMethod ?? 'unknown',
+        });
+
+        const privyToken = await getAccessToken();
+        if (!privyToken) throw new Error('No Privy access token');
+
+        const session = await createSession(privyToken, loginMethod);
+        queryClient.setQueryData(SESSION_KEY, session);
+
+        router.replace(redirectTo);
+      } catch {
+        setIsLoggingIn(false);
+      }
+    },
+    onError: () => {
+      setIsLoggingIn(false);
+    },
+  });
+
+  if (isContentLoading || isLoggingIn) {
     return (
       <div className='flex h-dvh flex-col items-center justify-center bg-background'>
         <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
@@ -50,7 +89,20 @@ export const LoginContent = () => {
           </p>
         </div>
 
-        <AuthButtons {...auth} />
+        <div className='w-fit rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-px'>
+          <Button
+            size='lg'
+            className={cn(
+              'gap-3 rounded-[calc(var(--radius-lg)-1px)]',
+              'bg-sidebar font-semibold text-white',
+              'hover:bg-sidebar/80',
+            )}
+            onClick={() => login()}
+          >
+            <LogInIcon className='size-4' />
+            Sign In
+          </Button>
+        </div>
 
         <button
           type='button'
