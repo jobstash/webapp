@@ -1,40 +1,25 @@
 'use client';
 
-import { usePrivy } from '@privy-io/react-auth';
-
 import { useSession } from '@/features/auth/hooks/use-session';
+import { useLinkedAccounts } from '@/features/profile/hooks/use-linked-accounts';
 
 import { ProfileCard } from './profile-card';
 
 export const DebugPrivyInfo = () => {
-  const { user, ready, authenticated } = usePrivy();
   const session = useSession();
+  const { data: linkedAccounts } = useLinkedAccounts();
 
-  const embeddedWallet = user?.linkedAccounts?.find(
-    (a) => a.type === 'wallet' && a.walletClientType === 'privy',
+  const embeddedWallet = linkedAccounts?.find(
+    (a) => a.type === 'embedded_wallet',
   );
 
-  const otherAccounts = user?.linkedAccounts?.filter(
-    (a) => !(a.type === 'wallet' && a.walletClientType === 'privy'),
+  const otherAccounts = linkedAccounts?.filter(
+    (a) => a.type !== 'embedded_wallet',
   );
 
   return (
-    <ProfileCard title='Debug: Privy & Session Info'>
+    <ProfileCard title='Debug: Session Info'>
       <div className='flex flex-col gap-4 font-mono text-xs'>
-        {/* Privy State */}
-        <section>
-          <h3 className='mb-1 text-sm font-semibold text-muted-foreground'>
-            Privy State
-          </h3>
-          <pre className='rounded bg-neutral-900 p-2 break-all whitespace-pre-wrap'>
-            {JSON.stringify(
-              { ready, authenticated, userId: user?.id },
-              null,
-              2,
-            )}
-          </pre>
-        </section>
-
         {/* Embedded Wallet */}
         <section>
           <h3 className='mb-1 text-sm font-semibold text-muted-foreground'>
@@ -47,7 +32,7 @@ export const DebugPrivyInfo = () => {
           </pre>
         </section>
 
-        {/* Other Linked Accounts */}
+        {/* Linked Accounts */}
         <section>
           <h3 className='mb-1 text-sm font-semibold text-muted-foreground'>
             Linked Accounts ({otherAccounts?.length ?? 0})

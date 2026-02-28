@@ -13,6 +13,7 @@ export const linkedAccountSchema = z.object({
     'google_oauth',
     'github_oauth',
     'wallet',
+    'embedded_wallet',
     'email',
     'farcaster',
   ]),
