@@ -11,12 +11,6 @@ import { useLinkAccount, usePrivy } from '@privy-io/react-auth';
 import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 import { LINKED_ACCOUNTS_QUERY_KEY } from '@/features/profile/hooks/use-linked-accounts';
 
-const PROVIDERS = ['github', 'google', 'email'] as const;
-type Provider = (typeof PROVIDERS)[number];
-
-const isValidProvider = (value: string | null): value is Provider =>
-  PROVIDERS.includes(value as Provider);
-
 export const useLinkAccountContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,9 +18,11 @@ export const useLinkAccountContent = () => {
   const isLinkInitiated = useRef(false);
 
   const queryClient = useQueryClient();
-  const { ready, authenticated, user } = usePrivy();
+  const { ready, authenticated } = usePrivy();
 
-  const { linkGithub, linkGoogle, linkEmail } = useLinkAccount({
+  const provider = searchParams.get('provider');
+
+  const { linkEmail } = useLinkAccount({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: LINKED_ACCOUNTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
@@ -39,48 +35,28 @@ export const useLinkAccountContent = () => {
     },
   });
 
-  const linkFnRef = useRef<Record<Provider, () => void>>({
-    github: linkGithub,
-    google: linkGoogle,
-    email: linkEmail,
-  });
-  linkFnRef.current = {
-    github: linkGithub,
-    google: linkGoogle,
-    email: linkEmail,
-  };
-
-  const provider = searchParams.get('provider');
-
-  const hasOAuthParams =
-    typeof window !== 'undefined' &&
-    /[?&]privy_oauth_/.test(window.location.search);
-
   useEffect(() => {
     if (!ready) return;
 
-    if (!authenticated) {
+    // Only email uses the /link page for initiation (modal-based, no redirect).
+    // OAuth providers (github, google) are initiated directly from the profile
+    // page via click handlers. If someone lands here for those providers, just
+    // redirect to profile.
+    if (provider !== 'email') {
       router.replace('/profile');
       return;
     }
 
-    if (!isValidProvider(provider)) {
-      router.replace('/profile');
-      return;
-    }
-
-    if (user?.[provider]) {
-      router.replace('/profile');
-      return;
-    }
-
-    if (hasOAuthParams) return;
-
+    if (!authenticated) return;
     if (isLinkInitiated.current) return;
     isLinkInitiated.current = true;
 
-    linkFnRef.current[provider]();
-  }, [ready, authenticated, user, provider, hasOAuthParams, router]);
+    linkEmail();
+
+    return () => {
+      isLinkInitiated.current = false;
+    };
+  }, [ready, authenticated, provider, router, linkEmail]);
 
   const isLoading = !error;
 
