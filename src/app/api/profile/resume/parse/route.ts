@@ -15,6 +15,7 @@ import {
   extractText,
   matchSkills,
   parseResume,
+  parseResumeFromPdf,
   transformAddress,
 } from '@/lib/server/resume-parser';
 
@@ -84,7 +85,17 @@ export const POST = async (request: Request): Promise<Response> => {
     return Response.json({ error: 'Resume is too long' }, { status: 400 });
   }
 
-  const extraction = await parseResume(text);
+  let extraction = await parseResume(text);
+
+  // Fallback: if text extraction returned near-empty content, try vision model
+  if (!extraction.isResume) {
+    const isTextEmpty = text.replace(/\s+/g, '').length < 50;
+    if (isTextEmpty && mimeType === 'application/pdf') {
+      extraction = await parseResumeFromPdf(buffer);
+    }
+  }
+
+  console.log('[resume-parse] result:', JSON.stringify(extraction, null, 2));
 
   if (!extraction.isResume) {
     return Response.json(

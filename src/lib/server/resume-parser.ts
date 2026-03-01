@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { generateObject } from 'ai';
+import { Output, generateObject, generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 
@@ -59,11 +59,14 @@ const resumeExtractionSchema = z.object({
 
 type ResumeExtraction = z.infer<typeof resumeExtractionSchema>;
 
-export const parseResume = async (text: string): Promise<ResumeExtraction> => {
-  const result = await generateObject({
-    model: openai('gpt-4.1-nano'),
-    schema: resumeExtractionSchema,
-    system: `You are a resume parser that extracts structured data from resume text.
+// PDF fallback LLM sometimes echoes platform names as handles (e.g. "GitHub" instead of a real username).
+// Strip socials where the handle matches a social kind name — these are broken extractions, not real profiles.
+const SOCIAL_KIND_NAMES: Set<string> = new Set(socialKindSchema.options);
+
+const filterBrokenSocials = (socials: ResumeExtraction['socials']) =>
+  socials.filter((s) => !SOCIAL_KIND_NAMES.has(s.handle.toLowerCase()));
+
+const SYSTEM_PROMPT = `You are a resume parser that extracts structured data from resume text.
 
 ## Step 1: Validate
 Determine if this document describes a real person's professional background. Set isResume to true if the text contains ANY of these signals:
@@ -82,7 +85,7 @@ If false, return null/empty for all other fields.
 ## Step 2: Extract contact info
 - Full name, email, phone (with country code if present)
 - Location: city, state/province, country, ISO 3166-1 alpha-2 country code
-- Social profiles: GitHub, LinkedIn, Twitter/X, Telegram, Discord, Farcaster, Lens, personal website. Extract handle or URL as-is.
+- Social profiles: GitHub, LinkedIn, Twitter/X, Telegram, Discord, Farcaster, Lens, personal website. Extract the actual handle or profile URL. If the resume only shows a platform name (e.g. "GitHub") without a username, handle, or URL, do NOT include it in socials — only include entries where you can identify the actual handle or profile URL.
 
 ## Step 3: Infer role category
 Read the full resume holistically — summary/objective, job titles, and what the candidate actually built or worked on in their experience bullet points. Determine what kind of professional this person is (e.g. "Frontend Developer", "Full-Stack Developer", "Backend Engineer", "Smart Contract Developer", "DevOps Engineer", "Designer", "Data Engineer"). Set roleCategory accordingly.
@@ -96,11 +99,46 @@ Guidelines:
 - Peripheral skills (mentioned once, tangential to the role) should be excluded. The candidate can always add more skills later.
 - Fewer, high-signal skills are better than an exhaustive list. Aim for around 10 at most.
 
-Return null for fields not found. Return empty arrays for skills/socials if none found.`,
+Return null for fields not found. Return empty arrays for skills/socials if none found.`;
+
+export const parseResume = async (text: string): Promise<ResumeExtraction> => {
+  const result = await generateObject({
+    model: openai('gpt-4.1-nano'),
+    schema: resumeExtractionSchema,
+    system: SYSTEM_PROMPT,
     prompt: text,
   });
 
-  return result.object;
+  return {
+    ...result.object,
+    socials: filterBrokenSocials(result.object.socials),
+  };
+};
+
+export const parseResumeFromPdf = async (
+  buffer: ArrayBuffer,
+): Promise<ResumeExtraction> => {
+  const result = await generateText({
+    model: openai('gpt-4o-mini'),
+    output: Output.object({ schema: resumeExtractionSchema }),
+    system: SYSTEM_PROMPT,
+    messages: [
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'Extract resume data from this PDF.' },
+          {
+            type: 'file',
+            data: new Uint8Array(buffer),
+            mediaType: 'application/pdf',
+          },
+        ],
+      },
+    ],
+  });
+
+  const output = await result.output;
+  return { ...output, socials: filterBrokenSocials(output.socials) };
 };
 
 export const matchSkills = async (
