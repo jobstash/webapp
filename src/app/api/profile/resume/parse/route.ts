@@ -19,7 +19,7 @@ import {
   transformAddress,
 } from '@/lib/server/resume-parser';
 
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const MAX_PAGE_COUNT = 2;
 
 export const POST = async (request: Request): Promise<Response> => {
@@ -50,7 +50,7 @@ export const POST = async (request: Request): Promise<Response> => {
 
   if (file.size > MAX_FILE_SIZE) {
     return Response.json(
-      { error: 'File too large. Maximum size is 1MB' },
+      { error: 'File too large. Maximum size is 3MB' },
       { status: 400 },
     );
   }
