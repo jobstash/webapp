@@ -53,6 +53,7 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
               href={websiteUrl}
               target='_blank'
               rel='noopener noreferrer'
+              aria-label={`Visit ${name} website`}
               className='text-muted-foreground transition-colors hover:text-foreground'
             >
               <ExternalLinkIcon className='size-3.5' />
