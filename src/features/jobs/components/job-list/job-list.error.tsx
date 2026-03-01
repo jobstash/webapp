@@ -1,21 +1,17 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { AppErrorBoundary } from '@/features/error-reporter/app-error-boundary';
 
 interface Props {
   children: ReactNode;
 }
 
-const handleJobListError = (error: unknown): void => {
-  console.error('[JobList]', error);
-};
-
 export const JobListBoundary = ({ children }: Props) => (
-  <ErrorBoundary
+  <AppErrorBoundary
     fallbackRender={({ resetErrorBoundary }) => (
       <div className='flex flex-col items-center justify-center gap-4 py-20 text-center'>
         <AlertCircle className='size-10 text-destructive' />
@@ -29,8 +25,7 @@ export const JobListBoundary = ({ children }: Props) => (
         </Button>
       </div>
     )}
-    onError={handleJobListError}
   >
     {children}
-  </ErrorBoundary>
+  </AppErrorBoundary>
 );

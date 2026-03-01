@@ -1,21 +1,17 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { AppErrorBoundary } from '@/features/error-reporter/app-error-boundary';
 
 interface Props {
   children: ReactNode;
 }
 
-const handleProfileError = (error: unknown): void => {
-  console.error('[ProfileErrorBoundary]', error);
-};
-
 export const ProfileErrorBoundary = ({ children }: Props) => (
-  <ErrorBoundary
+  <AppErrorBoundary
     fallbackRender={({ resetErrorBoundary }) => (
       <div className='flex flex-col items-center justify-center gap-4 py-20 text-center'>
         <AlertCircle className='size-10 text-destructive' />
@@ -31,8 +27,7 @@ export const ProfileErrorBoundary = ({ children }: Props) => (
         </Button>
       </div>
     )}
-    onError={handleProfileError}
   >
     {children}
-  </ErrorBoundary>
+  </AppErrorBoundary>
 );
