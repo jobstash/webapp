@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import withBundleAnalyzer from '@next/bundle-analyzer';
 
 import packageJson from './package.json';
 
@@ -32,4 +33,8 @@ const nextConfig: NextConfig = {
   ],
 };
 
-export default nextConfig;
+const analyze = withBundleAnalyzer({
+  enabled: process.env.ANALYZE_BUNDLE === 'true',
+});
+
+export default analyze(nextConfig);
