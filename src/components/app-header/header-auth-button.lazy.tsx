@@ -2,12 +2,12 @@
 
 import dynamic from 'next/dynamic';
 
-import { Skeleton } from '@/components/ui/skeleton';
+const AUTH_BUTTON_PLACEHOLDER = <div className='h-9 min-w-[4.5rem]' />;
 
 export const HeaderAuthButton = dynamic(
   () => import('./header-auth-button').then((mod) => mod.HeaderAuthButton),
   {
     ssr: false,
-    loading: () => <Skeleton className='h-10 w-32 rounded-lg lg:w-40' />,
+    loading: () => AUTH_BUTTON_PLACEHOLDER,
   },
 );
