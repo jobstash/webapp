@@ -15,10 +15,11 @@ import {
   extractText,
   matchSkills,
   parseResume,
+  parseResumeFromPdf,
   transformAddress,
 } from '@/lib/server/resume-parser';
 
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const MAX_PAGE_COUNT = 2;
 
 export const POST = async (request: Request): Promise<Response> => {
@@ -49,7 +50,7 @@ export const POST = async (request: Request): Promise<Response> => {
 
   if (file.size > MAX_FILE_SIZE) {
     return Response.json(
-      { error: 'File too large. Maximum size is 1MB' },
+      { error: 'File too large. Maximum size is 3MB' },
       { status: 400 },
     );
   }
@@ -84,7 +85,15 @@ export const POST = async (request: Request): Promise<Response> => {
     return Response.json({ error: 'Resume is too long' }, { status: 400 });
   }
 
-  const extraction = await parseResume(text);
+  let extraction = await parseResume(text);
+
+  // Fallback: if text extraction returned near-empty content, try vision model
+  if (!extraction.isResume) {
+    const isTextEmpty = text.replace(/\s+/g, '').length < 50;
+    if (isTextEmpty && mimeType === 'application/pdf') {
+      extraction = await parseResumeFromPdf(buffer);
+    }
+  }
 
   if (!extraction.isResume) {
     return Response.json(

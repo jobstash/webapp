@@ -58,7 +58,7 @@ const AccountPill = ({ account }: AccountPillProps) => {
     return (
       <span className={PILL_CONNECTED}>
         <Icon className='size-3.5 text-muted-foreground' />
-        {account.subtitle ?? account.label}
+        {account.subtitle ?? account.connectedLabel}
         <CheckCircle2Icon className='size-3.5 text-emerald-500' />
       </span>
     );

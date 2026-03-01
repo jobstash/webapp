@@ -15,15 +15,40 @@ import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use
 interface AccountConfig {
   type: string;
   label: string;
+  connectedLabel: string;
   icon: ComponentType<{ className?: string }>;
   isEnabled: boolean;
 }
 
 const ACCOUNT_TYPES: AccountConfig[] = [
-  { type: 'google_oauth', label: 'Google', icon: GoogleIcon, isEnabled: true },
-  { type: 'github_oauth', label: 'GitHub', icon: GithubIcon, isEnabled: true },
-  { type: 'email', label: 'Email', icon: MailIcon, isEnabled: true },
-  { type: 'wallet', label: 'Add Wallet', icon: WalletIcon, isEnabled: true },
+  {
+    type: 'google_oauth',
+    label: 'Link Google',
+    connectedLabel: 'Google',
+    icon: GoogleIcon,
+    isEnabled: true,
+  },
+  {
+    type: 'github_oauth',
+    label: 'Link GitHub',
+    connectedLabel: 'GitHub',
+    icon: GithubIcon,
+    isEnabled: true,
+  },
+  {
+    type: 'email',
+    label: 'Link Email',
+    connectedLabel: 'Email',
+    icon: MailIcon,
+    isEnabled: true,
+  },
+  {
+    type: 'wallet',
+    label: 'Link Wallet',
+    connectedLabel: 'Wallet',
+    icon: WalletIcon,
+    isEnabled: true,
+  },
 ];
 
 interface MappedAccount {
