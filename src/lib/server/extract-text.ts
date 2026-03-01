@@ -17,7 +17,7 @@ export const extractText = async (
 ): Promise<ExtractedText> => {
   if (mimeType === 'application/pdf') {
     const pdf = new PDFParse({ data: new Uint8Array(buffer) });
-    const result = await pdf.getText();
+    const result = await pdf.getText({ parseHyperlinks: true });
     return { text: result.text, pageCount: result.total };
   }
 

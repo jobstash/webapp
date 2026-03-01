@@ -95,8 +95,6 @@ export const POST = async (request: Request): Promise<Response> => {
     }
   }
 
-  console.log('[resume-parse] result:', JSON.stringify(extraction, null, 2));
-
   if (!extraction.isResume) {
     return Response.json(
       { error: 'Document does not appear to be a resume' },
