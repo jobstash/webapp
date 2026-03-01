@@ -32,6 +32,19 @@ const ACCEPTED_MIME_TYPES = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ]);
 
+const EXTENSION_TO_MIME: Record<string, string> = {
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+};
+
+/** Use file.type when available, fall back to extension (iOS often reports empty type) */
+const getFileMimeType = (file: File): string => {
+  if (file.type) return file.type;
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+  return EXTENSION_TO_MIME[ext] ?? '';
+};
+
 const USER_ERROR_MESSAGES: Record<string, string> = {
   'Unsupported file type. Accepted: PDF, DOC, DOCX':
     'Please upload a PDF, DOC, or DOCX file.',
@@ -66,7 +79,7 @@ const validateFile = (file: File): string | null => {
     file.name.includes('\\')
   )
     return 'The file name contains invalid characters. Please rename and try again.';
-  if (!ACCEPTED_MIME_TYPES.has(file.type))
+  if (!ACCEPTED_MIME_TYPES.has(getFileMimeType(file)))
     return 'Please upload a PDF, DOC, or DOCX file.';
   if (file.size === 0)
     return 'This file appears to be empty. Please upload your resume.';

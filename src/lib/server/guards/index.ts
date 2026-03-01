@@ -4,7 +4,7 @@ export { getClientIp } from './get-client-ip';
 export { checkOrigin } from './origin-guard';
 export { checkRateLimit } from './rate-limit-guard';
 export { checkFilename } from './filename-guard';
-export { checkMagicBytes } from './magic-bytes-guard';
+export { checkMagicBytes, detectMimeType } from './magic-bytes-guard';
 export {
   computeFileHash,
   getCachedResult,
