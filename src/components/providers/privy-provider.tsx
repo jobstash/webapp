@@ -8,15 +8,19 @@ export const PrivyClientProvider = ({ children }: React.PropsWithChildren) => {
   return (
     <PrivyProvider
       appId={clientEnv.PRIVY_APP_ID}
+      clientId={clientEnv.PRIVY_CLIENT_ID}
       config={{
-        loginMethods: ['github', 'google', 'email'],
+        loginMethodsAndOrder: {
+          primary: ['email', 'github', 'google', 'detected_ethereum_wallets'],
+        },
         appearance: {
           theme: 'dark',
           accentColor: '#8743FF',
+          logo: '/jobstash-logo.png',
         },
         embeddedWallets: {
           ethereum: {
-            createOnLogin: 'off',
+            createOnLogin: 'all-users',
           },
         },
       }}

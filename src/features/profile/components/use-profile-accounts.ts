@@ -3,22 +3,14 @@
 import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 
-import { useProgress } from '@bprogress/next';
-import { useRouter } from '@bprogress/next/app';
 import { GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
 
-import type { User } from '@privy-io/react-auth';
-import { usePrivy } from '@privy-io/react-auth';
+import type { LinkedAccountWithMetadata } from '@privy-io/react-auth';
+import { useLinkAccount, usePrivy } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
 
-// TODO: Farcaster temporarily hidden
-// import { FarcasterIcon } from '@/components/svg/farcaster-icon';
 import { GoogleIcon } from '@/components/svg/google-icon';
-import type { LinkedAccount } from '@/features/profile/schemas';
-import {
-  LINKED_ACCOUNTS_QUERY_KEY,
-  useLinkedAccounts,
-} from '@/features/profile/hooks/use-linked-accounts';
+import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 
 interface AccountConfig {
   type: string;
@@ -31,121 +23,144 @@ const ACCOUNT_TYPES: AccountConfig[] = [
   { type: 'google_oauth', label: 'Google', icon: GoogleIcon, isEnabled: true },
   { type: 'github_oauth', label: 'GitHub', icon: GithubIcon, isEnabled: true },
   { type: 'email', label: 'Email', icon: MailIcon, isEnabled: true },
-  { type: 'wallet', label: 'Wallet', icon: WalletIcon, isEnabled: false },
-  // TODO: Farcaster temporarily hidden
-  // {
-  //   type: 'farcaster',
-  //   label: 'Farcaster',
-  //   icon: FarcasterIcon,
-  //   isEnabled: false,
-  // },
+  { type: 'wallet', label: 'Add Wallet', icon: WalletIcon, isEnabled: true },
 ];
 
-const PROVIDER_MAP: Record<string, string> = {
-  google_oauth: 'google',
-  github_oauth: 'github',
-  email: 'email',
-};
+interface MappedAccount {
+  type: string;
+  display: string | null;
+}
 
-/** Derives LinkedAccount[] from Privy's client User object (mirrors API route logic). */
-const privyUserToLinkedAccounts = (user: User): LinkedAccount[] => {
-  const accounts: LinkedAccount[] = [];
-
-  if (user.google) {
-    accounts.push({
-      type: 'google_oauth',
-      email: user.google.email ?? null,
-      username: null,
-    });
-  }
-
-  if (user.github) {
-    accounts.push({
-      type: 'github_oauth',
-      email: user.github.email ?? null,
-      username: user.github.username ?? null,
-    });
-  }
-
-  if (user.wallet) {
-    accounts.push({
-      type: 'wallet',
-      email: null,
-      username: user.wallet.address ?? null,
-    });
-  }
-
-  if (user.email) {
-    accounts.push({
-      type: 'email',
-      email: user.email.address ?? null,
-      username: null,
-    });
-  }
-
-  // TODO: Farcaster temporarily hidden
-  // if (user.farcaster) {
-  //   accounts.push({
-  //     type: 'farcaster',
-  //     email: null,
-  //     username: user.farcaster.username ?? null,
-  //   });
-  // }
-
-  return accounts;
-};
+const mapPrivyAccounts = (
+  linkedAccounts: LinkedAccountWithMetadata[],
+): MappedAccount[] =>
+  linkedAccounts
+    .filter((account) => {
+      // Filter out embedded wallets (Privy-managed)
+      if (account.type === 'wallet') {
+        return account.walletClientType !== 'privy';
+      }
+      return true;
+    })
+    .map((account): MappedAccount | null => {
+      switch (account.type) {
+        case 'google_oauth':
+          return {
+            type: 'google_oauth',
+            display: account.email ?? account.name ?? null,
+          };
+        case 'github_oauth':
+          return {
+            type: 'github_oauth',
+            display: account.username ?? account.email ?? null,
+          };
+        case 'email':
+          return {
+            type: 'email',
+            display: account.address ?? null,
+          };
+        case 'wallet': {
+          const addr = account.address;
+          return {
+            type: 'wallet',
+            display: addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : null,
+          };
+        }
+        default:
+          return null;
+      }
+    })
+    .filter((a): a is MappedAccount => a !== null);
 
 export const useProfileAccounts = () => {
-  const router = useRouter();
-  const { start } = useProgress();
-  const { data: linkedAccounts, isPending } = useLinkedAccounts();
-  const { ready, user } = usePrivy();
   const queryClient = useQueryClient();
   const [linkingType, setLinkingType] = useState<string | null>(null);
+  const { user, ready, authenticated } = usePrivy();
 
-  // Dual-source sync: push Privy's client-side user into React Query cache
+  const privyAccounts = user?.linkedAccounts ?? [];
+  const mapped = mapPrivyAccounts(privyAccounts);
+
+  const { linkWallet, linkGithub, linkGoogle, linkEmail } = useLinkAccount({
+    onSuccess: () => {
+      setLinkingType(null);
+      queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
+    },
+    onError: () => {
+      setLinkingType(null);
+    },
+  });
+
+  // Clear linking state when the linked account appears
   useEffect(() => {
-    if (!ready || !user) return;
+    if (!linkingType) return;
 
-    const derived = privyUserToLinkedAccounts(user);
-
-    // Only sync if Privy has accounts (avoids overwriting with empty on initial load)
-    if (derived.length === 0) return;
-
-    queryClient.setQueryData<LinkedAccount[]>(
-      LINKED_ACCOUNTS_QUERY_KEY,
-      derived,
-    );
-  }, [ready, user, queryClient]);
-
-  // Clear linking state when the linked account appears in cache
-  useEffect(() => {
-    if (!linkingType || !linkedAccounts) return;
-
-    const isNowLinked = linkedAccounts.some((a) => a.type === linkingType);
+    const isNowLinked = mapped.some((a) => a.type === linkingType);
     if (isNowLinked) {
       setLinkingType(null);
     }
-  }, [linkingType, linkedAccounts]);
+  }, [linkingType, mapped]);
 
-  const accounts = ACCOUNT_TYPES.map((account) => {
-    const linked = linkedAccounts?.find((a) => a.type === account.type);
+  // Build account items
+  const connectedWallets = mapped.filter((a) => a.type === 'wallet');
 
-    return {
-      ...account,
-      isConnected: !!linked,
-      isLinking: linkingType === account.type,
-      subtitle: linked ? (linked.username ?? linked.email ?? null) : null,
-      onLink: () => {
-        const provider = PROVIDER_MAP[account.type];
-        if (!provider) return;
-        setLinkingType(account.type);
-        start();
-        router.push(`/link?provider=${provider}`);
+  const oauthLinkFns: Record<string, (() => void) | undefined> = {
+    github_oauth: linkGithub,
+    google_oauth: linkGoogle,
+  };
+
+  const accounts = ACCOUNT_TYPES.flatMap((account) => {
+    if (account.type === 'wallet') {
+      const walletPills = connectedWallets.map((w) => ({
+        ...account,
+        key: `wallet-${w.display}`,
+        isConnected: true,
+        isLinking: false,
+        subtitle: w.display,
+        onLink: () => {},
+      }));
+
+      const linkPill = {
+        ...account,
+        key: 'wallet-link',
+        isConnected: false,
+        isLinking: linkingType === 'wallet',
+        subtitle: null,
+        onLink: () => {
+          setLinkingType('wallet');
+          linkWallet();
+        },
+      };
+
+      return [...walletPills, linkPill];
+    }
+
+    const linked = mapped.find((a) => a.type === account.type);
+
+    return [
+      {
+        ...account,
+        key: account.type,
+        isConnected: !!linked,
+        isLinking: linkingType === account.type,
+        subtitle: linked?.display ?? null,
+        onLink: () => {
+          setLinkingType(account.type);
+
+          const linkFn = oauthLinkFns[account.type];
+          if (linkFn) {
+            linkFn();
+            return;
+          }
+
+          // Email: Privy opens modal in-place
+          if (account.type === 'email') {
+            linkEmail();
+          }
+        },
       },
-    };
+    ];
   }).sort((a, b) => {
-    const priority = (item: typeof a) => {
+    const priority = (item: typeof a): number => {
       if (!item.isEnabled) return 2;
       if (item.isConnected) return 0;
       return 1;
@@ -153,5 +168,7 @@ export const useProfileAccounts = () => {
     return priority(a) - priority(b);
   });
 
-  return { accounts, isPending: isPending && !ready, isLinking: !!linkingType };
+  const isPending = !ready || (authenticated && !user);
+
+  return { accounts, isPending, isLinking: !!linkingType };
 };

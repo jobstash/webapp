@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
-import { getPrivyUser, verifyPrivyToken } from '@/lib/server/privy';
+import type { User } from '@privy-io/server-auth';
+
+import {
+  extractEmbeddedWallet,
+  getPrivyUser,
+  verifyPrivyToken,
+} from '@/lib/server/privy';
 import { getSession } from '@/lib/server/session';
 import { getDisplayName } from '@/features/auth/server/get-display-name';
 
@@ -25,6 +31,7 @@ const toSessionPayload = (session: {
 const checkWalletResponseSchema = z.object({
   token: z.string().min(1),
   cryptoNative: z.boolean(),
+  permissions: z.array(z.string()).min(1),
 });
 
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
@@ -48,13 +55,32 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     return NextResponse.json({ error: 'Invalid Privy token' }, { status: 401 });
   }
 
+  let privyUser: User;
+  try {
+    privyUser = await getPrivyUser(privyClaims.userId);
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to fetch user' },
+      { status: 502 },
+    );
+  }
+
+  // Verify embedded wallet exists (created client-side by useEnsureEmbeddedWallet)
+  const embeddedWallet = extractEmbeddedWallet(privyUser);
+  if (!embeddedWallet) {
+    return NextResponse.json(
+      { error: 'Embedded wallet not found. Please try logging in again.' },
+      { status: 422 },
+    );
+  }
+
+  const mwUrl = `${clientEnv.MW_URL}/privy/check-wallet`;
   let res: Response;
   try {
-    res = await fetch(`${clientEnv.MW_URL}/privy/check-wallet`, {
+    res = await fetch(mwUrl, {
       headers: { Authorization: `Bearer ${privyToken}` },
     });
-  } catch (error) {
-    console.error('[POST /api/auth/session] Backend connection failed:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to connect to backend' },
       { status: 502 },
@@ -62,9 +88,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   }
 
   if (!res.ok) {
-    console.error(
-      `[POST /api/auth/session] Backend returned ${String(res.status)}`,
-    );
     return NextResponse.json(
       { error: 'Token exchange failed' },
       { status: res.status >= 500 ? 502 : res.status },
@@ -83,10 +106,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   const parsed = checkWalletResponseSchema.safeParse(json);
   if (!parsed.success) {
-    console.error(
-      '[POST /api/auth/session] Invalid backend response:',
-      parsed.error.flatten(),
-    );
     return NextResponse.json(
       { error: 'Invalid response format from backend' },
       { status: 502 },
@@ -95,10 +114,9 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   let identity: { displayName: string; identityType: string } | null = null;
   try {
-    const privyUser = await getPrivyUser(privyClaims.userId);
     identity = getDisplayName(privyUser, loginMethod);
-  } catch (error) {
-    console.error('[POST /api/auth/session] getPrivyUser failed:', error);
+  } catch {
+    // Display name resolution is non-critical
   }
 
   const session = await getSession();

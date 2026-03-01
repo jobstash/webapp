@@ -2,6 +2,8 @@ import 'server-only';
 
 import type { User } from '@privy-io/server-auth';
 
+import { extractExternalWallets } from '@/lib/server/privy';
+
 export type IdentityType = 'github' | 'google' | 'email' | 'wallet';
 
 interface DisplayIdentity {
@@ -25,11 +27,14 @@ const resolveIdentity = (
   if (method === 'email' && user.email?.address) {
     return { displayName: user.email.address, identityType: 'email' };
   }
-  if (method === 'wallet' && user.wallet?.address) {
-    return {
-      displayName: truncateAddress(user.wallet.address),
-      identityType: 'wallet',
-    };
+  if (method === 'wallet') {
+    const externalWallet = extractExternalWallets(user)[0]?.address;
+    if (externalWallet) {
+      return {
+        displayName: truncateAddress(externalWallet),
+        identityType: 'wallet',
+      };
+    }
   }
   return null;
 };

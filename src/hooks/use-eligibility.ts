@@ -2,25 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-interface EligibilityResponse {
-  apiToken: string | null;
-  isExpert: boolean | null;
-  displayName: string | null;
-  identityType: string | null;
-}
-
-export const ELIGIBILITY_KEY = ['session-status'];
-
-const fetchEligibility = async (): Promise<EligibilityResponse> => {
-  const res = await fetch('/api/auth/session');
-  if (!res.ok) throw new Error(`GET /api/auth/session failed: ${res.status}`);
-  return (await res.json()) as EligibilityResponse;
-};
+import { SESSION_KEY, fetchSession } from '@/features/auth/constants';
 
 export const useEligibility = () => {
   const { data, isPending } = useQuery({
-    queryKey: ELIGIBILITY_KEY,
-    queryFn: fetchEligibility,
+    queryKey: SESSION_KEY,
+    queryFn: fetchSession,
     staleTime: 5 * 60 * 1000,
   });
 

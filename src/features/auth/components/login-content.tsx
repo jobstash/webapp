@@ -1,16 +1,72 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
+import { useRouter } from '@bprogress/next/app';
 import { LoaderIcon } from 'lucide-react';
 
+import { useLogin, usePrivy } from '@privy-io/react-auth';
+import { useQueryClient } from '@tanstack/react-query';
+
 import { cn } from '@/lib/utils';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
+import { Button } from '@/components/ui/button';
 import { JobstashLogo } from '@/components/jobstash-logo';
-import { AuthButtons } from './auth-buttons';
+import { SESSION_KEY } from '@/features/auth/constants';
+import { useSession } from '@/features/auth/hooks/use-session';
+import { createSession } from '@/features/auth/lib/create-session';
+
 import { useLoginContent } from './use-login-content';
 
 export const LoginContent = () => {
-  const { isLoading, isNavigating, redirectTo, handleBack } = useLoginContent();
+  const { isNavigating, redirectTo, handleBack } = useLoginContent();
+  const { isAuthenticated, isLoading: isSessionLoading } = useSession();
 
-  if (isLoading) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Redirect when useSession resolves as authenticated
+  // (covers: valid iron-session, OR silent renewal from Privy)
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace(redirectTo);
+    }
+  }, [isAuthenticated, redirectTo, router]);
+
+  const { login } = useLogin({
+    onComplete: async ({ wasAlreadyAuthenticated, loginMethod }) => {
+      // If already authenticated, invalidate session query to trigger
+      // useSession's silent renewal — it will set isAuthenticated,
+      // which triggers the redirect effect above.
+      if (wasAlreadyAuthenticated) {
+        queryClient.invalidateQueries({ queryKey: SESSION_KEY });
+        return;
+      }
+
+      setIsLoggingIn(true);
+
+      try {
+        trackEvent(GA_EVENT.LOGIN_COMPLETED, {
+          login_method: loginMethod ?? 'unknown',
+        });
+
+        const privyToken = await getAccessToken();
+        if (!privyToken) throw new Error('No Privy access token');
+
+        const session = await createSession(privyToken, loginMethod);
+        queryClient.setQueryData(SESSION_KEY, session);
+      } catch {
+        setIsLoggingIn(false);
+      }
+    },
+    onError: () => {
+      setIsLoggingIn(false);
+    },
+  });
+
+  if (isSessionLoading || isAuthenticated || isLoggingIn) {
     return (
       <div className='flex h-dvh flex-col items-center justify-center bg-background'>
         <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
@@ -42,7 +98,19 @@ export const LoginContent = () => {
           </p>
         </div>
 
-        <AuthButtons />
+        <div className='w-48 rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-px'>
+          <Button
+            size='lg'
+            className={cn(
+              'w-full gap-3 rounded-[calc(var(--radius-lg)-1px)]',
+              'bg-sidebar font-semibold text-white',
+              'hover:bg-sidebar/80',
+            )}
+            onClick={() => login()}
+          >
+            Get Started
+          </Button>
+        </div>
 
         <button
           type='button'

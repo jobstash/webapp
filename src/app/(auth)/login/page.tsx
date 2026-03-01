@@ -1,10 +1,19 @@
-import { SessionRedirect } from '@/features/auth/components/session-redirect';
+import { Suspense } from 'react';
+
+import { LoaderIcon } from 'lucide-react';
+
 import { LoginContent } from '@/features/auth/components/login-content';
 
+const LoginFallback = () => (
+  <div className='flex h-dvh flex-col items-center justify-center bg-background'>
+    <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
+  </div>
+);
+
 const LoginPage = () => (
-  <SessionRedirect redirectUrl='/profile/jobs'>
+  <Suspense fallback={<LoginFallback />}>
     <LoginContent />
-  </SessionRedirect>
+  </Suspense>
 );
 
 export default LoginPage;

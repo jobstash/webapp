@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { getPrivyUser } from '@/lib/server/privy';
+import {
+  extractEmbeddedWallet,
+  extractExternalWallets,
+  getPrivyUser,
+} from '@/lib/server/privy';
 import { getSession } from '@/lib/server/session';
 
 const ROUTE_TAG = '[GET /api/profile/linked-accounts]';
@@ -37,11 +41,20 @@ export const GET = async (): Promise<NextResponse> => {
       });
     }
 
-    if (user.wallet) {
+    for (const wallet of extractExternalWallets(user)) {
       data.push({
         type: 'wallet',
         email: null,
-        username: user.wallet.address ?? null,
+        username: wallet.address ?? null,
+      });
+    }
+
+    const embeddedWalletAddress = extractEmbeddedWallet(user);
+    if (embeddedWalletAddress) {
+      data.push({
+        type: 'embedded_wallet',
+        email: null,
+        username: embeddedWalletAddress,
       });
     }
 

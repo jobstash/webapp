@@ -4,6 +4,7 @@ import {
   checkOrigin,
   checkRateLimit,
   computeFileHash,
+  detectMimeType,
   getCachedResult,
   getClientIp,
   runGuards,
@@ -19,12 +20,6 @@ import {
 
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
 const MAX_PAGE_COUNT = 2;
-
-const ACCEPTED_MIME_TYPES = new Set([
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-]);
 
 export const POST = async (request: Request): Promise<Response> => {
   const ip = getClientIp(request);
@@ -48,13 +43,6 @@ export const POST = async (request: Request): Promise<Response> => {
     return Response.json({ error: 'Missing or invalid file' }, { status: 400 });
   }
 
-  if (!ACCEPTED_MIME_TYPES.has(file.type)) {
-    return Response.json(
-      { error: 'Unsupported file type. Accepted: PDF, DOC, DOCX' },
-      { status: 400 },
-    );
-  }
-
   if (file.size === 0) {
     return Response.json({ error: 'File is empty' }, { status: 400 });
   }
@@ -74,6 +62,9 @@ export const POST = async (request: Request): Promise<Response> => {
   const magicCheck = checkMagicBytes(buffer);
   if (magicCheck) return magicCheck;
 
+  // Use magic-bytes-detected MIME (reliable) instead of file.type (empty on iOS)
+  const mimeType = detectMimeType(buffer)!;
+
   const hash = computeFileHash(buffer);
   const cached = getCachedResult(hash);
   if (cached) return cached;
@@ -81,7 +72,7 @@ export const POST = async (request: Request): Promise<Response> => {
   let text: string;
   let pageCount: number;
   try {
-    ({ text, pageCount } = await extractText(buffer.slice(0), file.type));
+    ({ text, pageCount } = await extractText(buffer.slice(0), mimeType));
   } catch {
     return Response.json(
       { error: 'Could not extract text from file' },
@@ -102,7 +93,7 @@ export const POST = async (request: Request): Promise<Response> => {
     );
   }
 
-  const resumeId = await uploadResume(buffer, file.name, file.type);
+  const resumeId = await uploadResume(buffer, file.name, mimeType);
 
   const skills = await matchSkills(extraction.skills);
   const address = transformAddress(extraction.location);

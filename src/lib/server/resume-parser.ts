@@ -18,7 +18,7 @@ const resumeExtractionSchema = z.object({
   isResume: z
     .boolean()
     .describe(
-      'Whether the document is actually a resume/CV. False for random text, jokes, troll content, or non-resume documents.',
+      "Whether the document is a resume/CV. True if it describes a real person's professional background — even if the format is unconventional. Only false for content that is clearly not about a person's career (e.g. articles, receipts, jokes, random text, spam).",
     ),
   name: z.string().nullable().describe('Full name of the candidate'),
   email: z.string().nullable().describe('Email address'),
@@ -66,7 +66,18 @@ export const parseResume = async (text: string): Promise<ResumeExtraction> => {
     system: `You are a resume parser that extracts structured data from resume text.
 
 ## Step 1: Validate
-Determine if this is actually a resume/CV. Set isResume to false for non-resume content (jokes, random text, troll content). If false, return null/empty for all other fields.
+Determine if this document describes a real person's professional background. Set isResume to true if the text contains ANY of these signals:
+- A person's name with contact details (email, phone, LinkedIn, GitHub, etc.)
+- Work experience, job titles, or employment history
+- Technical skills, programming languages, or tools
+- Education, certifications, or training
+- Professional summary or career objective
+
+Resumes come in many formats — traditional, minimal, portfolio-style, narrative, academic CV, single-page, multi-section. Unconventional section names (e.g. "WHOAMI" instead of "Summary") or first-person writing style do NOT disqualify a document.
+
+Only set isResume to false if the document is clearly unrelated to a person's career — for example: articles, blog posts with no personal career info, receipts, jokes, lorem ipsum, spam, or completely unrelated content.
+
+If false, return null/empty for all other fields.
 
 ## Step 2: Extract contact info
 - Full name, email, phone (with country code if present)
