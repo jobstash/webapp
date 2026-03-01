@@ -23,7 +23,7 @@ const ACCOUNT_TYPES: AccountConfig[] = [
   { type: 'google_oauth', label: 'Google', icon: GoogleIcon, isEnabled: true },
   { type: 'github_oauth', label: 'GitHub', icon: GithubIcon, isEnabled: true },
   { type: 'email', label: 'Email', icon: MailIcon, isEnabled: true },
-  { type: 'wallet', label: 'Wallet', icon: WalletIcon, isEnabled: true },
+  { type: 'wallet', label: 'Add Wallet', icon: WalletIcon, isEnabled: true },
 ];
 
 interface MappedAccount {
