@@ -29,6 +29,13 @@ const nextConfig: NextConfig = {
         ...config.optimization.splitChunks,
         cacheGroups: {
           ...config.optimization.splitChunks?.cacheGroups,
+          privy: {
+            test: /[\\/]node_modules[\\/](@privy-io|@walletconnect|@coinbase[\\/]wallet-sdk|viem|ox|abitype|@headlessui|styled-components|@noble|multiformats|uint8arrays|@msgpack|blakejs)[\\/]/,
+            name: 'privy-sdk',
+            chunks: 'all',
+            priority: 50,
+            enforce: true,
+          },
           ui: {
             test: /[\\/]src[\\/]components[\\/]ui[\\/]/,
             name: 'ui-components',

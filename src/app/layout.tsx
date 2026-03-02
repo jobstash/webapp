@@ -1,7 +1,7 @@
 import './globals.css';
 
 import type { Metadata, Viewport } from 'next';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import Script from 'next/script';
 
 import { interTight } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
@@ -44,7 +44,25 @@ const RootLayout = ({ children }: Props) => (
       <RootProviders>{children}</RootProviders>
     </body>
     {clientEnv.GA_MEASUREMENT_ID && (
-      <GoogleAnalytics gaId={clientEnv.GA_MEASUREMENT_ID} />
+      <>
+        <Script
+          id='_next-ga-init'
+          strategy='lazyOnload'
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer=window.dataLayer||[];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js',new Date());
+              gtag('config','${clientEnv.GA_MEASUREMENT_ID}');
+            `,
+          }}
+        />
+        <Script
+          id='_next-ga'
+          src={`https://www.googletagmanager.com/gtag/js?id=${clientEnv.GA_MEASUREMENT_ID}`}
+          strategy='lazyOnload'
+        />
+      </>
     )}
   </html>
 );
