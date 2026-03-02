@@ -5,7 +5,7 @@ import { fetchFilterConfigs } from '@/features/filters/server/data';
 
 import { FiltersAsideBoundary } from './filters-aside.error';
 import { FiltersAsideLayout } from './filters-aside.layout';
-import { FiltersAsideClient } from './filters-aside.client';
+import { FiltersAsideClient } from './filters-aside.client.lazy';
 import { FiltersAsideSkeleton } from './filters-aside.skeleton';
 
 interface FiltersAsideProps {
