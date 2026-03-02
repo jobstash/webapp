@@ -12,6 +12,7 @@ const schema = z.object({
   OPENAI_API_KEY: z.string().min(1),
   UPSTASH_REDIS_REST_URL: z.url(),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+  SENTRY_DSN: z.url().optional(),
 });
 
 export const serverEnv = schema.parse({
@@ -24,4 +25,5 @@ export const serverEnv = schema.parse({
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
   UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+  SENTRY_DSN: process.env.SENTRY_DSN,
 });

@@ -1,19 +1,14 @@
 'use client';
 
-import { type ReactNode } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import type { ReactNode } from 'react';
+
+import { AppErrorBoundary } from '@/features/error-reporter/app-error-boundary';
 
 interface Props {
   children: ReactNode;
   fallback: ReactNode;
 }
 
-const handleFilterError = (error: unknown) => {
-  console.error('[FiltersAside] Failed to load filters:', error);
-};
-
 export const FiltersAsideBoundary = ({ children, fallback }: Props) => (
-  <ErrorBoundary fallback={fallback} onError={handleFilterError}>
-    {children}
-  </ErrorBoundary>
+  <AppErrorBoundary fallback={fallback}>{children}</AppErrorBoundary>
 );

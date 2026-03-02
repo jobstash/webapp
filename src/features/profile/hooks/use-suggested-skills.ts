@@ -2,17 +2,19 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { clientEnv } from '@/lib/env/client';
 import { getTagColorIndex } from '@/lib/utils';
-import {
-  popularTagsResponseSchema,
-  type UserSkill,
-} from '@/features/profile/schemas';
+import type { PopularTagItem, UserSkill } from '@/features/profile/schemas';
 
 const LIMIT = 10;
 
+interface TagSuggestionsResponse {
+  items: PopularTagItem[];
+  page: number;
+  hasMore: boolean;
+}
+
 const fetchSuggestedSkills = async (): Promise<UserSkill[]> => {
-  const url = new URL('/search/tags/suggestions', clientEnv.MW_URL);
+  const url = new URL('/api/search/tags/suggestions', window.location.origin);
   url.searchParams.set('q', '');
   url.searchParams.set('page', '1');
   url.searchParams.set('limit', String(LIMIT));
@@ -20,8 +22,7 @@ const fetchSuggestedSkills = async (): Promise<UserSkill[]> => {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Suggested skills fetch failed: ${res.status}`);
 
-  const json: unknown = await res.json();
-  const data = popularTagsResponseSchema.parse(json).data;
+  const data = (await res.json()) as TagSuggestionsResponse;
 
   return data.items.map((tag) => ({
     id: tag.id,

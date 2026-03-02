@@ -2,10 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  type ApplyStatusResponse,
-  applyStatusResponseSchema,
-} from '@/features/jobs/apply-schemas';
+import type { ApplyStatusResponse } from '@/features/jobs/apply-constants';
 import { useEligibility } from '@/hooks/use-eligibility';
 
 export const JOB_APPLY_STATUS_KEY = 'job-apply-status';
@@ -17,8 +14,7 @@ const fetchApplyStatus = async (
   if (!res.ok)
     throw new Error(`GET /api/jobs/apply/status failed: ${res.status}`);
 
-  const json: unknown = await res.json();
-  return applyStatusResponseSchema.parse(json);
+  return (await res.json()) as ApplyStatusResponse;
 };
 
 export const useJobApplyStatus = (shortUUID: string) => {

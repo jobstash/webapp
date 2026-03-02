@@ -2,10 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  type LinkedAccount,
-  linkedAccountsResponseSchema,
-} from '@/features/profile/schemas';
+import type { LinkedAccount } from '@/features/profile/schemas';
 
 export const LINKED_ACCOUNTS_QUERY_KEY = ['linked-accounts'];
 
@@ -20,9 +17,8 @@ const fetchLinkedAccounts = async (): Promise<LinkedAccount[]> => {
   if (!res.ok)
     throw new Error(`GET /api/profile/linked-accounts failed: ${res.status}`);
 
-  const json: unknown = await res.json();
-  const parsed = linkedAccountsResponseSchema.parse(json);
-  return parsed.data;
+  const json = (await res.json()) as { data: LinkedAccount[] };
+  return json.data;
 };
 
 export const useLinkedAccounts = () =>

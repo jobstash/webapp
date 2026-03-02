@@ -7,11 +7,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { SKILL_ERROR_THRESHOLD, getSkillStatus } from '@/lib/constants';
 import { clientEnv } from '@/lib/env/client';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
-import {
-  type PopularTagItem,
-  type Social,
-  type UserSkill,
-  resumeParseResponseSchema,
+import type {
+  PopularTagItem,
+  Social,
+  UserSkill,
 } from '@/features/profile/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
@@ -23,7 +22,7 @@ import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcas
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
 const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx';
-const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_FILENAME_LENGTH = 255;
 
 const ACCEPTED_MIME_TYPES = new Set([
@@ -50,7 +49,7 @@ const USER_ERROR_MESSAGES: Record<string, string> = {
     'Please upload a PDF, DOC, or DOCX file.',
   'File content does not match expected format. Accepted: PDF, DOC, DOCX':
     "This file doesn't appear to be a valid document. Please try a different file.",
-  'File too large. Maximum size is 3MB':
+  'File too large. Maximum size is 5MB':
     'This file is too large. Please upload a smaller file.',
   'Resume is too long':
     'Your resume is too long. Please shorten it and try again.',
@@ -87,6 +86,16 @@ const validateFile = (file: File): string | null => {
     return 'This file is too large. Please upload a smaller file.';
   return null;
 };
+
+interface ResumeParseResponse {
+  resumeId: string;
+  fileName: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  skills: PopularTagItem[];
+  socials: Social[];
+}
 
 const preventAndStop = (e: DragEvent<HTMLDivElement>): void => {
   e.preventDefault();
@@ -200,8 +209,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
         return;
       }
 
-      const json: unknown = await parseRes.json();
-      const parsed = resumeParseResponseSchema.parse(json);
+      const parsed = (await parseRes.json()) as ResumeParseResponse;
 
       setResumeId(parsed.resumeId);
       setResumeEmail(parsed.email);

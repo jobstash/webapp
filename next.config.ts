@@ -1,14 +1,46 @@
 import type { NextConfig } from 'next';
+import withBundleAnalyzer from '@next/bundle-analyzer';
+import { z } from 'zod';
 
 import packageJson from './package.json';
+
+// Validate public env vars at build/dev start (never ships to client bundle)
+z.object({
+  NEXT_PUBLIC_FRONTEND_URL: z.url(),
+  NEXT_PUBLIC_MW_URL: z.url(),
+  NEXT_PUBLIC_PRIVY_APP_ID: z.string().min(1),
+}).parse({
+  NEXT_PUBLIC_FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
+  NEXT_PUBLIC_MW_URL: process.env.NEXT_PUBLIC_MW_URL,
+  NEXT_PUBLIC_PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID,
+});
 
 const nextConfig: NextConfig = {
   output: 'standalone',
   serverExternalPackages: ['pdf-parse'],
+  productionBrowserSourceMaps: !!process.env.SENTRY_AUTH_TOKEN,
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
   reactCompiler: true,
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        ...config.optimization.splitChunks,
+        cacheGroups: {
+          ...config.optimization.splitChunks?.cacheGroups,
+          ui: {
+            test: /[\\/]src[\\/]components[\\/]ui[\\/]/,
+            name: 'ui-components',
+            chunks: 'all',
+            priority: 40,
+            enforce: true,
+          },
+        },
+      };
+    }
+    return config;
+  },
   images: {
     qualities: [25, 50, 75, 100],
     remotePatterns: [
@@ -32,4 +64,8 @@ const nextConfig: NextConfig = {
   ],
 };
 
-export default nextConfig;
+const analyze = withBundleAnalyzer({
+  enabled: process.env.ANALYZE_BUNDLE === 'true',
+});
+
+export default analyze(nextConfig);

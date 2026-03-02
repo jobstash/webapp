@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { type MissingItem } from '@/features/jobs/apply-schemas';
+import type { MissingItem } from '@/features/jobs/apply-constants';
 
 interface EligibilityNudgeDialogProps {
   isOpen: boolean;

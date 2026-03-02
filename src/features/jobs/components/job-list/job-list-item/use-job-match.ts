@@ -1,23 +1,15 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { z } from 'zod';
 
 import { MAX_MATCH_SKILLS } from '@/lib/constants';
-import { nonEmptyStringSchema } from '@/lib/schemas';
 import { useEligibility } from '@/hooks/use-eligibility';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
-const jobMatchSchema = z.object({
-  success: z.boolean(),
-  message: z.string(),
-  data: z.object({
-    score: z.number(),
-    category: nonEmptyStringSchema,
-  }),
-});
-
-type JobMatch = z.infer<typeof jobMatchSchema>['data'];
+interface JobMatch {
+  score: number;
+  category: string;
+}
 
 const fetchJobMatch = async (
   jobId: string,
@@ -30,7 +22,7 @@ const fetchJobMatch = async (
   if (!res.ok) throw new Error(`GET /api/jobs/match failed: ${res.status}`);
 
   const json: unknown = await res.json();
-  return jobMatchSchema.parse(json).data;
+  return (json as { data: JobMatch }).data;
 };
 
 export const useJobMatch = (jobId: string) => {

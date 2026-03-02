@@ -30,6 +30,15 @@ ENV NEXT_PUBLIC_PRIVY_APP_ID=$NEXT_PUBLIC_PRIVY_APP_ID
 ENV NEXT_PUBLIC_ALLOW_INDEXING=$NEXT_PUBLIC_ALLOW_INDEXING
 ENV NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID
 
+# Sentry build args — enables productionBrowserSourceMaps and sourcemap upload
+# sentry-cli reads these from environment automatically
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+ENV SENTRY_ORG=$SENTRY_ORG
+ENV SENTRY_PROJECT=$SENTRY_PROJECT
+
 # Server env stubs — only needed to pass Zod validation during build
 # Real secrets injected at runtime by Coolify
 ENV SESSION_SECRET="build-time-placeholder-not-used-at-runtime-"
@@ -46,8 +55,8 @@ ENV UPSTASH_REDIS_REST_TOKEN="build-time-placeholder"
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build Next.js
-RUN pnpm build
+# Build Next.js and upload sourcemaps to Sentry
+RUN pnpm build && pnpm sentry:sourcemaps
 
 # Stage 3: Production runner
 FROM node:22-alpine AS runner

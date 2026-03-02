@@ -1,1 +1,1 @@
-export { FiltersAside } from './filters-aside.lazy';
+export { FiltersAside } from './filters-aside';

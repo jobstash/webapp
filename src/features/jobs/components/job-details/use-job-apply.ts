@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import {
-  type ApplyResponse,
-  applyResponseSchema,
-} from '@/features/jobs/apply-schemas';
+import type { ApplyResponse } from '@/features/jobs/apply-constants';
 import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 
 const postApply = async (shortUUID: string): Promise<ApplyResponse> => {
@@ -18,8 +15,7 @@ const postApply = async (shortUUID: string): Promise<ApplyResponse> => {
 
   if (!res.ok) throw new Error(`POST /api/jobs/apply failed: ${res.status}`);
 
-  const json: unknown = await res.json();
-  return applyResponseSchema.parse(json);
+  return (await res.json()) as ApplyResponse;
 };
 
 export const useJobApply = (shortUUID: string) => {
