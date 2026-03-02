@@ -56,7 +56,7 @@ describe('fetchPillarItems', () => {
 
     expect(categories).toContain('role');
     expect(categories).toContain('skill');
-    expect(categories).toContain('location');
+    expect(categories).toContain('locationType');
     expect(categories).toContain('commitment');
   });
 });
