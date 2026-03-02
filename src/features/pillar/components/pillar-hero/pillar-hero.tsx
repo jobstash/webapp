@@ -6,7 +6,7 @@ import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { POST_JOB_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { HeroCtaButton } from '@/components/hero-cta-button';
+import { HeroCtaButton } from '@/components/hero-cta-button.lazy';
 import type { PillarDetails } from '@/features/pillar/schemas';
 import {
   PILLAR_CATEGORY_CONFIG,
