@@ -121,7 +121,7 @@ export const ApplyButton = ({
   if (internalHref) {
     button = (
       <Button asChild size='lg' className={GRADIENT_BUTTON}>
-        <Link href={internalHref}>
+        <Link href={internalHref} prefetch={false}>
           {icon}
           {label}
         </Link>
