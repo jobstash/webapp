@@ -9,7 +9,12 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { HeroCtaButton } from '@/components/hero-cta-button.lazy';
 
-type PillarCategory = 'role' | 'skill' | 'location' | 'commitment';
+type PillarCategory =
+  | 'role'
+  | 'skill'
+  | 'location'
+  | 'locationType'
+  | 'commitment';
 
 interface PillarItem {
   category: PillarCategory;
@@ -33,6 +38,10 @@ const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
   location: {
     dot: 'bg-amber-400',
     hover: 'hover:border-amber-500/40 hover:bg-amber-500/10',
+  },
+  locationType: {
+    dot: 'bg-cyan-400',
+    hover: 'hover:border-cyan-500/40 hover:bg-cyan-500/10',
   },
   commitment: {
     dot: 'bg-violet-400',

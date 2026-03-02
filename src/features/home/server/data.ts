@@ -1,6 +1,11 @@
 import 'server-only';
 
-export type PillarCategory = 'role' | 'skill' | 'location' | 'commitment';
+export type PillarCategory =
+  | 'role'
+  | 'skill'
+  | 'location'
+  | 'locationType'
+  | 'commitment';
 
 export interface PillarItem {
   category: PillarCategory;
@@ -12,23 +17,28 @@ export const fetchPillarItems = async (): Promise<PillarItem[]> => {
   // Mock data for pillar items - replace with actual API call when available
   return [
     // Roles - What you do
-    { category: 'role', label: 'DevRel', href: '/cl-devrel' },
-    { category: 'role', label: 'Business Dev', href: '/cl-bizdev' },
-    { category: 'role', label: 'Frontend', href: '/cl-frontend' },
+    { category: 'role', label: 'Deisgn', href: '/cl-design' },
+    { category: 'role', label: 'Engineering', href: '/cl-engineering' },
+    { category: 'role', label: 'Marketing', href: '/cl-marketing' },
 
     // Skills - What you know
     { category: 'skill', label: 'TypeScript', href: '/t-typescript' },
+    { category: 'skill', label: 'Solidity', href: '/t-solidity' },
     { category: 'skill', label: 'React', href: '/t-react' },
-    { category: 'skill', label: 'Golang', href: '/t-golang' },
 
-    // Locations - Where you work
-    { category: 'location', label: 'USA', href: '/l-usa' },
-    { category: 'location', label: 'China', href: '/l-china' },
-    { category: 'location', label: 'Europe', href: '/l-europe' },
+    // // Locations - Where you work
+    // { category: 'location', label: 'USA', href: '/l-usa' },
+    // { category: 'location', label: 'China', href: '/l-china' },
+    // { category: 'location', label: 'Europe', href: '/l-europe' },
+
+    // Location Type - Work arrangement
+    { category: 'locationType', label: 'Remote', href: '/lt-remote' },
+    { category: 'locationType', label: 'Onsite', href: '/lt-onsite' },
+    { category: 'locationType', label: 'Hybrid', href: '/lt-hybrid' },
 
     // Commitment - How you work
-    { category: 'commitment', label: 'Full-time', href: '/co-fulltime' },
-    { category: 'commitment', label: 'Part-time', href: '/co-parttime' },
+    { category: 'commitment', label: 'Full Time', href: '/co-fulltime' },
+    { category: 'commitment', label: 'Part Time', href: '/co-parttime' },
     { category: 'commitment', label: 'Internship', href: '/co-internship' },
   ];
 };
