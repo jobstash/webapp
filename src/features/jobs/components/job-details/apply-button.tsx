@@ -7,7 +7,10 @@ import { ExternalLinkIcon, LoaderCircleIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { APPLY_STATUS, type MissingItem } from '@/features/jobs/apply-schemas';
+import {
+  APPLY_STATUS,
+  type MissingItem,
+} from '@/features/jobs/apply-constants';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
 import { EligibilityNudgeDialog } from './eligibility-nudge-dialog';

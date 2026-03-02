@@ -1,17 +1,16 @@
 'use client';
 
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
-import { z } from 'zod';
 
 import { MAX_MATCH_SKILLS } from '@/lib/constants';
-import { jobListItemSchema } from '@/features/jobs/schemas';
+import type { JobListItemSchema } from '@/features/jobs/schemas';
 
-const responseSchema = z.object({
-  page: z.number(),
-  total: z.number(),
-  data: jobListItemSchema.array(),
-  hasMore: z.boolean(),
-});
+interface SuggestedJobsResponse {
+  page: number;
+  total: number;
+  data: JobListItemSchema[];
+  hasMore: boolean;
+}
 
 const STALE_TIME = 15 * 60 * 1000;
 const ENDPOINT = '/api/profile/suggested-jobs';
@@ -26,7 +25,7 @@ const fetchSuggestedJobs = async (skills: string[], page: number) => {
   if (!res.ok) throw new Error(`GET ${ENDPOINT} failed: ${res.status}`);
 
   const json: unknown = await res.json();
-  return responseSchema.parse(json);
+  return json as SuggestedJobsResponse;
 };
 
 interface UseSuggestedJobsParams {

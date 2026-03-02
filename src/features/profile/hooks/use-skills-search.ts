@@ -3,17 +3,18 @@ import { useState } from 'react';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
 import { useDebounce, useMinDuration } from '@/hooks';
-import { clientEnv } from '@/lib/env/client';
 import { getTagColorIndex } from '@/lib/utils';
-import {
-  popularTagsResponseSchema,
-  type PopularTagItem,
-  type UserSkill,
-} from '@/features/profile/schemas';
+import type { PopularTagItem, UserSkill } from '@/features/profile/schemas';
 
 const DEBOUNCE_MS = 300;
 const MIN_LOADING_MS = 300;
 const LIMIT = 20;
+
+interface TagSuggestionsResponse {
+  items: PopularTagItem[];
+  page: number;
+  hasMore: boolean;
+}
 
 const tagToSkill = (tag: PopularTagItem): UserSkill => ({
   id: tag.id,
@@ -40,7 +41,10 @@ export const useSkillsSearch = (
   } = useInfiniteQuery({
     queryKey: ['skills-search', debouncedSearch],
     queryFn: async ({ pageParam }) => {
-      const url = new URL('/search/tags/suggestions', clientEnv.MW_URL);
+      const url = new URL(
+        '/api/search/tags/suggestions',
+        window.location.origin,
+      );
       url.searchParams.set('q', debouncedSearch);
       url.searchParams.set('page', String(pageParam));
       url.searchParams.set('limit', String(LIMIT));
@@ -48,8 +52,7 @@ export const useSkillsSearch = (
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Skills search failed: ${res.status}`);
 
-      const json: unknown = await res.json();
-      return popularTagsResponseSchema.parse(json).data;
+      return (await res.json()) as TagSuggestionsResponse;
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) =>

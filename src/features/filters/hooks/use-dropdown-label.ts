@@ -2,7 +2,7 @@ import { useSearchParams } from 'next/navigation';
 
 import { capitalizeSlug } from '@/lib/utils';
 import { FILTER_KIND } from '@/features/filters/constants';
-import {
+import type {
   FilterConfigSchema,
   SelectOptionsSchema,
 } from '@/features/filters/schemas';

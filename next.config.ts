@@ -1,7 +1,19 @@
 import type { NextConfig } from 'next';
 import withBundleAnalyzer from '@next/bundle-analyzer';
+import { z } from 'zod';
 
 import packageJson from './package.json';
+
+// Validate public env vars at build/dev start (never ships to client bundle)
+z.object({
+  NEXT_PUBLIC_FRONTEND_URL: z.url(),
+  NEXT_PUBLIC_MW_URL: z.url(),
+  NEXT_PUBLIC_PRIVY_APP_ID: z.string().min(1),
+}).parse({
+  NEXT_PUBLIC_FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
+  NEXT_PUBLIC_MW_URL: process.env.NEXT_PUBLIC_MW_URL,
+  NEXT_PUBLIC_PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID,
+});
 
 const nextConfig: NextConfig = {
   output: 'standalone',
