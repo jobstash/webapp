@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "pnpm format && pnpm lint",
-    "build": "DISABLE_STATIC_GENERATION=true next build",
+    "build": "DISABLE_STATIC_GENERATION=true next build --webpack",
     "sentry:sourcemaps": "dotenvx run -- sentry-cli sourcemaps inject .next/static && tsx scripts/fix-sourcemap-debug-ids.ts && dotenvx run -- sentry-cli releases new webapp@$npm_package_version && dotenvx run -- sentry-cli sourcemaps upload --release=webapp@$npm_package_version --url-prefix='~/_next/static/' .next/static",
     "start": "next start",
     "lint": "oxlint --fix --fix-suggestions",
@@ -14,7 +14,7 @@
     "test:run": "vitest run",
     "worktree:exec": "tsx scripts/worktree-exec.ts",
     "version:bump": "tsx scripts/version-bump.ts",
-    "analyze": "ANALYZE_BUNDLE=true next build --webpack"
+    "analyze": "DISABLE_STATIC_GENERATION=true ANALYZE_BUNDLE=true next build --webpack"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.18",
