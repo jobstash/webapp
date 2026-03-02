@@ -41,7 +41,7 @@ export const HeaderAuthButton = () => {
         asChild
         className={`${CTA_CLASS} animate-in duration-200 fade-in`}
       >
-        <LinkWithLoader href='/profile'>
+        <LinkWithLoader href='/profile' prefetch={false}>
           <Icon className='size-4 shrink-0' />
           <span className='max-w-32 truncate leading-tight lg:max-w-44'>
             {displayName ?? 'Account'}
@@ -57,7 +57,7 @@ export const HeaderAuthButton = () => {
       asChild
       className='animate-in bg-input/30 px-3 text-sm duration-200 fade-in lg:px-6 lg:text-base'
     >
-      <LinkWithLoader href='/login' onClick={handleClick}>
+      <LinkWithLoader href='/login' prefetch={false} onClick={handleClick}>
         Log in
       </LinkWithLoader>
     </Button>

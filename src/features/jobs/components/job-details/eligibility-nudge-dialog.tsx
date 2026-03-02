@@ -76,7 +76,9 @@ export const EligibilityNudgeDialog = ({
 
       <DialogFooter>
         <Button asChild className='w-full'>
-          <Link href='/profile'>Go to Profile</Link>
+          <Link href='/profile' prefetch={false}>
+            Go to Profile
+          </Link>
         </Button>
       </DialogFooter>
     </DialogContent>

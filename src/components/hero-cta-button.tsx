@@ -22,6 +22,7 @@ export const HeroCtaButton = () => {
     <PrimaryCTA asChild className='px-6 text-base'>
       <Link
         href={isAuthenticated ? '/profile/jobs' : '/login'}
+        prefetch={false}
         onClick={handleClick}
       >
         Jobs For You
