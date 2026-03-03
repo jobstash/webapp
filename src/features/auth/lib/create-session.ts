@@ -8,6 +8,7 @@ export const createSession = async (
     loginMethod === 'siwe' ? 'wallet' : (loginMethod ?? undefined);
   const res = await fetch('/api/auth/session', {
     method: 'POST',
+    signal: AbortSignal.timeout(15_000),
     headers: {
       Authorization: `Bearer ${privyToken}`,
       'Content-Type': 'application/json',
