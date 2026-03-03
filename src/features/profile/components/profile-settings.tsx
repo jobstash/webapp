@@ -2,6 +2,7 @@
 
 import { DeleteAccountDialog } from './delete-account-dialog';
 import { ProfileCard } from './profile-card';
+import { SettingsLogoutButton } from './settings-logout-button';
 
 const SettingsRow = ({
   title,
@@ -23,6 +24,14 @@ const SettingsRow = ({
 
 export const ProfileSettings = () => (
   <div className='flex flex-col gap-4'>
+    <ProfileCard title='Session'>
+      <SettingsRow
+        title='Log out'
+        description='End your current session and return to the home page'
+        action={<SettingsLogoutButton />}
+      />
+    </ProfileCard>
+
     <ProfileCard
       title='Danger Zone'
       className='border-destructive/30 [&>h2]:text-destructive'
