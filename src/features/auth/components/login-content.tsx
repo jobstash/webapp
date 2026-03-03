@@ -1,72 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-import { useRouter } from '@bprogress/next/app';
 import { LoaderIcon } from 'lucide-react';
 
-import { useLogin, usePrivy } from '@privy-io/react-auth';
-import { useQueryClient } from '@tanstack/react-query';
-
 import { cn } from '@/lib/utils';
-import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { JobstashLogo } from '@/components/jobstash-logo';
-import { SESSION_KEY } from '@/features/auth/constants';
-import { useSession } from '@/features/auth/hooks/use-session';
-import { createSession } from '@/features/auth/lib/create-session';
 
+import { useLoginAuth } from './use-login-auth';
 import { useLoginContent } from './use-login-content';
 
 export const LoginContent = () => {
   const { isNavigating, redirectTo, handleBack } = useLoginContent();
-  const { isAuthenticated, isLoading: isSessionLoading } = useSession();
+  const { login, isLoading } = useLoginAuth(redirectTo);
 
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const { getAccessToken } = usePrivy();
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  // Redirect when useSession resolves as authenticated
-  // (covers: valid iron-session, OR silent renewal from Privy)
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.replace(redirectTo);
-    }
-  }, [isAuthenticated, redirectTo, router]);
-
-  const { login } = useLogin({
-    onComplete: async ({ wasAlreadyAuthenticated, loginMethod }) => {
-      // If already authenticated, invalidate session query to trigger
-      // useSession's silent renewal — it will set isAuthenticated,
-      // which triggers the redirect effect above.
-      if (wasAlreadyAuthenticated) {
-        queryClient.invalidateQueries({ queryKey: SESSION_KEY });
-        return;
-      }
-
-      setIsLoggingIn(true);
-
-      try {
-        trackEvent(GA_EVENT.LOGIN_COMPLETED, {
-          login_method: loginMethod ?? 'unknown',
-        });
-
-        const privyToken = await getAccessToken();
-        if (!privyToken) throw new Error('No Privy access token');
-
-        const session = await createSession(privyToken, loginMethod);
-        queryClient.setQueryData(SESSION_KEY, session);
-      } catch {
-        setIsLoggingIn(false);
-      }
-    },
-    onError: () => {
-      setIsLoggingIn(false);
-    },
-  });
-
-  if (isSessionLoading || isAuthenticated || isLoggingIn) {
+  if (isLoading) {
     return (
       <div className='flex h-dvh flex-col items-center justify-center bg-background'>
         <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
