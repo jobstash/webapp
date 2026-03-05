@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { useSession } from '@/features/auth/hooks/use-session';
 
 export const useProfileLogoutButton = () => {
@@ -13,5 +14,16 @@ export const useProfileLogoutButton = () => {
 
   const handleOpen = () => setIsOpen(true);
 
-  return { isLoggingOut, isOpen, onOpenChange, handleOpen, logout };
+  const handleLogout = () => {
+    trackEvent(GA_EVENT.LOGOUT, {});
+    logout();
+  };
+
+  return {
+    isLoggingOut,
+    isOpen,
+    onOpenChange,
+    handleOpen,
+    logout: handleLogout,
+  };
 };

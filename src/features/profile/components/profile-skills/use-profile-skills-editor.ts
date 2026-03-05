@@ -4,6 +4,7 @@ import { type KeyboardEvent, type MouseEvent, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { SKILL_ERROR_THRESHOLD, getSkillStatus } from '@/lib/constants';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import { useSkillsSearch } from '@/features/profile/hooks/use-skills-search';
@@ -96,6 +97,11 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
       });
 
       if (!res.ok) throw new Error('Failed to save skills');
+
+      trackEvent(GA_EVENT.SKILLS_SAVED, {
+        skill_count: editedSkills.length,
+        source: 'editor',
+      });
 
       await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
       handleClose();

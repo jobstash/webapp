@@ -5,6 +5,7 @@ import { LoaderIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { JobstashLogo } from '@/components/jobstash-logo';
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
 import { useLoginAuth } from './use-login-auth';
 import { useLoginContent } from './use-login-content';
@@ -53,7 +54,10 @@ export const LoginContent = () => {
               'bg-sidebar font-semibold text-white',
               'hover:bg-sidebar/80',
             )}
-            onClick={() => login()}
+            onClick={() => {
+              trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'privy' });
+              login();
+            }}
           >
             Get Started
           </Button>

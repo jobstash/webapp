@@ -4,6 +4,7 @@ import { type ChangeEvent, type DragEvent, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { SKILL_ERROR_THRESHOLD, getSkillStatus } from '@/lib/constants';
 import { clientEnv } from '@/lib/env/client';
 import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
@@ -204,6 +205,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       if (!parseRes.ok) {
         const body = await parseRes.json().catch(() => null);
         const serverError = String(body?.error ?? '');
+        trackEvent(GA_EVENT.RESUME_PARSE_FAILED, {
+          resume_parse_error: serverError,
+        });
         setError(getErrorMessage(serverError));
         setFileName(null);
         return;
@@ -328,6 +332,10 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
         await syncSkills(skillsToSync);
         await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
       }
+
+      trackEvent(GA_EVENT.RESUME_UPLOADED, {
+        skill_count: skillsToSync?.length ?? 0,
+      });
 
       handleOpenChange(false);
     } catch {

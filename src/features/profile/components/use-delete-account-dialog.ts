@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { GA_EVENT, trackEvent } from '@/lib/analytics';
+
 interface UseDeleteAccountDialogParams {
   logout: () => Promise<void>;
 }
@@ -35,6 +37,7 @@ export const useDeleteAccountDialog = ({
         return;
       }
 
+      trackEvent(GA_EVENT.ACCOUNT_DELETED, {});
       await logout();
     } catch {
       setError('Something went wrong. Please try again.');
