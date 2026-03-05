@@ -63,12 +63,17 @@ export const ApplyButton = ({
     setNudgeOpen(true);
   };
 
-  const handleApplyClick = () => {
+  const trackApply = (destination: string) => {
     trackEvent(GA_EVENT.APPLY_BUTTON_CLICKED, {
       job_id: jobId,
       job_title: jobTitle,
       organization: organization ?? '',
+      apply_destination: destination,
     });
+  };
+
+  const handleApplyClick = () => {
+    trackApply('external');
     apply().catch(() => {});
   };
 
@@ -82,7 +87,12 @@ export const ApplyButton = ({
 
     if (!isAuthLoading && !isAuthenticated) {
       const href = `/login?redirect=${encodeURIComponent(pathname)}`;
-      return { icon: linkIcon, label: 'Apply Now', internalHref: href };
+      return {
+        icon: linkIcon,
+        label: 'Apply Now',
+        internalHref: href,
+        onClick: () => trackApply('login_redirect'),
+      };
     }
 
     if (status === APPLY_STATUS.ALREADY_APPLIED) {
@@ -90,6 +100,7 @@ export const ApplyButton = ({
         icon: linkIcon,
         label: 'Revisit Application',
         externalHref: applyUrl ?? undefined,
+        onClick: () => trackApply('revisit'),
       };
     }
 
@@ -97,7 +108,10 @@ export const ApplyButton = ({
       return {
         icon: linkIcon,
         label: 'Unlock Application',
-        onClick: () => openNudge(missing),
+        onClick: () => {
+          trackApply('unlock_nudge');
+          openNudge(missing);
+        },
       };
     }
 
@@ -121,7 +135,7 @@ export const ApplyButton = ({
   if (internalHref) {
     button = (
       <Button asChild size='lg' className={GRADIENT_BUTTON}>
-        <Link href={internalHref} prefetch={false}>
+        <Link href={internalHref} prefetch={false} onClick={onClick}>
           {icon}
           {label}
         </Link>
