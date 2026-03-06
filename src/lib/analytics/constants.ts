@@ -6,12 +6,10 @@ export const GA_EVENT = {
   PILLAR_CLICKED: 'pillar_clicked',
 
   // Browsing
-  JOB_LIST_VIEWED: 'job_list_viewed',
   PAGINATION_CLICKED: 'pagination_clicked',
   JOB_CARD_CLICKED: 'job_card_clicked',
 
   // Interest
-  JOB_DETAILS_VIEWED: 'job_details_viewed',
   SIMILAR_JOB_CLICKED: 'similar_job_clicked',
 
   // Conversion
@@ -20,6 +18,14 @@ export const GA_EVENT = {
   // Auth
   LOGIN_STARTED: 'login_started',
   LOGIN_COMPLETED: 'login_completed',
+  LOGOUT: 'logout',
+  ACCOUNT_DELETED: 'account_deleted',
+
+  // Profile
+  RESUME_UPLOADED: 'resume_uploaded',
+  RESUME_PARSE_FAILED: 'resume_parse_failed',
+  SKILLS_SAVED: 'skills_saved',
+
   // Navigation
   HERO_CTA_CLICKED: 'hero_cta_clicked',
   SUGGESTED_FILTER_APPLIED: 'suggested_filter_applied',
@@ -45,18 +51,10 @@ export type GaEventParams = {
     pillar_category: string;
     source: string;
   };
-  [GA_EVENT.JOB_LIST_VIEWED]: {
-    page_number: number;
-  };
   [GA_EVENT.PAGINATION_CLICKED]: {
     page_number: number;
   };
   [GA_EVENT.JOB_CARD_CLICKED]: {
-    job_id: string;
-    job_title: string;
-    organization: string;
-  };
-  [GA_EVENT.JOB_DETAILS_VIEWED]: {
     job_id: string;
     job_title: string;
     organization: string;
@@ -76,6 +74,18 @@ export type GaEventParams = {
   };
   [GA_EVENT.LOGIN_COMPLETED]: {
     login_method: string;
+  };
+  [GA_EVENT.LOGOUT]: Record<string, never>;
+  [GA_EVENT.ACCOUNT_DELETED]: Record<string, never>;
+  [GA_EVENT.RESUME_UPLOADED]: {
+    skill_count: number;
+  };
+  [GA_EVENT.RESUME_PARSE_FAILED]: {
+    resume_parse_error: string;
+  };
+  [GA_EVENT.SKILLS_SAVED]: {
+    skill_count: number;
+    source: string;
   };
   [GA_EVENT.HERO_CTA_CLICKED]: {
     source: string;
