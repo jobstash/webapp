@@ -7,7 +7,7 @@ import { clientEnv } from '@/lib/env/client';
 const LIMIT_LENGTH = 255;
 
 export const fetchPillarStaticParams = async () => {
-  const url = `${clientEnv.MW_URL}/search/pillar/slugs?nav=jobs`;
+  const url = `${clientEnv.MW_URL}/v2/search/pillar/slugs`;
   const response = await fetch(url, {
     cache: 'force-cache',
     next: { revalidate: 3600 },
@@ -18,14 +18,13 @@ export const fetchPillarStaticParams = async () => {
   const parsed = pillarSlugsDto.safeParse(json);
   if (!parsed.success) throw new Error('Failed to parse static pillar slugs');
 
-  // Skip slugs that are too long
-  const filteredSlugs = parsed.data.filter((slug) => {
-    const isSafe = slug.length <= LIMIT_LENGTH;
-    if (!isSafe) {
-      console.warn(`[fetchStaticPillarSlugs] Slug is too long: ${slug}`);
-    }
-    return isSafe;
-  });
-
-  return filteredSlugs.map((slug) => ({ slug: getFrontendSlug(slug) }));
+  return parsed.data
+    .filter((slug) => {
+      const isSafe = slug.length <= LIMIT_LENGTH;
+      if (!isSafe) {
+        console.warn(`[fetchPillarStaticParams] Slug is too long: ${slug}`);
+      }
+      return isSafe;
+    })
+    .map((slug) => ({ slug: getFrontendSlug(slug) }));
 };
