@@ -122,13 +122,27 @@ const PREFIX_MAPPINGS: PrefixMapping[] = [
   { prefix: 'b-', category: 'boolean', paramKey: null },
 ];
 
+// Custom slug aliases: frontend URL slug → MW API slug
+const SLUG_TO_API: Record<string, string> = {
+  'urgently-hiring': 'b-expertJobs',
+};
+
+// Reverse map: MW API slug → frontend URL slug
+const API_TO_SLUG: Record<string, string> = {
+  'b-expertJobs': 'urgently-hiring',
+};
+
+export const getApiSlug = (slug: string): string => SLUG_TO_API[slug] ?? slug;
+export const getFrontendSlug = (slug: string): string =>
+  API_TO_SLUG[slug] ?? slug;
+
 export const isValidPillarSlug = (slug: string): boolean =>
+  slug in SLUG_TO_API ||
   PREFIX_MAPPINGS.some(({ prefix }) => slug.startsWith(prefix));
 
 const BOOLEAN_SLUG_TO_PARAM_KEY: Record<string, string> = {
   'offers-token-allocation': 'offersTokenAllocation',
   'beginner-friendly': 'onboardIntoWeb3',
-  expert: 'expertJobs',
   'pays-in-crypto': 'paysInCrypto',
 };
 
@@ -136,7 +150,7 @@ const findMapping = (slug: string): PrefixMapping | undefined =>
   PREFIX_MAPPINGS.find(({ prefix }) => slug.startsWith(prefix));
 
 export const getPillarCategory = (slug: string): PillarCategory =>
-  findMapping(slug)?.category ?? 'tag';
+  slug in SLUG_TO_API ? 'boolean' : (findMapping(slug)?.category ?? 'tag');
 
 const ALL_PREFIXES = PREFIX_MAPPINGS.map(({ prefix }) => prefix);
 const PREFIX_REGEX = new RegExp(`^(${ALL_PREFIXES.join('|')})`);
@@ -155,6 +169,7 @@ export const getPillarName = (slug: string): string => {
 const BOOLEAN_TAGLINES: Record<string, string> = {
   'pays-in-crypto': 'Jobs that pay in crypto',
   'offers-token-allocation': 'Jobs with token allocation',
+  'urgently-hiring': 'Urgently Hiring Jobs',
 };
 
 export const getBooleanTagline = (slug: string): string => {
@@ -180,6 +195,11 @@ export const getPillarHeadline = (slug: string): string => {
 export const getPillarFilterContext = (
   slug: string,
 ): PillarFilterContext | null => {
+  if (slug in SLUG_TO_API) {
+    const paramKey = SLUG_TO_API[slug].slice(2); // strip 'b-' prefix
+    return { paramKey, value: 'true' };
+  }
+
   if (slug.startsWith('b-')) {
     const booleanSlug = slug.slice(2);
     const paramKey = BOOLEAN_SLUG_TO_PARAM_KEY[booleanSlug];
