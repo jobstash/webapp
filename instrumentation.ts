@@ -1,13 +1,10 @@
+import * as Sentry from '@sentry/nextjs';
+
 export const register = async () => {
   if (process.env.NEXT_RUNTIME !== 'nodejs') return;
 
-  const { serverEnv } = await import('@/lib/env/server');
-  if (!serverEnv.SENTRY_DSN) return;
-
-  const Sentry = await import('@sentry/node');
-
   Sentry.init({
-    dsn: serverEnv.SENTRY_DSN,
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     release: `webapp@${process.env.NEXT_PUBLIC_APP_VERSION}`,
     tracesSampleRate: 0,
     sendDefaultPii: false,
@@ -21,3 +18,5 @@ export const register = async () => {
     },
   });
 };
+
+export const onRequestError = Sentry.captureRequestError;
