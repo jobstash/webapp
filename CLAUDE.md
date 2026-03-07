@@ -137,7 +137,12 @@ Pillar pages are SEO landing pages for specific job filters. Each pillar slug us
 | `b-{name}`                | {name} (boolean)      | (contextual - see Boolean Filters) | `b-pays-in-crypto`          |
 | `b-with-token-allocation` | offersTokenAllocation | `Jobs with Token Allocation`       | `b-offers-token-allocation` |
 | `b-beginner-friendly`     | onboardIntoWeb3       | `Beginner Friendly Jobs`           | `b-beginner-friendly`       |
-| `b-expert`                | expertJobs            | `Expert Jobs`                      | `b-expert`                  |
+
+**Special alias slugs** (no prefix, custom URL → MW API slug mapping):
+
+| Frontend URL      | MW API Slug    | Filter Param | Hero Label             |
+| ----------------- | -------------- | ------------ | ---------------------- |
+| `urgently-hiring` | `b-expertJobs` | expertJobs   | `Urgently Hiring Jobs` |
 
 **Hero Label Examples:**
 
@@ -158,6 +163,7 @@ Boolean filters use the `b-` prefix followed by the filter name. They generate c
 
 - `b-pays-in-crypto` → "Jobs that pay in crypto"
 - `b-offers-token-allocation` → "Jobs with token allocation"
+- `urgently-hiring` → "Urgently Hiring Jobs" (alias: URL is `/urgently-hiring`, MW slug is `b-expertJobs`)
 - Default: "Jobs with {readable name}"
 
 **Implementation:** `src/features/pillar/constants.ts`

@@ -4,6 +4,7 @@ import { clientEnv } from '@/lib/env/client';
 import type { PillarPageStatic } from '@/features/pillar/schemas';
 import { JOB_ITEM_BADGE } from '@/features/jobs/constants';
 import type { JobListItemSchema } from '@/features/jobs/schemas';
+import { getApiSlug } from '@/features/pillar/constants';
 import {
   pillarPageStaticDto,
   dtoToPillarPageStatic,
@@ -20,7 +21,8 @@ const sortFeaturedFirst = (jobs: JobListItemSchema[]): JobListItemSchema[] => {
 export const fetchPillarPageStatic = async (
   slug: string,
 ): Promise<PillarPageStatic | null> => {
-  const url = `${clientEnv.MW_URL}/search/pillar/page/static/${slug}`;
+  const apiSlug = getApiSlug(slug);
+  const url = `${clientEnv.MW_URL}/search/pillar/page/static/${apiSlug}`;
 
   const response = await fetch(url, {
     cache: 'force-cache',

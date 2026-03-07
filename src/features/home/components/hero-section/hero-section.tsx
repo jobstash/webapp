@@ -4,10 +4,8 @@ import Link from 'next/link';
 import { ChevronDownIcon } from 'lucide-react';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
-import { POST_JOB_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { HeroCtaButton } from '@/components/hero-cta-button.lazy';
+import { HeroCtas } from '@/components/hero-ctas';
 
 type PillarCategory =
   | 'role'
@@ -50,10 +48,6 @@ const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
 };
 
 export const HeroSection = ({ pillarItems }: Props) => {
-  const handlePostJobClick = () => {
-    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'post_job' });
-  };
-
   const handlePillarClick = (item: PillarItem) => {
     trackEvent(GA_EVENT.PILLAR_CLICKED, {
       pillar_slug: item.href.slice(1),
@@ -82,19 +76,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
             </p>
           </div>
 
-          <div className='flex flex-col items-center gap-3 sm:flex-row'>
-            <HeroCtaButton />
-            <Button
-              size='lg'
-              variant='secondary'
-              className='bg-input/30 text-base'
-              asChild
-            >
-              <Link href={POST_JOB_URL} onClick={handlePostJobClick}>
-                Post a Job
-              </Link>
-            </Button>
-          </div>
+          <HeroCtas />
 
           {!!pillarItems?.length && (
             <div className='flex w-full max-w-3xl flex-col items-center gap-6 pt-4'>

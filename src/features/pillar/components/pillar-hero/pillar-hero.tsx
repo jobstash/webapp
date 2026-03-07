@@ -1,12 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-
-import { GA_EVENT, trackEvent } from '@/lib/analytics';
-import { POST_JOB_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { HeroCtaButton } from '@/components/hero-cta-button.lazy';
+import { HeroCtas } from '@/components/hero-ctas';
 import type { PillarDetails } from '@/features/pillar/schemas';
 import {
   PILLAR_CATEGORY_CONFIG,
@@ -60,10 +55,6 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
   const pillarName = getPillarName(slug);
   const config = PILLAR_CATEGORY_CONFIG[category];
 
-  const handlePostJobClick = () => {
-    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'post_job' });
-  };
-
   return (
     <section className='relative flex min-h-[420px] w-full items-center overflow-hidden border-b bg-linear-to-b from-primary/5 via-background to-background md:min-h-[520px]'>
       <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/4 via-transparent to-transparent' />
@@ -94,19 +85,7 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
             </p>
           </div>
 
-          <div className='flex flex-col items-center gap-3 sm:flex-row'>
-            <HeroCtaButton />
-            <Button
-              size='lg'
-              variant='secondary'
-              className='bg-input/30 text-base'
-              asChild
-            >
-              <Link href={POST_JOB_URL} onClick={handlePostJobClick}>
-                Post a Job
-              </Link>
-            </Button>
-          </div>
+          <HeroCtas slug={slug} />
         </div>
       </div>
     </section>

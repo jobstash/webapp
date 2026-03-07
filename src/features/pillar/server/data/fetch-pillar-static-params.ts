@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { getFrontendSlug } from '@/features/pillar/constants';
 import { pillarSlugsDto } from '@/features/pillar/server/dtos/pillar-slugs.dto';
 import { clientEnv } from '@/lib/env/client';
 
@@ -26,5 +27,5 @@ export const fetchPillarStaticParams = async () => {
     return isSafe;
   });
 
-  return filteredSlugs.map((slug) => ({ slug }));
+  return filteredSlugs.map((slug) => ({ slug: getFrontendSlug(slug) }));
 };
