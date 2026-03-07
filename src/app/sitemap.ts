@@ -30,10 +30,11 @@ function staticSitemap(): MetadataRoute.Sitemap {
 }
 
 async function pillarSitemap(): Promise<MetadataRoute.Sitemap> {
-  const params = await fetchPillarSitemapSlugs();
+  const slugs = await fetchPillarSitemapSlugs();
 
-  return params.map(({ slug }) => ({
+  return slugs.map(({ slug, lastModified }) => ({
     url: `${FRONTEND_URL}/${slug}`,
+    lastModified: new Date(lastModified),
     changeFrequency: 'daily' as const,
     priority: 0.8,
   }));
