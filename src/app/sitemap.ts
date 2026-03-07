@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { clientEnv } from '@/lib/env/client';
-import { fetchJobListPage } from '@/features/jobs/server/data';
+import { fetchSitemapJobs } from '@/features/jobs/server/data';
 import { fetchPillarSitemapSlugs } from '@/features/pillar/server/data';
 
 const FRONTEND_URL = clientEnv.FRONTEND_URL;
@@ -41,11 +41,11 @@ async function pillarSitemap(): Promise<MetadataRoute.Sitemap> {
 }
 
 async function jobSitemap(): Promise<MetadataRoute.Sitemap> {
-  const { data: jobs } = await fetchJobListPage({ page: 1, limit: 4000 });
+  const jobs = await fetchSitemapJobs();
 
   return jobs.map((job) => ({
     url: `${FRONTEND_URL}${job.href}`,
-    lastModified: new Date(job.datePosted),
+    lastModified: job.lastModified,
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
