@@ -4,15 +4,12 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ProgressProvider } from '@bprogress/next/app';
 import { Progress, Bar } from '@bprogress/next';
 
-import { GlobalErrorSetup } from '@/features/error-reporter/global-error-setup';
-
 import { ReactQueryProvider } from './react-query-provider';
 
 export const RootProviders = ({ children }: React.PropsWithChildren) => {
   return (
     <NuqsAdapter defaultOptions={{ shallow: false }}>
       <ReactQueryProvider>
-        <GlobalErrorSetup />
         <ProgressProvider
           shallowRouting
           options={{ showSpinner: false, template: null }}

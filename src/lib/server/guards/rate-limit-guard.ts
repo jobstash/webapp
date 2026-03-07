@@ -41,9 +41,3 @@ const createRateLimiter = (
 };
 
 export const checkRateLimit = createRateLimiter('ratelimit:resume', 5, '15 m');
-
-export const checkErrorRateLimit = createRateLimiter(
-  'ratelimit:error',
-  20,
-  '1 m',
-);

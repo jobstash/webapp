@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import withBundleAnalyzer from '@next/bundle-analyzer';
+import { withSentryConfig } from '@sentry/nextjs';
 import { z } from 'zod';
 
 import packageJson from './package.json';
@@ -18,7 +19,6 @@ z.object({
 const nextConfig: NextConfig = {
   output: 'standalone',
   serverExternalPackages: ['pdf-parse'],
-  productionBrowserSourceMaps: !!process.env.SENTRY_AUTH_TOKEN,
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
@@ -75,4 +75,20 @@ const analyze = withBundleAnalyzer({
   enabled: process.env.ANALYZE_BUNDLE === 'true',
 });
 
-export default analyze(nextConfig);
+export default withSentryConfig(analyze(nextConfig), {
+  org: 'jobstash',
+  project: 'webapp',
+  silent: !process.env.CI,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+    excludeTracing: true,
+    excludeReplayIframe: true,
+    excludeReplayShadowDom: true,
+    excludeReplayWorker: true,
+  },
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+  widenClientFileUpload: true,
+});
