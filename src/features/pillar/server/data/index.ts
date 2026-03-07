@@ -1,2 +1,5 @@
 export { fetchPillarPageStatic } from './fetch-pillar-page-static';
-export { fetchPillarStaticParams } from './fetch-pillar-static-params';
+export {
+  fetchPillarStaticParams,
+  fetchPillarSitemapSlugs,
+} from './fetch-pillar-static-params';

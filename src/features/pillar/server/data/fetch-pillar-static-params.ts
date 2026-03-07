@@ -6,8 +6,7 @@ import { clientEnv } from '@/lib/env/client';
 
 const LIMIT_LENGTH = 255;
 
-export const fetchPillarStaticParams = async () => {
-  const url = `${clientEnv.MW_URL}/search/pillar/slugs?nav=jobs`;
+const fetchSlugs = async (url: string) => {
   const response = await fetch(url, {
     cache: 'force-cache',
     next: { revalidate: 3600 },
@@ -29,3 +28,9 @@ export const fetchPillarStaticParams = async () => {
 
   return filteredSlugs.map((slug) => ({ slug: getFrontendSlug(slug) }));
 };
+
+export const fetchPillarStaticParams = async () =>
+  fetchSlugs(`${clientEnv.MW_URL}/v2/search/pillar/slugs`);
+
+export const fetchPillarSitemapSlugs = async () =>
+  fetchSlugs(`${clientEnv.MW_URL}/search/pillar/slugs?nav=jobs`);
