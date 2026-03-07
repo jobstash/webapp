@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/nextjs';
+
 import { fetchPillarSitemapSlugs } from '@/features/pillar/server/data';
 import { clientEnv } from '@/lib/env/client';
 
@@ -10,8 +12,9 @@ export async function GET() {
 
   try {
     slugs = await fetchPillarSitemapSlugs();
-  } catch {
-    // API unavailable — return empty sitemap, ISR will retry
+  } catch (error) {
+    if (process.env.CI) throw error;
+    Sentry.captureException(error);
   }
 
   const urls = slugs.map(
