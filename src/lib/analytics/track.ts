@@ -1,5 +1,3 @@
-import { sendGAEvent } from '@next/third-parties/google';
-
 import type { GaEventParams } from './constants';
 
 export const trackEvent = <E extends keyof GaEventParams>(
@@ -7,5 +5,5 @@ export const trackEvent = <E extends keyof GaEventParams>(
   params: GaEventParams[E],
 ): void => {
   if (typeof window === 'undefined') return;
-  sendGAEvent('event', event, params);
+  window.dataLayer?.push({ event, ...params });
 };
