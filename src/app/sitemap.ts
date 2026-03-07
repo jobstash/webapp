@@ -6,10 +6,6 @@ import { fetchPillarSitemapSlugs } from '@/features/pillar/server/data';
 
 const FRONTEND_URL = clientEnv.FRONTEND_URL;
 
-const isStaticGenerationDisabled =
-  process.env.DISABLE_STATIC_GENERATION === 'true' ||
-  process.env.NODE_ENV === 'development';
-
 export const generateSitemaps = () => [{ id: 0 }, { id: 1 }, { id: 2 }];
 
 export default async function sitemap({
@@ -17,7 +13,6 @@ export default async function sitemap({
 }: {
   id: number;
 }): Promise<MetadataRoute.Sitemap> {
-  if (isStaticGenerationDisabled) return staticSitemap();
   if (id === 0) return staticSitemap();
   if (id === 1) return pillarSitemap();
   return jobSitemap();
