@@ -7,3 +7,5 @@ Sentry.init({
   integrations: (defaults) =>
     defaults.filter((i) => i.name !== 'BrowserTracing'),
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
