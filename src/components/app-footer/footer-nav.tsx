@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { POST_JOB_URL } from '@/lib/constants';
+
 const NAV_SECTIONS = [
   {
     title: 'Browse Jobs',
@@ -18,6 +20,10 @@ const NAV_SECTIONS = [
       { label: 'Rust', href: '/t-rust' },
       { label: 'React', href: '/t-react' },
     ],
+  },
+  {
+    title: 'For Employers',
+    links: [{ label: 'Post a Job', href: POST_JOB_URL }],
   },
 ] as const;
 

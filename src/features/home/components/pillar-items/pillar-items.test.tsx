@@ -13,8 +13,8 @@ afterEach(() => {
   cleanup();
 });
 
-vi.mock('@/components/hero-cta-button.lazy', () => ({
-  HeroCtaButton: () => <button>Jobs For You</button>,
+vi.mock('@/components/hero-jobs-for-you-button.lazy', () => ({
+  HeroJobsForYouButton: () => <button>Jobs For You</button>,
 }));
 
 vi.mock('next/link', () => ({
@@ -97,20 +97,20 @@ describe('HeroWithPillars', () => {
 
     // All items should be rendered as links (no category headers)
     const links = screen.getAllByRole('link');
-    // +1 for "Post a Job" CTA (Browse Jobs is a button, not a link)
+    // +1 for "Urgently Hiring" CTA (Jobs For You is a button, not a link)
     expect(links.length).toBe(items.length + 1);
   });
 
   it('renders primary CTA buttons', async () => {
     render(await HeroWithPillars());
 
-    // Jobs For You is a button (mocked HeroCtaButton)
+    // Urgently Hiring is a link (primary CTA)
+    expect(
+      screen.getByRole('link', { name: /urgently hiring/i }),
+    ).toBeInTheDocument();
+    // Jobs For You is a button (mocked HeroJobsForYouButton)
     expect(
       screen.getByRole('button', { name: /jobs for you/i }),
-    ).toBeInTheDocument();
-    // Post a Job is a link
-    expect(
-      screen.getByRole('link', { name: /post a job/i }),
     ).toBeInTheDocument();
   });
 });

@@ -3,10 +3,9 @@
 import Link from 'next/link';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
-import { POST_JOB_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { HeroCtaButton } from '@/components/hero-cta-button.lazy';
+import { PrimaryCTA } from '@/components/primary-cta';
+import { HeroJobsForYouButton } from '@/components/hero-jobs-for-you-button.lazy';
 import type { PillarDetails } from '@/features/pillar/schemas';
 import {
   PILLAR_CATEGORY_CONFIG,
@@ -60,8 +59,8 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
   const pillarName = getPillarName(slug);
   const config = PILLAR_CATEGORY_CONFIG[category];
 
-  const handlePostJobClick = () => {
-    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'post_job' });
+  const handleUrgentClick = () => {
+    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'urgently_hiring' });
   };
 
   return (
@@ -95,17 +94,12 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
           </div>
 
           <div className='flex flex-col items-center gap-3 sm:flex-row'>
-            <HeroCtaButton />
-            <Button
-              size='lg'
-              variant='secondary'
-              className='bg-input/30 text-base'
-              asChild
-            >
-              <Link href={POST_JOB_URL} onClick={handlePostJobClick}>
-                Post a Job
+            <PrimaryCTA asChild className='px-6 text-base'>
+              <Link href='/urgently-hiring' onClick={handleUrgentClick}>
+                Urgently Hiring
               </Link>
-            </Button>
+            </PrimaryCTA>
+            <HeroJobsForYouButton />
           </div>
         </div>
       </div>

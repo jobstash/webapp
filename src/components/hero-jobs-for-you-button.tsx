@@ -4,22 +4,27 @@ import Link from 'next/link';
 
 import { useEligibility } from '@/hooks/use-eligibility';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
-import { PrimaryCTA } from '@/components/primary-cta';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const HERO_CTA_SKELETON = <Skeleton className='h-10 w-36 rounded-lg' />;
+const SKELETON = <Skeleton className='h-10 w-36 rounded-lg' />;
 
 const handleClick = () => {
   trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'hero_jobs_for_you' });
 };
 
-export const HeroCtaButton = () => {
+export const HeroJobsForYouButton = () => {
   const { isAuthenticated, isLoading } = useEligibility();
 
-  if (isLoading) return HERO_CTA_SKELETON;
+  if (isLoading) return SKELETON;
 
   return (
-    <PrimaryCTA asChild className='px-6 text-base'>
+    <Button
+      size='lg'
+      variant='secondary'
+      className='bg-input/30 text-base'
+      asChild
+    >
       <Link
         href={isAuthenticated ? '/profile/jobs' : '/login'}
         prefetch={false}
@@ -27,6 +32,6 @@ export const HeroCtaButton = () => {
       >
         Jobs For You
       </Link>
-    </PrimaryCTA>
+    </Button>
   );
 };

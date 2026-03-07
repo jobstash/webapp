@@ -4,10 +4,9 @@ import Link from 'next/link';
 import { ChevronDownIcon } from 'lucide-react';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
-import { POST_JOB_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { HeroCtaButton } from '@/components/hero-cta-button.lazy';
+import { PrimaryCTA } from '@/components/primary-cta';
+import { HeroJobsForYouButton } from '@/components/hero-jobs-for-you-button.lazy';
 
 type PillarCategory =
   | 'role'
@@ -50,8 +49,8 @@ const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
 };
 
 export const HeroSection = ({ pillarItems }: Props) => {
-  const handlePostJobClick = () => {
-    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'post_job' });
+  const handleUrgentClick = () => {
+    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'urgently_hiring' });
   };
 
   const handlePillarClick = (item: PillarItem) => {
@@ -83,17 +82,12 @@ export const HeroSection = ({ pillarItems }: Props) => {
           </div>
 
           <div className='flex flex-col items-center gap-3 sm:flex-row'>
-            <HeroCtaButton />
-            <Button
-              size='lg'
-              variant='secondary'
-              className='bg-input/30 text-base'
-              asChild
-            >
-              <Link href={POST_JOB_URL} onClick={handlePostJobClick}>
-                Post a Job
+            <PrimaryCTA asChild className='px-6 text-base'>
+              <Link href='/urgently-hiring' onClick={handleUrgentClick}>
+                Urgently Hiring
               </Link>
-            </Button>
+            </PrimaryCTA>
+            <HeroJobsForYouButton />
           </div>
 
           {!!pillarItems?.length && (
