@@ -13,8 +13,13 @@ afterEach(() => {
   cleanup();
 });
 
-vi.mock('@/components/hero-jobs-for-you-button.lazy', () => ({
-  HeroJobsForYouButton: () => <button>Jobs For You</button>,
+vi.mock('@/components/hero-ctas', () => ({
+  HeroCtas: () => (
+    <div>
+      <a href='/urgently-hiring'>Urgently Hiring</a>
+      <button>Jobs For You</button>
+    </div>
+  ),
 }));
 
 vi.mock('next/link', () => ({

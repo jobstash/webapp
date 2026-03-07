@@ -5,8 +5,7 @@ import { ChevronDownIcon } from 'lucide-react';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
-import { PrimaryCTA } from '@/components/primary-cta';
-import { HeroJobsForYouButton } from '@/components/hero-jobs-for-you-button.lazy';
+import { HeroCtas } from '@/components/hero-ctas';
 
 type PillarCategory =
   | 'role'
@@ -49,10 +48,6 @@ const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
 };
 
 export const HeroSection = ({ pillarItems }: Props) => {
-  const handleUrgentClick = () => {
-    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'urgently_hiring' });
-  };
-
   const handlePillarClick = (item: PillarItem) => {
     trackEvent(GA_EVENT.PILLAR_CLICKED, {
       pillar_slug: item.href.slice(1),
@@ -81,14 +76,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
             </p>
           </div>
 
-          <div className='flex flex-col items-center gap-3 sm:flex-row'>
-            <PrimaryCTA asChild className='px-6 text-base'>
-              <Link href='/urgently-hiring' onClick={handleUrgentClick}>
-                Urgently Hiring
-              </Link>
-            </PrimaryCTA>
-            <HeroJobsForYouButton />
-          </div>
+          <HeroCtas />
 
           {!!pillarItems?.length && (
             <div className='flex w-full max-w-3xl flex-col items-center gap-6 pt-4'>

@@ -1,11 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-
-import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
-import { PrimaryCTA } from '@/components/primary-cta';
-import { HeroJobsForYouButton } from '@/components/hero-jobs-for-you-button.lazy';
+import { HeroCtas } from '@/components/hero-ctas';
 import type { PillarDetails } from '@/features/pillar/schemas';
 import {
   PILLAR_CATEGORY_CONFIG,
@@ -59,10 +55,6 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
   const pillarName = getPillarName(slug);
   const config = PILLAR_CATEGORY_CONFIG[category];
 
-  const handleUrgentClick = () => {
-    trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'urgently_hiring' });
-  };
-
   return (
     <section className='relative flex min-h-[420px] w-full items-center overflow-hidden border-b bg-linear-to-b from-primary/5 via-background to-background md:min-h-[520px]'>
       <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/4 via-transparent to-transparent' />
@@ -93,14 +85,7 @@ export const PillarHero = ({ slug, pillarDetails }: Props) => {
             </p>
           </div>
 
-          <div className='flex flex-col items-center gap-3 sm:flex-row'>
-            <PrimaryCTA asChild className='px-6 text-base'>
-              <Link href='/urgently-hiring' onClick={handleUrgentClick}>
-                Urgently Hiring
-              </Link>
-            </PrimaryCTA>
-            <HeroJobsForYouButton />
-          </div>
+          <HeroCtas slug={slug} />
         </div>
       </div>
     </section>
