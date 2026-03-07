@@ -23,7 +23,7 @@ function staticSitemap(): MetadataRoute.Sitemap {
     {
       url: FRONTEND_URL,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'hourly',
       priority: 1.0,
     },
   ];
@@ -35,7 +35,7 @@ async function pillarSitemap(): Promise<MetadataRoute.Sitemap> {
   return slugs.map(({ slug, lastModified }) => ({
     url: `${FRONTEND_URL}/${slug}`,
     lastModified: new Date(lastModified),
-    changeFrequency: 'daily' as const,
+    changeFrequency: 'hourly' as const,
     priority: 0.8,
   }));
 }
@@ -46,7 +46,7 @@ async function jobSitemap(): Promise<MetadataRoute.Sitemap> {
   return jobs.map((job) => ({
     url: `${FRONTEND_URL}${job.href}`,
     lastModified: job.lastModified,
-    changeFrequency: 'weekly' as const,
+    changeFrequency: 'hourly' as const,
     priority: 0.6,
   }));
 }
