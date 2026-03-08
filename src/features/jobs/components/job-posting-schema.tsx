@@ -39,6 +39,9 @@ const buildJobPostingSchema = (
     };
   }
 
+  // Only emit jobLocation with structured PostalAddress data.
+  // Plain strings (e.g. "Distributed") are invalid — Google requires
+  // PostalAddress with addressCountry. Omitting is better than invalid data.
   if (job.addresses?.length) {
     schema.jobLocation = job.addresses.map((addr) => ({
       '@type': 'Place',
@@ -58,11 +61,6 @@ const buildJobPostingSchema = (
         },
       }),
     }));
-  } else if (job.organization?.location) {
-    schema.jobLocation = {
-      '@type': 'Place',
-      address: job.organization.location,
-    };
   }
 
   if (salaryData) {
@@ -79,12 +77,15 @@ const buildJobPostingSchema = (
   }
 
   if (jobLocationType === 'TELECOMMUTE') {
-    schema.jobLocationType = 'TELECOMMUTE';
-
     const locationRequirements = extractApplicantLocationRequirements(
       job.addresses,
     );
+
+    // Only emit TELECOMMUTE when we have valid country data for
+    // applicantLocationRequirements — Google requires both together.
+    // Jobs without address data skip the remote enrichment to stay valid.
     if (locationRequirements) {
+      schema.jobLocationType = 'TELECOMMUTE';
       schema.applicantLocationRequirements = locationRequirements;
     }
   }
