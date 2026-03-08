@@ -127,6 +127,10 @@ interface SchemaCountry {
  * Extracts applicant location requirements for remote jobs.
  * Returns countries where remote work is offered for Schema.org structured data.
  * Only relevant when jobLocationType is 'TELECOMMUTE'.
+ *
+ * Google requires applicantLocationRequirements for all TELECOMMUTE jobs.
+ * Returns null when no valid country data is available — callers should
+ * skip jobLocationType entirely in that case to avoid invalid structured data.
  */
 export const extractApplicantLocationRequirements = (
   addresses?: Address[] | null,
