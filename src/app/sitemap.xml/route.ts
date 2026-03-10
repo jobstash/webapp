@@ -8,15 +8,16 @@ const PILLAR_CHUNK_SIZE = 3000;
 
 export async function GET() {
   const slugs = await fetchPillarSitemapSlugs();
-  const numChunks = Math.ceil(slugs.length / PILLAR_CHUNK_SIZE);
+  const numPillarChunks = Math.ceil(slugs.length / PILLAR_CHUNK_SIZE);
 
+  // sitemap1 = static, sitemap2 = jobs, sitemap3+ = pillar chunks
   const sitemaps = [
-    `${FRONTEND_URL}/sitemap/static.xml`,
+    `${FRONTEND_URL}/sitemap1.xml`,
+    `${FRONTEND_URL}/sitemap2.xml`,
     ...Array.from(
-      { length: numChunks },
-      (_, i) => `${FRONTEND_URL}/sitemap/pillar-${i}.xml`,
+      { length: numPillarChunks },
+      (_, i) => `${FRONTEND_URL}/sitemap${i + 3}.xml`,
     ),
-    `${FRONTEND_URL}/sitemap/jobs.xml`,
   ];
 
   const xml = [
