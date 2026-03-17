@@ -17,19 +17,19 @@ export const fetchPillarItems = async (): Promise<PillarItem[]> => {
   // Mock data for pillar items - replace with actual API call when available
   return [
     // Roles - What you do
-    { category: 'role', label: 'Deisgn', href: '/cl-design' },
-    { category: 'role', label: 'Engineering', href: '/cl-engineering' },
-    { category: 'role', label: 'Marketing', href: '/cl-marketing' },
+    { category: 'role', label: 'BizDev', href: '/cl-bizdev' },
+    { category: 'role', label: 'Smart Contracts', href: '/cl-smartcontracts' },
+    { category: 'role', label: 'Marketing', href: '/cl-backend' },
 
     // Skills - What you know
     { category: 'skill', label: 'TypeScript', href: '/t-typescript' },
     { category: 'skill', label: 'Solidity', href: '/t-solidity' },
     { category: 'skill', label: 'React', href: '/t-react' },
 
-    // // Locations - Where you work
-    // { category: 'location', label: 'USA', href: '/l-usa' },
-    // { category: 'location', label: 'China', href: '/l-china' },
-    // { category: 'location', label: 'Europe', href: '/l-europe' },
+    // Locations - Where you work
+    { category: 'location', label: 'London', href: '/l-london' },
+    { category: 'location', label: 'New York City', href: '/l-nyc' },
+    { category: 'location', label: 'Singapore', href: '/l-singapore' },
 
     // Location Type - Work arrangement
     { category: 'locationType', label: 'Remote', href: '/lt-remote' },
