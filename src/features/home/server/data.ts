@@ -28,7 +28,7 @@ export const fetchPillarItems = async (): Promise<PillarItem[]> => {
 
     // Locations - Where you work
     { category: 'location', label: 'London', href: '/l-london' },
-    { category: 'location', label: 'New York City', href: '/l-nyc' },
+    { category: 'location', label: 'New York', href: '/l-new-york' },
     { category: 'location', label: 'Singapore', href: '/l-singapore' },
 
     // Location Type - Work arrangement
