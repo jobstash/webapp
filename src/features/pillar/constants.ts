@@ -125,11 +125,13 @@ const PREFIX_MAPPINGS: PrefixMapping[] = [
 // Custom slug aliases: frontend URL slug → MW API slug
 const SLUG_TO_API: Record<string, string> = {
   'urgently-hiring': 'b-expertJobs',
+  'crypto-beginner-jobs': 'b-onboardIntoWeb3',
 };
 
 // Reverse map: MW API slug → frontend URL slug
 const API_TO_SLUG: Record<string, string> = {
   'b-expertJobs': 'urgently-hiring',
+  'b-onboardIntoWeb3': 'crypto-beginner-jobs',
 };
 
 export const getApiSlug = (slug: string): string => SLUG_TO_API[slug] ?? slug;
@@ -170,6 +172,7 @@ const BOOLEAN_TAGLINES: Record<string, string> = {
   'pays-in-crypto': 'Jobs that pay in crypto',
   'offers-token-allocation': 'Jobs with token allocation',
   'urgently-hiring': 'Urgently Hiring Jobs',
+  'crypto-beginner-jobs': 'Crypto Beginner Jobs',
 };
 
 export const getBooleanTagline = (slug: string): string => {
