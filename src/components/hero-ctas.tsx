@@ -50,6 +50,23 @@ export const HeroCtas = ({ slug }: Props) => {
           Urgently Hiring
         </Link>
       </PrimaryCTA>
+      <Button
+        size='lg'
+        variant='secondary'
+        className='bg-input/30 text-base'
+        asChild
+      >
+        <Link
+          href='/crypto-beginner-jobs'
+          onClick={() =>
+            trackEvent(GA_EVENT.HERO_CTA_CLICKED, {
+              source: 'crypto_beginner_jobs',
+            })
+          }
+        >
+          Crypto Beginner Jobs
+        </Link>
+      </Button>
       <HeroJobsForYouButton />
     </div>
   );
