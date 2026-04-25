@@ -1,5 +1,5 @@
 {
-  "ignorePatterns": ["node_modules/", "public/"],
+  "ignorePatterns": ["node_modules/", "public/", "middleware/**"],
   "categories": {
     "correctness": "warn"
   },
