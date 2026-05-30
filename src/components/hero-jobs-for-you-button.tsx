@@ -6,9 +6,8 @@ import { useEligibility } from '@/hooks/use-eligibility';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { PrimaryCTA } from '@/components/primary-cta';
-import { Skeleton } from '@/components/ui/skeleton';
 
-const SKELETON = <Skeleton className='h-10 w-36 rounded-lg' />;
+import { HeroJobsForYouButtonSkeleton } from './hero-jobs-for-you-button.skeleton';
 
 const handleClick = () => {
   trackEvent(GA_EVENT.HERO_CTA_CLICKED, { source: 'hero_jobs_for_you' });
@@ -21,7 +20,7 @@ interface Props {
 export const HeroJobsForYouButton = ({ variant = 'secondary' }: Props) => {
   const { isAuthenticated, isLoading } = useEligibility();
 
-  if (isLoading) return SKELETON;
+  if (isLoading) return <HeroJobsForYouButtonSkeleton variant={variant} />;
 
   const href = isAuthenticated ? '/profile/jobs' : '/login';
 

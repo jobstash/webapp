@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { SocialsAside } from './socials-aside';
+import SocialsAsideContent from './socials-aside-content';
 
 afterEach(() => {
   cleanup();
@@ -24,9 +24,9 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-describe('SocialsAside', () => {
+describe('SocialsAsideContent', () => {
   it('renders all 4 social links', () => {
-    render(<SocialsAside />);
+    render(<SocialsAsideContent />);
 
     expect(screen.getByRole('link', { name: 'Telegram' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'X' })).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe('SocialsAside', () => {
   });
 
   it('has correct hrefs', () => {
-    render(<SocialsAside />);
+    render(<SocialsAsideContent />);
 
     expect(screen.getByRole('link', { name: 'Telegram' })).toHaveAttribute(
       'href',
@@ -56,7 +56,7 @@ describe('SocialsAside', () => {
   });
 
   it('opens links in new tab', () => {
-    render(<SocialsAside />);
+    render(<SocialsAsideContent />);
 
     const links = screen.getAllByRole('link');
     links.forEach((link) => {
