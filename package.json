@@ -1,7 +1,8 @@
 {
   "name": "webapp",
-  "version": "2.32.2",
+  "version": "2.32.3",
   "private": true,
+  "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "next dev",
     "prebuild": "pnpm format && pnpm lint",

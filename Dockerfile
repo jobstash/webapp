@@ -2,8 +2,10 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 
-# Enable corepack for pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable corepack and pin pnpm to match package.json's "packageManager".
+# Do NOT use pnpm@latest: a release newer than 10.28.0 made ignored build
+# scripts a fatal error (ERR_PNPM_IGNORED_BUILDS), which broke this build.
+RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
 
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
@@ -15,8 +17,8 @@ RUN pnpm install --frozen-lockfile
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Enable corepack for pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable corepack and pin pnpm (must match the deps stage and package.json)
+RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
 
 # Build-time environment variables (Coolify passes these as --build-arg)
 ARG NEXT_PUBLIC_MW_URL
