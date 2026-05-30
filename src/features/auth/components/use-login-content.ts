@@ -10,17 +10,21 @@ export const useLoginContent = () => {
   const searchParams = useSearchParams();
   const [isNavigating, startTransition] = useTransition();
 
-  const redirectTo = searchParams.get('redirect') ?? '/profile/jobs';
+  const redirectParam = searchParams.get('redirect');
+  const redirectTo = redirectParam ?? '/profile/jobs';
+  const backTo = redirectParam ?? '/';
+  const isBackToHome = backTo === '/';
 
   const handleBack = () => {
     startTransition(() => {
-      router.push(redirectTo);
+      router.push(backTo);
     });
   };
 
   return {
     isNavigating,
     redirectTo,
+    isBackToHome,
     handleBack,
   };
 };
