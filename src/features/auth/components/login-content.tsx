@@ -11,7 +11,8 @@ import { useLoginAuth } from './use-login-auth';
 import { useLoginContent } from './use-login-content';
 
 export const LoginContent = () => {
-  const { isNavigating, redirectTo, handleBack } = useLoginContent();
+  const { isNavigating, redirectTo, isBackToHome, handleBack } =
+    useLoginContent();
   const { login, isLoading } = useLoginAuth(redirectTo);
 
   if (isLoading) {
@@ -74,7 +75,7 @@ export const LoginContent = () => {
             'disabled:pointer-events-none disabled:opacity-50',
           )}
         >
-          Back to {redirectTo === '/' ? 'jobs' : 'previous page'}
+          Back to {isBackToHome ? 'jobs' : 'previous page'}
         </button>
       </div>
     </div>
