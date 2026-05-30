@@ -14,6 +14,7 @@ export const JobstashLogo = ({ className }: JobstashLogoProps) => {
         fill
         priority
         quality={50}
+        sizes='64px'
         src='/jobstash-logo.png'
         alt='JobStash Logo'
         style={{ objectFit: 'contain' }}
