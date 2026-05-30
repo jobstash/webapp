@@ -2,9 +2,7 @@
 
 import dynamic from 'next/dynamic';
 
-const SKELETON = (
-  <div className='h-10 w-36 animate-pulse rounded-lg bg-muted' />
-);
+import { HeroJobsForYouButtonSkeleton } from './hero-jobs-for-you-button.skeleton';
 
 export const HeroJobsForYouButton = dynamic(
   () =>
@@ -13,6 +11,6 @@ export const HeroJobsForYouButton = dynamic(
     ),
   {
     ssr: false,
-    loading: () => SKELETON,
+    loading: () => <HeroJobsForYouButtonSkeleton />,
   },
 );
