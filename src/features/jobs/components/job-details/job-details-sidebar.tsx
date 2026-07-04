@@ -6,11 +6,14 @@ import { SimilarJobsCard } from './similar-jobs-card';
 interface JobDetailsSidebarProps {
   job: JobDetailsSchema;
   isExpertJob: boolean;
+  /** On small screens the org card renders inline below the job header */
+  hideOrgCard?: boolean;
 }
 
 export const JobDetailsSidebar = ({
   job,
   isExpertJob,
+  hideOrgCard,
 }: JobDetailsSidebarProps) => {
   const { hasApplyUrl, organization, similarJobs } = job;
 
@@ -23,7 +26,9 @@ export const JobDetailsSidebar = ({
         jobTitle={job.title}
         organization={organization?.name ?? null}
       />
-      {organization && <OrgInfoCard organization={organization} />}
+      {!hideOrgCard && organization && (
+        <OrgInfoCard organization={organization} />
+      )}
       <SimilarJobsCard jobs={similarJobs} />
     </div>
   );

@@ -4,6 +4,7 @@ import { JobDetailsHeader } from './job-details-header';
 import { JobDetailsContent } from './job-details-content';
 import { JobDetailsSidebar } from './job-details-sidebar';
 import { MobileApplyBar } from './mobile-apply-bar';
+import { OrgInfoCard } from './org-info-card';
 
 interface JobDetailsPageProps {
   job: JobDetailsSchema;
@@ -20,6 +21,13 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
           <article className='min-w-0 flex-1'>
             <div className='rounded-2xl border border-neutral-800/50 bg-sidebar p-3 pt-4 md:p-6 md:pt-6'>
               <JobDetailsHeader job={job} />
+              {/* Below lg the sidebar is hidden — surface the company info
+                  right under the header instead of at the page bottom */}
+              {job.organization && (
+                <div className='mt-6 lg:hidden'>
+                  <OrgInfoCard organization={job.organization} />
+                </div>
+              )}
               <JobDetailsContent job={job} tags={job.tags} />
             </div>
           </article>
@@ -30,7 +38,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
         </div>
 
         <div className='mt-6 space-y-4 lg:hidden'>
-          <JobDetailsSidebar job={job} isExpertJob={isExpertJob} />
+          <JobDetailsSidebar job={job} isExpertJob={isExpertJob} hideOrgCard />
         </div>
       </main>
 

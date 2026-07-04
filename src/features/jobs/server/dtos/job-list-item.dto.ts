@@ -11,6 +11,16 @@ import {
 } from '@/lib/schemas';
 import { fundingRoundDto, investorDto, tagDto } from '@/lib/server/dtos';
 
+export const jobOrgProjectDto = z.object({
+  id: nonEmptyStringSchema,
+  name: nullableStringSchema,
+  logo: optionalStringSchema,
+  logoUrl: optionalStringSchema,
+  website: optionalStringSchema,
+  category: optionalStringSchema,
+});
+export type JobOrgProjectDto = z.infer<typeof jobOrgProjectDto>;
+
 export const jobListItemDto = z.object({
   id: nonEmptyStringSchema,
   title: nullableStringSchema,
@@ -57,6 +67,14 @@ export const jobListItemDto = z.object({
       headcountEstimate: nullableNumberSchema,
       fundingRounds: fundingRoundDto.array(),
       investors: investorDto.array(),
+      // Enriched org metadata — emitted by /jobs/details and the pillar
+      // static endpoint; absent on /jobs/list.
+      discord: optionalStringSchema,
+      telegram: optionalStringSchema,
+      twitter: optionalStringSchema,
+      github: optionalStringSchema,
+      docs: optionalStringSchema,
+      projects: jobOrgProjectDto.array().optional(),
     })
     .nullable(),
 });
