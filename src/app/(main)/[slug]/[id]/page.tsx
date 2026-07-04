@@ -25,16 +25,17 @@ export const generateMetadata = async ({
   const { id } = await params;
   const job = await fetchJobDetails({ id });
 
-  if (!job) return { title: 'Job Not Found | JobStash' };
+  if (!job) return { title: 'Job Not Found' };
 
   const title = job.organization
-    ? `${job.title} at ${job.organization.name} | JobStash`
-    : `${job.title} | JobStash`;
+    ? `${job.title} at ${job.organization.name}`
+    : job.title;
 
   const description = job.summary ?? `View details for ${job.title}`;
   const canonicalUrl = `${clientEnv.FRONTEND_URL}${job.href}`;
   const keywords = job.tags.map((tag) => tag.name);
 
+  // og/twitter titles inherit the templated page title when unset.
   return {
     title,
     description,
@@ -43,13 +44,11 @@ export const generateMetadata = async ({
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
       description,
       url: canonicalUrl,
     },
     twitter: {
       card: 'summary_large_image',
-      title,
       description,
     },
   };

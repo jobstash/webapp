@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | JobStash',
+  title: 'Privacy Policy',
   description: 'Privacy Policy for JobStash - Crypto Native Jobs',
 };
 

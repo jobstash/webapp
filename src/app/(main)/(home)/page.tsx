@@ -16,7 +16,7 @@ interface Props {
   searchParams: Promise<Record<string, string> & { page?: string }>;
 }
 
-const HOME_TITLE = 'Crypto Jobs — Web3, DeFi & Blockchain Jobs | JobStash';
+const HOME_TITLE = 'Crypto Jobs — Web3, DeFi & Blockchain Jobs';
 const HOME_DESCRIPTION =
   'Browse crypto native jobs across the entire Web3 ecosystem — engineering, product, design, marketing and more. Aggregated from thousands of crypto organizations and updated daily.';
 

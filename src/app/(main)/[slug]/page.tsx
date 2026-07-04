@@ -29,7 +29,7 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-const NOT_FOUND_METADATA: Metadata = { title: 'Page Not Found | JobStash' };
+const NOT_FOUND_METADATA: Metadata = { title: 'Page Not Found' };
 
 export const generateMetadata = async ({
   params,
@@ -41,14 +41,14 @@ export const generateMetadata = async ({
   const pillarPage = await fetchPillarPageStatic(slug);
   if (!pillarPage) return NOT_FOUND_METADATA;
 
-  const { title: pageTitle, description } = pillarPage;
-  const title = `${pageTitle} | JobStash`;
+  const { title, description } = pillarPage;
   const url = `${clientEnv.FRONTEND_URL}/${slug}`;
 
   // Thin pillars (junk/low-volume tags) stay usable for humans but are
   // kept out of the index; no canonical alongside noindex.
   const isThin = pillarPage.jobs.length < PILLAR_MIN_INDEXABLE_JOBS;
 
+  // og/twitter titles inherit the templated page title when unset.
   return {
     title,
     description,
@@ -56,13 +56,11 @@ export const generateMetadata = async ({
       ? { robots: robotsNoindexFollow() }
       : { alternates: { canonical: url } }),
     openGraph: {
-      title,
       description,
       url,
     },
     twitter: {
       card: 'summary_large_image',
-      title,
       description,
     },
   };
