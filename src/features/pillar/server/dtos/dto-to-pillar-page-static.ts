@@ -24,6 +24,13 @@ export const dtoToPillarPageStatic = (
   title: dto.data.title,
   description: dto.data.description,
   jobs: dto.data.jobs.map(dtoToJobListItem),
+  organization: dto.data.organization
+    ? {
+        name: dto.data.organization.name,
+        summary: dto.data.organization.summary ?? null,
+        description: dto.data.organization.description ?? null,
+      }
+    : null,
   suggestedPillars: dto.data.suggestedPillars.map((p) => ({
     ...p,
     label: mapSuggestedPillarLabel(p.label, p.href),

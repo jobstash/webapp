@@ -261,6 +261,8 @@ const dtoToJobItemOrg = (
     location,
     logoUrl,
     headcountEstimate,
+    summary,
+    description,
     fundingRounds,
     investors,
   } = dto;
@@ -272,6 +274,8 @@ const dtoToJobItemOrg = (
     location,
     logo: getLogoUrl(website, logoUrl),
     employeeCount: headcountEstimate ? `${headcountEstimate}` : null,
+    summary: summary ?? null,
+    description: description ?? null,
     fundingRounds: dtoToFundingRounds(fundingRounds),
     investors: dtoToInvestors(investors),
   };

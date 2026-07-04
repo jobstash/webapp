@@ -37,6 +37,8 @@ export const jobOrganizationSchema = z.object({
   location: nullableStringSchema,
   logo: nullableStringSchema,
   employeeCount: nullableStringSchema,
+  summary: nullableStringSchema,
+  description: nullableStringSchema,
   fundingRounds: jobFundingRoundSchema.array(),
   investors: jobInvestorSchema.array(),
 });
