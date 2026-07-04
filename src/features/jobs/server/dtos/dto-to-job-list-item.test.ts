@@ -96,6 +96,29 @@ describe('jobListItemDto — org summary/description tolerance', () => {
   });
 });
 
+describe('dtoToJobListItem — publishedTimestampIsVerified', () => {
+  const getPostedTag = (dto: JobListItemDto) =>
+    dtoToJobListItem(dto).infoTags.find((tag) => tag.iconKey === 'posted');
+
+  it('marks the posted info tag verified when the flag is true', () => {
+    const tag = getPostedTag(
+      makeJobListItemDto({ publishedTimestampIsVerified: true }),
+    );
+    expect(tag?.verified).toBe(true);
+  });
+
+  it.each([
+    ['false', false],
+    ['absent', undefined],
+  ])('omits verified when the flag is %s', (_label, value) => {
+    const tag = getPostedTag(
+      makeJobListItemDto({ publishedTimestampIsVerified: value }),
+    );
+    expect(tag).toBeDefined();
+    expect(tag).not.toHaveProperty('verified');
+  });
+});
+
 describe('dtoToJobListItem — existing behavior smoke', () => {
   it('builds the slugified href from title and org name', () => {
     const item = dtoToJobListItem(makeJobListItemDto());

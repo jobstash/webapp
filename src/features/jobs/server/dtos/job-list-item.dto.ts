@@ -17,6 +17,9 @@ export const jobListItemDto = z.object({
   url: nullableStringSchema,
   shortUUID: nonEmptyStringSchema,
   timestamp: z.number(),
+  // Optional until MW emits it; true = the publish date is verified (not a
+  // resurrected/re-scraped posting).
+  publishedTimestampIsVerified: z.boolean().optional(),
   summary: nullableStringSchema,
 
   seniority: nullableStringSchema,

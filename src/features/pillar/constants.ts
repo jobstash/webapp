@@ -1,6 +1,6 @@
-import { SENIORITY_LABEL_TO_KEY } from '@/lib/constants';
+import { SENIORITY_LABEL_TO_KEY, SENIORITY_MAPPING } from '@/lib/constants';
 
-import type { PillarFilterContext } from './schemas';
+import type { PillarFilterContext, SuggestedPillar } from './schemas';
 
 // Pillar pages with fewer jobs than this are thin/doorway content:
 // they render normally for humans but are noindexed.
@@ -233,4 +233,52 @@ export const getPillarFilterHref = (
 ): string => {
   if (!pillarContext) return '/';
   return `/?${pillarContext.paramKey}=${encodeURIComponent(pillarContext.value)}`;
+};
+
+// Boolean filter params → their pillar page (alias slugs preferred for SEO)
+const BOOLEAN_PARAM_KEY_TO_SLUG: Record<string, string> = {
+  expertJobs: 'urgently-hiring',
+  onboardIntoWeb3: 'crypto-beginner-jobs',
+  paysInCrypto: 'b-pays-in-crypto',
+  offersTokenAllocation: 'b-offers-token-allocation',
+};
+
+const MAX_PILLAR_LINKS = 8;
+
+/**
+ * Reverse-maps active filter params to their pillar pages so filtered views
+ * can cross-link to the SEO landing pages (e.g. `?tags=react` → `/t-react`).
+ * Location has no filter param and is correctly skipped.
+ */
+export const getPillarLinksFromSearchParams = (
+  searchParams: Record<string, string>,
+): SuggestedPillar[] => {
+  const slugs: string[] = [];
+
+  for (const { prefix, paramKey } of PREFIX_MAPPINGS) {
+    const paramValue = paramKey ? searchParams[paramKey] : undefined;
+    if (!paramValue) continue;
+
+    for (const value of paramValue.split(',')) {
+      const trimmed = value.trim().toLowerCase();
+      if (!trimmed) continue;
+
+      if (paramKey === 'seniority') {
+        const label = (SENIORITY_MAPPING as Record<string, string>)[trimmed];
+        if (label) slugs.push(`s-${label.toLowerCase()}`);
+        continue;
+      }
+
+      slugs.push(`${prefix}${trimmed}`);
+    }
+  }
+
+  for (const [paramKey, slug] of Object.entries(BOOLEAN_PARAM_KEY_TO_SLUG)) {
+    if (searchParams[paramKey] === 'true') slugs.push(slug);
+  }
+
+  return [...new Set(slugs)].slice(0, MAX_PILLAR_LINKS).map((slug) => ({
+    label: getPillarName(slug),
+    href: `/${slug}`,
+  }));
 };

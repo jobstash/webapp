@@ -33,6 +33,8 @@ const PARAM_KEYS = {
   ORGANIZATIONS: 'organizations',
   PUBLICATION_DATE: 'publicationDate',
   INVESTORS: 'investors',
+  EXPERT_JOBS: 'expertJobs',
+  ONBOARD_INTO_WEB3: 'onboardIntoWeb3',
 } as const;
 
 type ParamKey = (typeof PARAM_KEYS)[keyof typeof PARAM_KEYS];
@@ -50,6 +52,8 @@ const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.ORGANIZATIONS,
   PARAM_KEYS.PUBLICATION_DATE,
   PARAM_KEYS.INVESTORS,
+  PARAM_KEYS.EXPERT_JOBS,
+  PARAM_KEYS.ONBOARD_INTO_WEB3,
 ]);
 
 const RADIO_FILTER_OPTION_THRESHOLD = 6;

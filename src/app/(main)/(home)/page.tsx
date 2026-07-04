@@ -7,6 +7,8 @@ import { JobList } from '@/features/jobs/components/job-list/job-list';
 import { JobListBoundary } from '@/features/jobs/components/job-list/job-list.error';
 import { JobListSkeleton } from '@/features/jobs/components/job-list/job-list.skeleton';
 import { fetchJobListPage } from '@/features/jobs/server/data';
+import { SuggestedPillars } from '@/features/pillar/components';
+import { getPillarLinksFromSearchParams } from '@/features/pillar/constants';
 import { clientEnv } from '@/lib/env/client';
 import { robotsNoindexFollow } from '@/lib/seo';
 
@@ -61,10 +63,14 @@ const HomePage = async ({ searchParams }: Props) => {
   const currentPage = Number(page) || 1;
   preload(currentPage, restSearchParams);
 
+  // Cross-link filtered views to their pillar pages (internal linking).
+  const suggestedPillarLinks = getPillarLinksFromSearchParams(restSearchParams);
+
   return (
     <div className='flex gap-4'>
       <aside className='sticky top-20 hidden max-h-[calc(100vh-5rem)] w-68 shrink-0 flex-col gap-4 self-start overflow-y-auto lg:top-24 lg:flex lg:max-h-[calc(100vh-6rem)]'>
         <FiltersAside />
+        <SuggestedPillars items={suggestedPillarLinks} />
         <SocialsAside />
       </aside>
       <section className='min-w-0 grow'>

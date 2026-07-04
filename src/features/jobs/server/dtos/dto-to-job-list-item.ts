@@ -123,6 +123,7 @@ const createJobInfoTags = (
   tags.push({
     iconKey: 'posted',
     label: prettyTimestamp(timestamp),
+    ...(dto.publishedTimestampIsVerified === true && { verified: true }),
   });
 
   if (seniority && seniority in SENIORITY_MAPPING) {
