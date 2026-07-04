@@ -2,7 +2,10 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import { SocialsAside } from '@/components/socials-aside';
-import { FiltersAside } from '@/features/filters/components/filters-aside';
+import {
+  FiltersAside,
+  FiltersDrawer,
+} from '@/features/filters/components/filters-aside';
 import { JobList } from '@/features/jobs/components/job-list/job-list';
 import { JobListBoundary } from '@/features/jobs/components/job-list/job-list.error';
 import { JobListSkeleton } from '@/features/jobs/components/job-list/job-list.skeleton';
@@ -74,6 +77,9 @@ const HomePage = async ({ searchParams }: Props) => {
         <SocialsAside />
       </aside>
       <section className='min-w-0 grow'>
+        <div className='mb-4 lg:hidden'>
+          <FiltersDrawer />
+        </div>
         <Suspense fallback={<JobListSkeleton />}>
           <JobListBoundary>
             <JobList

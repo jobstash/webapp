@@ -1,7 +1,10 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { FiltersAside } from '@/features/filters/components/filters-aside';
+import {
+  FiltersAside,
+  FiltersDrawer,
+} from '@/features/filters/components/filters-aside';
 import { OrgInfoCard } from '@/features/jobs/components/job-details/org-info-card';
 import {
   OrgAboutSection,
@@ -115,6 +118,9 @@ const PillarPage = async ({ params }: Props) => {
           <SuggestedPillars items={suggestedPillars} />
         </aside>
         <section className='min-w-0 grow'>
+          <div className='mb-4 lg:hidden'>
+            <FiltersDrawer pillarMode pillarContext={pillarContext} />
+          </div>
           <PillarJobList
             slug={slug}
             pillarContext={pillarContext}
