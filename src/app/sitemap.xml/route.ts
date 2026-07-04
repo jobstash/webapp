@@ -1,33 +1,27 @@
-import { fetchPillarSitemapSlugs } from '@/features/pillar/server/data';
+import { buildSitemapIndexResponse } from '@/lib/server/sitemap/build-sitemap-xml';
+import { getChunkCounts } from '@/lib/server/sitemap/chunks';
 import { clientEnv } from '@/lib/env/client';
 
 export const revalidate = 3600;
 
 const FRONTEND_URL = clientEnv.FRONTEND_URL;
-const PILLAR_CHUNK_SIZE = 3000;
 
 export async function GET() {
-  const slugs = await fetchPillarSitemapSlugs();
-  const numPillarChunks = Math.ceil(slugs.length / PILLAR_CHUNK_SIZE);
+  const counts = await getChunkCounts();
 
-  // sitemap1 = static, sitemap2 = jobs, sitemap3+ = pillar chunks
+  // The index and the chunk route derive from the same cached fetches, so it
+  // can only reference chunk ids the /sitemaps/[id] route actually serves.
   const sitemaps = [
-    `${FRONTEND_URL}/sitemap1.xml`,
-    `${FRONTEND_URL}/sitemap2.xml`,
+    `${FRONTEND_URL}/sitemaps/static`,
     ...Array.from(
-      { length: numPillarChunks },
-      (_, i) => `${FRONTEND_URL}/sitemap${i + 3}.xml`,
+      { length: counts.jobs },
+      (_, i) => `${FRONTEND_URL}/sitemaps/jobs-${i + 1}`,
+    ),
+    ...Array.from(
+      { length: counts.pillars },
+      (_, i) => `${FRONTEND_URL}/sitemaps/pillars-${i + 1}`,
     ),
   ];
 
-  const xml = [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...sitemaps.map((loc) => `  <sitemap><loc>${loc}</loc></sitemap>`),
-    '</sitemapindex>',
-  ].join('\n');
-
-  return new Response(xml, {
-    headers: { 'Content-Type': 'application/xml' },
-  });
+  return buildSitemapIndexResponse(sitemaps);
 }
