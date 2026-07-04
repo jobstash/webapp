@@ -10,7 +10,10 @@ import { clientEnv } from '@/lib/env/client';
 
 export const metadata: Metadata = {
   metadataBase: new URL(clientEnv.FRONTEND_URL),
-  title: 'Crypto Native Jobs',
+  title: {
+    default: 'JobStash — Crypto Native Jobs',
+    template: '%s | JobStash',
+  },
   description:
     'Explore crypto native jobs across the entire crypto ecosystem, powered by AI and enhanced by unique data insights as a public good.',
   icons: {

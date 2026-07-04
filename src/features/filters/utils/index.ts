@@ -1,3 +1,4 @@
+export { buildFilterModeHref } from './build-filter-mode-href';
 export { checkIsRemoteFilter } from './check-is-remote-filter';
 export {
   calculateSliderStep,

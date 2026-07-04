@@ -68,7 +68,50 @@ const nextConfig: NextConfig = {
       destination: '/',
       permanent: true,
     },
+    // Legacy child-sitemap URLs → chunked /sitemaps/* scheme. The GSC-submitted
+    // index at /sitemap.xml keeps its address.
+    {
+      source: '/sitemap1.xml',
+      destination: '/sitemaps/static',
+      permanent: true,
+    },
+    {
+      source: '/sitemap2.xml',
+      destination: '/sitemaps/jobs-1',
+      permanent: true,
+    },
+    {
+      source: '/sitemap3.xml',
+      destination: '/sitemaps/pillars-1',
+      permanent: true,
+    },
+    {
+      source: '/sitemap4.xml',
+      destination: '/sitemaps/pillars-2',
+      permanent: true,
+    },
+    {
+      source: '/sitemap5.xml',
+      destination: '/sitemaps/pillars-3',
+      permanent: true,
+    },
   ],
+  // Keep generated OG/Twitter image routes out of the search index — Google
+  // was indexing them as standalone pages. Social scrapers ignore robots
+  // headers, so link previews are unaffected.
+  headers: async () => {
+    const noindex = [{ key: 'X-Robots-Tag', value: 'noindex' }];
+    return [
+      {
+        source: '/:path*/:file(opengraph-image|twitter-image)',
+        headers: noindex,
+      },
+      {
+        source: '/:path*/:file(opengraph-image|twitter-image)-:hash',
+        headers: noindex,
+      },
+    ];
+  },
 };
 
 const analyze = withBundleAnalyzer({

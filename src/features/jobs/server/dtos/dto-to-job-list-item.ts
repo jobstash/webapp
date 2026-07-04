@@ -123,6 +123,7 @@ const createJobInfoTags = (
   tags.push({
     iconKey: 'posted',
     label: prettyTimestamp(timestamp),
+    ...(dto.publishedTimestampIsVerified === true && { verified: true }),
   });
 
   if (seniority && seniority in SENIORITY_MAPPING) {
@@ -261,6 +262,8 @@ const dtoToJobItemOrg = (
     location,
     logoUrl,
     headcountEstimate,
+    summary,
+    description,
     fundingRounds,
     investors,
   } = dto;
@@ -272,6 +275,8 @@ const dtoToJobItemOrg = (
     location,
     logo: getLogoUrl(website, logoUrl),
     employeeCount: headcountEstimate ? `${headcountEstimate}` : null,
+    summary: summary ?? null,
+    description: description ?? null,
     fundingRounds: dtoToFundingRounds(fundingRounds),
     investors: dtoToInvestors(investors),
   };

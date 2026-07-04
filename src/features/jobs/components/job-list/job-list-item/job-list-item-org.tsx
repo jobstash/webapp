@@ -10,9 +10,10 @@ interface JobListItemOrgProps {
 }
 
 export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
-  const { fundingRounds, investors } = organization;
+  const { summary, fundingRounds, investors } = organization;
 
-  const hasExpandableContent = fundingRounds.length > 0 || investors.length > 0;
+  const hasExpandableContent =
+    !!summary || fundingRounds.length > 0 || investors.length > 0;
 
   if (!hasExpandableContent) return null;
 
@@ -38,6 +39,12 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
       </summary>
 
       <div className='mt-3 space-y-3 pl-4'>
+        {summary && (
+          <p className='text-sm leading-relaxed text-muted-foreground'>
+            {summary}
+          </p>
+        )}
+
         {/* Funding rounds - card style */}
         {fundingRounds.length > 0 && (
           <div className='space-y-2'>

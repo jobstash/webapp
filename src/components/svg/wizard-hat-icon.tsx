@@ -1,9 +1,11 @@
-export const WizardHatIcon = () => (
+import { cn } from '@/lib/utils';
+
+export const WizardHatIcon = ({ className }: { className?: string }) => (
   <svg
     viewBox='0 0 320 320'
     xmlns='http://www.w3.org/2000/svg'
     shapeRendering='crispEdges'
-    className='mt-1.5 h-[28px] w-[28px]'
+    className={cn('mt-1.5 h-[28px] w-[28px]', className)}
   >
     <rect width='100%' height='100%' fill='none' />
     <rect

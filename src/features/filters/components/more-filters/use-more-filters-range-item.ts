@@ -4,6 +4,7 @@ import { useProgress } from '@bprogress/next';
 import { useQueryState } from 'nuqs';
 
 import type { RangeFilterConfig } from '@/features/filters/schemas';
+import { usePillarFilterMode } from '@/features/filters/hooks/use-pillar-filter-mode';
 import {
   calculateSliderStep,
   formatRangeValue,
@@ -22,6 +23,7 @@ export const useMoreFiltersRangeItem = ({
   startTransition,
 }: Props) => {
   const { start } = useProgress();
+  const pillarMode = usePillarFilterMode();
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<[number, number]>([
@@ -57,6 +59,15 @@ export const useMoreFiltersRangeItem = ({
     start();
     setOpen(false);
     closeDropdown();
+
+    if (pillarMode) {
+      pillarMode.navigate({
+        [config.lowest.paramKey]: String(roundedLow),
+        [config.highest.paramKey]: String(roundedHigh),
+      });
+      return;
+    }
+
     startTransition(() => {
       setPage(null);
       setLowParam(String(roundedLow));

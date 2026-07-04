@@ -1,5 +1,10 @@
 import Link from 'next/link';
-import { ExternalLinkIcon, MapPinIcon, UsersIcon } from 'lucide-react';
+import {
+  ChevronRightIcon,
+  ExternalLinkIcon,
+  MapPinIcon,
+  UsersIcon,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -20,9 +25,13 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
     location,
     logo,
     employeeCount,
+    summary,
+    description,
     fundingRounds,
     investors,
   } = organization;
+
+  const hasAboutSection = !!description && description !== summary;
 
   return (
     <div className='space-y-4 rounded-2xl border border-neutral-800/50 bg-sidebar p-4'>
@@ -61,6 +70,12 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
           )}
         </div>
       </div>
+
+      {summary && (
+        <p className='text-sm leading-relaxed text-muted-foreground'>
+          {summary}
+        </p>
+      )}
 
       <div className='space-y-2'>
         {location && (
@@ -122,6 +137,28 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
             ))}
           </div>
         </div>
+      )}
+
+      {hasAboutSection && (
+        <details className='group'>
+          <summary
+            className={cn(
+              'inline-flex cursor-pointer list-none items-center gap-1',
+              'text-xs text-muted-foreground',
+              'transition-colors duration-150 hover:text-foreground',
+              '[&::-webkit-details-marker]:hidden',
+            )}
+          >
+            <ChevronRightIcon
+              className='size-3.5 transition-transform duration-200 group-open:rotate-90'
+              aria-hidden='true'
+            />
+            About {name}
+          </summary>
+          <p className='mt-2 text-sm leading-relaxed whitespace-pre-line text-muted-foreground'>
+            {description}
+          </p>
+        </details>
       )}
 
       <Button variant='secondary' asChild className='w-full'>

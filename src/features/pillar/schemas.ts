@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { nonEmptyStringSchema } from '@/lib/schemas';
+import { nonEmptyStringSchema, nullableStringSchema } from '@/lib/schemas';
 import { jobListItemSchema } from '@/features/jobs/schemas';
 
 export const pillarDetailsSchema = z.object({
@@ -15,10 +15,18 @@ export const suggestedPillarSchema = z.object({
 });
 export type SuggestedPillar = z.infer<typeof suggestedPillarSchema>;
 
+export const pillarOrganizationSchema = z.object({
+  name: nonEmptyStringSchema,
+  summary: nullableStringSchema,
+  description: nullableStringSchema,
+});
+export type PillarOrganization = z.infer<typeof pillarOrganizationSchema>;
+
 export const pillarPageStaticSchema = z.object({
   title: nonEmptyStringSchema,
   description: nonEmptyStringSchema,
   jobs: jobListItemSchema.array(),
+  organization: pillarOrganizationSchema.nullable(),
   suggestedPillars: suggestedPillarSchema.array(),
 });
 export type PillarPageStatic = z.infer<typeof pillarPageStaticSchema>;
