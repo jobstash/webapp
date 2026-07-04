@@ -76,6 +76,75 @@ describe('dtoToJobListItem — organization summary/description', () => {
   });
 });
 
+describe('dtoToJobListItem — org socials and projects', () => {
+  it('normalizes handles to absolute urls and keeps full urls', () => {
+    const item = dtoToJobListItem(
+      makeJobListItemDto({
+        organization: makeOrganizationDto({
+          twitter: '@bitrefill',
+          telegram: 'bitrefill',
+          discord: 'https://discord.com/invite/bitrefill',
+          github: 'bitrefill',
+          docs: 'https://docs.bitrefill.com',
+        }),
+      }),
+    );
+
+    expect(item.organization?.socials).toEqual({
+      twitter: 'https://x.com/bitrefill',
+      telegram: 'https://t.me/bitrefill',
+      discord: 'https://discord.com/invite/bitrefill',
+      github: 'https://github.com/bitrefill',
+      docs: 'https://docs.bitrefill.com',
+    });
+  });
+
+  it('returns null socials when no channel is present', () => {
+    const item = dtoToJobListItem(makeJobListItemDto());
+    expect(item.organization?.socials).toBeNull();
+  });
+
+  it('maps projects and drops nameless entries', () => {
+    const item = dtoToJobListItem(
+      makeJobListItemDto({
+        organization: makeOrganizationDto({
+          projects: [
+            {
+              id: 'p1',
+              name: 'MetaMask',
+              logo: null,
+              logoUrl: null,
+              website: 'https://metamask.io',
+              category: 'Wallet',
+            },
+            {
+              id: 'p2',
+              name: null,
+              logo: null,
+              logoUrl: null,
+              website: null,
+              category: null,
+            },
+          ],
+        }),
+      }),
+    );
+
+    expect(item.organization?.projects).toHaveLength(1);
+    expect(item.organization?.projects[0]).toMatchObject({
+      id: 'p1',
+      name: 'MetaMask',
+      website: 'https://metamask.io',
+      category: 'Wallet',
+    });
+  });
+
+  it('defaults to empty projects when the endpoint omits them', () => {
+    const item = dtoToJobListItem(makeJobListItemDto());
+    expect(item.organization?.projects).toEqual([]);
+  });
+});
+
 describe('jobListItemDto — org summary/description tolerance', () => {
   it.each([
     ['empty strings', { summary: '', description: '' }],

@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { FiltersAside } from '@/features/filters/components/filters-aside';
+import { OrgInfoCard } from '@/features/jobs/components/job-details/org-info-card';
 import {
   OrgAboutSection,
   PillarHero,
@@ -98,11 +99,18 @@ const PillarPage = async ({ params }: Props) => {
         slug={slug}
         pillarDetails={{ title, description: heroDescription }}
       />
+      {/* Below lg the aside is hidden — surface the org card under the hero */}
+      {org && (
+        <div className='mx-auto w-full max-w-2xl px-4 pt-6 lg:hidden'>
+          <OrgInfoCard organization={org} hideJobsButton />
+        </div>
+      )}
       {org && orgDescription && (
         <OrgAboutSection name={org.name} description={orgDescription} />
       )}
       <div id='jobs' className='flex scroll-mt-20 gap-4 pt-4 lg:scroll-mt-24'>
         <aside className='sticky top-20 hidden max-h-[calc(100vh-5rem)] w-68 shrink-0 flex-col gap-4 self-start overflow-y-auto lg:top-24 lg:flex lg:max-h-[calc(100vh-6rem)]'>
+          {org && <OrgInfoCard organization={org} hideJobsButton />}
           <FiltersAside pillarMode pillarContext={pillarContext} />
           <SuggestedPillars items={suggestedPillars} />
         </aside>

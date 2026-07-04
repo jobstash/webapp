@@ -13,7 +13,10 @@ import {
   slugify,
   titleCase,
 } from '@/lib/server/utils';
-import { type JobListItemDto } from './job-list-item.dto';
+import {
+  type JobListItemDto,
+  type JobOrgProjectDto,
+} from './job-list-item.dto';
 import {
   type JobFundingRoundSchema,
   type JobInvestorSchema,
@@ -250,36 +253,90 @@ const dtoToInvestors = (investors: InvestorDto[]): JobInvestorSchema[] => {
   }));
 };
 
-const dtoToJobItemOrg = (
+const normalizeSocialUrl = (
+  value: string | null | undefined,
+  buildUrl: (handle: string) => string,
+): string | null => {
+  if (!value) return null;
+  if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  return buildUrl(value.replace(/^@/, ''));
+};
+
+// Any org-shaped payload (job list/details org, pillar static org) —
+// only `name` is guaranteed.
+export interface OrgInfoSource {
+  name: string;
+  website?: string | null;
+  location?: string | null;
+  logoUrl?: string | null;
+  headcountEstimate?: number | null;
+  summary?: string | null;
+  description?: string | null;
+  discord?: string | null;
+  telegram?: string | null;
+  twitter?: string | null;
+  github?: string | null;
+  docs?: string | null;
+  projects?: JobOrgProjectDto[];
+  fundingRounds?: FundingRoundDto[];
+  investors?: InvestorDto[];
+}
+
+const dtoToOrgSocials = (
+  dto: OrgInfoSource,
+): JobOrganizationSchema['socials'] => {
+  const socials = {
+    twitter: normalizeSocialUrl(dto.twitter, (h) => `https://x.com/${h}`),
+    telegram: normalizeSocialUrl(dto.telegram, (h) => `https://t.me/${h}`),
+    discord: normalizeSocialUrl(dto.discord, (h) => `https://discord.gg/${h}`),
+    github: normalizeSocialUrl(dto.github, (h) => `https://github.com/${h}`),
+    docs: dto.docs ?? null,
+  };
+
+  const hasAny = Object.values(socials).some(Boolean);
+  return hasAny ? socials : null;
+};
+
+const dtoToOrgProjects = (
+  dto: OrgInfoSource,
+): JobOrganizationSchema['projects'] => {
+  return (dto.projects ?? [])
+    .filter((project) => !!project.name)
+    .map((project) => ({
+      id: project.id,
+      name: project.name as string,
+      logo: getLogoUrl(
+        project.website ?? null,
+        project.logoUrl ?? project.logo ?? null,
+      ),
+      website: project.website ?? null,
+      category: project.category ?? null,
+    }));
+};
+
+export const dtoToOrgInfo = (
+  dto: OrgInfoSource,
+  href: string,
+): JobOrganizationSchema => ({
+  name: dto.name,
+  href,
+  websiteUrl: dto.website ?? null,
+  location: dto.location ?? null,
+  logo: getLogoUrl(dto.website ?? null, dto.logoUrl ?? null),
+  employeeCount: dto.headcountEstimate ? `${dto.headcountEstimate}` : null,
+  summary: dto.summary ?? null,
+  description: dto.description ?? null,
+  socials: dtoToOrgSocials(dto),
+  projects: dtoToOrgProjects(dto),
+  fundingRounds: dtoToFundingRounds(dto.fundingRounds ?? []),
+  investors: dtoToInvestors(dto.investors ?? []),
+});
+
+export const dtoToJobItemOrg = (
   dto: JobListItemDto['organization'],
 ): JobOrganizationSchema | null => {
   if (!dto) return null;
-
-  const {
-    name,
-    normalizedName,
-    website,
-    location,
-    logoUrl,
-    headcountEstimate,
-    summary,
-    description,
-    fundingRounds,
-    investors,
-  } = dto;
-
-  return {
-    name,
-    href: `/o-${normalizedName}`,
-    websiteUrl: website,
-    location,
-    logo: getLogoUrl(website, logoUrl),
-    employeeCount: headcountEstimate ? `${headcountEstimate}` : null,
-    summary: summary ?? null,
-    description: description ?? null,
-    fundingRounds: dtoToFundingRounds(fundingRounds),
-    investors: dtoToInvestors(investors),
-  };
+  return dtoToOrgInfo(dto, `/o-${dto.normalizedName}`);
 };
 
 const dtoToJobItemBadge = (dto: JobListItemDto): JobListItemSchema['badge'] => {

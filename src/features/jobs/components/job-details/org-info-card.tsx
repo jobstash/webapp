@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import {
+  BookOpenIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
   MapPinIcon,
@@ -11,13 +12,135 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { ImageWithFallback } from '@/components/image-with-fallback';
-import { type JobOrganizationSchema } from '@/features/jobs/schemas';
+import { DiscordIcon } from '@/components/svg/discord-icon';
+import { GithubIcon } from '@/components/svg/github-icon';
+import { TelegramIcon } from '@/components/svg/telegram-icon';
+import { TwitterIcon } from '@/components/svg/twitter-icon';
+import {
+  type JobOrganizationSchema,
+  type JobOrgSocialsSchema,
+} from '@/features/jobs/schemas';
 
 interface OrgInfoCardProps {
   organization: JobOrganizationSchema;
+  /** Hide the "View jobs by" button (e.g. on the org's own pillar page) */
+  hideJobsButton?: boolean;
 }
 
-export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
+const SOCIAL_LINKS: {
+  key: keyof JobOrgSocialsSchema;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
+  { key: 'twitter', label: 'X (Twitter)', icon: TwitterIcon },
+  { key: 'telegram', label: 'Telegram', icon: TelegramIcon },
+  { key: 'discord', label: 'Discord', icon: DiscordIcon },
+  { key: 'github', label: 'GitHub', icon: GithubIcon },
+  { key: 'docs', label: 'Documentation', icon: BookOpenIcon },
+];
+
+const OrgSocials = ({
+  name,
+  socials,
+}: {
+  name: string;
+  socials: JobOrgSocialsSchema;
+}) => {
+  const links = SOCIAL_LINKS.filter(({ key }) => socials[key]);
+  if (links.length === 0) return null;
+
+  return (
+    <div className='flex items-center gap-3'>
+      {links.map(({ key, label, icon: Icon }) => (
+        <Link
+          key={key}
+          href={socials[key] as string}
+          target='_blank'
+          rel='noopener noreferrer'
+          aria-label={`${name} on ${label}`}
+          title={label}
+          className='text-muted-foreground transition-colors hover:text-foreground'
+        >
+          <Icon className='size-4' />
+        </Link>
+      ))}
+    </div>
+  );
+};
+
+const OrgProjects = ({
+  projects,
+}: {
+  projects: JobOrganizationSchema['projects'];
+}) => {
+  if (projects.length === 0) return null;
+
+  return (
+    <div className='space-y-2'>
+      <p className='text-xs font-medium text-muted-foreground'>Projects</p>
+      <div className='space-y-1.5'>
+        {projects.map((project) => {
+          const row = (
+            <>
+              <ImageWithFallback
+                src={project.logo ?? ''}
+                alt={`${project.name} logo`}
+                width={20}
+                height={20}
+                className='shrink-0 rounded ring-1 ring-border/50'
+                fallback={
+                  <div className='flex size-5 shrink-0 items-center justify-center rounded bg-muted text-[10px] font-medium text-muted-foreground ring-1 ring-border/50'>
+                    {project.name.charAt(0).toUpperCase()}
+                  </div>
+                }
+              />
+              <span className='truncate text-sm text-foreground/80'>
+                {project.name}
+              </span>
+              {project.category && (
+                <Badge
+                  variant='secondary'
+                  className='ml-auto shrink-0 text-[10px]'
+                >
+                  {project.category}
+                </Badge>
+              )}
+              {project.website && (
+                <ExternalLinkIcon className='size-3 shrink-0 text-muted-foreground' />
+              )}
+            </>
+          );
+
+          const rowClassName = 'flex items-center gap-2 rounded-lg px-2 py-1';
+
+          return project.website ? (
+            <Link
+              key={project.id}
+              href={project.website}
+              target='_blank'
+              rel='noopener noreferrer'
+              className={cn(
+                rowClassName,
+                'transition-colors hover:bg-muted/50',
+              )}
+            >
+              {row}
+            </Link>
+          ) : (
+            <div key={project.id} className={rowClassName}>
+              {row}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export const OrgInfoCard = ({
+  organization,
+  hideJobsButton,
+}: OrgInfoCardProps) => {
   const {
     name,
     href,
@@ -27,6 +150,8 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
     employeeCount,
     summary,
     description,
+    socials,
+    projects,
     fundingRounds,
     investors,
   } = organization;
@@ -76,6 +201,8 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
           {summary}
         </p>
       )}
+
+      {socials && <OrgSocials name={name} socials={socials} />}
 
       <div className='space-y-2'>
         {location && (
@@ -139,6 +266,8 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
         </div>
       )}
 
+      <OrgProjects projects={projects} />
+
       {hasAboutSection && (
         <details className='group'>
           <summary
@@ -153,7 +282,7 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
               className='size-3.5 transition-transform duration-200 group-open:rotate-90'
               aria-hidden='true'
             />
-            About {name}
+            {`About ${name}`}
           </summary>
           <p className='mt-2 text-sm leading-relaxed whitespace-pre-line text-muted-foreground'>
             {description}
@@ -161,9 +290,11 @@ export const OrgInfoCard = ({ organization }: OrgInfoCardProps) => {
         </details>
       )}
 
-      <Button variant='secondary' asChild className='w-full'>
-        <LinkWithLoader href={href}>View jobs by {name}</LinkWithLoader>
-      </Button>
+      {!hideJobsButton && (
+        <Button variant='secondary' asChild className='w-full'>
+          <LinkWithLoader href={href}>View jobs by {name}</LinkWithLoader>
+        </Button>
+      )}
     </div>
   );
 };

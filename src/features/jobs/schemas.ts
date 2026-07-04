@@ -30,6 +30,25 @@ export const jobInvestorSchema = z.object({
 });
 export type JobInvestorSchema = z.infer<typeof jobInvestorSchema>;
 
+// Absolute URLs, normalized from MW handles/invites in the transform
+export const jobOrgSocialsSchema = z.object({
+  twitter: nullableStringSchema,
+  telegram: nullableStringSchema,
+  discord: nullableStringSchema,
+  github: nullableStringSchema,
+  docs: nullableStringSchema,
+});
+export type JobOrgSocialsSchema = z.infer<typeof jobOrgSocialsSchema>;
+
+export const jobOrgProjectSchema = z.object({
+  id: nonEmptyStringSchema,
+  name: nonEmptyStringSchema,
+  logo: nullableStringSchema,
+  website: nullableStringSchema,
+  category: nullableStringSchema,
+});
+export type JobOrgProjectSchema = z.infer<typeof jobOrgProjectSchema>;
+
 export const jobOrganizationSchema = z.object({
   name: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
@@ -39,6 +58,9 @@ export const jobOrganizationSchema = z.object({
   employeeCount: nullableStringSchema,
   summary: nullableStringSchema,
   description: nullableStringSchema,
+  // null when the source endpoint doesn't carry socials (job list)
+  socials: jobOrgSocialsSchema.nullable(),
+  projects: jobOrgProjectSchema.array(),
   fundingRounds: jobFundingRoundSchema.array(),
   investors: jobInvestorSchema.array(),
 });
