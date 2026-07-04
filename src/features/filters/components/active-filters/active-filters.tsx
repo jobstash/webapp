@@ -1,8 +1,14 @@
 'use client';
 
 import type { PillarFilterContext } from '@/features/pillar/schemas';
-import { FILTER_KIND } from '@/features/filters/constants';
-import { useActiveFilters } from '@/features/filters/hooks';
+import {
+  FILTER_KIND,
+  PILLAR_FALLBACK_CHIP_LABELS,
+} from '@/features/filters/constants';
+import {
+  useActiveFilters,
+  usePillarFilterMode,
+} from '@/features/filters/hooks';
 import { type FilterConfigSchema } from '@/features/filters/schemas';
 
 import { ActiveFilterCheckbox } from './active-filter-checkbox';
@@ -19,10 +25,31 @@ interface Props {
 
 export const ActiveFilters = ({ configs, pillarContext }: Props) => {
   const activeFilters = useActiveFilters(configs);
-  if (activeFilters.length === 0) return null;
+  const pillarMode = usePillarFilterMode();
+
+  // Pillar params with no matching config (e.g. expertJobs until MW ships
+  // its filter) still get a chip so the pillar's criteria stay visible and
+  // removable. Real configs take precedence.
+  const fallbackKeys = pillarMode
+    ? Object.keys(pillarMode.baseParams).filter(
+        (key) =>
+          !configs.some(
+            (config) => 'paramKey' in config && config.paramKey === key,
+          ),
+      )
+    : [];
+
+  if (activeFilters.length === 0 && fallbackKeys.length === 0) return null;
 
   return (
     <div className='flex flex-wrap gap-2'>
+      {fallbackKeys.map((key) => (
+        <ActiveFilterSwitch
+          key={key}
+          label={PILLAR_FALLBACK_CHIP_LABELS[key] ?? key}
+          paramKey={key}
+        />
+      ))}
       {activeFilters.map((config) => {
         const key = config.label;
 

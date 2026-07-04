@@ -6,4 +6,8 @@ export {
   useFilterQueryState,
   type FilterAnalyticsContext,
 } from './use-filter-query-state';
+export {
+  PillarFilterModeProvider,
+  usePillarFilterMode,
+} from './use-pillar-filter-mode';
 export { useRangeFilterState } from './use-range-filter-state';

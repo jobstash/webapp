@@ -10,9 +10,18 @@ import { FiltersAsideSkeleton } from './filters-aside.skeleton';
 
 interface FiltersAsideProps {
   pillarContext?: PillarFilterContext | null;
+  /**
+   * Pillar pages render the pillar's implied criteria as visually-active
+   * "mock" chips; interacting with any filter navigates to the home page in
+   * real filter mode.
+   */
+  pillarMode?: boolean;
 }
 
-const FiltersAsideRSC = async ({ pillarContext }: FiltersAsideProps) => {
+const FiltersAsideRSC = async ({
+  pillarContext,
+  pillarMode,
+}: FiltersAsideProps) => {
   const filterConfigs = await fetchFilterConfigs();
   return (
     <FiltersAsideLayout>
@@ -20,6 +29,7 @@ const FiltersAsideRSC = async ({ pillarContext }: FiltersAsideProps) => {
         <FiltersAsideClient
           configs={filterConfigs}
           pillarContext={pillarContext}
+          pillarMode={pillarMode}
         />
       </div>
     </FiltersAsideLayout>
@@ -32,10 +42,13 @@ const FiltersAsideError = () => (
   </FiltersAsideLayout>
 );
 
-export const FiltersAside = ({ pillarContext }: FiltersAsideProps) => (
+export const FiltersAside = ({
+  pillarContext,
+  pillarMode,
+}: FiltersAsideProps) => (
   <Suspense fallback={<FiltersAsideSkeleton />}>
     <FiltersAsideBoundary fallback={<FiltersAsideError />}>
-      <FiltersAsideRSC pillarContext={pillarContext} />
+      <FiltersAsideRSC pillarContext={pillarContext} pillarMode={pillarMode} />
     </FiltersAsideBoundary>
   </Suspense>
 );

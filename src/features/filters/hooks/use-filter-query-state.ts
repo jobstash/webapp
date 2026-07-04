@@ -5,6 +5,8 @@ import { useProgress } from '@bprogress/next';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
+import { usePillarFilterMode } from './use-pillar-filter-mode';
+
 export interface FilterAnalyticsContext {
   filterType?: string;
   analyticsId?: string | null;
@@ -16,12 +18,12 @@ export const useFilterQueryState = (
   analytics?: FilterAnalyticsContext,
 ) => {
   const { start } = useProgress();
+  const pillarMode = usePillarFilterMode();
   const [filterParam, setFilterParam] = useQueryState(paramKey);
   const [, setPage] = useQueryState('page');
 
   const setFilterWithPageReset = (value: string | null) => {
     start();
-    setPage(null);
 
     if (value !== null) {
       trackEvent(GA_EVENT.FILTER_APPLIED, {
@@ -37,8 +39,21 @@ export const useFilterQueryState = (
       trackEvent(GA_EVENT.FILTER_REMOVED, { filter_name: paramKey });
     }
 
+    // On pillar pages the job list is static — a nuqs write would change the
+    // URL without refetching. Navigate to the home page in real filter mode
+    // instead, carrying the pillar criteria plus this change.
+    if (pillarMode) {
+      pillarMode.navigate({ [paramKey]: value });
+      return;
+    }
+
+    setPage(null);
     return setFilterParam(value);
   };
 
-  return [filterParam, setFilterWithPageReset] as const;
+  const effectiveValue = pillarMode
+    ? (pillarMode.baseParams[paramKey] ?? null)
+    : filterParam;
+
+  return [effectiveValue, setFilterWithPageReset] as const;
 };
