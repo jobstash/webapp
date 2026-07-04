@@ -2,6 +2,10 @@ import { SENIORITY_LABEL_TO_KEY } from '@/lib/constants';
 
 import type { PillarFilterContext } from './schemas';
 
+// Pillar pages with fewer jobs than this are thin/doorway content:
+// they render normally for humans but are noindexed.
+export const PILLAR_MIN_INDEXABLE_JOBS = 3;
+
 export type PillarCategory =
   | 'tag'
   | 'classification'

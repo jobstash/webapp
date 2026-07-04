@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 
 import { SocialsAside } from '@/components/socials-aside';
 import { FiltersAside } from '@/features/filters/components/filters-aside';
@@ -6,10 +7,39 @@ import { JobList } from '@/features/jobs/components/job-list/job-list';
 import { JobListBoundary } from '@/features/jobs/components/job-list/job-list.error';
 import { JobListSkeleton } from '@/features/jobs/components/job-list/job-list.skeleton';
 import { fetchJobListPage } from '@/features/jobs/server/data';
+import { clientEnv } from '@/lib/env/client';
+import { robotsNoindexFollow } from '@/lib/seo';
 
 interface Props {
   searchParams: Promise<Record<string, string> & { page?: string }>;
 }
+
+const HOME_TITLE = 'Crypto Jobs — Web3, DeFi & Blockchain Jobs | JobStash';
+const HOME_DESCRIPTION =
+  'Browse crypto native jobs across the entire Web3 ecosystem — engineering, product, design, marketing and more. Aggregated from thousands of crypto organizations and updated daily.';
+
+export const generateMetadata = async ({
+  searchParams,
+}: Props): Promise<Metadata> => {
+  const params = await searchParams;
+
+  // Filtered/paginated views are near-duplicates of the bare job list:
+  // keep them crawlable (follow) but out of the index, with no canonical
+  // (noindex + canonical send conflicting signals).
+  if (Object.keys(params).length > 0) {
+    return {
+      title: HOME_TITLE,
+      description: HOME_DESCRIPTION,
+      robots: robotsNoindexFollow(),
+    };
+  }
+
+  return {
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    alternates: { canonical: `${clientEnv.FRONTEND_URL}/` },
+  };
+};
 
 const preload = (currentPage: number, searchParams: Record<string, string>) => {
   const adjacentPages = [

@@ -8,12 +8,14 @@ import {
   SuggestedPillars,
 } from '@/features/pillar/components';
 import {
+  PILLAR_MIN_INDEXABLE_JOBS,
   getPillarFilterContext,
   isValidPillarSlug,
 } from '@/features/pillar/constants';
 import { fetchPillarPageStatic } from '@/features/pillar/server';
 import { fetchPillarStaticParams } from '@/features/pillar/server/data';
 import { clientEnv } from '@/lib/env/client';
+import { robotsNoindexFollow } from '@/lib/seo';
 
 export const generateStaticParams =
   process.env.DISABLE_STATIC_GENERATION === 'true' ||
@@ -41,10 +43,16 @@ export const generateMetadata = async ({
   const title = `${pageTitle} | JobStash`;
   const url = `${clientEnv.FRONTEND_URL}/${slug}`;
 
+  // Thin pillars (junk/low-volume tags) stay usable for humans but are
+  // kept out of the index; no canonical alongside noindex.
+  const isThin = pillarPage.jobs.length < PILLAR_MIN_INDEXABLE_JOBS;
+
   return {
     title,
     description,
-    alternates: { canonical: url },
+    ...(isThin
+      ? { robots: robotsNoindexFollow() }
+      : { alternates: { canonical: url } }),
     openGraph: {
       title,
       description,
