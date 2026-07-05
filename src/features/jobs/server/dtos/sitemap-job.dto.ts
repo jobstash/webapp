@@ -6,7 +6,8 @@ export const sitemapJobDto = z.object({
   shortUUID: z.string(),
   title: z.string().nullable(),
   organizationName: z.string().nullable(),
-  timestamp: z.number(),
+  // null when MW has no usable date for the job
+  timestamp: z.number().nullable(),
 });
 export type SitemapJobDto = z.infer<typeof sitemapJobDto>;
 
