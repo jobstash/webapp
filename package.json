@@ -1,6 +1,6 @@
 {
   "name": "webapp",
-  "version": "2.35.2",
+  "version": "2.35.3",
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "scripts": {
