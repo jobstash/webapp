@@ -112,7 +112,9 @@ const PillarPage = async ({ params }: Props) => {
         <OrgAboutSection name={org.name} description={orgDescription} />
       )}
       <div id='jobs' className='flex scroll-mt-20 gap-4 pt-4 lg:scroll-mt-24'>
-        <aside className='sticky top-20 hidden max-h-[calc(100vh-5rem)] w-68 shrink-0 flex-col gap-4 self-start overflow-y-auto lg:top-24 lg:flex lg:max-h-[calc(100vh-6rem)]'>
+        {/* Normal flow, natural height — a viewport-capped column gives the
+            filter block its own scrollbar once the org card is present */}
+        <aside className='hidden w-68 shrink-0 flex-col gap-4 self-start lg:flex'>
           {org && <OrgInfoCard organization={org} hideJobsButton />}
           <FiltersAside pillarMode pillarContext={pillarContext} />
           <SuggestedPillars items={suggestedPillars} />
