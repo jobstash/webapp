@@ -14,7 +14,13 @@ interface JobDetailsContentProps {
 }
 
 export const JobDetailsContent = ({ job, tags }: JobDetailsContentProps) => {
-  const { description, requirements, responsibilities, benefits } = job;
+  const {
+    description,
+    requirements,
+    responsibilities,
+    benefits,
+    hiringProcess,
+  } = job;
 
   const bulletSections = [
     { title: 'Requirements', items: requirements },
@@ -33,6 +39,13 @@ export const JobDetailsContent = ({ job, tags }: JobDetailsContentProps) => {
       {bulletSections.map(({ title, items }) => (
         <BulletSection key={title} title={title} items={items} />
       ))}
+
+      {hiringProcess && (
+        <DescriptionSection
+          title='Hiring Process'
+          description={hiringProcess}
+        />
+      )}
     </div>
   );
 };
