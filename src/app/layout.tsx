@@ -46,15 +46,17 @@ const RootLayout = ({ children }: Props) => (
     <body className='antialiased'>
       <RootProviders>{children}</RootProviders>
     </body>
+    {/* afterInteractive (not lazyOnload): job pages are SEO landing pages
+        and early Apply clicks must not be lost while GA idles */}
     {clientEnv.GA_MEASUREMENT_ID && (
       <>
         <Script
           id='_next-ga-init'
-          strategy='lazyOnload'
+          strategy='afterInteractive'
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer=window.dataLayer||[];
-              function gtag(){dataLayer.push(arguments);}
+              window.gtag=window.gtag||function(){dataLayer.push(arguments);};
               gtag('js',new Date());
               gtag('config','${clientEnv.GA_MEASUREMENT_ID}');
             `,
@@ -63,7 +65,7 @@ const RootLayout = ({ children }: Props) => (
         <Script
           id='_next-ga'
           src={`https://www.googletagmanager.com/gtag/js?id=${clientEnv.GA_MEASUREMENT_ID}`}
-          strategy='lazyOnload'
+          strategy='afterInteractive'
         />
       </>
     )}

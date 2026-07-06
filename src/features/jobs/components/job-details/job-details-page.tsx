@@ -51,6 +51,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
         jobId={job.id}
         jobTitle={job.title}
         organization={orgName}
+        classification={job.classification}
       />
     </>
   );

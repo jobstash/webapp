@@ -10,10 +10,17 @@ z.object({
   NEXT_PUBLIC_FRONTEND_URL: z.url(),
   NEXT_PUBLIC_MW_URL: z.url(),
   NEXT_PUBLIC_PRIVY_APP_ID: z.string().min(1),
+  // Strict shape: the id is interpolated into an inline <script> in the
+  // root layout, so reject anything that could break out of it
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: z
+    .string()
+    .regex(/^G-[A-Z0-9]+$/)
+    .optional(),
 }).parse({
   NEXT_PUBLIC_FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
   NEXT_PUBLIC_MW_URL: process.env.NEXT_PUBLIC_MW_URL,
   NEXT_PUBLIC_PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID,
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
 });
 
 const nextConfig: NextConfig = {

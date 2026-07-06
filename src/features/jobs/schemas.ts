@@ -71,6 +71,7 @@ export const jobListItemSchema = z.object({
   title: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
   hasApplyUrl: z.boolean(),
+  classification: nullableStringSchema,
   summary: nullableStringSchema,
   addresses: addressSchema.array().nullable(),
   infoTags: mappedInfoTagSchema.array(),
