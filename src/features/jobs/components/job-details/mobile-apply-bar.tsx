@@ -14,6 +14,7 @@ interface MobileApplyBarProps {
   jobId: string;
   jobTitle: string;
   organization: string | null;
+  classification: string | null;
 }
 
 export const MobileApplyBar = ({
@@ -22,6 +23,7 @@ export const MobileApplyBar = ({
   jobId,
   jobTitle,
   organization,
+  classification,
 }: MobileApplyBarProps) => {
   if (!hasApplyUrl && !isExpertJob) return null;
 
@@ -35,6 +37,7 @@ export const MobileApplyBar = ({
             jobId={jobId}
             jobTitle={jobTitle}
             organization={organization}
+            classification={classification}
             className='w-full'
           />
         </Suspense>

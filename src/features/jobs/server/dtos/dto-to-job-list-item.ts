@@ -88,6 +88,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     title,
     href,
     hasApplyUrl: !!dto.url,
+    classification: dto.classification,
     summary: summary || getDefaultSummary(dto),
     addresses: addressLookup?.addresses ?? null,
     infoTags,

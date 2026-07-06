@@ -12,6 +12,7 @@ import {
   type MissingItem,
 } from '@/features/jobs/apply-constants';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
+import { useEligibility } from '@/hooks/use-eligibility';
 
 import { EligibilityNudgeDialog } from './eligibility-nudge-dialog';
 import { useJobApply } from './use-job-apply';
@@ -32,6 +33,7 @@ interface ApplyButtonProps {
   jobId: string;
   jobTitle: string;
   organization: string | null;
+  classification: string | null;
   className?: string;
 }
 
@@ -41,9 +43,11 @@ export const ApplyButton = ({
   jobId,
   jobTitle,
   organization,
+  classification,
   className,
 }: ApplyButtonProps) => {
   const pathname = usePathname();
+  const { isExpert } = useEligibility();
   const {
     isAuthenticated,
     isAuthLoading,
@@ -64,10 +68,19 @@ export const ApplyButton = ({
   };
 
   const trackApply = (destination: string) => {
-    trackEvent(GA_EVENT.APPLY_BUTTON_CLICKED, {
-      job_id: jobId,
+    const userRole = !isAuthenticated
+      ? 'anonymous'
+      : isExpert
+        ? 'expert'
+        : 'user';
+
+    trackEvent(GA_EVENT.JOB_APPLY, {
+      event_category: 'job',
+      job_shortuuid: jobId,
+      job_classification: classification ?? '',
+      organization_name: organization ?? '',
+      user_role: userRole,
       job_title: jobTitle,
-      organization: organization ?? '',
       apply_destination: destination,
     });
   };

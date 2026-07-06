@@ -25,6 +25,7 @@ export const JobDetailsSidebar = ({
         jobId={job.id}
         jobTitle={job.title}
         organization={organization?.name ?? null}
+        classification={job.classification}
       />
       {!hideOrgCard && organization && (
         <OrgInfoCard organization={organization} />
