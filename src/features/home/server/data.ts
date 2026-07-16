@@ -18,7 +18,7 @@ export const fetchPillarItems = async (): Promise<PillarItem[]> => {
   return [
     // Roles - What you do
     { category: 'role', label: 'BizDev', href: '/cl-bizdev' },
-    { category: 'role', label: 'Smart Contracts', href: '/cl-smartcontracts' },
+    { category: 'role', label: 'Smart Contracts', href: '/cl-smart-contracts' },
     { category: 'role', label: 'Marketing', href: '/cl-marketing' },
 
     // Skills - What you know
