@@ -73,6 +73,8 @@ export const jobListItemSchema = z.object({
   hasApplyUrl: z.boolean(),
   classification: nullableStringSchema,
   summary: nullableStringSchema,
+  location: nullableStringSchema,
+  locationType: nullableStringSchema,
   addresses: addressSchema.array().nullable(),
   infoTags: mappedInfoTagSchema.array(),
   tags: jobTagSchema.array(),

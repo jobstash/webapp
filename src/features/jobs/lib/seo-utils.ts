@@ -81,29 +81,40 @@ export const extractEmploymentType = (
 
 /**
  * Schema.org jobLocationType value.
- * Only 'TELECOMMUTE' is a valid Schema.org value for remote/hybrid jobs.
+ * Only 'TELECOMMUTE' is a valid Schema.org value for fully remote jobs.
  * Returns null for on-site only positions (no jobLocationType needed).
  */
 type SchemaJobLocationType = 'TELECOMMUTE' | null;
 
 /**
  * Extracts job location type for Schema.org structured data.
- * Returns 'TELECOMMUTE' for remote/hybrid positions, null for on-site only.
+ * Returns 'TELECOMMUTE' for fully remote positions, null for hybrid/on-site.
+ * Google explicitly says not to mark hybrid or occasional work-from-home jobs
+ * as TELECOMMUTE.
  */
 export const extractJobLocationType = (
   infoTags: MappedInfoTagSchema[],
   addresses?: Address[] | null,
+  sourceLocationType?: string | null,
 ): SchemaJobLocationType => {
+  // Prefer the first-party work-mode field. A known non-remote value must win
+  // over address mappings whose free-form text happens to mention "remote".
+  if (sourceLocationType) {
+    return sourceLocationType.trim().toLowerCase() === 'remote'
+      ? 'TELECOMMUTE'
+      : null;
+  }
+
   // Check addresses first - most reliable source
   if (addresses?.some((addr) => addr.isRemote)) {
     return 'TELECOMMUTE';
   }
 
-  // Check workMode tag for remote/hybrid indicators
+  // Legacy fallback for callers that don't carry the source work-mode field.
   const workModeTag = infoTags.find((tag) => tag.iconKey === 'workMode');
   if (workModeTag) {
     const label = workModeTag.label.toLowerCase();
-    if (label.includes('remote') || label.includes('hybrid')) {
+    if (label.includes('remote') && !label.includes('hybrid')) {
       return 'TELECOMMUTE';
     }
   }

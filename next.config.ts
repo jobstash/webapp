@@ -75,31 +75,37 @@ const nextConfig: NextConfig = {
       destination: '/',
       permanent: true,
     },
-    // Legacy child-sitemap URLs → chunked /sitemaps/* scheme. The GSC-submitted
-    // index at /sitemap.xml keeps its address.
+    // The short-lived /sitemaps/* scheme put sitemap files below the URLs they
+    // advertised, which violates sitemap path scoping. Keep those URLs as
+    // redirects only; the canonical child sitemaps are direct root routes.
     {
-      source: '/sitemap1.xml',
-      destination: '/sitemaps/static',
+      source: '/sitemaps/static',
+      destination: '/sitemap1.xml',
       permanent: true,
     },
     {
-      source: '/sitemap2.xml',
-      destination: '/sitemaps/jobs-1',
+      source: '/sitemaps/jobs-1',
+      destination: '/sitemap2.xml',
       permanent: true,
     },
     {
-      source: '/sitemap3.xml',
-      destination: '/sitemaps/pillars-1',
+      source: '/sitemaps/jobs-2',
+      destination: '/sitemap6.xml',
       permanent: true,
     },
     {
-      source: '/sitemap4.xml',
-      destination: '/sitemaps/pillars-2',
+      source: '/sitemaps/pillars-1',
+      destination: '/sitemap3.xml',
       permanent: true,
     },
     {
-      source: '/sitemap5.xml',
-      destination: '/sitemaps/pillars-3',
+      source: '/sitemaps/pillars-2',
+      destination: '/sitemap4.xml',
+      permanent: true,
+    },
+    {
+      source: '/sitemaps/pillars-3',
+      destination: '/sitemap5.xml',
       permanent: true,
     },
   ],

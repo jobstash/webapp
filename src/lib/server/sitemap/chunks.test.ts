@@ -1,7 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getChunkCounts, getJobsChunk, getPillarsChunk } from './chunks';
-import { JOBS_CHUNK_SIZE, PILLAR_CHUNK_SIZE } from './constants';
+import { getJobsChunk, getPillarsChunk } from './chunks';
+import {
+  JOBS_CHUNK_COUNT,
+  JOBS_CHUNK_SIZE,
+  PILLAR_CHUNK_COUNT,
+  PILLAR_CHUNK_SIZE,
+  SITEMAP_INDEX_PATHS,
+} from './constants';
 
 const { mockFetchSitemapJobs, mockFetchPillarSitemapSlugs } = vi.hoisted(
   () => ({
@@ -34,21 +40,14 @@ beforeEach(() => {
   mockFetchPillarSitemapSlugs.mockReset();
 });
 
-describe('getChunkCounts', () => {
-  it('never reports zero chunks, even with no data', async () => {
-    mockFetchSitemapJobs.mockResolvedValue([]);
-    mockFetchPillarSitemapSlugs.mockResolvedValue([]);
-
-    await expect(getChunkCounts()).resolves.toEqual({ jobs: 1, pillars: 1 });
-  });
-
-  it('rounds up to a partial final chunk', async () => {
-    mockFetchSitemapJobs.mockResolvedValue(makeJobs(JOBS_CHUNK_SIZE + 1));
-    mockFetchPillarSitemapSlugs.mockResolvedValue(
-      makeSlugs(PILLAR_CHUNK_SIZE * 2),
+describe('sitemap index paths', () => {
+  it('keeps every child sitemap at the site root with an xml suffix', () => {
+    expect(SITEMAP_INDEX_PATHS).toHaveLength(
+      1 + JOBS_CHUNK_COUNT + PILLAR_CHUNK_COUNT,
     );
-
-    await expect(getChunkCounts()).resolves.toEqual({ jobs: 2, pillars: 2 });
+    expect(
+      SITEMAP_INDEX_PATHS.every((path) => /^\/[^/]+\.xml$/.test(path)),
+    ).toBe(true);
   });
 });
 
@@ -68,6 +67,17 @@ describe('getJobsChunk', () => {
     mockFetchSitemapJobs.mockResolvedValue(makeJobs(3));
     await expect(getJobsChunk(99)).resolves.toEqual([]);
   });
+
+  it('keeps later growth in the final advertised chunk', async () => {
+    mockFetchSitemapJobs.mockResolvedValue(
+      makeJobs(JOBS_CHUNK_SIZE * JOBS_CHUNK_COUNT + 2),
+    );
+
+    const final = await getJobsChunk(JOBS_CHUNK_COUNT);
+
+    expect(final).toHaveLength(JOBS_CHUNK_SIZE + 2);
+    expect(final[0].loc).toContain(`/job-${JOBS_CHUNK_SIZE}/`);
+  });
 });
 
 describe('getPillarsChunk', () => {
@@ -79,5 +89,15 @@ describe('getPillarsChunk', () => {
     expect(chunk).toHaveLength(2);
     expect(chunk[0].loc).toMatch(/\/t-tag-0$/);
     expect(chunk[0].lastModified).toBeInstanceOf(Date);
+  });
+
+  it('keeps later growth in the final advertised chunk', async () => {
+    mockFetchPillarSitemapSlugs.mockResolvedValue(
+      makeSlugs(PILLAR_CHUNK_SIZE * PILLAR_CHUNK_COUNT + 1),
+    );
+
+    const final = await getPillarsChunk(PILLAR_CHUNK_COUNT);
+
+    expect(final).toHaveLength(PILLAR_CHUNK_SIZE + 1);
   });
 });

@@ -52,16 +52,16 @@ describe('buildUrlsetXml', () => {
 describe('buildSitemapIndexXml', () => {
   it('renders one sitemap element per loc', () => {
     const xml = buildSitemapIndexXml([
-      'https://example.com/sitemaps/static',
-      'https://example.com/sitemaps/jobs-1',
+      'https://example.com/sitemap1.xml',
+      'https://example.com/sitemap2.xml',
     ]);
 
     expect(xml).toContain('<sitemapindex');
     expect(xml).toContain(
-      '<sitemap><loc>https://example.com/sitemaps/static</loc></sitemap>',
+      '<sitemap><loc>https://example.com/sitemap1.xml</loc></sitemap>',
     );
     expect(xml).toContain(
-      '<sitemap><loc>https://example.com/sitemaps/jobs-1</loc></sitemap>',
+      '<sitemap><loc>https://example.com/sitemap2.xml</loc></sitemap>',
     );
   });
 });
@@ -69,6 +69,9 @@ describe('buildSitemapIndexXml', () => {
 describe('buildUrlsetResponse', () => {
   it('responds with the xml content type', () => {
     const response = buildUrlsetResponse([]);
-    expect(response.headers.get('Content-Type')).toBe('application/xml');
+    expect(response.headers.get('Content-Type')).toBe(
+      'application/xml; charset=utf-8',
+    );
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
   });
 });

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 
 import { JobDetailsPage } from '@/features/jobs/components/job-details';
 import { JobPostingSchema } from '@/features/jobs/components/job-posting-schema';
@@ -55,10 +55,13 @@ export const generateMetadata = async ({
 };
 
 const JobDetailsRoute = async ({ params }: Props) => {
-  const { id } = await params;
+  const { slug, id } = await params;
   const job = await fetchJobDetails({ id });
 
   if (!job) notFound();
+
+  const requestedPath = `/${slug}/${id}`;
+  if (requestedPath !== job.href) permanentRedirect(job.href);
 
   return (
     <>

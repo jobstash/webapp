@@ -14,7 +14,10 @@ export const escapeXml = (value: string): string =>
     .replaceAll("'", '&apos;');
 
 const XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
-const RESPONSE_HEADERS = { 'Content-Type': 'application/xml' };
+const RESPONSE_HEADERS = {
+  'Content-Type': 'application/xml; charset=utf-8',
+  'X-Content-Type-Options': 'nosniff',
+};
 
 export const buildUrlsetXml = (entries: SitemapEntry[]): string =>
   [

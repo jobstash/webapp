@@ -188,6 +188,19 @@ describe('dtoToJobListItem — publishedTimestampIsVerified', () => {
   });
 });
 
+describe('dtoToJobListItem — structured locations', () => {
+  it('keeps the source work mode and resolves uppercase remote locations', () => {
+    const item = dtoToJobListItem(
+      makeJobListItemDto({ location: 'REMOTE', locationType: 'REMOTE' }),
+    );
+
+    expect(item.location).toBe('REMOTE');
+    expect(item.locationType).toBe('REMOTE');
+    expect(item.addresses?.length).toBeGreaterThan(0);
+    expect(item.addresses?.every((address) => address.isRemote)).toBe(true);
+  });
+});
+
 describe('dtoToJobListItem — existing behavior smoke', () => {
   it('builds the slugified href from title and org name', () => {
     const item = dtoToJobListItem(makeJobListItemDto());
