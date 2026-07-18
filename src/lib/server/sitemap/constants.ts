@@ -1,10 +1,7 @@
 import 'server-only';
 
-// Keep the number of root-level child sitemap URLs stable. The final chunk for
-// each kind absorbs growth so /sitemap.xml never needs a middleware request in
-// order to decide which files exist.
-export const JOBS_CHUNK_SIZE = 5000;
-export const PILLAR_CHUNK_SIZE = 3000;
+// Keep the number of root-level child sitemap URLs stable so /sitemap.xml
+// never needs a middleware request in order to decide which files exist.
 export const JOBS_CHUNK_COUNT = 2;
 export const PILLAR_CHUNK_COUNT = 3;
 

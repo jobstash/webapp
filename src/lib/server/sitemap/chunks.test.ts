@@ -3,9 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getJobsChunk, getPillarsChunk } from './chunks';
 import {
   JOBS_CHUNK_COUNT,
-  JOBS_CHUNK_SIZE,
   PILLAR_CHUNK_COUNT,
-  PILLAR_CHUNK_SIZE,
   SITEMAP_INDEX_PATHS,
 } from './constants';
 
@@ -52,52 +50,45 @@ describe('sitemap index paths', () => {
 });
 
 describe('getJobsChunk', () => {
-  it('slices 1-based chunks of the configured size', async () => {
-    mockFetchSitemapJobs.mockResolvedValue(makeJobs(JOBS_CHUNK_SIZE + 2));
+  it('balances the complete inventory across the advertised chunks', async () => {
+    mockFetchSitemapJobs.mockResolvedValue(makeJobs(7));
 
     const first = await getJobsChunk(1);
     const second = await getJobsChunk(2);
 
-    expect(first).toHaveLength(JOBS_CHUNK_SIZE);
-    expect(second).toHaveLength(2);
-    expect(second[0].loc).toContain(`/job-${JOBS_CHUNK_SIZE}/`);
+    expect(first).toHaveLength(3);
+    expect(second).toHaveLength(4);
+    expect([...first, ...second].map((item) => item.loc)).toEqual(
+      makeJobs(7).map((item) => expect.stringContaining(item.href)),
+    );
   });
 
   it('returns an empty chunk when out of range', async () => {
     mockFetchSitemapJobs.mockResolvedValue(makeJobs(3));
     await expect(getJobsChunk(99)).resolves.toEqual([]);
   });
-
-  it('keeps later growth in the final advertised chunk', async () => {
-    mockFetchSitemapJobs.mockResolvedValue(
-      makeJobs(JOBS_CHUNK_SIZE * JOBS_CHUNK_COUNT + 2),
-    );
-
-    const final = await getJobsChunk(JOBS_CHUNK_COUNT);
-
-    expect(final).toHaveLength(JOBS_CHUNK_SIZE + 2);
-    expect(final[0].loc).toContain(`/job-${JOBS_CHUNK_SIZE}/`);
-  });
 });
 
 describe('getPillarsChunk', () => {
   it('prefixes slugs with the frontend url and parses lastModified', async () => {
-    mockFetchPillarSitemapSlugs.mockResolvedValue(makeSlugs(2));
+    mockFetchPillarSitemapSlugs.mockResolvedValue(makeSlugs(9));
 
     const chunk = await getPillarsChunk(1);
 
-    expect(chunk).toHaveLength(2);
+    expect(chunk).toHaveLength(3);
     expect(chunk[0].loc).toMatch(/\/t-tag-0$/);
     expect(chunk[0].lastModified).toBeInstanceOf(Date);
   });
 
-  it('keeps later growth in the final advertised chunk', async () => {
-    mockFetchPillarSitemapSlugs.mockResolvedValue(
-      makeSlugs(PILLAR_CHUNK_SIZE * PILLAR_CHUNK_COUNT + 1),
+  it('keeps every advertised chunk populated after the inventory shrinks', async () => {
+    mockFetchPillarSitemapSlugs.mockResolvedValue(makeSlugs(4_773));
+
+    const chunks = await Promise.all(
+      Array.from({ length: PILLAR_CHUNK_COUNT }, (_, index) =>
+        getPillarsChunk(index + 1),
+      ),
     );
 
-    const final = await getPillarsChunk(PILLAR_CHUNK_COUNT);
-
-    expect(final).toHaveLength(PILLAR_CHUNK_SIZE + 1);
+    expect(chunks.map((chunk) => chunk.length)).toEqual([1591, 1591, 1591]);
   });
 });
