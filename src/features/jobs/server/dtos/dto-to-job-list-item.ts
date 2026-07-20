@@ -241,9 +241,7 @@ const dtoToFundingRounds = (
     .sort((a, b) => (b.date ?? 0) - (a.date ?? 0))
     .map((fr) => ({
       roundName: fr.roundName ?? null,
-      amount: fr.raisedAmount
-        ? `$${formatNumber(fr.raisedAmount * 1_000_000)}`
-        : null,
+      amount: fr.raisedAmount ? `$${formatNumber(fr.raisedAmount)}` : null,
       date: fr.date ? shortTimestamp(fr.date) : null,
       href: fr.roundName ? `/fr-${slugify(fr.roundName)}` : null,
     }));
