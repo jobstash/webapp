@@ -5,6 +5,7 @@ import { JobDetailsContent } from './job-details-content';
 import { JobDetailsSidebar } from './job-details-sidebar';
 import { MobileApplyBar } from './mobile-apply-bar';
 import { OrgInfoCard } from './org-info-card';
+import { JobViewTracker } from './job-view-tracker';
 
 interface JobDetailsPageProps {
   job: JobDetailsSchema;
@@ -16,6 +17,7 @@ export const JobDetailsPage = ({ job }: JobDetailsPageProps) => {
 
   return (
     <>
+      <JobViewTracker shortUUID={job.id} />
       <main className='pb-24 lg:pb-8'>
         <div className='flex gap-6'>
           <article className='min-w-0 flex-1'>
