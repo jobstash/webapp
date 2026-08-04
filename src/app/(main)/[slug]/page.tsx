@@ -29,6 +29,11 @@ export const generateStaticParams =
     ? undefined
     : async () => fetchPillarStaticParams();
 
+// Route-level revalidation bounds every cached state of this page — including
+// notFound() results — so a pillar that was empty or erroring recovers within
+// the hour once MW serves data for it again.
+export const revalidate = 3600;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

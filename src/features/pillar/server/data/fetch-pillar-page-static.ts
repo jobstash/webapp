@@ -18,6 +18,13 @@ const sortFeaturedFirst = (jobs: JobListItemSchema[]): JobListItemSchema[] => {
   });
 };
 
+// Pillar pages must never serve a 404 for a transient backend problem:
+// notFound() results get cached, and a cached 404 both deindexes the page
+// and can stick around long after MW has recovered. Transient failures
+// (network, non-OK status, success:false, schema drift) throw instead,
+// surfacing as an uncached 500 that retries on the next hit and reports to
+// Sentry. `null` is reserved for pillars that genuinely have no data (MW
+// answers success:true with data:null); those intentionally stay 404.
 export const fetchPillarPageStatic = async (
   slug: string,
 ): Promise<PillarPageStatic | null> => {
@@ -28,11 +35,25 @@ export const fetchPillarPageStatic = async (
     cache: 'force-cache',
     next: { revalidate: 3600 },
   });
-  if (!response.ok) return null;
+  if (!response.ok) {
+    throw new Error(
+      `Pillar page fetch failed (${response.status}): ${apiSlug}`,
+    );
+  }
 
   const json = await response.json();
+
+  if (json?.success === true && json?.data == null) return null;
+  if (json?.success === false) {
+    throw new Error(
+      `Pillar page request failed for ${apiSlug}: ${json?.message}`,
+    );
+  }
+
   const parsed = pillarPageStaticDto.safeParse(json);
-  if (!parsed.success) return null;
+  if (!parsed.success) {
+    throw new Error(`Pillar page payload failed validation: ${apiSlug}`);
+  }
 
   const result = dtoToPillarPageStatic(parsed.data);
   return {

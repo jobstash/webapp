@@ -44,7 +44,7 @@ pnpm version:bump     # Bump package.json version (semver, by branch prefix or f
 ```
 
 - Builds use **`--webpack`** (opting out of Turbopack) because of the custom `splitChunks` config and Sentry wrapping in `next.config.ts`.
-- The `build` script sets **`DISABLE_STATIC_GENERATION=true`**, so production builds do **not** pre-render pillar/job pages. `generateStaticParams` returns `undefined` when this flag is set or in dev; pages are served on-demand with `force-cache` + `revalidate: 3600` (ISR-style).
+- The `build` script sets **`DISABLE_STATIC_GENERATION=true`**, so production builds do **not** pre-render pillar/job pages. `generateStaticParams` returns `undefined` when this flag is set or in dev; pages are served on-demand with `force-cache` + `revalidate: 3600` (ISR-style). The pillar route also exports route-level `revalidate = 3600` so cached states (including 404s) always re-check within the hour.
 
 ## Architecture
 
@@ -207,7 +207,7 @@ Filters are fully **server-driven via URL state (nuqs)**. Setting any filter cle
 
 ## Pillar Pages
 
-Pillar pages are SEO landing pages rendered by `src/app/(main)/[slug]/page.tsx`. Slug validity + filter mapping live in **`src/features/pillar/constants.ts`** (`isValidPillarSlug`, `getPillarFilterContext`, `getPillarHeadline`). Data comes from `MW/search/pillar/page/static/{apiSlug}` via `fetchPillarPageStatic`. Each pillar composes `PillarHero`, `SuggestedPillars`, `PillarCTA`, `PillarJobList`, plus dynamic `opengraph-image.tsx`/`twitter-image.tsx`.
+Pillar pages are SEO landing pages rendered by `src/app/(main)/[slug]/page.tsx`. Slug validity + filter mapping live in **`src/features/pillar/constants.ts`** (`isValidPillarSlug`, `getPillarFilterContext`, `getPillarHeadline`). Data comes from `MW/search/pillar/page/static/{apiSlug}` via `fetchPillarPageStatic` (MW filters jobs to a 90-day recency window). Failure contract: transient MW failures (network, non-OK, `success:false`, schema drift) **throw** → uncached 500 that recovers on the next hit; `null` is reserved for pillars that genuinely have no data (`success:true` + `data:null`) → 404. Never turn a transient failure into a 404 — a cached 404 deindexes the page. Each pillar composes `PillarHero`, `SuggestedPillars`, `PillarCTA`, `PillarJobList`, plus dynamic `opengraph-image.tsx`/`twitter-image.tsx`.
 
 **Prefix → filter mappings** (`PREFIX_MAPPINGS`; matched by `startsWith`, longer prefixes first):
 
