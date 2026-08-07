@@ -22,6 +22,7 @@ import {
   type JobInvestorSchema,
   type JobListItemSchema,
   type JobOrganizationSchema,
+  type JobAvailabilitySchema,
 } from '@/features/jobs/schemas';
 import type { MappedInfoTagSchema } from '@/lib/schemas';
 import { SENIORITY_MAPPING } from '@/lib/constants';
@@ -96,9 +97,55 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     infoTags,
     tags: mappedTags,
     organization: mappedOrg,
+    availability: dto.availability?.map(dtoToAvailability) ?? [],
     badge,
     timestampText,
     datePosted,
+  };
+};
+
+const formatUtcOffset = (minutes: number): string => {
+  const sign = minutes >= 0 ? '+' : '-';
+  const absolute = Math.abs(minutes);
+  const hours = Math.floor(absolute / 60);
+  const remainder = absolute % 60;
+  return `UTC${sign}${hours}${remainder ? `:${String(remainder).padStart(2, '0')}` : ''}`;
+};
+
+const dtoToAvailability = (
+  item: NonNullable<JobListItemDto['availability']>[number],
+): JobAvailabilitySchema => {
+  const place = item.placeName ?? item.placeText ?? null;
+  const timezone =
+    item.timezone ??
+    (item.minimumUtcOffsetMinutes != null
+      ? item.maximumUtcOffsetMinutes != null &&
+        item.maximumUtcOffsetMinutes !== item.minimumUtcOffsetMinutes
+        ? `${formatUtcOffset(item.minimumUtcOffsetMinutes)}–${formatUtcOffset(item.maximumUtcOffsetMinutes)}`
+        : formatUtcOffset(item.minimumUtcOffsetMinutes)
+      : item.maximumUtcOffsetMinutes != null
+        ? formatUtcOffset(item.maximumUtcOffsetMinutes)
+        : null);
+  const workMode = item.workMode ? capitalize(item.workMode, true) : null;
+  const label = [workMode, place, timezone].filter(Boolean).join(' · ');
+  const availabilityKey = item.placeId
+    ? `place:${item.placeId}`
+    : item.timezone
+      ? `tz:${item.timezone}`
+      : item.timezoneKind &&
+          (item.minimumUtcOffsetMinutes != null ||
+            item.maximumUtcOffsetMinutes != null)
+        ? `tz:${item.timezoneKind}:${item.minimumUtcOffsetMinutes ?? ''}:${item.maximumUtcOffsetMinutes ?? ''}`
+        : null;
+  return {
+    requirement: item.requirement,
+    label: label || item.rawText,
+    href: availabilityKey
+      ? createFilterUrl('availability', availabilityKey)
+      : item.workMode
+        ? createFilterUrl('workModes', item.workMode)
+        : null,
+    rawText: item.rawText,
   };
 };
 
@@ -267,6 +314,7 @@ const normalizeSocialUrl = (
 // only `name` is guaranteed.
 export interface OrgInfoSource {
   name: string;
+  normalizedName?: string | null;
   website?: string | null;
   location?: string | null;
   logoUrl?: string | null;
@@ -281,6 +329,14 @@ export interface OrgInfoSource {
   projects?: JobOrgProjectDto[];
   fundingRounds?: FundingRoundDto[];
   investors?: InvestorDto[];
+  fundingStage?: string | null;
+  recentlyFunded?: boolean;
+  teamCoverageStatus?: 'current' | 'unknown' | null;
+  teamSignalsAsOf?: string | null;
+  currentMaintainerCount?: number | null;
+  growingTeam?: boolean | null;
+  shrinkingTeam?: boolean | null;
+  earlyTeamShrinkage?: boolean | null;
 }
 
 const dtoToOrgSocials = (
@@ -331,6 +387,15 @@ export const dtoToOrgInfo = (
   projects: dtoToOrgProjects(dto),
   fundingRounds: dtoToFundingRounds(dto.fundingRounds ?? []),
   investors: dtoToInvestors(dto.investors ?? []),
+  fundingStage: dto.fundingStage ?? null,
+  recentlyFunded: dto.recentlyFunded ?? false,
+  teamCoverageStatus: dto.teamCoverageStatus ?? null,
+  teamSignalsAsOf: dto.teamSignalsAsOf ?? null,
+  currentMaintainerCount: dto.currentMaintainerCount ?? null,
+  growingTeam: dto.growingTeam ?? null,
+  shrinkingTeam: dto.shrinkingTeam ?? null,
+  earlyTeamShrinkage: dto.earlyTeamShrinkage ?? null,
+  intelligenceUrl: `https://ecosystem.vision/organizations/info/${dto.normalizedName ?? slugify(dto.name)}`,
 });
 
 export const dtoToJobItemOrg = (

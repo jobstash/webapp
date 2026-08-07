@@ -28,6 +28,8 @@ import { checkIsRemoteFilter } from '@/features/filters/utils';
 
 const PARAM_KEYS = {
   LOCATIONS: 'locations',
+  WORK_MODES: 'workModes',
+  AVAILABILITY: 'availability',
   SENIORITY: 'seniority',
   TAGS: 'tags',
   ORGANIZATIONS: 'organizations',
@@ -47,6 +49,8 @@ const LABELS = {
 
 const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.LOCATIONS,
+  PARAM_KEYS.WORK_MODES,
+  PARAM_KEYS.AVAILABILITY,
   PARAM_KEYS.SENIORITY,
   PARAM_KEYS.TAGS,
   PARAM_KEYS.ORGANIZATIONS,
@@ -206,7 +210,10 @@ const adjustLocationLabel = (
     | SearchFilterConfigSchema
     | RemoteSearchFilterConfigSchema,
 ) => {
-  if (dto.paramKey === PARAM_KEYS.LOCATIONS) {
+  if (
+    dto.paramKey === PARAM_KEYS.LOCATIONS ||
+    dto.paramKey === PARAM_KEYS.WORK_MODES
+  ) {
     baseFilter.label = LABELS.WORK_MODE;
   }
 };
@@ -247,6 +254,7 @@ const handleMultiSelect = (
 const handleFilterConfig = (
   dto: FilterConfigDto[string],
 ): FilterConfigSchema | null => {
+  if (!dto.show) return null;
   adjustFilterPosition(dto);
 
   let baseFilter: FilterConfigSchema | null = null;

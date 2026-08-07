@@ -145,6 +145,51 @@ describe('dtoToJobListItem — org socials and projects', () => {
   });
 });
 
+describe('dtoToJobListItem — company intelligence', () => {
+  it('maps authoritative funding and maintainer signals', () => {
+    const item = dtoToJobListItem(
+      makeJobListItemDto({
+        organization: makeOrganizationDto({
+          fundingStage: 'Series A',
+          recentlyFunded: true,
+          teamCoverageStatus: 'current',
+          teamSignalsAsOf: '2026-08-07T12:00:00.000Z',
+          currentMaintainerCount: 4,
+          growingTeam: true,
+          shrinkingTeam: false,
+          earlyTeamShrinkage: false,
+        }),
+      }),
+    );
+
+    expect(item.organization).toMatchObject({
+      fundingStage: 'Series A',
+      recentlyFunded: true,
+      teamCoverageStatus: 'current',
+      teamSignalsAsOf: '2026-08-07T12:00:00.000Z',
+      currentMaintainerCount: 4,
+      growingTeam: true,
+      shrinkingTeam: false,
+      earlyTeamShrinkage: false,
+      intelligenceUrl: 'https://ecosystem.vision/organizations/info/bitrefill',
+    });
+  });
+
+  it('defaults omitted maintainer signals to unavailable values', () => {
+    const item = dtoToJobListItem(makeJobListItemDto());
+
+    expect(item.organization).toMatchObject({
+      recentlyFunded: false,
+      teamCoverageStatus: null,
+      teamSignalsAsOf: null,
+      currentMaintainerCount: null,
+      growingTeam: null,
+      shrinkingTeam: null,
+      earlyTeamShrinkage: null,
+    });
+  });
+});
+
 describe('jobListItemDto — org summary/description tolerance', () => {
   it.each([
     ['empty strings', { summary: '', description: '' }],
@@ -198,6 +243,30 @@ describe('dtoToJobListItem — structured locations', () => {
     expect(item.locationType).toBe('REMOTE');
     expect(item.addresses?.length).toBeGreaterThan(0);
     expect(item.addresses?.every((address) => address.isRemote)).toBe(true);
+  });
+
+  it('uses the canonical timezone key in an availability link', () => {
+    const item = dtoToJobListItem(
+      makeJobListItemDto({
+        availability: [
+          {
+            requirement: 'required',
+            timezoneKind: 'offset',
+            minimumUtcOffsetMinutes: 120,
+            rawText: 'Must overlap UTC+2',
+            confidence: 0.99,
+            extractorVersion: 'availability-v1',
+          },
+        ],
+      }),
+    );
+
+    expect(item.availability).toEqual([
+      expect.objectContaining({
+        label: 'UTC+2',
+        href: '/?availability=tz%3Aoffset%3A120%3A',
+      }),
+    ]);
   });
 });
 

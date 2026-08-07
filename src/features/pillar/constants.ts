@@ -16,6 +16,7 @@ export type PillarCategory =
   | 'seniority'
   | 'investor'
   | 'fundingRound'
+  | 'fundingStage'
   | 'boolean';
 
 interface CategoryConfig {
@@ -90,6 +91,13 @@ export const PILLAR_CATEGORY_CONFIG: Record<PillarCategory, CategoryConfig> = {
     dot: 'bg-indigo-400',
     nameFirst: true,
   },
+  fundingStage: {
+    label: 'Current Stage',
+    tagline: 'Startup Jobs',
+    accent: 'text-fuchsia-400',
+    dot: 'bg-fuchsia-400',
+    nameFirst: true,
+  },
   boolean: {
     label: 'Filter',
     tagline: '',
@@ -116,8 +124,9 @@ interface PrefixMapping {
 const PREFIX_MAPPINGS: PrefixMapping[] = [
   { prefix: 'cl-', category: 'classification', paramKey: 'classifications' },
   { prefix: 'co-', category: 'commitment', paramKey: 'commitments' },
-  { prefix: 'lt-', category: 'locationType', paramKey: 'locations' },
+  { prefix: 'lt-', category: 'locationType', paramKey: 'workModes' },
   { prefix: 'fr-', category: 'fundingRound', paramKey: 'fundingRounds' },
+  { prefix: 'fs-', category: 'fundingStage', paramKey: 'fundingStages' },
   { prefix: 't-', category: 'tag', paramKey: 'tags' },
   { prefix: 'l-', category: 'location', paramKey: null },
   { prefix: 'o-', category: 'organization', paramKey: 'organizations' },

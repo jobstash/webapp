@@ -32,8 +32,7 @@ export const fetchPillarPageStatic = async (
   const url = `${clientEnv.MW_URL}/search/pillar/page/static/${apiSlug}`;
 
   const response = await fetch(url, {
-    cache: 'force-cache',
-    next: { revalidate: 3600 },
+    cache: 'no-store',
   });
   if (!response.ok) {
     throw new Error(

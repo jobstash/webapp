@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { cn } from '@/lib/utils';
 import { type JobOrganizationSchema } from '@/features/jobs/schemas';
+import { OrganizationIntelligenceBadges } from '@/features/jobs/components/organization-intelligence-badges';
 
 interface JobListItemOrgProps {
   organization: JobOrganizationSchema;
@@ -12,8 +13,18 @@ interface JobListItemOrgProps {
 export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
   const { summary, fundingRounds, investors } = organization;
 
+  const hasIntelligence =
+    !!organization.fundingStage ||
+    organization.recentlyFunded ||
+    organization.currentMaintainerCount !== null ||
+    !!organization.growingTeam ||
+    !!organization.shrinkingTeam ||
+    !!organization.earlyTeamShrinkage;
   const hasExpandableContent =
-    !!summary || fundingRounds.length > 0 || investors.length > 0;
+    !!summary ||
+    fundingRounds.length > 0 ||
+    investors.length > 0 ||
+    hasIntelligence;
 
   if (!hasExpandableContent) return null;
 
@@ -39,6 +50,7 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
       </summary>
 
       <div className='mt-3 space-y-3 pl-4'>
+        <OrganizationIntelligenceBadges organization={organization} />
         {summary && (
           <p className='text-sm leading-relaxed text-muted-foreground'>
             {summary}

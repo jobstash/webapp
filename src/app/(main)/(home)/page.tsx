@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { permanentRedirect } from 'next/navigation';
 
 import { SocialsAside } from '@/components/socials-aside';
 import {
@@ -62,7 +63,20 @@ const preload = (currentPage: number, searchParams: Record<string, string>) => {
 };
 
 const HomePage = async ({ searchParams }: Props) => {
-  const { page, ...restSearchParams } = await searchParams;
+  const rawSearchParams = await searchParams;
+  if (rawSearchParams.locations) {
+    const canonical = new URLSearchParams(rawSearchParams);
+    const workModes = [
+      ...(rawSearchParams.workModes?.split(',') ?? []),
+      ...rawSearchParams.locations.split(','),
+    ]
+      .map((value) => value.trim())
+      .filter(Boolean);
+    canonical.set('workModes', [...new Set(workModes)].join(','));
+    canonical.delete('locations');
+    permanentRedirect(`/?${canonical.toString()}`);
+  }
+  const { page, ...restSearchParams } = rawSearchParams;
   const currentPage = Number(page) || 1;
   preload(currentPage, restSearchParams);
 

@@ -21,6 +21,23 @@ export const jobOrgProjectDto = z.object({
 });
 export type JobOrgProjectDto = z.infer<typeof jobOrgProjectDto>;
 
+export const jobAvailabilityDto = z.object({
+  requirement: z.enum(['required', 'preferred']),
+  workMode: z.enum(['remote', 'hybrid', 'onsite']).optional(),
+  placeId: nonEmptyStringSchema.optional(),
+  placeName: nonEmptyStringSchema.optional(),
+  placeText: nonEmptyStringSchema.optional(),
+  ancestorPlaceIds: nonEmptyStringSchema.array().optional(),
+  timezoneKind: nonEmptyStringSchema.optional(),
+  timezone: nonEmptyStringSchema.optional(),
+  minimumUtcOffsetMinutes: z.number().optional(),
+  maximumUtcOffsetMinutes: z.number().optional(),
+  rawText: nonEmptyStringSchema,
+  confidence: z.number().min(0).max(1),
+  extractorVersion: nonEmptyStringSchema,
+});
+export type JobAvailabilityDto = z.infer<typeof jobAvailabilityDto>;
+
 export const jobListItemDto = z.object({
   id: nonEmptyStringSchema,
   title: nullableStringSchema,
@@ -44,6 +61,7 @@ export const jobListItemDto = z.object({
   salaryCurrency: nullableStringSchema,
   classification: nullableStringSchema,
   tags: tagDto.array(),
+  availability: jobAvailabilityDto.array().optional(),
 
   access: z.enum(['public', 'protected']),
   featured: z.boolean(),
@@ -67,6 +85,14 @@ export const jobListItemDto = z.object({
       headcountEstimate: nullableNumberSchema,
       fundingRounds: fundingRoundDto.array(),
       investors: investorDto.array(),
+      fundingStage: nullableStringSchema.optional(),
+      recentlyFunded: z.boolean().optional(),
+      teamCoverageStatus: z.enum(['current', 'unknown']).nullable().optional(),
+      teamSignalsAsOf: nullableStringSchema.optional(),
+      currentMaintainerCount: nullableNumberSchema.optional(),
+      growingTeam: nullableBooleanSchema.optional(),
+      shrinkingTeam: nullableBooleanSchema.optional(),
+      earlyTeamShrinkage: nullableBooleanSchema.optional(),
       // Enriched org metadata — emitted by /jobs/details and the pillar
       // static endpoint; absent on /jobs/list.
       discord: optionalStringSchema,

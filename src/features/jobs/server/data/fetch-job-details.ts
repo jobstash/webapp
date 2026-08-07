@@ -15,8 +15,7 @@ export const fetchJobDetails = async ({
   const url = `${clientEnv.MW_URL}/jobs/details/${id}`;
 
   const response = await fetch(url, {
-    cache: 'force-cache',
-    next: { revalidate: 3600 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {

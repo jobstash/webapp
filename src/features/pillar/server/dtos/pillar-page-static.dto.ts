@@ -2,7 +2,12 @@ import 'server-only';
 
 import { z } from 'zod';
 
-import { nonEmptyStringSchema, optionalStringSchema } from '@/lib/schemas';
+import {
+  nonEmptyStringSchema,
+  nullableBooleanSchema,
+  nullableStringSchema,
+  optionalStringSchema,
+} from '@/lib/schemas';
 import { fundingRoundDto, investorDto } from '@/lib/server/dtos';
 import {
   jobListItemDto,
@@ -29,6 +34,14 @@ const pillarOrganizationDto = z.object({
   projects: jobOrgProjectDto.array().optional(),
   fundingRounds: fundingRoundDto.array().optional(),
   investors: investorDto.array().optional(),
+  fundingStage: nullableStringSchema.optional(),
+  recentlyFunded: z.boolean().optional(),
+  teamCoverageStatus: z.enum(['current', 'unknown']).nullable().optional(),
+  teamSignalsAsOf: nullableStringSchema.optional(),
+  currentMaintainerCount: z.number().nullable().optional(),
+  growingTeam: nullableBooleanSchema.optional(),
+  shrinkingTeam: nullableBooleanSchema.optional(),
+  earlyTeamShrinkage: nullableBooleanSchema.optional(),
 });
 
 export const pillarPageStaticDto = z.object({

@@ -25,6 +25,7 @@ const CATEGORY_HOVER_STYLES: Record<PillarCategory, string> = {
   seniority: 'hover:border-orange-500/40 hover:bg-orange-500/10',
   investor: 'hover:border-teal-500/40 hover:bg-teal-500/10',
   fundingRound: 'hover:border-indigo-500/40 hover:bg-indigo-500/10',
+  fundingStage: 'hover:border-fuchsia-500/40 hover:bg-fuchsia-500/10',
   boolean: 'hover:border-slate-500/40 hover:bg-slate-500/10',
 };
 

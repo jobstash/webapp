@@ -20,6 +20,7 @@ import {
   type JobOrganizationSchema,
   type JobOrgSocialsSchema,
 } from '@/features/jobs/schemas';
+import { OrganizationIntelligenceBadges } from '@/features/jobs/components/organization-intelligence-badges';
 
 interface OrgInfoCardProps {
   organization: JobOrganizationSchema;
@@ -204,6 +205,18 @@ export const OrgInfoCard = ({
 
       {socials && <OrgSocials name={name} socials={socials} />}
 
+      <OrganizationIntelligenceBadges
+        organization={organization}
+        includeEcosystemLink
+      />
+
+      {organization.teamSignalsAsOf && (
+        <p className='text-[11px] text-muted-foreground'>
+          Maintainer signals as of{' '}
+          {new Date(organization.teamSignalsAsOf).toLocaleDateString()}
+        </p>
+      )}
+
       <div className='space-y-2'>
         {location && (
           <div className='flex items-center gap-2 text-sm text-muted-foreground'>
@@ -221,7 +234,9 @@ export const OrgInfoCard = ({
 
       {fundingRounds.length > 0 && (
         <div className='space-y-2'>
-          <p className='text-xs font-medium text-muted-foreground'>Funding</p>
+          <p className='text-xs font-medium text-muted-foreground'>
+            Funding history
+          </p>
           <div className='flex flex-wrap gap-1.5'>
             {fundingRounds.slice(0, 3).map((round) => {
               const label = round.amount

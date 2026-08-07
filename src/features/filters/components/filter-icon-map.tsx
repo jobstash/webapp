@@ -8,6 +8,7 @@ import {
   FunnelPlusIcon,
   HandCoinsIcon,
   LinkIcon,
+  MapPinIcon,
   SquareChevronRightIcon,
 } from 'lucide-react';
 
@@ -31,6 +32,8 @@ import { WorkModeIcon } from '@/components/svg/work-mode-icon';
 
 export const filterIconMap: IconMap = {
   locations: <WorkModeIcon />,
+  workModes: <WorkModeIcon />,
+  availability: <MapPinIcon />,
   seniority: <SeniorityIcon className='size-3' />,
   tags: <CodeXmlIcon className='mt-0.25 size-4' />,
   publicationDate: <CalendarDaysIcon />,
@@ -39,6 +42,12 @@ export const filterIconMap: IconMap = {
   minSalaryRange: <SalaryIcon />,
   minHeadCount: <UsersIcon />,
   fundingRounds: <BankIcon className='size-3.5' />,
+  fundingStages: <BankIcon className='size-3.5' />,
+  minCurrentMaintainers: <UsersIcon />,
+  growingTeam: <UsersIcon />,
+  shrinkingTeam: <UsersIcon />,
+  earlyTeamShrinkage: <UsersIcon />,
+  recentlyFunded: <HandCoinsIcon />,
   investors: <HandCoinsIcon />,
   audits: <AuditIcon />,
   hacks: <HackIcon />,

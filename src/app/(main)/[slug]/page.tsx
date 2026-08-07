@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 
 import {
   FiltersAside,
@@ -20,6 +20,7 @@ import {
 } from '@/features/pillar/constants';
 import { fetchPillarPageStatic } from '@/features/pillar/server';
 import { fetchPillarStaticParams } from '@/features/pillar/server/data';
+import { fetchCanonicalPillarSlug } from '@/features/pillar/server/data/fetch-canonical-pillar-slug';
 import { clientEnv } from '@/lib/env/client';
 import { robotsNoindexFollow } from '@/lib/seo';
 
@@ -79,6 +80,9 @@ const PillarPage = async ({ params }: Props) => {
   const { slug } = await params;
 
   if (!isValidPillarSlug(slug)) notFound();
+
+  const canonicalSlug = await fetchCanonicalPillarSlug(slug);
+  if (canonicalSlug) permanentRedirect(`/${canonicalSlug}`);
 
   const pillarPage = await fetchPillarPageStatic(slug);
   if (!pillarPage) notFound();

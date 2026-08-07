@@ -49,6 +49,14 @@ export const jobOrgProjectSchema = z.object({
 });
 export type JobOrgProjectSchema = z.infer<typeof jobOrgProjectSchema>;
 
+export const jobAvailabilitySchema = z.object({
+  requirement: z.enum(['required', 'preferred']),
+  label: nonEmptyStringSchema,
+  href: nullableStringSchema,
+  rawText: nonEmptyStringSchema,
+});
+export type JobAvailabilitySchema = z.infer<typeof jobAvailabilitySchema>;
+
 export const jobOrganizationSchema = z.object({
   name: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
@@ -63,6 +71,15 @@ export const jobOrganizationSchema = z.object({
   projects: jobOrgProjectSchema.array(),
   fundingRounds: jobFundingRoundSchema.array(),
   investors: jobInvestorSchema.array(),
+  fundingStage: nullableStringSchema,
+  recentlyFunded: z.boolean(),
+  teamCoverageStatus: z.enum(['current', 'unknown']).nullable(),
+  teamSignalsAsOf: nullableStringSchema,
+  currentMaintainerCount: z.number().nullable(),
+  growingTeam: z.boolean().nullable(),
+  shrinkingTeam: z.boolean().nullable(),
+  earlyTeamShrinkage: z.boolean().nullable(),
+  intelligenceUrl: nonEmptyStringSchema,
 });
 export type JobOrganizationSchema = z.infer<typeof jobOrganizationSchema>;
 
@@ -78,6 +95,7 @@ export const jobListItemSchema = z.object({
   addresses: addressSchema.array().nullable(),
   infoTags: mappedInfoTagSchema.array(),
   tags: jobTagSchema.array(),
+  availability: jobAvailabilitySchema.array(),
   organization: jobOrganizationSchema.nullable(),
   timestampText: nonEmptyStringSchema,
   datePosted: nonEmptyStringSchema,

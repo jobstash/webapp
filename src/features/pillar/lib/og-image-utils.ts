@@ -20,6 +20,7 @@ const CATEGORY_ACCENT_HEX: Record<PillarCategory, string> = {
   seniority: '#FB923C',
   investor: '#2DD4BF',
   fundingRound: '#818CF8',
+  fundingStage: '#E879F9',
   boolean: '#94A3B8',
 };
 
