@@ -37,6 +37,11 @@ const PARAM_KEYS = {
   INVESTORS: 'investors',
   EXPERT_JOBS: 'expertJobs',
   ONBOARD_INTO_WEB3: 'onboardIntoWeb3',
+  FUNDING_STAGES: 'fundingStages',
+  GROWING_TEAM: 'growingTeam',
+  SHRINKING_TEAM: 'shrinkingTeam',
+  EARLY_TEAM_SHRINKAGE: 'earlyTeamShrinkage',
+  RECENTLY_FUNDED: 'recentlyFunded',
 } as const;
 
 type ParamKey = (typeof PARAM_KEYS)[keyof typeof PARAM_KEYS];
@@ -58,6 +63,16 @@ const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.INVESTORS,
   PARAM_KEYS.EXPERT_JOBS,
   PARAM_KEYS.ONBOARD_INTO_WEB3,
+  PARAM_KEYS.FUNDING_STAGES,
+  PARAM_KEYS.GROWING_TEAM,
+  PARAM_KEYS.SHRINKING_TEAM,
+  PARAM_KEYS.EARLY_TEAM_SHRINKAGE,
+  PARAM_KEYS.RECENTLY_FUNDED,
+]);
+
+const SUGGESTED_RANGE_PARAM_KEYS = new Set([
+  'minCurrentMaintainers',
+  'maxCurrentMaintainers',
 ]);
 
 const RADIO_FILTER_OPTION_THRESHOLD = 6;
@@ -165,6 +180,9 @@ const handleRangeFilter = (
   const isSalarySuggested =
     lowest.paramKey.toLowerCase().includes('salary') ||
     highest.paramKey.toLowerCase().includes('salary');
+  const isIntelligenceSuggested =
+    SUGGESTED_RANGE_PARAM_KEYS.has(lowest.paramKey) ||
+    SUGGESTED_RANGE_PARAM_KEYS.has(highest.paramKey);
 
   return {
     ...dtoToFilterConfigSharedProps(dto),
@@ -172,7 +190,7 @@ const handleRangeFilter = (
     lowest,
     highest,
     prefix: dto.prefix,
-    isSuggested: isSalarySuggested || undefined,
+    isSuggested: isSalarySuggested || isIntelligenceSuggested || undefined,
   };
 };
 
