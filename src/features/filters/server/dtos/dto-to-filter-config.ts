@@ -38,6 +38,10 @@ const PARAM_KEYS = {
   EXPERT_JOBS: 'expertJobs',
   ONBOARD_INTO_WEB3: 'onboardIntoWeb3',
   FUNDING_STAGES: 'fundingStages',
+  NEW_ACTIVE_LEADS: 'newActiveLeads',
+  STEPPED_DOWN_LEADS: 'steppedDownLeads',
+  MOVED_LEADS: 'movedLeads',
+  EARLY_LEAD_DEPARTURES: 'earlyLeadDepartures',
   GROWING_TEAM: 'growingTeam',
   SHRINKING_TEAM: 'shrinkingTeam',
   EARLY_TEAM_SHRINKAGE: 'earlyTeamShrinkage',
@@ -64,6 +68,10 @@ const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.EXPERT_JOBS,
   PARAM_KEYS.ONBOARD_INTO_WEB3,
   PARAM_KEYS.FUNDING_STAGES,
+  PARAM_KEYS.NEW_ACTIVE_LEADS,
+  PARAM_KEYS.STEPPED_DOWN_LEADS,
+  PARAM_KEYS.MOVED_LEADS,
+  PARAM_KEYS.EARLY_LEAD_DEPARTURES,
   PARAM_KEYS.GROWING_TEAM,
   PARAM_KEYS.SHRINKING_TEAM,
   PARAM_KEYS.EARLY_TEAM_SHRINKAGE,
@@ -73,6 +81,8 @@ const SUGGESTED_FILTERS = new Set<ParamKey>([
 const SUGGESTED_RANGE_PARAM_KEYS = new Set([
   'minCurrentMaintainers',
   'maxCurrentMaintainers',
+  'minActiveLeads',
+  'maxActiveLeads',
 ]);
 
 const RADIO_FILTER_OPTION_THRESHOLD = 6;

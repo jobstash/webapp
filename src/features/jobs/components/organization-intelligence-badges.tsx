@@ -40,14 +40,60 @@ export const OrganizationIntelligenceBadges = ({
       label: `${organization.currentMaintainerCount} ${maintainerLabel}`,
     });
   }
-  if (hasCurrentTeamCoverage && organization.growingTeam) {
-    badges.push({ label: 'Growing team' });
+  if (hasCurrentTeamCoverage && organization.activeLeadCount !== null) {
+    const leadLabel =
+      organization.activeLeadCount === 1 ? 'active lead' : 'active leads';
+    badges.push({ label: `${organization.activeLeadCount} ${leadLabel}` });
   }
-  if (hasCurrentTeamCoverage && organization.shrinkingTeam) {
-    badges.push({ label: 'Maintainer moves' });
+  if (hasCurrentTeamCoverage && (organization.newActiveLeadCount ?? 0) > 0) {
+    const label =
+      organization.newActiveLeadCount === 1
+        ? 'new active lead'
+        : 'new active leads';
+    badges.push({ label: `${organization.newActiveLeadCount} ${label}` });
   }
-  if (hasCurrentTeamCoverage && organization.earlyTeamShrinkage) {
-    badges.push({ label: 'Early-team moves' });
+  if (hasCurrentTeamCoverage && (organization.steppedDownLeadCount ?? 0) > 0) {
+    const label =
+      organization.steppedDownLeadCount === 1
+        ? 'lead step-down'
+        : 'lead step-downs';
+    badges.push({ label: `${organization.steppedDownLeadCount} ${label}` });
+  }
+  if (hasCurrentTeamCoverage && (organization.movedLeadCount ?? 0) > 0) {
+    const label =
+      organization.movedLeadCount === 1 ? 'lead movement' : 'lead movements';
+    badges.push({ label: `${organization.movedLeadCount} ${label}` });
+  }
+  if (
+    hasCurrentTeamCoverage &&
+    (organization.earlyLeadDepartureCount ?? 0) > 0
+  ) {
+    const label =
+      organization.earlyLeadDepartureCount === 1
+        ? 'early lead departure'
+        : 'early lead departures';
+    badges.push({ label: `${organization.earlyLeadDepartureCount} ${label}` });
+  }
+  if (
+    hasCurrentTeamCoverage &&
+    organization.newActiveLeadCount === null &&
+    organization.growingTeam
+  ) {
+    badges.push({ label: 'New active leads' });
+  }
+  if (
+    hasCurrentTeamCoverage &&
+    organization.steppedDownLeadCount === null &&
+    organization.shrinkingTeam
+  ) {
+    badges.push({ label: 'Lead step-downs' });
+  }
+  if (
+    hasCurrentTeamCoverage &&
+    organization.earlyLeadDepartureCount === null &&
+    organization.earlyTeamShrinkage
+  ) {
+    badges.push({ label: 'Early lead departures' });
   }
 
   if (badges.length === 0 && !includeEcosystemLink) return null;

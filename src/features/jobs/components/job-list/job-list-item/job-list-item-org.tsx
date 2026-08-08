@@ -17,6 +17,11 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
     !!organization.fundingStage ||
     organization.recentlyFunded ||
     organization.currentMaintainerCount !== null ||
+    organization.activeLeadCount !== null ||
+    (organization.newActiveLeadCount ?? 0) > 0 ||
+    (organization.steppedDownLeadCount ?? 0) > 0 ||
+    (organization.movedLeadCount ?? 0) > 0 ||
+    (organization.earlyLeadDepartureCount ?? 0) > 0 ||
     !!organization.growingTeam ||
     !!organization.shrinkingTeam ||
     !!organization.earlyTeamShrinkage;

@@ -334,6 +334,11 @@ export interface OrgInfoSource {
   teamCoverageStatus?: 'current' | 'unknown' | null;
   teamSignalsAsOf?: string | null;
   currentMaintainerCount?: number | null;
+  activeLeadCount?: number | null;
+  newActiveLeadCount?: number | null;
+  steppedDownLeadCount?: number | null;
+  movedLeadCount?: number | null;
+  earlyLeadDepartureCount?: number | null;
   growingTeam?: boolean | null;
   shrinkingTeam?: boolean | null;
   earlyTeamShrinkage?: boolean | null;
@@ -392,6 +397,11 @@ export const dtoToOrgInfo = (
   teamCoverageStatus: dto.teamCoverageStatus ?? null,
   teamSignalsAsOf: dto.teamSignalsAsOf ?? null,
   currentMaintainerCount: dto.currentMaintainerCount ?? null,
+  activeLeadCount: dto.activeLeadCount ?? null,
+  newActiveLeadCount: dto.newActiveLeadCount ?? null,
+  steppedDownLeadCount: dto.steppedDownLeadCount ?? null,
+  movedLeadCount: dto.movedLeadCount ?? null,
+  earlyLeadDepartureCount: dto.earlyLeadDepartureCount ?? null,
   growingTeam: dto.growingTeam ?? null,
   shrinkingTeam: dto.shrinkingTeam ?? null,
   earlyTeamShrinkage: dto.earlyTeamShrinkage ?? null,
