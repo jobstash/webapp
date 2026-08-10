@@ -27,7 +27,18 @@ export const jobAvailabilityDto = z.object({
   placeId: nonEmptyStringSchema.optional(),
   placeName: nonEmptyStringSchema.optional(),
   placeText: nonEmptyStringSchema.optional(),
+  placeKind: z
+    .enum([
+      'city',
+      'administrative_area',
+      'country',
+      'world_region',
+      'continent',
+      'business_region',
+    ])
+    .optional(),
   ancestorPlaceIds: nonEmptyStringSchema.array().optional(),
+  placeTimezoneIds: nonEmptyStringSchema.array().optional(),
   timezoneKind: nonEmptyStringSchema.optional(),
   timezone: nonEmptyStringSchema.optional(),
   minimumUtcOffsetMinutes: z.number().optional(),

@@ -27,7 +27,9 @@ export const AvailabilityPills = ({
             variant='outline'
             title={item.rawText}
             className={cn(
-              'border-sky-500/20 bg-sky-500/5 text-sky-200',
+              'border-sky-500/20 bg-sky-500/5 text-sky-200 transition-colors',
+              item.href &&
+                'cursor-pointer hover:border-sky-400/50 hover:bg-sky-500/15 focus-visible:border-sky-400/50',
               item.requirement === 'preferred' &&
                 'border-violet-500/20 bg-violet-500/5 text-violet-200',
             )}
@@ -40,7 +42,7 @@ export const AvailabilityPills = ({
           <LinkWithLoader
             key={`${item.label}-${item.requirement}-${index}`}
             href={item.href}
-            className='rounded-full'
+            className='rounded-full outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60'
           >
             {badge}
           </LinkWithLoader>

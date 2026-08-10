@@ -10,6 +10,7 @@ export type PillarCategory =
   | 'tag'
   | 'classification'
   | 'location'
+  | 'timezone'
   | 'commitment'
   | 'locationType'
   | 'organization'
@@ -47,6 +48,13 @@ export const PILLAR_CATEGORY_CONFIG: Record<PillarCategory, CategoryConfig> = {
     tagline: 'Jobs in',
     accent: 'text-amber-400',
     dot: 'bg-amber-400',
+    nameFirst: false,
+  },
+  timezone: {
+    label: 'Timezone',
+    tagline: 'Jobs in',
+    accent: 'text-sky-400',
+    dot: 'bg-sky-400',
     nameFirst: false,
   },
   commitment: {
@@ -128,6 +136,7 @@ const PREFIX_MAPPINGS: PrefixMapping[] = [
   { prefix: 'fr-', category: 'fundingRound', paramKey: 'fundingRounds' },
   { prefix: 'fs-', category: 'fundingStage', paramKey: 'fundingStages' },
   { prefix: 't-', category: 'tag', paramKey: 'tags' },
+  { prefix: 'tz-', category: 'timezone', paramKey: null },
   { prefix: 'l-', category: 'location', paramKey: null },
   { prefix: 'o-', category: 'organization', paramKey: 'organizations' },
   { prefix: 's-', category: 'seniority', paramKey: 'seniority' },

@@ -260,7 +260,7 @@ describe('dtoToJobListItem — structured locations', () => {
     expect(item.addresses?.every((address) => address.isRemote)).toBe(true);
   });
 
-  it('uses the canonical timezone key in an availability link', () => {
+  it('links timezone availability to a timezone pillar', () => {
     const item = dtoToJobListItem(
       makeJobListItemDto({
         availability: [
@@ -279,8 +279,40 @@ describe('dtoToJobListItem — structured locations', () => {
     expect(item.availability).toEqual([
       expect.objectContaining({
         label: 'UTC+2',
-        href: '/?availability=tz%3Aoffset%3A120%3A',
+        href: '/tz-utc-2',
       }),
+    ]);
+  });
+
+  it('links place and work-mode availability to their pillars', () => {
+    const item = dtoToJobListItem(
+      makeJobListItemDto({
+        availability: [
+          {
+            requirement: 'required',
+            placeText: 'Zürich, Switzerland',
+            placeKind: 'city',
+            rawText: 'Based in Zürich, Switzerland',
+            confidence: 0.99,
+            extractorVersion: 'availability-v1',
+          },
+          {
+            requirement: 'preferred',
+            workMode: 'remote',
+            rawText: 'Remote preferred',
+            confidence: 0.9,
+            extractorVersion: 'availability-v1',
+          },
+        ],
+      }),
+    );
+
+    expect(item.availability).toEqual([
+      expect.objectContaining({
+        label: 'Zürich, Switzerland',
+        href: '/l-zurich-switzerland',
+      }),
+      expect.objectContaining({ label: 'Remote', href: '/lt-remote' }),
     ]);
   });
 });

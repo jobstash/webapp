@@ -19,6 +19,7 @@ const CATEGORY_HOVER_STYLES: Record<PillarCategory, string> = {
   tag: 'hover:border-emerald-500/40 hover:bg-emerald-500/10',
   classification: 'hover:border-blue-500/40 hover:bg-blue-500/10',
   location: 'hover:border-amber-500/40 hover:bg-amber-500/10',
+  timezone: 'hover:border-sky-500/40 hover:bg-sky-500/10',
   commitment: 'hover:border-violet-500/40 hover:bg-violet-500/10',
   locationType: 'hover:border-cyan-500/40 hover:bg-cyan-500/10',
   organization: 'hover:border-rose-500/40 hover:bg-rose-500/10',

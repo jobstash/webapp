@@ -128,23 +128,17 @@ const dtoToAvailability = (
         : null);
   const workMode = item.workMode ? capitalize(item.workMode, true) : null;
   const label = [workMode, place, timezone].filter(Boolean).join(' · ');
-  const availabilityKey = item.placeId
-    ? `place:${item.placeId}`
-    : item.timezone
-      ? `tz:${item.timezone}`
-      : item.timezoneKind &&
-          (item.minimumUtcOffsetMinutes != null ||
-            item.maximumUtcOffsetMinutes != null)
-        ? `tz:${item.timezoneKind}:${item.minimumUtcOffsetMinutes ?? ''}:${item.maximumUtcOffsetMinutes ?? ''}`
+  const href = place
+    ? `/l-${slugify(place)}`
+    : timezone
+      ? `/tz-${slugify(timezone.replaceAll('+', ' '))}`
+      : item.workMode
+        ? `/lt-${slugify(item.workMode)}`
         : null;
   return {
     requirement: item.requirement,
     label: label || item.rawText,
-    href: availabilityKey
-      ? createFilterUrl('availability', availabilityKey)
-      : item.workMode
-        ? createFilterUrl('workModes', item.workMode)
-        : null,
+    href,
     rawText: item.rawText,
   };
 };
