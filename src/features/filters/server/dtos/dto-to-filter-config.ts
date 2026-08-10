@@ -116,6 +116,7 @@ const dtoToSelectOptions = (dto: SelectOptionDto): SelectOptionsSchema => {
   return {
     value: `${dto.value}`,
     label: dto.label,
+    aliases: dto.aliases,
   };
 };
 

@@ -13,6 +13,11 @@ import { JobListSkeleton } from '@/features/jobs/components/job-list/job-list.sk
 import { fetchJobListPage } from '@/features/jobs/server/data';
 import { SuggestedPillars } from '@/features/pillar/components';
 import { getPillarLinksFromSearchParams } from '@/features/pillar/constants';
+import { fetchFilterConfigs } from '@/features/filters/server/data';
+import {
+  canonicalizeGeographySearchParams,
+  hasLegacyGeographySearchParams,
+} from '@/features/filters/utils';
 import { clientEnv } from '@/lib/env/client';
 import { robotsNoindexFollow } from '@/lib/seo';
 
@@ -75,6 +80,15 @@ const HomePage = async ({ searchParams }: Props) => {
     canonical.set('workModes', [...new Set(workModes)].join(','));
     canonical.delete('locations');
     permanentRedirect(`/?${canonical.toString()}`);
+  }
+  if (hasLegacyGeographySearchParams(rawSearchParams)) {
+    const canonical = canonicalizeGeographySearchParams(
+      rawSearchParams,
+      await fetchFilterConfigs(),
+    );
+    if (canonical.changed) {
+      permanentRedirect(`/?${new URLSearchParams(canonical.searchParams)}`);
+    }
   }
   const { page, ...restSearchParams } = rawSearchParams;
   const currentPage = Number(page) || 1;

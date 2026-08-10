@@ -90,7 +90,7 @@ export const jobListItemDto = z.object({
       // Tolerate missing/empty org copy — a required nonEmpty here would
       // drop the whole job (and fail entire pillar pages) on one bad org.
       summary: optionalStringSchema,
-      location: nonEmptyStringSchema,
+      location: optionalStringSchema,
       description: optionalStringSchema,
       logoUrl: nullableStringSchema,
       headcountEstimate: nullableNumberSchema,

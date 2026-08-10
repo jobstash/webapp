@@ -11,8 +11,16 @@ const locationConfig = (position: number, label: string, paramKey: string) => ({
   kind: 'MULTI_SELECT_WITH_SEARCH' as const,
   paramKey,
   options: [
-    { label: `${label} A`, value: `${paramKey}:a` },
-    { label: `${label} B`, value: `${paramKey}:b` },
+    {
+      label: `${label} A`,
+      value: `${paramKey}-a`,
+      aliases: [`place:test:${paramKey}:a`],
+    },
+    {
+      label: `${label} B`,
+      value: `${paramKey}-b`,
+      aliases: [`place:test:${paramKey}:b`],
+    },
   ],
 });
 
@@ -55,5 +63,13 @@ describe('dtoToFilterConfig location facets', () => {
         }),
       ]),
     );
+    for (const config of result) {
+      if (!('options' in config)) continue;
+      for (const option of config.options) {
+        expect(option.value).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+        expect(option.value).not.toMatch(/[:/]/);
+        expect(option.aliases?.[0]).toMatch(/^place:/);
+      }
+    }
   });
 });

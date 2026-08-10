@@ -205,11 +205,14 @@ describe('dtoToJobListItem — company intelligence', () => {
   });
 });
 
-describe('jobListItemDto — org summary/description tolerance', () => {
+describe('jobListItemDto — incomplete organization copy tolerance', () => {
   it.each([
-    ['empty strings', { summary: '', description: '' }],
-    ['nulls', { summary: null, description: null }],
-    ['omitted', { summary: undefined, description: undefined }],
+    ['empty strings', { summary: '', location: '', description: '' }],
+    ['nulls', { summary: null, location: null, description: null }],
+    [
+      'omitted',
+      { summary: undefined, location: undefined, description: undefined },
+    ],
   ])('parses successfully with %s', (_label, orgOverrides) => {
     const raw = makeJobListItemDto({
       organization: makeOrganizationDto(orgOverrides),
@@ -220,6 +223,7 @@ describe('jobListItemDto — org summary/description tolerance', () => {
     expect(parsed.success).toBe(true);
     if (parsed.success) {
       expect(parsed.data.organization?.summary ?? null).toBeNull();
+      expect(parsed.data.organization?.location ?? null).toBeNull();
       expect(parsed.data.organization?.description ?? null).toBeNull();
     }
   });
