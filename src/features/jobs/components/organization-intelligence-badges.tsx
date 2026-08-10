@@ -114,11 +114,17 @@ export const OrganizationIntelligenceBadges = ({
       {includeEcosystemLink && (
         <Badge variant='outline' asChild>
           <Link
-            href={organization.intelligenceUrl}
+            href={
+              hasCurrentTeamCoverage
+                ? `${organization.intelligenceUrl}/team`
+                : organization.intelligenceUrl
+            }
             target='_blank'
             rel='noopener noreferrer'
           >
-            Company intelligence
+            {hasCurrentTeamCoverage
+              ? 'Team intelligence'
+              : 'Company intelligence'}
             <ExternalLinkIcon className='size-3' />
           </Link>
         </Badge>
