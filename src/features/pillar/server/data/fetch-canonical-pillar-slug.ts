@@ -25,7 +25,7 @@ export const fetchCanonicalPillarSlug = async (
       const input = slug.slice(2);
       const response = await fetch(
         `${clientEnv.MW_URL}/search/pillar/location/resolve?value=${encodeURIComponent(input)}`,
-        { next: { revalidate: 3600 } },
+        { cache: 'no-store' },
       );
       if (!response.ok) return null;
       const result = (await response.json()) as {
