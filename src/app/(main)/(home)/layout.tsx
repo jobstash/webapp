@@ -1,8 +1,14 @@
+import { Suspense } from 'react';
+
 import {
   HeroWithPillars,
   PillarItemsBoundary,
   HeroSection,
 } from '@/features/home/components';
+import {
+  JobMarketOverviewSection,
+  JobMarketOverviewSkeleton,
+} from '@/features/job-market/components';
 
 const HomeLayout = ({ children }: Readonly<React.PropsWithChildren>) => {
   return (
@@ -10,6 +16,9 @@ const HomeLayout = ({ children }: Readonly<React.PropsWithChildren>) => {
       <PillarItemsBoundary fallback={<HeroSection />}>
         <HeroWithPillars />
       </PillarItemsBoundary>
+      <Suspense fallback={<JobMarketOverviewSkeleton />}>
+        <JobMarketOverviewSection />
+      </Suspense>
       <div id='jobs' className='scroll-mt-20 space-y-4 pt-4 lg:scroll-mt-24'>
         {children}
       </div>

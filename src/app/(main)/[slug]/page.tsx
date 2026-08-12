@@ -6,6 +6,8 @@ import {
   FiltersDrawer,
 } from '@/features/filters/components/filters-aside';
 import { OrgInfoCard } from '@/features/jobs/components/job-details/org-info-card';
+import { PillarMarketSection } from '@/features/job-market/components';
+import { fetchPillarMarket } from '@/features/job-market/server';
 import {
   OrgAboutSection,
   PillarHero,
@@ -84,7 +86,10 @@ const PillarPage = async ({ params }: Props) => {
   const canonicalSlug = await fetchCanonicalPillarSlug(slug);
   if (canonicalSlug) permanentRedirect(`/${canonicalSlug}`);
 
-  const pillarPage = await fetchPillarPageStatic(slug);
+  const [pillarPage, pillarMarket] = await Promise.all([
+    fetchPillarPageStatic(slug),
+    fetchPillarMarket(slug),
+  ]);
   if (!pillarPage) notFound();
 
   const pillarContext = getPillarFilterContext(slug);
@@ -111,6 +116,7 @@ const PillarPage = async ({ params }: Props) => {
         slug={slug}
         pillarDetails={{ title, description: heroDescription }}
       />
+      {pillarMarket && <PillarMarketSection market={pillarMarket} />}
       {/* Below lg the aside is hidden — surface the org card under the hero */}
       {org && (
         <div className='mx-auto w-full max-w-2xl px-4 pt-6 lg:hidden'>
