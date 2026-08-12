@@ -13,11 +13,16 @@ const isValidImageSrc = (src: ImageProps['src']): boolean => {
   return true;
 };
 
+export const shouldBypassImageOptimization = (
+  src: ImageProps['src'],
+): boolean => typeof src === 'string' && /^(?:https?:)?\/\//i.test(src.trim());
+
 export const ImageWithFallback = ({
   fallback,
   className,
   alt,
   src,
+  unoptimized,
   ...props
 }: ImageWithFallbackProps) => {
   const [hasError, setHasError] = useState(false);
@@ -32,6 +37,12 @@ export const ImageWithFallback = ({
       alt={alt}
       className={className}
       onError={() => setHasError(true)}
+      // Organization/project logos come from arbitrary third-party hosts.
+      // Loading them directly keeps Google Favicons as the primary automatic
+      // logo source while preventing 404s and redirects from consuming the
+      // server-side Next image optimizer. The existing onError handler still
+      // switches broken sources to the initials fallback.
+      unoptimized={unoptimized ?? shouldBypassImageOptimization(src)}
       {...props}
     />
   );

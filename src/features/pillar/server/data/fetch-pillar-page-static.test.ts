@@ -2,6 +2,27 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { fetchPillarPageStatic } from './fetch-pillar-page-static';
 
+const { cachedResults } = vi.hoisted(() => ({
+  cachedResults: new Map<string, unknown>(),
+}));
+
+vi.mock('next/cache', () => ({
+  unstable_cache:
+    <Args extends unknown[], Result>(
+      callback: (...args: Args) => Promise<Result>,
+    ) =>
+    async (...args: Args) => {
+      const key = JSON.stringify(args);
+      if (cachedResults.has(key)) {
+        return cachedResults.get(key) as Result;
+      }
+
+      const result = await callback(...args);
+      cachedResults.set(key, result);
+      return result;
+    },
+}));
+
 const validJob = {
   id: 'job-1',
   title: 'React Developer',
@@ -34,17 +55,17 @@ const stubFetchResponse = (init: {
   status?: number;
   body?: unknown;
 }) => {
-  vi.stubGlobal(
-    'fetch',
-    vi.fn().mockResolvedValue({
-      ok: init.ok ?? true,
-      status: init.status ?? 200,
-      json: async () => init.body,
-    }),
-  );
+  const fetchMock = vi.fn().mockResolvedValue({
+    ok: init.ok ?? true,
+    status: init.status ?? 200,
+    json: async () => init.body,
+  });
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
 };
 
 afterEach(() => {
+  cachedResults.clear();
   vi.unstubAllGlobals();
 });
 
@@ -108,5 +129,36 @@ describe('fetchPillarPageStatic', () => {
     const result = await fetchPillarPageStatic('t-react');
     expect(result?.title).toBe('React Jobs');
     expect(result?.jobs).toHaveLength(1);
+  });
+
+  it('caches a validated pillar result', async () => {
+    const fetchMock = stubFetchResponse({
+      body: {
+        success: true,
+        message: 'Retrieved pillar page data',
+        data: {
+          title: 'Cached Jobs',
+          description: 'A cached pillar',
+          jobs: [validJob],
+          organization: null,
+        },
+      },
+    });
+
+    await fetchPillarPageStatic('t-cached');
+    await fetchPillarPageStatic('t-cached');
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache a transient MW failure', async () => {
+    const fetchMock = stubFetchResponse({
+      body: { success: false, message: 'Database temporarily unavailable' },
+    });
+
+    await expect(fetchPillarPageStatic('t-retry')).rejects.toThrow('t-retry');
+    await expect(fetchPillarPageStatic('t-retry')).rejects.toThrow('t-retry');
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
