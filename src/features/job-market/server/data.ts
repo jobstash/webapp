@@ -1,6 +1,5 @@
 import 'server-only';
 
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { z } from 'zod';
 
@@ -53,17 +52,8 @@ const fetchPillarMarketUncached = (slug: string) =>
     pillarMarketSchema,
   );
 
-const fetchJobMarketOverviewCached = unstable_cache(
-  fetchJobMarketOverviewUncached,
-  ['job-market-overview-v1'],
-  { revalidate: 3600 },
-);
-
-const fetchPillarMarketCached = unstable_cache(
-  fetchPillarMarketUncached,
-  ['pillar-market-v1'],
-  { revalidate: 3600 },
-);
-
-export const fetchJobMarketOverview = cache(fetchJobMarketOverviewCached);
-export const fetchPillarMarket = cache(fetchPillarMarketCached);
+// React cache deduplicates calls within a render without persisting a null
+// response across requests. The middleware owns the one-hour HTTP cache for
+// successful data; a temporary "not ready" response must recover immediately.
+export const fetchJobMarketOverview = cache(fetchJobMarketOverviewUncached);
+export const fetchPillarMarket = cache(fetchPillarMarketUncached);
