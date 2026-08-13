@@ -9,6 +9,16 @@ describe('developerReportSchema', () => {
       asOf: '2026-08-01',
       completeThrough: '2026-07-01',
       methodologyVersion: 'developer-report-v1',
+      selectedCohort: 'crypto',
+      cohorts: [
+        {
+          cohort: 'crypto',
+          label: 'Crypto',
+          activePeople: 100,
+          activeMaintainers: 20,
+          activeOrganizations: 15,
+        },
+      ],
       population: {
         label: 'Verified internal contributors',
         definition: 'Repeated recorded write authority',

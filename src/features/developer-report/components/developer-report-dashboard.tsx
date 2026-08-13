@@ -28,6 +28,9 @@ const percent = (value: number) => `${(value * 100).toFixed(0)}%`;
 
 const signed = (value: number) => `${value > 0 ? '+' : ''}${value}`;
 
+const cohortHref = (cohort: DeveloperReport['selectedCohort']) =>
+  cohort === 'crypto' ? '/developers' : `/developers?cohort=${cohort}`;
+
 const month = (value: string) => {
   const parsed = new Date(`${value.slice(0, 7)}-01T00:00:00Z`);
   return Number.isNaN(parsed.getTime())
@@ -95,6 +98,10 @@ export const DeveloperReportDashboard = ({
     activePeople12mAgo && activePeople12mAgo > 0
       ? ((current.activePeople - activePeople12mAgo) / activePeople12mAgo) * 100
       : null;
+  const selectedCohort =
+    report.cohorts.find(({ cohort }) => cohort === report.selectedCohort) ??
+    report.cohorts[0];
+  const cohortLabel = selectedCohort?.label ?? report.selectedCohort;
 
   return (
     <div className='space-y-6 pb-16'>
@@ -104,15 +111,16 @@ export const DeveloperReportDashboard = ({
           <div className='max-w-4xl'>
             <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-emerald-400 uppercase'>
               <GitCommitHorizontalIcon className='size-4' aria-hidden />
-              Crypto developer report
+              {cohortLabel} developer report
             </div>
             <h1 className='mt-3 text-4xl font-black tracking-tight md:text-6xl'>
-              The people maintaining crypto
+              The people building {cohortLabel}
             </h1>
             <p className='mt-4 max-w-3xl text-base text-muted-foreground md:text-lg'>
               A monthly view of verified internal employees, maintainers, lead
-              developers, team growth, retention, and movement across the
-              ecosystem—derived from recorded GitHub work history.
+              developers, team growth, retention, and movement across the{' '}
+              {cohortLabel.toLowerCase()} cohort—derived from recorded GitHub
+              work history.
             </p>
             <p className='mt-4 text-xs text-muted-foreground'>
               Complete through {report.completeThrough ?? report.asOf} ·{' '}
@@ -126,6 +134,47 @@ export const DeveloperReportDashboard = ({
             Explore people on Ecosystem Vision
             <ArrowRightIcon className='size-4' aria-hidden />
           </Link>
+        </div>
+      </section>
+
+      <section
+        aria-label='Developer sector cohorts'
+        className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'
+      >
+        <div>
+          <h2 className='text-2xl font-bold'>Compare developer cohorts</h2>
+          <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
+            Organizations are grouped into Crypto, Fintech, AI, Banking, or
+            Tech. Every chart and ranking below follows the selected cohort;
+            permanently banned organizations are excluded before grouping.
+          </p>
+        </div>
+        <div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
+          {report.cohorts.map((cohort) => (
+            <Link
+              key={cohort.cohort}
+              href={cohortHref(cohort.cohort)}
+              aria-current={
+                cohort.cohort === report.selectedCohort ? 'page' : undefined
+              }
+              className={cn(
+                'rounded-xl border p-4 transition-colors',
+                cohort.cohort === report.selectedCohort
+                  ? 'border-emerald-500/60 bg-emerald-500/10'
+                  : 'border-border/60 bg-background/50 hover:border-emerald-500/35',
+              )}
+            >
+              <span className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
+                {cohort.label}
+              </span>
+              <strong className='mt-2 block text-2xl'>
+                {compact(cohort.activePeople)}
+              </strong>
+              <span className='mt-1 block text-xs text-muted-foreground'>
+                internal people · {compact(cohort.activeOrganizations)} orgs
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -288,7 +337,9 @@ export const DeveloperReportDashboard = ({
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
         <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
           <div>
-            <h2 className='text-2xl font-bold'>Organizations building now</h2>
+            <h2 className='text-2xl font-bold'>
+              {cohortLabel} organizations building now
+            </h2>
             <p className='mt-1 text-sm text-muted-foreground'>
               Ranked by verified internal people in the latest complete month.
               Twelve-month change, joins, and exits make growth interpretable.

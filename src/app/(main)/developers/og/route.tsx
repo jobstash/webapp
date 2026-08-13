@@ -1,11 +1,28 @@
 import { ImageResponse } from 'next/og';
 
 import { fetchDeveloperReport } from '@/features/developer-report/server';
+import type { DeveloperCohort } from '@/features/developer-report/schemas';
 
 export const runtime = 'nodejs';
 
 const compact = (value: number) =>
   new Intl.NumberFormat('en-US', { notation: 'compact' }).format(value);
+
+const COHORTS: DeveloperCohort[] = [
+  'crypto',
+  'fintech',
+  'ai',
+  'banking',
+  'tech',
+];
+
+const COHORT_LABELS: Record<DeveloperCohort, string> = {
+  crypto: 'Crypto',
+  fintech: 'Fintech',
+  ai: 'AI',
+  banking: 'Banking',
+  tech: 'Tech',
+};
 
 const sparkline = (values: number[]) => {
   if (values.length < 2) return '';
@@ -21,8 +38,13 @@ const sparkline = (values: number[]) => {
     .join(' ');
 };
 
-export const GET = async () => {
-  const report = await fetchDeveloperReport();
+export const GET = async (request: Request) => {
+  const rawCohort = new URL(request.url).searchParams.get('cohort');
+  const cohort = COHORTS.includes(rawCohort as DeveloperCohort)
+    ? (rawCohort as DeveloperCohort)
+    : 'crypto';
+  const cohortLabel = COHORT_LABELS[cohort];
+  const report = await fetchDeveloperReport(cohort);
   const current = report?.current;
   const points = sparkline(
     report?.history.slice(-36).map((point) => point.activePeople) ?? [],
@@ -73,10 +95,10 @@ export const GET = async () => {
               letterSpacing: -2,
             }}
           >
-            Crypto Developer Report
+            {cohortLabel} Developer Report
           </div>
           <div style={{ marginTop: 14, color: '#a4ada8', fontSize: 25 }}>
-            The internal people maintaining the ecosystem
+            The internal people building {cohortLabel.toLowerCase()}
           </div>
         </div>
         <div

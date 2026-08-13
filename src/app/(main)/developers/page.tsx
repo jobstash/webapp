@@ -3,41 +3,81 @@ import Link from 'next/link';
 
 import { DeveloperReportDashboard } from '@/features/developer-report/components/developer-report-dashboard';
 import { fetchDeveloperReport } from '@/features/developer-report/server';
+import type { DeveloperCohort } from '@/features/developer-report/schemas';
 import { clientEnv } from '@/lib/env/client';
 
-const title = 'Crypto Developer Report';
-const description =
-  'Track verified internal crypto developers, maintainers, active leads, retention, organization growth, and team movement using recorded GitHub work history.';
 const canonical = `${clientEnv.FRONTEND_URL}/developers`;
-const image = {
-  url: `${canonical}/og`,
-  width: 1200,
-  height: 630,
-  alt: 'Crypto Developer Report — JobStash',
+
+interface Props {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+const COHORTS: DeveloperCohort[] = [
+  'crypto',
+  'fintech',
+  'ai',
+  'banking',
+  'tech',
+];
+
+const COHORT_LABELS: Record<DeveloperCohort, string> = {
+  crypto: 'Crypto',
+  fintech: 'Fintech',
+  ai: 'AI',
+  banking: 'Banking',
+  tech: 'Tech',
 };
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical },
-  openGraph: {
-    type: 'website',
-    siteName: 'JobStash',
-    title,
-    description,
-    url: canonical,
-    images: [image],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title,
-    description,
-    images: [image],
-  },
+const selectedCohort = (
+  params: Record<string, string | string[] | undefined>,
+): DeveloperCohort => {
+  const raw = Array.isArray(params.cohort) ? params.cohort[0] : params.cohort;
+  return COHORTS.includes(raw as DeveloperCohort)
+    ? (raw as DeveloperCohort)
+    : 'crypto';
 };
 
-const DevelopersPage = async () => {
-  const report = await fetchDeveloperReport();
+export const generateMetadata = async ({
+  searchParams,
+}: Props): Promise<Metadata> => {
+  const cohort = selectedCohort(await searchParams);
+  const label = COHORT_LABELS[cohort];
+  const title = `${label} Developer Report`;
+  const description = `Track verified internal ${label.toLowerCase()} developers, maintainers, active leads, retention, organization growth, and team movement using recorded GitHub work history.`;
+  const pageUrl =
+    cohort === 'crypto' ? canonical : `${canonical}?cohort=${cohort}`;
+  const image = {
+    url: `${canonical}/og?cohort=${cohort}`,
+    width: 1200,
+    height: 630,
+    alt: `${title} — JobStash`,
+  };
+
+  return {
+    title,
+    description,
+    alternates: { canonical: pageUrl },
+    openGraph: {
+      type: 'website',
+      siteName: 'JobStash',
+      title,
+      description,
+      url: pageUrl,
+      images: [image],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
+  };
+};
+
+const DevelopersPage = async ({ searchParams }: Props) => {
+  const params = await searchParams;
+  const cohort = selectedCohort(params);
+  const report = await fetchDeveloperReport(cohort);
 
   if (!report?.current) {
     return (

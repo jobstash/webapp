@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export const developerCohortSchema = z.enum([
+  'crypto',
+  'fintech',
+  'ai',
+  'banking',
+  'tech',
+]);
+
 export const developerReportPointSchema = z.object({
   period: z.string(),
   activePeople: z.number().int().nonnegative(),
@@ -34,6 +42,7 @@ const developerOrganizationSchema = z.object({
   organizationId: z.string().nullable(),
   organizationName: z.string(),
   organizationSlug: z.string(),
+  cohort: developerCohortSchema,
   logoUrl: z.string().nullable(),
   activePeople: z.number().int().nonnegative(),
   activeMaintainers: z.number().int().nonnegative(),
@@ -57,6 +66,16 @@ export const developerReportSchema = z.object({
   asOf: z.string().nullable(),
   completeThrough: z.string().nullable(),
   methodologyVersion: z.literal('developer-report-v1'),
+  selectedCohort: developerCohortSchema,
+  cohorts: z
+    .object({
+      cohort: developerCohortSchema,
+      label: z.string(),
+      activePeople: z.number().int().nonnegative(),
+      activeMaintainers: z.number().int().nonnegative(),
+      activeOrganizations: z.number().int().nonnegative(),
+    })
+    .array(),
   population: z
     .object({
       label: z.string(),
@@ -103,5 +122,6 @@ export const developerReportSchema = z.object({
 });
 
 export type DeveloperReportPoint = z.infer<typeof developerReportPointSchema>;
+export type DeveloperCohort = z.infer<typeof developerCohortSchema>;
 export type DeveloperReport = z.infer<typeof developerReportSchema>;
 export type DeveloperOrganization = DeveloperReport['organizations'][number];
