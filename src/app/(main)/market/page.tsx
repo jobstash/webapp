@@ -20,11 +20,34 @@ interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+const marketTitle = 'State of the Crypto Job Market';
+const marketDescription =
+  'Explore crypto hiring demand, remote and local compensation, geographic salary differences, and statistically meaningful skill repricing.';
+const marketImage = {
+  url: '/jobstash-market-analytics-og.png',
+  width: 1200,
+  height: 630,
+  alt: 'JobStash Job Market Analytics — demand, salaries, skills, and geography',
+};
+
 export const metadata: Metadata = {
-  title: 'State of the Crypto Job Market',
-  description:
-    'Explore crypto hiring demand, remote and local compensation, geographic salary differences, and statistically meaningful skill repricing.',
+  title: marketTitle,
+  description: marketDescription,
   alternates: { canonical: `${clientEnv.FRONTEND_URL}/market` },
+  openGraph: {
+    type: 'website',
+    siteName: 'JobStash',
+    title: marketTitle,
+    description: marketDescription,
+    url: `${clientEnv.FRONTEND_URL}/market`,
+    images: [marketImage],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: marketTitle,
+    description: marketDescription,
+    images: [marketImage],
+  },
 };
 
 const first = (value: string | string[] | undefined): string =>
