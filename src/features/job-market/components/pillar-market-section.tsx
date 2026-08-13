@@ -467,7 +467,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
 
       <p className='mt-4 text-xs text-muted-foreground'>
         {reconstructed
-          ? 'Earlier dates are reconstructed from each job’s first and last observed dates; new daily samples are exact snapshots.'
+          ? 'Earlier open counts are estimated from observation dates. Offline postings are never inferred open for more than 90 days; new daily samples are exact snapshots.'
           : 'All dates shown are exact daily snapshots.'}
       </p>
     </section>

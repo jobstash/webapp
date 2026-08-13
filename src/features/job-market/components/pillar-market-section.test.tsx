@@ -132,6 +132,9 @@ describe('PillarMarketSection', () => {
     expect(screen.getByText('+50.0%')).toBeInTheDocument();
     expect(screen.getAllByText('Limited evidence')).not.toHaveLength(0);
     expect(screen.getByText('$9.5K/mo')).toBeInTheDocument();
+    expect(
+      screen.getByText(/never inferred open for more than 90 days/i),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /germany/i })).toHaveAttribute(
       'href',
       '/?cities=berlin&countries=germany',
