@@ -6,6 +6,7 @@ import type { EChartsCoreOption, EChartsType } from 'echarts/core';
 import { BarChart, LineChart, TreemapChart } from 'echarts/charts';
 import {
   AriaComponent,
+  GraphicComponent,
   GridComponent,
   LegendComponent,
   TooltipComponent,
@@ -16,6 +17,7 @@ echarts.use([
   AriaComponent,
   BarChart,
   CanvasRenderer,
+  GraphicComponent,
   GridComponent,
   LegendComponent,
   LineChart,

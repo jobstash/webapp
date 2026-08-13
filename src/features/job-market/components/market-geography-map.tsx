@@ -162,6 +162,14 @@ export const MarketGeographyMap = ({
                     : ''
                 }`
               : null;
+            const salarySummary = metric?.reliable
+              ? `${metric.activeJobs} open jobs · ${monthlySalary(metric.medianMonthlyUsd)}`
+              : usesFallback && continentMetric
+                ? `${metric?.activeJobs ?? 0} open jobs · ${monthlySalary(continentMetric.medianMonthlyUsd)} ${country.continent} fallback (${metric?.sampleCount ?? 0} country salaries)`
+                : metric
+                  ? `${metric.activeJobs} open jobs · insufficient salary evidence (${metric.sampleCount} salaries, ${metric.employerCount} employers)`
+                  : 'No open local jobs in this selection';
+            const tooltip = `${country.name} · ${country.continent ?? 'No region'} · ${salarySummary}`;
             const path = (
               <path
                 d={country.d}
@@ -176,16 +184,7 @@ export const MarketGeographyMap = ({
                 strokeWidth='0.7'
                 className={href ? 'transition-opacity hover:opacity-75' : ''}
               >
-                <title>
-                  {country.name} · {country.continent ?? 'No region'} ·{' '}
-                  {metric?.reliable
-                    ? `${metric.activeJobs} open jobs · ${monthlySalary(metric.medianMonthlyUsd)}`
-                    : usesFallback && continentMetric
-                      ? `${metric?.activeJobs ?? 0} open jobs · ${monthlySalary(continentMetric.medianMonthlyUsd)} ${country.continent} fallback (${metric?.sampleCount ?? 0} country salaries)`
-                      : metric
-                        ? `${metric.activeJobs} open jobs · insufficient salary evidence (${metric.sampleCount} salaries, ${metric.employerCount} employers)`
-                        : 'No open local jobs in this selection'}
-                </title>
+                <title>{tooltip}</title>
               </path>
             );
             return href ? (

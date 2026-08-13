@@ -1,5 +1,8 @@
 // @vitest-environment jsdom
+import { act } from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -184,6 +187,29 @@ afterEach(() => {
 });
 
 describe('SkillAnalysisDashboard', () => {
+  it('hydrates the skill analysis without replacing server markup', async () => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    const element = (
+      <SkillAnalysisDashboard
+        detail={detail}
+        market={market}
+        jobs={jobs}
+        selection={{ range: 'max', mode: 'remote', skill: 't-langgraph' }}
+      />
+    );
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(element);
+    document.body.append(container);
+    const initialMarkup = container.innerHTML;
+
+    const root = hydrateRoot(container, element);
+    await act(async () => {});
+
+    expect(container.innerHTML).toBe(initialMarkup);
+    await act(async () => root.unmount());
+    container.remove();
+  });
+
   it('keeps the analysis scoped to the selected skill and withholds noise', async () => {
     const user = userEvent.setup();
     render(
@@ -198,6 +224,10 @@ describe('SkillAnalysisDashboard', () => {
     expect(
       screen.getByRole('heading', { name: 'LangGraph jobs, demand & pay' }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'LangGraph jobs, demand & pay' })
+        .childNodes,
+    ).toHaveLength(1);
     expect(
       screen.getByText(/every number on this page is limited/i),
     ).toBeInTheDocument();

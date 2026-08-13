@@ -1,5 +1,8 @@
 // @vitest-environment jsdom
+import { act } from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { JobMarketCompensation } from '../schemas';
@@ -73,6 +76,27 @@ const geography: JobMarketCompensation[] = [
 afterEach(cleanup);
 
 describe('MarketGeographyMap', () => {
+  it('hydrates its country SVG without replacing server markup', async () => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    const element = (
+      <MarketGeographyMap
+        geography={geography}
+        classification='cl-engineering'
+      />
+    );
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(element);
+    document.body.append(container);
+    const initialMarkup = container.innerHTML;
+
+    const root = hydrateRoot(container, element);
+    await act(async () => {});
+
+    expect(container.innerHTML).toBe(initialMarkup);
+    await act(async () => root.unmount());
+    container.remove();
+  });
+
   it('maps and links countries while labelling continent salary fallback', () => {
     const { container } = render(
       <MarketGeographyMap

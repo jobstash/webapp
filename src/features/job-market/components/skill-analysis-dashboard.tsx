@@ -280,7 +280,7 @@ export const SkillAnalysisDashboard = ({
                 analysis
               </div>
               <h1 className='mt-3 text-4xl font-black tracking-tight md:text-6xl'>
-                {label} jobs, demand &amp; pay
+                {`${label} jobs, demand & pay`}
               </h1>
               <p className='mt-4 max-w-3xl text-base text-muted-foreground md:text-lg'>
                 Every number on this page is limited to jobs tagged {label}.
