@@ -7,5 +7,6 @@ export function GET() {
   return buildUrlsetResponse([
     { loc: clientEnv.FRONTEND_URL },
     { loc: `${clientEnv.FRONTEND_URL}/market` },
+    { loc: `${clientEnv.FRONTEND_URL}/developers` },
   ]);
 }

@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { useMemo, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowDownRightIcon,
-  ArrowUpRightIcon,
   BriefcaseBusinessIcon,
   Building2Icon,
   ChartNoAxesCombinedIcon,
@@ -17,21 +15,17 @@ import {
 
 import { cn } from '@/lib/utils';
 import { getFrontendSlug } from '@/features/pillar/constants';
-import { marketTreemapOption } from './chart-options';
+import { activityChartOption, marketTreemapOption } from './chart-options';
+import { CompensationBandChart } from './compensation-band-chart';
 import { FlintEChart } from './flint-echart';
 import { MarketGeographyMap } from './market-geography-map';
-import {
-  compactNumber,
-  monthlySalary,
-  percentLabel,
-  relativeMomentumLabel,
-} from '../lib/format';
+import { compactNumber, monthlySalary, percentLabel } from '../lib/format';
 import type {
   JobMarketCompensation,
   JobMarketSkillList,
-  JobMarketSkillSignal,
   JobMarketState,
   JobMarketTicker,
+  PillarMarket,
 } from '../schemas';
 
 type Range = '90' | '365' | 'max';
@@ -48,11 +42,11 @@ interface Selection {
 }
 
 const TRENDS: Array<{ value: SkillSort; label: string }> = [
-  { value: 'breakout', label: 'Breakouts' },
-  { value: 'repricing', label: 'Pay rising' },
+  { value: 'breakout', label: 'Most relevant' },
+  { value: 'repricing', label: 'Verified pay increases' },
   { value: 'salary', label: 'Highest pay' },
-  { value: 'demand', label: 'Demand rising' },
-  { value: 'cooling', label: 'Demand cooling' },
+  { value: 'demand', label: 'New postings rising' },
+  { value: 'cooling', label: 'New postings cooling' },
 ];
 
 const Metric = ({
@@ -108,37 +102,6 @@ const CompensationCard = ({
   </div>
 );
 
-const SignalBadge = ({ signal }: { signal: JobMarketSkillSignal | null }) => {
-  if (!signal || signal.status === 'insufficient') {
-    return (
-      <span className='rounded-full bg-zinc-800 px-2 py-1 text-xs text-zinc-400'>
-        Building evidence
-      </span>
-    );
-  }
-  const positive = signal.status === 'rising';
-  const negative = signal.status === 'falling';
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold',
-        positive && 'bg-emerald-500/15 text-emerald-400',
-        negative && 'bg-rose-500/15 text-rose-400',
-        signal.status === 'stable' && 'bg-zinc-800 text-zinc-300',
-      )}
-    >
-      {positive ? (
-        <ArrowUpRightIcon className='size-3' aria-hidden />
-      ) : negative ? (
-        <ArrowDownRightIcon className='size-3' aria-hidden />
-      ) : null}
-      {signal.status === 'stable'
-        ? 'Statistically stable'
-        : `${percentLabel(signal.adjustedChangePercent)} adjusted`}
-    </span>
-  );
-};
-
 const ClassificationMove = ({ ticker }: { ticker: JobMarketTicker }) => (
   <Link
     href={`/${getFrontendSlug(ticker.slug)}`}
@@ -157,7 +120,10 @@ const ClassificationMove = ({ ticker }: { ticker: JobMarketTicker }) => (
         ticker.momentum.direction === 'down' && 'text-rose-400',
       )}
     >
-      {relativeMomentumLabel(ticker.momentum)}
+      {percentLabel(
+        ticker.activity.marketComparison.openInventoryPercentagePoints,
+      )}{' '}
+      points
     </span>
   </Link>
 );
@@ -165,10 +131,12 @@ const ClassificationMove = ({ ticker }: { ticker: JobMarketTicker }) => (
 export const MarketStateDashboard = ({
   state,
   skills,
+  scopeMarket,
   selection,
 }: {
   state: JobMarketState;
   skills: JobMarketSkillList;
+  scopeMarket: PillarMarket | null;
   selection: Selection;
 }) => {
   const router = useRouter();
@@ -177,6 +145,10 @@ export const MarketStateDashboard = ({
   const treemap = useMemo(
     () => marketTreemapOption(state.classifications),
     [state.classifications],
+  );
+  const activityChart = useMemo(
+    () => activityChartOption(scopeMarket?.history ?? []),
+    [scopeMarket],
   );
   const paramsFor = (updates: Partial<Selection>) => {
     const next = {
@@ -215,6 +187,15 @@ export const MarketStateDashboard = ({
       : (state.classifications.find(
           (ticker) => ticker.slug === selectedClassification,
         ) ?? state.market);
+  const scoped = selectedClassification !== 'market';
+  const scopeLabel = state.selectedClassificationLabel;
+  const scopePillar = getFrontendSlug(selectedClassification);
+  const publishableSignals = skills.skills.filter(
+    (skill) =>
+      skill.signal &&
+      skill.signal.status !== 'insufficient' &&
+      skill.current.reliable,
+  );
 
   return (
     <div className='space-y-6 pb-16'>
@@ -223,19 +204,40 @@ export const MarketStateDashboard = ({
         <div className='relative max-w-4xl'>
           <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-emerald-400 uppercase'>
             <ChartNoAxesCombinedIcon className='size-4' aria-hidden />
-            State of the crypto job market
+            {scoped
+              ? `${scopeLabel} market intelligence`
+              : 'State of the crypto job market'}
           </div>
           <h1 className='mt-3 text-4xl font-black tracking-tight md:text-6xl'>
-            Hiring intelligence you can act on
+            {scoped
+              ? `${scopeLabel} jobs market`
+              : 'Hiring intelligence you can act on'}
           </h1>
           <p className='mt-4 max-w-3xl text-base text-muted-foreground md:text-lg'>
-            See which roles are heating up, where local jobs pay best, and which
-            skills are gaining value after accounting for job mix—not just raw
-            salary averages.
+            {scoped
+              ? `Open ${scopeLabel.toLowerCase()} opportunities, hiring activity, listed compensation, local salary geography, and the skills employers ask for.`
+              : 'See which roles are heating up, where local jobs pay best, and which skills are gaining value after accounting for job mix—not just raw salary averages.'}
           </p>
+          {scoped && (
+            <div className='mt-6 flex flex-wrap gap-3'>
+              <Link
+                href={`/${scopePillar}`}
+                className='rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-background'
+              >
+                Browse {compactNumber(scopeTicker.current.activeJobs)} open{' '}
+                {scopeLabel} jobs
+              </Link>
+              <Link
+                href='/market'
+                className='rounded-lg border border-border bg-background/60 px-4 py-2.5 text-sm font-bold'
+              >
+                Back to the full market
+              </Link>
+            </div>
+          )}
           <p className='mt-4 text-xs text-muted-foreground'>
-            Complete through {state.completeThrough} · Daily demand · Weekly
-            compensation · Historical exchange rates
+            Complete through {state.completeThrough} · Daily hiring activity ·
+            Weekly compensation · Historical exchange rates
           </p>
         </div>
       </section>
@@ -245,8 +247,8 @@ export const MarketStateDashboard = ({
           <div>
             <h2 className='text-2xl font-bold'>Market scope</h2>
             <p className='mt-1 text-sm text-muted-foreground'>
-              Pick one role family and a history window. Every region uses the
-              same salary color scale.
+              Pick one role family and history window. All figures below follow
+              that selection.
             </p>
           </div>
           <div className='grid gap-3 sm:grid-cols-2'>
@@ -289,7 +291,7 @@ export const MarketStateDashboard = ({
             icon={BriefcaseBusinessIcon}
             label='Open jobs'
             value={compactNumber(scopeTicker.current.activeJobs)}
-            detail={`${compactNumber(scopeTicker.current.newJobs)} first observed on the latest day`}
+            detail='Currently actionable roles in this selection'
           />
           <Metric
             icon={Building2Icon}
@@ -299,54 +301,82 @@ export const MarketStateDashboard = ({
           />
           <Metric
             icon={ChartNoAxesCombinedIcon}
-            label='Demand pulse'
-            value={relativeMomentumLabel(scopeTicker.momentum)}
-            detail='7-day median versus the preceding 28-day baseline'
+            label='New postings'
+            value={compactNumber(scopeTicker.activity.newPostings.current)}
+            detail={`${percentLabel(scopeTicker.activity.newPostings.percentChange)} vs the previous 7 days`}
           />
           <Metric
             icon={CircleDollarSignIcon}
-            label='Published salaries'
-            value={compactNumber(
-              (remote?.sampleCount ?? 0) + (local?.sampleCount ?? 0),
+            label='Open-job change'
+            value={percentLabel(
+              scopeTicker.activity.openInventory.percentChange,
             )}
-            detail='Filtered, deduplicated USD-converted observations'
+            detail={`7-day median vs preceding 28 days${
+              scopeTicker.activity.marketComparison
+                .openInventoryPercentagePoints === null
+                ? ''
+                : ` · ${percentLabel(
+                    scopeTicker.activity.marketComparison
+                      .openInventoryPercentagePoints,
+                  )} points vs market`
+            }`}
           />
         </div>
       </section>
 
-      <section className='grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,.7fr)]'>
-        <div className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-          <h2 className='text-2xl font-bold'>Opportunity map</h2>
-          <p className='mt-1 text-sm text-muted-foreground'>
-            Area represents current open jobs. Color shows demand change
-            relative to the market, which prevents a bulk import from making
-            every role look bullish.
+      {scopeMarket && (
+        <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+          <h2 className='text-2xl font-bold'>
+            {scoped
+              ? `${scopeLabel} hiring activity`
+              : 'Market hiring activity'}
+          </h2>
+          <p className='mt-1 max-w-4xl text-sm text-muted-foreground'>
+            Open roles and hiring employers are current inventory. New postings
+            are counted when a job first enters the corpus.
           </p>
           <FlintEChart
-            option={treemap}
-            className='mt-4 h-[32rem] w-full'
-            ariaLabel='Crypto job classifications sized by open jobs and colored by market-relative demand'
-            onSelect={(entry) => {
-              if (typeof entry.slug === 'string') {
-                navigate({ classification: entry.slug });
-              }
-            }}
+            option={activityChart}
+            className='mt-4 h-80 w-full'
+            ariaLabel={`${scopeLabel} open jobs, hiring employers, and new postings over time`}
           />
-        </div>
-        <div className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-          <h2 className='text-xl font-bold'>Unusual moves</h2>
-          <p className='mt-1 text-sm text-muted-foreground'>
-            Broad roles moving differently from the overall market.
-          </p>
-          <div className='mt-4'>
-            {[...state.movers.bullish, ...state.movers.cooling]
-              .slice(0, 12)
-              .map((ticker) => (
-                <ClassificationMove key={ticker.slug} ticker={ticker} />
-              ))}
+        </section>
+      )}
+
+      {!scoped && (
+        <section className='grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,.7fr)]'>
+          <div className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+            <h2 className='text-2xl font-bold'>Opportunity map</h2>
+            <p className='mt-1 text-sm text-muted-foreground'>
+              Area represents current open jobs. Color shows each role's
+              open-inventory change minus the overall market change.
+            </p>
+            <FlintEChart
+              option={treemap}
+              className='mt-4 h-[32rem] w-full'
+              ariaLabel='Crypto job classifications sized by open jobs and colored by open-inventory change relative to the market'
+              onSelect={(entry) => {
+                if (typeof entry.slug === 'string') {
+                  navigate({ classification: entry.slug });
+                }
+              }}
+            />
           </div>
-        </div>
-      </section>
+          <div className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+            <h2 className='text-xl font-bold'>Unusual moves</h2>
+            <p className='mt-1 text-sm text-muted-foreground'>
+              Broad roles moving differently from the overall market.
+            </p>
+            <div className='mt-4'>
+              {[...state.movers.bullish, ...state.movers.cooling]
+                .slice(0, 12)
+                .map((ticker) => (
+                  <ClassificationMove key={ticker.slug} ticker={ticker} />
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
         <div className='flex items-start gap-3'>
@@ -354,10 +384,10 @@ export const MarketStateDashboard = ({
           <div>
             <h2 className='text-2xl font-bold'>Local pay geography</h2>
             <p className='mt-1 max-w-4xl text-sm text-muted-foreground'>
-              Onsite and hybrid roles are grouped by continent; remote roles are
-              kept separate so San Francisco and New York salaries cannot
-              distort the remote benchmark. Countries inherit the continent
-              estimate because country-level evidence is still sparse.
+              Country estimates use onsite and hybrid listings. Remote roles
+              stay separate so high-cost local markets cannot distort the remote
+              benchmark. Sparse countries use a clearly labelled continent
+              fallback.
             </p>
           </div>
         </div>
@@ -365,6 +395,18 @@ export const MarketStateDashboard = ({
           <CompensationCard title='Remote benchmark' compensation={remote} />
           <CompensationCard title='Local benchmark' compensation={local} />
         </div>
+        {state.compensationBands.some((band) => band.reliable) && (
+          <div className='mt-6 border-t border-border/50 pt-6'>
+            <h3 className='text-lg font-bold'>
+              Listed compensation by seniority
+            </h3>
+            <p className='mt-1 text-sm text-muted-foreground'>
+              Median and middle 50% of USD-converted monthly compensation.
+              Statistical salary history includes open and offline jobs.
+            </p>
+            <CompensationBandChart bands={state.compensationBands} />
+          </div>
+        )}
         <div className='mt-5'>
           <MarketGeographyMap
             geography={state.geography}
@@ -381,15 +423,15 @@ export const MarketStateDashboard = ({
           <div>
             <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-violet-400 uppercase'>
               <SparklesIcon className='size-4' aria-hidden />
-              Skill alpha matrix
+              {scoped ? `Skills in ${scopeLabel}` : 'Skill market'}
             </div>
             <h2 className='mt-2 text-2xl font-bold'>
-              What skills are worth now
+              Skills employers ask for
             </h2>
             <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
-              Raw pay is useful; adjusted repricing asks whether the same skill
-              became more valuable after role, seniority, work mode, geography,
-              and employer concentration are controlled.
+              {scoped
+                ? `Only skills found on open ${scopeLabel.toLowerCase()} jobs are shown, ranked by role coverage and employer breadth.`
+                : 'Skills are ranked using current open roles and distinct hiring employers. Verified pay changes appear separately when the evidence is strong enough.'}
             </p>
           </div>
           <div className='flex flex-wrap gap-2'>
@@ -411,7 +453,12 @@ export const MarketStateDashboard = ({
           </div>
         </div>
 
-        <div className='mt-5 grid gap-3 lg:grid-cols-[minmax(260px,1fr)_minmax(220px,.45fr)]'>
+        <div
+          className={cn(
+            'mt-5 grid gap-3',
+            !scoped && 'lg:grid-cols-[minmax(260px,1fr)_minmax(220px,.45fr)]',
+          )}
+        >
           <form onSubmit={submitSearch} className='relative'>
             <SearchIcon
               className='pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground'
@@ -431,32 +478,33 @@ export const MarketStateDashboard = ({
               Search
             </button>
           </form>
-          <select
-            value={selection.sort}
-            onChange={(event) =>
-              navigate({ sort: event.target.value as SkillSort, skill: null })
-            }
-            aria-label='Sort skills'
-            className='rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground'
-          >
-            {TRENDS.map((trend) => (
-              <option key={trend.value} value={trend.value}>
-                {trend.label}
-              </option>
-            ))}
-          </select>
+          {!scoped && (
+            <select
+              value={selection.sort}
+              onChange={(event) =>
+                navigate({ sort: event.target.value as SkillSort, skill: null })
+              }
+              aria-label='Sort skills'
+              className='rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground'
+            >
+              {TRENDS.map((trend) => (
+                <option key={trend.value} value={trend.value}>
+                  {trend.label}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className='mt-4 overflow-x-auto rounded-xl border border-border/60'>
-          <table className='w-full min-w-[900px] text-left text-sm'>
+          <table className='w-full min-w-[760px] text-left text-sm'>
             <thead className='bg-background/60 text-xs text-muted-foreground uppercase'>
               <tr>
                 <th className='px-4 py-3'>Skill</th>
-                <th className='px-4 py-3'>Monthly pay</th>
-                <th className='px-4 py-3'>Adjusted repricing</th>
-                <th className='px-4 py-3'>Demand vs market</th>
                 <th className='px-4 py-3'>Open jobs</th>
-                <th className='px-4 py-3'>Evidence</th>
+                <th className='px-4 py-3'>Share of scope</th>
+                <th className='px-4 py-3'>Hiring employers</th>
+                <th className='px-4 py-3'>New-posting change</th>
                 <th className='px-4 py-3'>Explore</th>
               </tr>
             </thead>
@@ -477,50 +525,41 @@ export const MarketStateDashboard = ({
                       </span>
                     )}
                   </td>
-                  <td className='px-4 py-3 font-semibold'>
-                    {monthlySalary(skill.current.medianMonthlyUsd)}
-                  </td>
-                  <td className='px-4 py-3'>
-                    <SignalBadge signal={skill.signal} />
-                  </td>
-                  <td
-                    className={cn(
-                      'px-4 py-3 font-semibold',
-                      (skill.momentum.marketRelativeScore ?? 0) >= 5 &&
-                        'text-emerald-400',
-                      (skill.momentum.marketRelativeScore ?? 0) <= -5 &&
-                        'text-rose-400',
-                    )}
-                  >
-                    {relativeMomentumLabel(skill.momentum)}
-                  </td>
                   <td className='px-4 py-3'>
                     {compactNumber(skill.activeJobs)}
-                    <span className='block text-xs text-muted-foreground'>
-                      {compactNumber(skill.hiringCompanies)} employers
-                    </span>
                   </td>
-                  <td className='px-4 py-3 text-muted-foreground'>
-                    {skill.current.sampleCount} salaries
-                    <span className='block text-xs'>
-                      {skill.current.employerCount} employers
+                  <td className='px-4 py-3 font-semibold'>
+                    {skill.openJobShare.toFixed(1)}%
+                  </td>
+                  <td className='px-4 py-3'>
+                    {compactNumber(skill.hiringCompanies)}
+                  </td>
+                  <td className='px-4 py-3'>
+                    {percentLabel(skill.momentum.percentChange)}
+                    <span className='block text-xs text-muted-foreground'>
+                      latest 7 days vs previous 7
                     </span>
                   </td>
                   <td className='px-4 py-3'>
-                    <button
-                      type='button'
-                      onClick={() => {
-                        navigate({ skill: skill.slug });
-                      }}
-                      className='font-semibold text-emerald-400 hover:underline'
-                    >
-                      Analyze
-                    </button>
+                    {!scoped && (
+                      <button
+                        type='button'
+                        onClick={() => {
+                          navigate({ skill: skill.slug });
+                        }}
+                        className='font-semibold text-emerald-400 hover:underline'
+                      >
+                        Analyze
+                      </button>
+                    )}
                     <Link
                       href={`/${getFrontendSlug(skill.slug)}`}
-                      className='ml-3 text-muted-foreground hover:text-foreground'
+                      className={cn(
+                        'text-muted-foreground hover:text-foreground',
+                        !scoped && 'ml-3',
+                      )}
                     >
-                      Jobs
+                      Browse jobs
                     </Link>
                   </td>
                 </tr>
@@ -539,12 +578,40 @@ export const MarketStateDashboard = ({
           )}
         </div>
         <p className='mt-3 text-xs text-muted-foreground'>
-          Showing {skills.skills.length} skills with at least five salary
-          samples from three employers. Estimates are only printed at ten
-          salaries from five employers; stronger repricing signals have stricter
-          thresholds.
+          Showing {skills.skills.length} skills with at least 10 open jobs from
+          five hiring employers in this scope.
         </p>
       </section>
+
+      {publishableSignals.length > 0 && (
+        <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+          <h2 className='text-2xl font-bold'>Verified skill value moves</h2>
+          <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
+            Only statistically supported changes are shown. Listed pay is
+            adjusted for role, seniority, work mode, geography, and employer
+            concentration.
+          </p>
+          <div className='mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3'>
+            {publishableSignals.slice(0, 9).map((skill) => (
+              <Link
+                key={skill.slug}
+                href={paramsFor({ skill: skill.slug })}
+                className='rounded-xl border border-border/60 bg-background/50 p-4 transition-colors hover:border-emerald-500/50'
+              >
+                <strong>{skill.label}</strong>
+                <span className='mt-3 block text-2xl font-bold text-emerald-400'>
+                  {percentLabel(skill.signal?.adjustedChangePercent ?? null)}
+                </span>
+                <span className='mt-1 block text-xs text-muted-foreground'>
+                  {monthlySalary(skill.current.medianMonthlyUsd)} ·{' '}
+                  {skill.current.sampleCount} salaries from{' '}
+                  {skill.current.employerCount} employers
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className='rounded-xl border border-border/60 bg-background/45 p-4 text-xs text-muted-foreground'>
         <strong className='text-foreground'>How to read this page.</strong> Job

@@ -87,8 +87,8 @@ const readableDate = (value: string): string =>
   }).format(new Date(`${value}T00:00:00.000Z`));
 
 const evidenceGap = (compensation?: JobMarketCompensation): string => {
-  const salariesNeeded = Math.max(0, 10 - (compensation?.sampleCount ?? 0));
-  const employersNeeded = Math.max(0, 5 - (compensation?.employerCount ?? 0));
+  const salariesNeeded = Math.max(0, 20 - (compensation?.sampleCount ?? 0));
+  const employersNeeded = Math.max(0, 10 - (compensation?.employerCount ?? 0));
   const gaps = [
     salariesNeeded > 0
       ? `${salariesNeeded} more ${salariesNeeded === 1 ? 'salary' : 'salaries'}`
@@ -280,7 +280,7 @@ export const SkillAnalysisDashboard = ({
                 analysis
               </div>
               <h1 className='mt-3 text-4xl font-black tracking-tight md:text-6xl'>
-                {`${label} jobs, demand & pay`}
+                {`${label} jobs, activity & pay`}
               </h1>
               <p className='mt-4 max-w-3xl text-base text-muted-foreground md:text-lg'>
                 Every number on this page is limited to jobs tagged {label}.
@@ -307,7 +307,8 @@ export const SkillAnalysisDashboard = ({
           <div>
             <h2 className='text-2xl font-bold'>Current opportunity</h2>
             <p className='mt-1 text-sm text-muted-foreground'>
-              Live availability and demand for {label}, not the overall market.
+              Live availability and newly observed posting activity for {label},
+              not the overall market.
             </p>
           </div>
           <label className='text-xs font-semibold text-muted-foreground'>
@@ -340,9 +341,9 @@ export const SkillAnalysisDashboard = ({
           />
           <Metric
             icon={ChartNoAxesCombinedIcon}
-            label='7-day demand change'
+            label='7-day new-posting change'
             value={momentumLabel(market.momentum)}
-            detail={`${market.momentum.currentJobs} current vs ${market.momentum.previousJobs} prior baseline`}
+            detail={`${market.momentum.currentJobs} newly observed vs ${market.momentum.previousJobs} in the previous 7 days`}
           />
           <Metric
             icon={MapPinnedIcon}
@@ -433,7 +434,7 @@ export const SkillAnalysisDashboard = ({
           <Metric
             icon={Building2Icon}
             label='Evidence threshold'
-            value={`${benchmark?.sampleCount ?? 0}/10 salaries`}
+            value={`${benchmark?.sampleCount ?? 0}/20 salaries`}
             detail={evidenceGap(benchmark)}
           />
         </div>

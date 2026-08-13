@@ -114,8 +114,8 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
             {market.pillar.label} market pulse
           </h2>
           <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
-            Daily demand, hiring breadth, and normalized monthly compensation
-            for jobs in this pillar.
+            Daily open opportunities, newly observed postings, hiring breadth,
+            and normalized monthly compensation for jobs in this pillar.
           </p>
         </div>
         <div

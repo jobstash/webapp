@@ -76,8 +76,9 @@ const fetchJobMarketSkillsUncached = (
   mode: 'remote' | 'local' = 'remote',
   sort: 'breakout' | 'repricing' | 'salary' | 'demand' | 'cooling' = 'breakout',
   query = '',
+  classification = 'market',
 ) => {
-  const params = new URLSearchParams({ mode, sort });
+  const params = new URLSearchParams({ mode, sort, classification });
   if (query.trim()) params.set('q', query.trim());
   return fetchMarket<JobMarketSkillList>(
     `/v2/search/market/skills?${params.toString()}`,

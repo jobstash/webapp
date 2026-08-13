@@ -188,7 +188,11 @@ afterEach(() => {
 
 describe('SkillAnalysisDashboard', () => {
   it('hydrates the skill analysis without replacing server markup', async () => {
-    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    (
+      globalThis as typeof globalThis & {
+        IS_REACT_ACT_ENVIRONMENT?: boolean;
+      }
+    ).IS_REACT_ACT_ENVIRONMENT = true;
     const element = (
       <SkillAnalysisDashboard
         detail={detail}
@@ -222,10 +226,10 @@ describe('SkillAnalysisDashboard', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: 'LangGraph jobs, demand & pay' }),
+      screen.getByRole('heading', { name: 'LangGraph jobs, activity & pay' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: 'LangGraph jobs, demand & pay' })
+      screen.getByRole('heading', { name: 'LangGraph jobs, activity & pay' })
         .childNodes,
     ).toHaveLength(1);
     expect(

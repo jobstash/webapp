@@ -32,6 +32,34 @@ export const jobMarketMomentumSchema = z.object({
   hiringCompaniesChange: z.number().nullable(),
 });
 
+const jobMarketChangeMetricSchema = z.object({
+  current: z.number().nonnegative(),
+  baseline: z.number().nonnegative(),
+  absoluteChange: z.number(),
+  percentChange: z.number().nullable(),
+  direction: z.enum(['up', 'down', 'flat', 'new', 'insufficient']),
+});
+
+export const jobMarketActivitySchema = z.object({
+  newPostings: jobMarketChangeMetricSchema.extend({
+    currentWindowDays: z.literal(7),
+    baselineWindowDays: z.literal(7),
+  }),
+  openInventory: jobMarketChangeMetricSchema.extend({
+    currentWindowDays: z.literal(7),
+    baselineWindowDays: z.literal(28),
+  }),
+  hiringEmployers: jobMarketChangeMetricSchema.extend({
+    currentWindowDays: z.literal(7),
+    baselineWindowDays: z.literal(28),
+  }),
+  marketComparison: z.object({
+    openInventoryPercentagePoints: z.number().nullable(),
+    hiringEmployersPercentagePoints: z.number().nullable(),
+    newPostingsPercentagePoints: z.number().nullable(),
+  }),
+});
+
 export const jobMarketCompensationSchema = z.object({
   segment: z.enum(['remote', 'local']),
   regionSlug: z.string(),
@@ -81,6 +109,7 @@ export const jobMarketTickerSchema = z.object({
   label: z.string(),
   current: jobMarketPointSchema,
   momentum: jobMarketMomentumSchema,
+  activity: jobMarketActivitySchema,
   eligibleMover: z.boolean(),
 });
 
@@ -110,10 +139,24 @@ export const jobMarketOverviewSchema = z.object({
 
 export const jobMarketStateSchema = jobMarketOverviewSchema.extend({
   completeThrough: z.string(),
-  methodologyVersion: z.literal('market-state-v2'),
+  methodologyVersion: z.literal('market-state-v3'),
   selectedClassification: z.string(),
+  selectedClassificationLabel: z.string(),
   range: z.enum(['90', '365', 'max']),
   geography: jobMarketCompensationSchema.array(),
+  compensationBands: z
+    .object({
+      segment: z.enum(['remote', 'local']),
+      senioritySlug: z.string(),
+      seniorityLabel: z.string(),
+      medianMonthlyUsd: z.number().nullable(),
+      p25MonthlyUsd: z.number().nullable(),
+      p75MonthlyUsd: z.number().nullable(),
+      sampleCount: z.number().int().nonnegative(),
+      employerCount: z.number().int().nonnegative(),
+      reliable: z.boolean(),
+    })
+    .array(),
 });
 
 export const jobMarketSkillSummarySchema = z.object({
@@ -125,13 +168,16 @@ export const jobMarketSkillSummarySchema = z.object({
   momentum: jobMarketMomentumSchema,
   activeJobs: z.number().int().nonnegative(),
   hiringCompanies: z.number().int().nonnegative(),
+  openJobShare: z.number().min(0).max(100),
   strongBreakout: z.boolean(),
 });
 
 export const jobMarketSkillListSchema = z.object({
   asOf: z.string(),
   completeThrough: z.string(),
-  methodologyVersion: z.literal('market-state-v2'),
+  methodologyVersion: z.literal('market-state-v3'),
+  classification: z.string(),
+  classificationLabel: z.string(),
   segment: z.enum(['remote', 'local']),
   sort: z.enum(['breakout', 'repricing', 'salary', 'demand', 'cooling']),
   query: z.string(),
@@ -168,12 +214,15 @@ export const jobMarketSkillDetailSchema = z.object({
 export type JobMarketSalary = z.infer<typeof jobMarketSalarySchema>;
 export type JobMarketPoint = z.infer<typeof jobMarketPointSchema>;
 export type JobMarketMomentum = z.infer<typeof jobMarketMomentumSchema>;
+export type JobMarketActivity = z.infer<typeof jobMarketActivitySchema>;
 export type JobMarketTicker = z.infer<typeof jobMarketTickerSchema>;
 export type PillarMarket = z.infer<typeof pillarMarketSchema>;
 export type JobMarketOverview = z.infer<typeof jobMarketOverviewSchema>;
 export type JobMarketCompensation = z.infer<typeof jobMarketCompensationSchema>;
 export type JobMarketSkillSignal = z.infer<typeof jobMarketSkillSignalSchema>;
 export type JobMarketState = z.infer<typeof jobMarketStateSchema>;
+export type JobMarketCompensationBand =
+  JobMarketState['compensationBands'][number];
 export type JobMarketSkillSummary = z.infer<typeof jobMarketSkillSummarySchema>;
 export type JobMarketSkillList = z.infer<typeof jobMarketSkillListSchema>;
 export type JobMarketSkillDetail = z.infer<typeof jobMarketSkillDetailSchema>;

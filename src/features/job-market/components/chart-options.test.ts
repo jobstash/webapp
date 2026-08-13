@@ -49,6 +49,40 @@ const ticker = (slug: string, percentChange: number): JobMarketTicker => ({
     activeJobsChange: percentChange,
     hiringCompaniesChange: percentChange,
   },
+  activity: {
+    newPostings: {
+      current: 14,
+      baseline: 10,
+      absoluteChange: 4,
+      percentChange: 40,
+      direction: 'up',
+      currentWindowDays: 7,
+      baselineWindowDays: 7,
+    },
+    openInventory: {
+      current: 100,
+      baseline: 90,
+      absoluteChange: 10,
+      percentChange: 11.1,
+      direction: 'up',
+      currentWindowDays: 7,
+      baselineWindowDays: 28,
+    },
+    hiringEmployers: {
+      current: 30,
+      baseline: 28,
+      absoluteChange: 2,
+      percentChange: 7.1,
+      direction: 'up',
+      currentWindowDays: 7,
+      baselineWindowDays: 28,
+    },
+    marketComparison: {
+      openInventoryPercentagePoints: percentChange,
+      hiringEmployersPercentagePoints: 2,
+      newPostingsPercentagePoints: 4,
+    },
+  },
   eligibleMover: true,
 });
 

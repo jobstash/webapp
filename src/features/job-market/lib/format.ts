@@ -23,12 +23,6 @@ export const momentumLabel = (momentum: JobMarketMomentum): string => {
   return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
 };
 
-export const relativeMomentumLabel = (momentum: JobMarketMomentum): string => {
-  const value = momentum.marketRelativeScore;
-  if (value === null) return momentumLabel(momentum);
-  return `${value > 0 ? '+' : ''}${value.toFixed(1)}% vs market`;
-};
-
 export const percentLabel = (value: number | null): string =>
   value === null
     ? 'Not enough evidence'

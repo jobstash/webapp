@@ -22,36 +22,81 @@ interface Props {
 
 const marketTitle = 'State of the Crypto Job Market';
 const marketDescription =
-  'Explore crypto hiring demand, remote and local compensation, geographic salary differences, and statistically meaningful skill repricing.';
-const marketImage = {
-  url: '/jobstash-market-analytics-og.png',
-  width: 1200,
-  height: 630,
-  alt: 'JobStash Job Market Analytics — demand, salaries, skills, and geography',
-};
-
-export const metadata: Metadata = {
-  title: marketTitle,
-  description: marketDescription,
-  alternates: { canonical: `${clientEnv.FRONTEND_URL}/market` },
-  openGraph: {
-    type: 'website',
-    siteName: 'JobStash',
-    title: marketTitle,
-    description: marketDescription,
-    url: `${clientEnv.FRONTEND_URL}/market`,
-    images: [marketImage],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: marketTitle,
-    description: marketDescription,
-    images: [marketImage],
-  },
-};
-
+  'Explore crypto hiring activity, remote and local compensation, geographic salary differences, and statistically meaningful skill repricing.';
 const first = (value: string | string[] | undefined): string =>
   Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
+
+export const generateMetadata = async ({
+  searchParams,
+}: Props): Promise<Metadata> => {
+  const params = await searchParams;
+  const classification = first(params.classification) || 'market';
+  const range = first(params.range);
+  const skill = first(params.skill);
+  const rangeKey = range === '90' || range === '365' ? range : 'max';
+  const [state, skillMarket] = await Promise.all([
+    fetchJobMarketState(rangeKey, classification),
+    skill ? fetchPillarMarket(skill, rangeKey) : Promise.resolve(null),
+  ]);
+  const scopeLabel = state?.selectedClassificationLabel ?? 'Crypto';
+  const skillLabel =
+    skillMarket?.pillar.label ??
+    skill
+      .replace(/^t-/, '')
+      .replaceAll('-', ' ')
+      .replaceAll(/\b\w/g, (letter) => letter.toUpperCase());
+  const title = skill
+    ? `${skillLabel} skill market`
+    : classification === 'market'
+      ? marketTitle
+      : `${scopeLabel} jobs market`;
+  const description = skill
+    ? `Open jobs requiring ${skillLabel}, hiring activity, listed compensation, and statistically supported skill-value signals.`
+    : classification === 'market'
+      ? marketDescription
+      : `Open ${scopeLabel.toLowerCase()} jobs, hiring activity, listed compensation, salary geography, and relevant skills.`;
+  const canonicalParams = new URLSearchParams();
+  if (!skill && classification !== 'market') {
+    canonicalParams.set(
+      'classification',
+      state?.selectedClassification ?? classification,
+    );
+  }
+  if (skill) canonicalParams.set('skill', skill);
+  const canonical = `${clientEnv.FRONTEND_URL}/market${
+    canonicalParams.size ? `?${canonicalParams.toString()}` : ''
+  }`;
+  const imageParams = new URLSearchParams({
+    classification: state?.selectedClassification ?? classification,
+  });
+  if (range === '90' || range === '365') imageParams.set('range', range);
+  if (skill) imageParams.set('skill', skill);
+  const image = {
+    url: `${clientEnv.FRONTEND_URL}/market/og?${imageParams.toString()}`,
+    width: 1200,
+    height: 630,
+    alt: `${title} — JobStash market analytics`,
+  };
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: 'website',
+      siteName: 'JobStash',
+      title,
+      description,
+      url: canonical,
+      images: [image],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
+  };
+};
 
 const MarketPage = async ({ searchParams }: Props) => {
   const params = await searchParams;
@@ -118,9 +163,10 @@ const MarketPage = async ({ searchParams }: Props) => {
     );
   }
 
-  const [state, skills] = await Promise.all([
+  const [state, skills, scopeMarket] = await Promise.all([
     fetchJobMarketState(range, classification),
-    fetchJobMarketSkills(mode, sort, query),
+    fetchJobMarketSkills(mode, sort, query, classification),
+    fetchPillarMarket(classification, range).catch(() => null),
   ]);
 
   if (!state || !skills) {
@@ -143,6 +189,7 @@ const MarketPage = async ({ searchParams }: Props) => {
     <MarketStateDashboard
       state={state}
       skills={skills}
+      scopeMarket={scopeMarket}
       selection={{ range, classification, mode, sort, query, skill: null }}
     />
   );

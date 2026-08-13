@@ -77,7 +77,11 @@ afterEach(cleanup);
 
 describe('MarketGeographyMap', () => {
   it('hydrates its country SVG without replacing server markup', async () => {
-    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    (
+      globalThis as typeof globalThis & {
+        IS_REACT_ACT_ENVIRONMENT?: boolean;
+      }
+    ).IS_REACT_ACT_ENVIRONMENT = true;
     const element = (
       <MarketGeographyMap
         geography={geography}

@@ -59,6 +59,40 @@ const ticker = (overrides: Partial<JobMarketTicker> = {}): JobMarketTicker => ({
     activeJobsChange: 10,
     hiringCompaniesChange: 5,
   },
+  activity: {
+    newPostings: {
+      current: 45,
+      baseline: 40,
+      absoluteChange: 5,
+      percentChange: 12.5,
+      direction: 'up',
+      currentWindowDays: 7,
+      baselineWindowDays: 7,
+    },
+    openInventory: {
+      current: 1_200,
+      baseline: 1_100,
+      absoluteChange: 100,
+      percentChange: 9.1,
+      direction: 'up',
+      currentWindowDays: 7,
+      baselineWindowDays: 28,
+    },
+    hiringEmployers: {
+      current: 340,
+      baseline: 320,
+      absoluteChange: 20,
+      percentChange: 6.25,
+      direction: 'up',
+      currentWindowDays: 7,
+      baselineWindowDays: 28,
+    },
+    marketComparison: {
+      openInventoryPercentagePoints: 3,
+      hiringEmployersPercentagePoints: 2,
+      newPostingsPercentagePoints: 4,
+    },
+  },
   eligibleMover: true,
   ...overrides,
 });
@@ -92,8 +126,9 @@ const compensation = (
 const state: JobMarketState = {
   asOf: '2026-08-12',
   completeThrough: '2026-08-12',
-  methodologyVersion: 'market-state-v2',
+  methodologyVersion: 'market-state-v3',
   selectedClassification: 'market',
+  selectedClassificationLabel: 'Crypto Job Market',
   range: 'max',
   market: ticker({
     kind: 'market',
@@ -115,12 +150,15 @@ const state: JobMarketState = {
       remoteCount: 0,
     }),
   ],
+  compensationBands: [],
 };
 
 const skills: JobMarketSkillList = {
   asOf: '2026-08-12',
   completeThrough: '2026-08-12',
-  methodologyVersion: 'market-state-v2',
+  methodologyVersion: 'market-state-v3',
+  classification: 'market',
+  classificationLabel: 'Crypto Job Market',
   segment: 'remote',
   sort: 'breakout',
   query: '',
@@ -150,6 +188,7 @@ const skills: JobMarketSkillList = {
       momentum: ticker().momentum,
       activeJobs: 80,
       hiringCompanies: 30,
+      openJobShare: 6.7,
       strongBreakout: true,
     },
   ],
@@ -167,6 +206,7 @@ describe('MarketStateDashboard', () => {
       <MarketStateDashboard
         state={state}
         skills={skills}
+        scopeMarket={null}
         selection={{
           range: 'max',
           classification: 'market',
@@ -189,8 +229,8 @@ describe('MarketStateDashboard', () => {
     expect(screen.getByText('Remote benchmark')).toBeInTheDocument();
     expect(screen.getByText('Local benchmark')).toBeInTheDocument();
     expect(screen.getByTestId('salary-map')).toBeInTheDocument();
-    expect(screen.getByText('TypeScript')).toBeInTheDocument();
-    expect(screen.getByText('+11.2% adjusted')).toBeInTheDocument();
+    expect(screen.getAllByText('TypeScript')).toHaveLength(2);
+    expect(screen.getByText('+11.2%')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Analyze' }));
     expect(push).toHaveBeenCalledWith('/market?skill=t-typescript');
@@ -201,6 +241,7 @@ describe('MarketStateDashboard', () => {
       <MarketStateDashboard
         state={state}
         skills={skills}
+        scopeMarket={null}
         selection={{
           range: 'max',
           classification: 'cl-not-real',
@@ -215,5 +256,50 @@ describe('MarketStateDashboard', () => {
     expect(
       screen.getByRole('combobox', { name: /classification/i }),
     ).toHaveValue('market');
+  });
+
+  it('makes a selected classification explicit and only links scoped skills to jobs', () => {
+    const scopedState: JobMarketState = {
+      ...state,
+      selectedClassification: 'cl-engineering-management',
+      selectedClassificationLabel: 'Engineering Management',
+    };
+    const scopedSkills: JobMarketSkillList = {
+      ...skills,
+      classification: 'cl-engineering-management',
+      classificationLabel: 'Engineering Management',
+    };
+
+    render(
+      <MarketStateDashboard
+        state={scopedState}
+        skills={scopedSkills}
+        scopeMarket={null}
+        selection={{
+          range: 'max',
+          classification: 'cl-engineering-management',
+          mode: 'remote',
+          sort: 'breakout',
+          query: '',
+          skill: null,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', {
+        name: 'Engineering Management jobs market',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /open engineering management jobs/i }),
+    ).toHaveAttribute('href', '/cl-engineering-management');
+    expect(
+      screen.queryByRole('button', { name: 'Analyze' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Browse jobs' })).toHaveAttribute(
+      'href',
+      '/t-typescript',
+    );
   });
 });

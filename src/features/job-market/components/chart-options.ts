@@ -6,11 +6,7 @@ import type {
   JobMarketSkillWeeklyPoint,
   JobMarketTicker,
 } from '../schemas';
-import {
-  compactNumber,
-  monthlySalary,
-  relativeMomentumLabel,
-} from '../lib/format';
+import { compactNumber, monthlySalary } from '../lib/format';
 
 const chartBase = {
   backgroundColor: 'transparent',
@@ -173,16 +169,23 @@ const mix = (
 
 export const tickerColor = (ticker: JobMarketTicker): string => {
   const neutral = [39, 39, 42] as const;
-  if (ticker.momentum.direction === 'new') {
+  if (ticker.activity.openInventory.direction === 'new') {
     return mix(neutral, [5, 150, 105], 0.85);
   }
   const change =
-    ticker.momentum.marketRelativeScore ?? ticker.momentum.percentChange ?? 0;
+    ticker.activity.marketComparison.openInventoryPercentagePoints ?? 0;
   if (Math.abs(change) < 5) return mix(neutral, [82, 82, 91], 0.45);
   const strength = Math.min(1, 0.35 + Math.abs(change) / 100);
   return change > 0
     ? mix(neutral, [5, 150, 105], strength)
     : mix(neutral, [220, 38, 38], strength);
+};
+
+const marketDifferenceLabel = (ticker: JobMarketTicker): string => {
+  const value = ticker.activity.marketComparison.openInventoryPercentagePoints;
+  return value === null
+    ? 'Not enough history'
+    : `${value > 0 ? '+' : ''}${value.toFixed(1)} points vs market`;
 };
 
 export const marketTreemapOption = (
@@ -227,7 +230,7 @@ export const marketTreemapOption = (
           ticker.label,
           `${compactNumber(ticker.current.activeJobs)} open jobs`,
           `${compactNumber(ticker.current.hiringCompanies)} hiring companies`,
-          `${relativeMomentumLabel(ticker.momentum)} job velocity`,
+          `Open-job change: ${marketDifferenceLabel(ticker)}`,
           monthlySalary(ticker.current.salary.medianMonthlyUsd),
         ].join('\n');
       },
@@ -250,7 +253,7 @@ export const marketTreemapOption = (
             return [
               `{name|${ticker.label}}`,
               `{value|${compactNumber(ticker.current.activeJobs)} jobs}`,
-              `{move|${relativeMomentumLabel(ticker.momentum)}}`,
+              `{move|${marketDifferenceLabel(ticker)}}`,
               ...(salary === null ? [] : [`{salary|${monthlySalary(salary)}}`]),
             ].join('\n');
           },
