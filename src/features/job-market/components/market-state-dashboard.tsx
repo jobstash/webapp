@@ -101,9 +101,14 @@ const CompensationCard = ({
         ? `${monthlySalary(compensation.p25MonthlyUsd)} – ${monthlySalary(compensation.p75MonthlyUsd)} middle 50%`
         : `${compensation?.sampleCount ?? 0} salaries · ${compensation?.employerCount ?? 0} employers; estimate withheld`}
     </p>
+    <p className='mt-2 text-xs text-muted-foreground'>
+      {compensation?.activeJobs ?? 0} open jobs at{' '}
+      {compensation?.hiringCompanies ?? 0} hiring companies
+    </p>
     {compensation?.segment === 'local' && (
       <p className='mt-2 text-xs text-muted-foreground'>
-        {compensation.onsiteCount} onsite · {compensation.hybridCount} hybrid
+        {compensation.activeOnsiteJobs} open onsite ·{' '}
+        {compensation.activeHybridJobs} open hybrid
       </p>
     )}
   </div>
@@ -281,10 +286,12 @@ const SkillDetail = ({
 
       {regions.length > 0 && (
         <div className='mt-4 overflow-x-auto rounded-xl border border-border/60 bg-background/45'>
-          <table className='w-full min-w-[680px] text-left text-sm'>
+          <table className='w-full min-w-[980px] text-left text-sm'>
             <thead className='text-xs text-muted-foreground uppercase'>
               <tr>
                 <th className='px-4 py-3'>Local market</th>
+                <th className='px-4 py-3'>Open jobs</th>
+                <th className='px-4 py-3'>Hiring companies</th>
                 <th className='px-4 py-3'>Monthly median</th>
                 <th className='px-4 py-3'>Middle 50%</th>
                 <th className='px-4 py-3'>Evidence</th>
@@ -292,31 +299,40 @@ const SkillDetail = ({
               </tr>
             </thead>
             <tbody>
-              {regions.map((region) => (
-                <tr
-                  key={region.regionSlug}
-                  className='border-t border-border/50'
-                >
-                  <td className='px-4 py-3 font-medium'>
-                    {region.regionLabel}
-                  </td>
-                  <td className='px-4 py-3'>
-                    {monthlySalary(region.medianMonthlyUsd)}
-                  </td>
-                  <td className='px-4 py-3 text-muted-foreground'>
-                    {region.reliable
-                      ? `${monthlySalary(region.p25MonthlyUsd)} – ${monthlySalary(region.p75MonthlyUsd)}`
-                      : 'Estimate withheld'}
-                  </td>
-                  <td className='px-4 py-3'>
-                    {region.sampleCount} salaries · {region.employerCount}{' '}
-                    employers
-                  </td>
-                  <td className='px-4 py-3 text-muted-foreground'>
-                    {region.onsiteCount} onsite · {region.hybridCount} hybrid
-                  </td>
-                </tr>
-              ))}
+              {[...regions]
+                .sort(
+                  (left, right) =>
+                    right.activeJobs - left.activeJobs ||
+                    left.regionLabel.localeCompare(right.regionLabel),
+                )
+                .map((region) => (
+                  <tr
+                    key={region.regionSlug}
+                    className='border-t border-border/50'
+                  >
+                    <td className='px-4 py-3 font-medium'>
+                      {region.regionLabel}
+                    </td>
+                    <td className='px-4 py-3'>{region.activeJobs}</td>
+                    <td className='px-4 py-3'>{region.hiringCompanies}</td>
+                    <td className='px-4 py-3'>
+                      {monthlySalary(region.medianMonthlyUsd)}
+                    </td>
+                    <td className='px-4 py-3 text-muted-foreground'>
+                      {region.reliable
+                        ? `${monthlySalary(region.p25MonthlyUsd)} – ${monthlySalary(region.p75MonthlyUsd)}`
+                        : 'Estimate withheld'}
+                    </td>
+                    <td className='px-4 py-3'>
+                      {region.sampleCount} salaries · {region.employerCount}{' '}
+                      employers
+                    </td>
+                    <td className='px-4 py-3 text-muted-foreground'>
+                      {region.activeOnsiteJobs} onsite ·{' '}
+                      {region.activeHybridJobs} hybrid
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

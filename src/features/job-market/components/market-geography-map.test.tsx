@@ -19,6 +19,11 @@ const geography: JobMarketCompensation[] = [
     onsiteCount: 35,
     hybridCount: 15,
     remoteCount: 0,
+    activeJobs: 90,
+    hiringCompanies: 40,
+    activeOnsiteJobs: 60,
+    activeHybridJobs: 30,
+    activeRemoteJobs: 0,
     reliable: true,
   },
   {
@@ -34,6 +39,11 @@ const geography: JobMarketCompensation[] = [
     onsiteCount: 5,
     hybridCount: 2,
     remoteCount: 0,
+    activeJobs: 24,
+    hiringCompanies: 17,
+    activeOnsiteJobs: 18,
+    activeHybridJobs: 6,
+    activeRemoteJobs: 0,
     reliable: false,
   },
 ];
@@ -60,6 +70,8 @@ describe('MarketGeographyMap', () => {
     expect(screen.getByText('Europe')).toBeInTheDocument();
     expect(screen.getByText('$9K/mo')).toBeInTheDocument();
     expect(screen.getByText('Africa')).toBeInTheDocument();
+    expect(screen.getByText('24')).toBeInTheDocument();
+    expect(screen.getByText('17')).toBeInTheDocument();
     expect(screen.getByText('Insufficient evidence')).toBeInTheDocument();
     expect(
       screen.getByText('Fixed $3K–$20K monthly scale'),

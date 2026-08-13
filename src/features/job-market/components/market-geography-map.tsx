@@ -93,8 +93,9 @@ export const MarketGeographyMap = ({
             Local monthly salaries by continent
           </title>
           <desc id='local-pay-map-description'>
-            Countries inherit their continent aggregate. Hatched countries do
-            not yet have enough salary and employer evidence for an estimate.
+            Countries inherit their continent aggregate. Every active local
+            market remains visible even when salary evidence is too sparse for a
+            responsible estimate.
           </desc>
           <defs>
             <pattern
@@ -145,10 +146,10 @@ export const MarketGeographyMap = ({
                 <title>
                   {country.name} · {country.continent ?? 'No region'} ·{' '}
                   {metric?.reliable
-                    ? monthlySalary(metric.medianMonthlyUsd)
+                    ? `${metric.activeJobs} open jobs · ${monthlySalary(metric.medianMonthlyUsd)}`
                     : metric
-                      ? `Insufficient evidence (${metric.sampleCount} salaries, ${metric.employerCount} employers)`
-                      : 'No salary evidence'}
+                      ? `${metric.activeJobs} open jobs · insufficient salary evidence (${metric.sampleCount} salaries, ${metric.employerCount} employers)`
+                      : 'No open local jobs in this selection'}
                 </title>
               </path>
             );
@@ -174,21 +175,24 @@ export const MarketGeographyMap = ({
       </div>
 
       <div className='mt-3 overflow-x-auto'>
-        <table className='w-full min-w-[720px] text-left text-sm'>
+        <table className='w-full min-w-[940px] text-left text-sm'>
           <thead className='text-xs text-muted-foreground uppercase'>
             <tr>
               <th className='px-3 py-2'>Local market</th>
+              <th className='px-3 py-2'>Open jobs</th>
+              <th className='px-3 py-2'>Hiring companies</th>
               <th className='px-3 py-2'>Median</th>
               <th className='px-3 py-2'>Middle 50%</th>
-              <th className='px-3 py-2'>Salaries</th>
-              <th className='px-3 py-2'>Employers</th>
-              <th className='px-3 py-2'>Onsite / hybrid</th>
+              <th className='px-3 py-2'>Salary evidence</th>
+              <th className='px-3 py-2'>Active onsite / hybrid</th>
             </tr>
           </thead>
           <tbody>
             {[...byContinent.values()]
-              .sort((left, right) =>
-                left.regionLabel.localeCompare(right.regionLabel),
+              .sort(
+                (left, right) =>
+                  right.activeJobs - left.activeJobs ||
+                  left.regionLabel.localeCompare(right.regionLabel),
               )
               .map((entry) => (
                 <tr
@@ -196,6 +200,8 @@ export const MarketGeographyMap = ({
                   className='border-t border-border/50'
                 >
                   <td className='px-3 py-3 font-medium'>{entry.regionLabel}</td>
+                  <td className='px-3 py-3'>{entry.activeJobs}</td>
+                  <td className='px-3 py-3'>{entry.hiringCompanies}</td>
                   <td className='px-3 py-3'>
                     {entry.reliable
                       ? monthlySalary(entry.medianMonthlyUsd)
@@ -206,16 +212,24 @@ export const MarketGeographyMap = ({
                       ? `${monthlySalary(entry.p25MonthlyUsd)} – ${monthlySalary(entry.p75MonthlyUsd)}`
                       : '—'}
                   </td>
-                  <td className='px-3 py-3'>{entry.sampleCount}</td>
-                  <td className='px-3 py-3'>{entry.employerCount}</td>
+                  <td className='px-3 py-3 text-muted-foreground'>
+                    {entry.sampleCount} salaries / {entry.employerCount}{' '}
+                    employers
+                  </td>
                   <td className='px-3 py-3'>
-                    {entry.onsiteCount} / {entry.hybridCount}
+                    {entry.activeOnsiteJobs} / {entry.activeHybridJobs}
                   </td>
                 </tr>
               ))}
           </tbody>
         </table>
       </div>
+      <p className='mt-3 text-xs leading-relaxed text-muted-foreground'>
+        Open jobs and hiring companies are current. Salary distributions use the
+        selected lookback and stay hidden below 10 salaries or 5 distinct
+        employers. Jobs tagged to cities, states, or countries roll up through
+        the canonical place hierarchy and are counted once per continent.
+      </p>
     </div>
   );
 };

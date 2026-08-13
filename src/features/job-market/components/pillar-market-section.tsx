@@ -225,46 +225,65 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
                     ? `${entry.sampleCount} salaries from ${entry.employerCount} employers`
                     : `${entry?.sampleCount ?? 0} salaries; estimate withheld until evidence is broad enough`}
                 </p>
+                <p className='mt-2 text-xs text-muted-foreground'>
+                  {entry?.activeJobs ?? 0} open jobs at{' '}
+                  {entry?.hiringCompanies ?? 0} hiring companies
+                </p>
               </div>
             ))}
           </div>
 
           {localRegions.length > 0 && (
             <div className='mt-4 overflow-x-auto'>
-              <table className='w-full min-w-[640px] text-left text-sm'>
+              <table className='w-full min-w-[840px] text-left text-sm'>
                 <thead className='text-xs text-muted-foreground uppercase'>
                   <tr>
                     <th className='px-3 py-2'>Local region</th>
+                    <th className='px-3 py-2'>Open jobs</th>
+                    <th className='px-3 py-2'>Hiring companies</th>
                     <th className='px-3 py-2'>Median</th>
                     <th className='px-3 py-2'>Middle 50%</th>
                     <th className='px-3 py-2'>Evidence</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {localRegions.map((region) => (
-                    <tr
-                      key={region.regionSlug}
-                      className='border-t border-border/50'
-                    >
-                      <td className='px-3 py-3 font-medium'>
-                        {region.regionLabel}
-                      </td>
-                      <td className='px-3 py-3'>
-                        {monthlySalary(region.medianMonthlyUsd)}
-                      </td>
-                      <td className='px-3 py-3 text-muted-foreground'>
-                        {region.reliable
-                          ? `${monthlySalary(region.p25MonthlyUsd)} – ${monthlySalary(region.p75MonthlyUsd)}`
-                          : 'Estimate withheld'}
-                      </td>
-                      <td className='px-3 py-3 text-muted-foreground'>
-                        {region.sampleCount} salaries · {region.employerCount}{' '}
-                        employers
-                      </td>
-                    </tr>
-                  ))}
+                  {[...localRegions]
+                    .sort(
+                      (left, right) =>
+                        right.activeJobs - left.activeJobs ||
+                        left.regionLabel.localeCompare(right.regionLabel),
+                    )
+                    .map((region) => (
+                      <tr
+                        key={region.regionSlug}
+                        className='border-t border-border/50'
+                      >
+                        <td className='px-3 py-3 font-medium'>
+                          {region.regionLabel}
+                        </td>
+                        <td className='px-3 py-3'>{region.activeJobs}</td>
+                        <td className='px-3 py-3'>{region.hiringCompanies}</td>
+                        <td className='px-3 py-3'>
+                          {monthlySalary(region.medianMonthlyUsd)}
+                        </td>
+                        <td className='px-3 py-3 text-muted-foreground'>
+                          {region.reliable
+                            ? `${monthlySalary(region.p25MonthlyUsd)} – ${monthlySalary(region.p75MonthlyUsd)}`
+                            : 'Estimate withheld'}
+                        </td>
+                        <td className='px-3 py-3 text-muted-foreground'>
+                          {region.sampleCount} salaries · {region.employerCount}{' '}
+                          employers
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
+              <p className='px-3 pt-3 text-xs leading-relaxed text-muted-foreground'>
+                Open jobs are current; salary evidence covers the past 12
+                months. City, state, and country matches roll up through the
+                canonical place hierarchy and count once per continent.
+              </p>
             </div>
           )}
         </div>

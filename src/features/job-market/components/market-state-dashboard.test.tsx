@@ -78,6 +78,11 @@ const compensation = (
   onsiteCount: 0,
   hybridCount: 0,
   remoteCount: 100,
+  activeJobs: 120,
+  hiringCompanies: 45,
+  activeOnsiteJobs: 0,
+  activeHybridJobs: 0,
+  activeRemoteJobs: 120,
   reliable: true,
   ...overrides,
 });

@@ -45,6 +45,11 @@ export const jobMarketCompensationSchema = z.object({
   onsiteCount: z.number().int().nonnegative(),
   hybridCount: z.number().int().nonnegative(),
   remoteCount: z.number().int().nonnegative(),
+  activeJobs: z.number().int().nonnegative(),
+  hiringCompanies: z.number().int().nonnegative(),
+  activeOnsiteJobs: z.number().int().nonnegative(),
+  activeHybridJobs: z.number().int().nonnegative(),
+  activeRemoteJobs: z.number().int().nonnegative(),
   reliable: z.boolean(),
 });
 
