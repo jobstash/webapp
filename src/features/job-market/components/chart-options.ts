@@ -104,7 +104,7 @@ export const salaryChartOption = (
   history: JobMarketPoint[],
 ): EChartsCoreOption => {
   const values = history.flatMap((point) => {
-    if (!point.salary.reliable) return [];
+    if (point.salary.evidenceLevel === 'insufficient') return [];
     return [
       {
         date: point.date,

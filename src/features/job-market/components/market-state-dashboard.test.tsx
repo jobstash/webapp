@@ -37,6 +37,7 @@ const point: JobMarketPoint = {
     p75MonthlyUsd: 12_000,
     sampleCount: 100,
     coverage: 0.08,
+    evidenceLevel: 'strong',
     reliable: true,
   },
   provenance: 'snapshot',
@@ -104,6 +105,7 @@ const compensation = (
   regionSlug: 'remote',
   regionLabel: 'Remote',
   regionType: 'remote',
+  filter: null,
   countryCode: null,
   medianMonthlyUsd: 9_000,
   p25MonthlyUsd: 7_000,
@@ -119,6 +121,7 @@ const compensation = (
   activeOnsiteJobs: 0,
   activeHybridJobs: 0,
   activeRemoteJobs: 120,
+  evidenceLevel: 'strong',
   reliable: true,
   ...overrides,
 });

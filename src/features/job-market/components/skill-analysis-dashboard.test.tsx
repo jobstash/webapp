@@ -37,6 +37,7 @@ const point = (date: string, activeJobs: number): JobMarketPoint => ({
     p75MonthlyUsd: null,
     sampleCount: 5,
     coverage: 0.25,
+    evidenceLevel: 'insufficient',
     reliable: false,
   },
   provenance: 'reconstructed',
@@ -50,6 +51,7 @@ const compensation = (
   regionSlug: 'remote',
   regionLabel: 'Remote',
   regionType: 'remote',
+  filter: null,
   countryCode: null,
   medianMonthlyUsd: null,
   p25MonthlyUsd: null,
@@ -65,6 +67,7 @@ const compensation = (
   activeOnsiteJobs: 0,
   activeHybridJobs: 0,
   activeRemoteJobs: 3,
+  evidenceLevel: 'limited',
   reliable: false,
   ...overrides,
 });
@@ -137,7 +140,12 @@ const detail: JobMarketSkillDetail = {
 
 const market: PillarMarket = {
   asOf: '2026-08-12',
-  pillar: { kind: 'tags', slug: 't-langgraph', label: 'LangGraph' },
+  pillar: {
+    kind: 'tags',
+    slug: 't-langgraph',
+    label: 'LangGraph',
+    filter: { paramKey: 'tags', value: 'langgraph' },
+  },
   current: point('2026-08-12', 20),
   momentum: {
     periodDays: 7,

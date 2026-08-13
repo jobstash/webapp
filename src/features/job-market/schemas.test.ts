@@ -17,6 +17,7 @@ describe('job-market schemas', () => {
       onsiteCount: 12,
       hybridCount: 8,
       remoteCount: 0,
+      evidenceLevel: 'strong',
       reliable: true,
     });
 

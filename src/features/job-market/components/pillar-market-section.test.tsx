@@ -14,7 +14,12 @@ import { PillarMarketSection } from './pillar-market-section';
 
 const market: PillarMarket = {
   asOf: '2026-08-12',
-  pillar: { kind: 'locations', slug: 'l-berlin', label: 'Berlin' },
+  pillar: {
+    kind: 'locations',
+    slug: 'l-berlin',
+    label: 'Berlin',
+    filter: { paramKey: 'cities', value: 'berlin' },
+  },
   current: {
     date: '2026-08-12',
     activeJobs: 42,
@@ -27,6 +32,7 @@ const market: PillarMarket = {
       p75MonthlyUsd: null,
       sampleCount: 7,
       coverage: 0.17,
+      evidenceLevel: 'limited',
       reliable: false,
     },
     provenance: 'snapshot',
@@ -55,6 +61,7 @@ const market: PillarMarket = {
       p75MonthlyUsd: null,
       sampleCount: 7,
       coverage: 0.17,
+      evidenceLevel: 'limited',
       reliable: false,
     },
     provenance: index < 99 ? ('reconstructed' as const) : ('snapshot' as const),
@@ -66,6 +73,7 @@ const market: PillarMarket = {
       regionSlug: 'remote',
       regionLabel: 'Remote',
       regionType: 'remote',
+      filter: null,
       countryCode: null,
       medianMonthlyUsd: 9_500,
       p25MonthlyUsd: 8_000,
@@ -81,7 +89,32 @@ const market: PillarMarket = {
       activeOnsiteJobs: 0,
       activeHybridJobs: 0,
       activeRemoteJobs: 32,
-      reliable: true,
+      evidenceLevel: 'limited',
+      reliable: false,
+    },
+    {
+      segment: 'local',
+      regionSlug: 'germany',
+      regionLabel: 'Germany',
+      regionType: 'country',
+      filter: { paramKey: 'countries', value: 'germany' },
+      countryCode: 'DEU',
+      medianMonthlyUsd: 8_500,
+      p25MonthlyUsd: 7_000,
+      p75MonthlyUsd: 10_000,
+      adjustedPremiumPercent: null,
+      sampleCount: 4,
+      employerCount: 2,
+      onsiteCount: 4,
+      hybridCount: 0,
+      remoteCount: 0,
+      activeJobs: 3,
+      hiringCompanies: 2,
+      activeOnsiteJobs: 3,
+      activeHybridJobs: 0,
+      activeRemoteJobs: 0,
+      evidenceLevel: 'limited',
+      reliable: false,
     },
   ],
   skillSignals: [],
@@ -90,28 +123,76 @@ const market: PillarMarket = {
 afterEach(cleanup);
 
 describe('PillarMarketSection', () => {
-  it('shows actionable demand metrics and honest sparse-salary copy', async () => {
+  it('shows limited evidence and actionable geographic drill-downs', async () => {
     const user = userEvent.setup();
     render(<PillarMarketSection market={market} />);
 
     expect(screen.getByText('Berlin market pulse')).toBeInTheDocument();
     expect(screen.getByText('42')).toBeInTheDocument();
     expect(screen.getByText('+50.0%')).toBeInTheDocument();
-    expect(
-      screen.getByText('Hidden until 10 samples (7 available)'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('Not enough salary samples yet'),
-    ).toBeInTheDocument();
+    expect(screen.getAllByText('Limited evidence')).not.toHaveLength(0);
     expect(screen.getByText('$9.5K/mo')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /germany/i })).toHaveAttribute(
+      'href',
+      '/?cities=berlin&countries=germany',
+    );
 
     const oneYear = screen.getByRole('button', { name: '1Y' });
-    await user.click(oneYear);
     expect(oneYear).toHaveAttribute('aria-pressed', 'true');
     expect(
       screen.getByRole('img', {
         name: /daily open jobs, hiring companies, and new jobs over 365 days/i,
       }),
     ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '30D' }));
+    expect(oneYear).toHaveAttribute('aria-pressed', 'false');
+    await user.click(oneYear);
+    expect(oneYear).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('removes uncomputable salary panels and keeps the activity chart', () => {
+    const sparseMarket: PillarMarket = {
+      ...market,
+      current: {
+        ...market.current,
+        salary: {
+          ...market.current.salary,
+          medianMonthlyUsd: null,
+          p25MonthlyUsd: null,
+          p75MonthlyUsd: null,
+          evidenceLevel: 'insufficient',
+        },
+      },
+      history: market.history.map((point) => ({
+        ...point,
+        salary: {
+          ...point.salary,
+          evidenceLevel: 'insufficient',
+        },
+      })),
+      compensation: market.compensation.map((entry) => ({
+        ...entry,
+        medianMonthlyUsd: null,
+        p25MonthlyUsd: null,
+        p75MonthlyUsd: null,
+        evidenceLevel: 'insufficient',
+      })),
+    };
+
+    render(<PillarMarketSection market={sparseMarket} />);
+
+    expect(
+      screen.queryByText('Compensation by work market'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Not enough salary samples yet')).toBeNull();
+    expect(
+      screen.getByRole('img', {
+        name: /daily open jobs, hiring companies, and new jobs/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('img', { name: /median and percentile/i }),
+    ).not.toBeInTheDocument();
   });
 });

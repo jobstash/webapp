@@ -1,5 +1,31 @@
 import { z } from 'zod';
 
+export const jobMarketEvidenceLevelSchema = z.enum([
+  'insufficient',
+  'limited',
+  'strong',
+]);
+
+export const jobMarketFilterSchema = z.object({
+  paramKey: z.enum([
+    'tags',
+    'classifications',
+    'commitments',
+    'workModes',
+    'organizations',
+    'seniority',
+    'investors',
+    'fundingRounds',
+    'fundingStages',
+    'cities',
+    'regions',
+    'countries',
+    'continents',
+    'timezones',
+  ]),
+  value: z.string().min(1),
+});
+
 export const jobMarketSalarySchema = z.object({
   medianMonthlyUsd: z.number().nullable(),
   meanMonthlyUsd: z.number().nullable(),
@@ -7,6 +33,7 @@ export const jobMarketSalarySchema = z.object({
   p75MonthlyUsd: z.number().nullable(),
   sampleCount: z.number().int().nonnegative(),
   coverage: z.number().min(0).max(1),
+  evidenceLevel: jobMarketEvidenceLevelSchema,
   reliable: z.boolean(),
 });
 
@@ -65,8 +92,9 @@ export const jobMarketCompensationSchema = z.object({
   regionSlug: z.string(),
   regionLabel: z.string(),
   regionType: z
-    .enum(['remote', 'aggregate', 'continent', 'country'])
+    .enum(['remote', 'aggregate', 'continent', 'country', 'region', 'city'])
     .default('continent'),
+  filter: jobMarketFilterSchema.nullable().default(null),
   countryCode: z.string().nullable().default(null),
   medianMonthlyUsd: z.number().nullable(),
   p25MonthlyUsd: z.number().nullable(),
@@ -82,6 +110,7 @@ export const jobMarketCompensationSchema = z.object({
   activeOnsiteJobs: z.number().int().nonnegative().default(0),
   activeHybridJobs: z.number().int().nonnegative().default(0),
   activeRemoteJobs: z.number().int().nonnegative().default(0),
+  evidenceLevel: jobMarketEvidenceLevelSchema,
   reliable: z.boolean(),
 });
 
@@ -119,6 +148,7 @@ export const pillarMarketSchema = z.object({
     kind: z.string(),
     slug: z.string(),
     label: z.string(),
+    filter: jobMarketFilterSchema.nullable(),
   }),
   current: jobMarketPointSchema,
   momentum: jobMarketMomentumSchema,
