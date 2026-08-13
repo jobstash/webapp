@@ -126,8 +126,8 @@ export const GET = async (request: Request) => {
           stroke='#25352d'
           strokeWidth='2'
         />
-        {points && (
-          <>
+        {points ? (
+          <g>
             <polyline
               points={points}
               fill='none'
@@ -144,8 +144,8 @@ export const GET = async (request: Request) => {
               strokeLinecap='round'
               strokeLinejoin='round'
             />
-          </>
-        )}
+          </g>
+        ) : null}
       </svg>
 
       <div style={{ display: 'flex', gap: 70 }}>
@@ -194,10 +194,8 @@ export const GET = async (request: Request) => {
           </div>
         ))}
       </div>
-      <div style={{ color: '#7f8d85', fontSize: 17 }}>
-        Open roles are actionable. Compensation analysis also uses the
-        historical offline corpus. Complete through{' '}
-        {state?.completeThrough ?? 'latest snapshot'}.
+      <div style={{ color: '#7f8d85', display: 'flex', fontSize: 17 }}>
+        {`Open roles are actionable. Compensation analysis also uses the historical offline corpus. Complete through ${state?.completeThrough ?? 'latest snapshot'}.`}
       </div>
     </div>,
     { width: 1200, height: 630 },

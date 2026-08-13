@@ -85,7 +85,14 @@ export const GET = async () => {
             fontSize: 34,
           }}
         >
-          ◉
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              border: '7px solid #6ee7b7',
+              borderRadius: 28,
+            }}
+          />
         </div>
       </div>
 
@@ -98,8 +105,8 @@ export const GET = async () => {
           stroke='#25352d'
           strokeWidth='2'
         />
-        {points && (
-          <>
+        {points ? (
+          <g>
             <polyline
               points={points}
               fill='none'
@@ -116,8 +123,8 @@ export const GET = async () => {
               strokeLinecap='round'
               strokeLinejoin='round'
             />
-          </>
-        )}
+          </g>
+        ) : null}
       </svg>
 
       <div style={{ display: 'flex', gap: 64 }}>
@@ -135,9 +142,8 @@ export const GET = async () => {
           </div>
         ))}
       </div>
-      <div style={{ color: '#7f8d85', fontSize: 17 }}>
-        Verified internal contributors only · External contributors excluded ·
-        Complete through {report?.completeThrough ?? 'latest snapshot'}
+      <div style={{ color: '#7f8d85', display: 'flex', fontSize: 17 }}>
+        {`Verified internal contributors only · External contributors excluded · Complete through ${report?.completeThrough ?? 'latest snapshot'}`}
       </div>
     </div>,
     { width: 1200, height: 630 },
