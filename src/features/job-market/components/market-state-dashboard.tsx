@@ -20,6 +20,7 @@ import { CompensationBandChart } from './compensation-band-chart';
 import { FlintEChart } from './flint-echart';
 import { MarketGeographyMap } from './market-geography-map';
 import { compactNumber, monthlySalary, percentLabel } from '../lib/format';
+import { hasPublishableSkillCompensation } from '../lib/skill-evidence';
 import type {
   JobMarketCompensation,
   JobMarketSkillList,
@@ -190,7 +191,10 @@ export const MarketStateDashboard = ({
   const scoped = selectedClassification !== 'market';
   const scopeLabel = state.selectedClassificationLabel;
   const scopePillar = getFrontendSlug(selectedClassification);
-  const publishableSignals = skills.skills.filter(
+  const publishableSkills = skills.skills.filter(
+    hasPublishableSkillCompensation,
+  );
+  const publishableSignals = publishableSkills.filter(
     (skill) =>
       skill.signal &&
       skill.signal.status !== 'insufficient' &&
@@ -423,15 +427,19 @@ export const MarketStateDashboard = ({
           <div>
             <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-violet-400 uppercase'>
               <SparklesIcon className='size-4' aria-hidden />
-              {scoped ? `Skills in ${scopeLabel}` : 'Skill market'}
+              {scoped
+                ? `Compensation in ${scopeLabel}`
+                : 'Skill pay benchmarks'}
             </div>
             <h2 className='mt-2 text-2xl font-bold'>
-              Skills employers ask for
+              {scoped
+                ? `What skills are worth in ${scopeLabel}`
+                : 'What skills are worth now'}
             </h2>
             <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
-              {scoped
-                ? `Only skills found on open ${scopeLabel.toLowerCase()} jobs are shown, ranked by role coverage and employer breadth.`
-                : 'Skills are ranked using current open roles and distinct hiring employers. Verified pay changes appear separately when the evidence is strong enough.'}
+              Only skills with publishable compensation evidence are shown.
+              Salary statistics use open and historical closed listings; open
+              job counts remain current.
             </p>
           </div>
           <div className='flex flex-wrap gap-2'>
@@ -497,19 +505,20 @@ export const MarketStateDashboard = ({
         </div>
 
         <div className='mt-4 overflow-x-auto rounded-xl border border-border/60'>
-          <table className='w-full min-w-[760px] text-left text-sm'>
+          <table className='w-full min-w-[940px] text-left text-sm'>
             <thead className='bg-background/60 text-xs text-muted-foreground uppercase'>
               <tr>
                 <th className='px-4 py-3'>Skill</th>
+                <th className='px-4 py-3'>Monthly pay</th>
+                <th className='px-4 py-3'>Middle 50%</th>
                 <th className='px-4 py-3'>Open jobs</th>
-                <th className='px-4 py-3'>Share of scope</th>
                 <th className='px-4 py-3'>Hiring employers</th>
-                <th className='px-4 py-3'>New-posting change</th>
+                <th className='px-4 py-3'>Evidence</th>
                 <th className='px-4 py-3'>Explore</th>
               </tr>
             </thead>
             <tbody>
-              {skills.skills.map((skill) => (
+              {publishableSkills.map((skill) => (
                 <tr
                   key={skill.slug}
                   className={cn(
@@ -525,19 +534,23 @@ export const MarketStateDashboard = ({
                       </span>
                     )}
                   </td>
+                  <td className='px-4 py-3 font-semibold'>
+                    {monthlySalary(skill.current.medianMonthlyUsd)}
+                  </td>
+                  <td className='px-4 py-3 whitespace-nowrap text-muted-foreground'>
+                    {monthlySalary(skill.current.p25MonthlyUsd)} –{' '}
+                    {monthlySalary(skill.current.p75MonthlyUsd)}
+                  </td>
                   <td className='px-4 py-3'>
                     {compactNumber(skill.activeJobs)}
-                  </td>
-                  <td className='px-4 py-3 font-semibold'>
-                    {skill.openJobShare.toFixed(1)}%
                   </td>
                   <td className='px-4 py-3'>
                     {compactNumber(skill.hiringCompanies)}
                   </td>
-                  <td className='px-4 py-3'>
-                    {percentLabel(skill.momentum.percentChange)}
+                  <td className='px-4 py-3 whitespace-nowrap'>
+                    {compactNumber(skill.current.sampleCount)} salaries
                     <span className='block text-xs text-muted-foreground'>
-                      latest 7 days vs previous 7
+                      {compactNumber(skill.current.employerCount)} employers
                     </span>
                   </td>
                   <td className='px-4 py-3'>
@@ -566,20 +579,23 @@ export const MarketStateDashboard = ({
               ))}
             </tbody>
           </table>
-          {skills.skills.length === 0 && (
+          {publishableSkills.length === 0 && (
             <div className='px-6 py-12 text-center'>
               <p className='font-semibold'>
-                No publishable skill signals found
+                No skills have publishable compensation evidence in this
+                selection
               </p>
               <p className='mt-1 text-sm text-muted-foreground'>
-                Try a broader search, another view, or the other work mode.
+                Try a broader classification, another work mode, or a different
+                search.
               </p>
             </div>
           )}
         </div>
         <p className='mt-3 text-xs text-muted-foreground'>
-          Showing {skills.skills.length} skills with at least 10 open jobs from
-          five hiring employers in this scope.
+          Showing {publishableSkills.length}{' '}
+          {publishableSkills.length === 1 ? 'skill' : 'skills'} with publishable
+          compensation: at least 20 salary listings from 10 employers.
         </p>
       </section>
 
@@ -621,8 +637,9 @@ export const MarketStateDashboard = ({
         20 jobs and 10 employers in both comparison windows, seven observed
         dates, no single date contributing over 40%, a meaningful 5% move, a 95%
         confidence interval excluding zero, correction for testing many skills,
-        and persistence across three snapshots. Sparse estimates remain visible
-        as missing evidence, not zeros.
+        and persistence across three snapshots. Skills without enough
+        compensation evidence are omitted from the pay table rather than shown
+        as missing values.
       </section>
     </div>
   );

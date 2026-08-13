@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -191,6 +191,25 @@ const skills: JobMarketSkillList = {
       openJobShare: 6.7,
       strongBreakout: true,
     },
+    {
+      slug: 't-sparse-skill',
+      label: 'Sparse Skill',
+      segment: 'remote',
+      current: compensation({
+        medianMonthlyUsd: null,
+        p25MonthlyUsd: null,
+        p75MonthlyUsd: null,
+        sampleCount: 8,
+        employerCount: 4,
+        reliable: false,
+      }),
+      signal: null,
+      momentum: ticker().momentum,
+      activeJobs: 35,
+      hiringCompanies: 14,
+      openJobShare: 2.9,
+      strongBreakout: false,
+    },
   ],
 };
 
@@ -230,6 +249,14 @@ describe('MarketStateDashboard', () => {
     expect(screen.getByText('Local benchmark')).toBeInTheDocument();
     expect(screen.getByTestId('salary-map')).toBeInTheDocument();
     expect(screen.getAllByText('TypeScript')).toHaveLength(2);
+    expect(screen.queryByText('Sparse Skill')).not.toBeInTheDocument();
+    const skillRow = screen.getByRole('row', { name: /TypeScript/ });
+    expect(within(skillRow).getByText('$9K/mo')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Showing 1 skill with publishable compensation: at least 20 salary listings from 10 employers.',
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText('+11.2%')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Analyze' }));

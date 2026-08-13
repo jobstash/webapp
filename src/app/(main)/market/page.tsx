@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { MarketStateDashboard } from '@/features/job-market/components/market-state-dashboard';
 import { SkillAnalysisDashboard } from '@/features/job-market/components/skill-analysis-dashboard';
+import { withPublishableSkillCompensation } from '@/features/job-market/lib/skill-evidence';
 import {
   fetchJobMarketSkillDetail,
   fetchJobMarketSkills,
@@ -188,7 +189,7 @@ const MarketPage = async ({ searchParams }: Props) => {
   return (
     <MarketStateDashboard
       state={state}
-      skills={skills}
+      skills={withPublishableSkillCompensation(skills)}
       scopeMarket={scopeMarket}
       selection={{ range, classification, mode, sort, query, skill: null }}
     />
