@@ -188,4 +188,26 @@ describe('MarketStateDashboard', () => {
     await user.click(screen.getByRole('button', { name: 'Analyze' }));
     expect(push).toHaveBeenCalledWith('/market?skill=t-typescript');
   });
+
+  it('uses the API-selected market scope when a URL classification is invalid', () => {
+    render(
+      <MarketStateDashboard
+        state={state}
+        skills={skills}
+        detail={null}
+        selection={{
+          range: 'max',
+          classification: 'cl-not-real',
+          mode: 'remote',
+          sort: 'breakout',
+          query: '',
+          skill: null,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('combobox', { name: /classification/i }),
+    ).toHaveValue('market');
+  });
 });

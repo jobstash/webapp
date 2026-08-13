@@ -338,12 +338,17 @@ export const MarketStateDashboard = ({
 }) => {
   const router = useRouter();
   const [query, setQuery] = useState(selection.query);
+  const selectedClassification = state.selectedClassification;
   const treemap = useMemo(
     () => marketTreemapOption(state.classifications),
     [state.classifications],
   );
   const paramsFor = (updates: Partial<Selection>) => {
-    const next = { ...selection, ...updates };
+    const next = {
+      ...selection,
+      classification: selectedClassification,
+      ...updates,
+    };
     const params = new URLSearchParams();
     if (next.range !== 'max') params.set('range', next.range);
     if (next.classification !== 'market') {
@@ -370,10 +375,10 @@ export const MarketStateDashboard = ({
     (entry) => entry.segment === 'local' && entry.regionSlug === 'local',
   );
   const scopeTicker =
-    selection.classification === 'market'
+    selectedClassification === 'market'
       ? state.market
       : (state.classifications.find(
-          (ticker) => ticker.slug === selection.classification,
+          (ticker) => ticker.slug === selectedClassification,
         ) ?? state.market);
 
   return (
@@ -413,7 +418,7 @@ export const MarketStateDashboard = ({
             <label className='text-xs font-semibold text-muted-foreground'>
               Classification
               <select
-                value={selection.classification}
+                value={selectedClassification}
                 onChange={(event) =>
                   navigate({ classification: event.target.value })
                 }
@@ -528,7 +533,7 @@ export const MarketStateDashboard = ({
         <div className='mt-5'>
           <MarketGeographyMap
             geography={state.geography}
-            classification={selection.classification}
+            classification={selectedClassification}
           />
         </div>
       </section>
