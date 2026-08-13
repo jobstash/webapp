@@ -69,6 +69,8 @@ const compensation = (
   segment: 'remote',
   regionSlug: 'remote',
   regionLabel: 'Remote',
+  regionType: 'remote',
+  countryCode: null,
   medianMonthlyUsd: 9_000,
   p25MonthlyUsd: 7_000,
   p75MonthlyUsd: 11_000,
@@ -106,6 +108,7 @@ const state: JobMarketState = {
       segment: 'local',
       regionSlug: 'local',
       regionLabel: 'All local markets',
+      regionType: 'aggregate',
       medianMonthlyUsd: 10_500,
       onsiteCount: 70,
       hybridCount: 30,
@@ -164,7 +167,6 @@ describe('MarketStateDashboard', () => {
       <MarketStateDashboard
         state={state}
         skills={skills}
-        detail={null}
         selection={{
           range: 'max',
           classification: 'market',
@@ -199,7 +201,6 @@ describe('MarketStateDashboard', () => {
       <MarketStateDashboard
         state={state}
         skills={skills}
-        detail={null}
         selection={{
           range: 'max',
           classification: 'cl-not-real',

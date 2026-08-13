@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 import { MarketStateDashboard } from '@/features/job-market/components/market-state-dashboard';
+import { SkillAnalysisDashboard } from '@/features/job-market/components/skill-analysis-dashboard';
 import {
   fetchJobMarketSkillDetail,
   fetchJobMarketSkills,
   fetchJobMarketState,
+  fetchPillarMarket,
 } from '@/features/job-market/server';
+import { fetchPillarPageStatic } from '@/features/pillar/server';
 import { clientEnv } from '@/lib/env/client';
 
 type Range = '90' | '365' | 'max';
@@ -46,10 +50,54 @@ const MarketPage = async ({ searchParams }: Props) => {
   const query = first(params.q).trim();
   const skill = first(params.skill).trim() || null;
 
-  const [state, skills, detail] = await Promise.all([
+  if (skill) {
+    const [detail, market, pillar] = await Promise.all([
+      fetchJobMarketSkillDetail(skill, range),
+      fetchPillarMarket(skill, range),
+      fetchPillarPageStatic(skill).catch(() => null),
+    ]);
+
+    if (!detail || !market) {
+      return (
+        <div className='flex min-h-[60vh] items-center justify-center pb-16 text-center'>
+          <div className='max-w-lg rounded-2xl border border-border/60 bg-card/60 p-8'>
+            <h1 className='text-3xl font-bold'>Skill analysis is refreshing</h1>
+            <p className='mt-3 text-muted-foreground'>
+              The selected skill page is temporarily unavailable. Its current
+              jobs remain available while the analytical snapshot catches up.
+            </p>
+            <div className='mt-5 flex flex-wrap justify-center gap-3'>
+              <Link
+                href={`/${skill}`}
+                className='rounded-lg bg-foreground px-4 py-2 text-sm font-bold text-background'
+              >
+                Browse current jobs
+              </Link>
+              <Link
+                href='/market#skill-explorer'
+                className='rounded-lg border border-border px-4 py-2 text-sm font-bold'
+              >
+                Back to skill rankings
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <SkillAnalysisDashboard
+        detail={detail}
+        market={market}
+        jobs={pillar?.jobs ?? []}
+        selection={{ range, mode, skill }}
+      />
+    );
+  }
+
+  const [state, skills] = await Promise.all([
     fetchJobMarketState(range, classification),
     fetchJobMarketSkills(mode, sort, query),
-    skill ? fetchJobMarketSkillDetail(skill, range) : Promise.resolve(null),
   ]);
 
   if (!state || !skills) {
@@ -72,8 +120,7 @@ const MarketPage = async ({ searchParams }: Props) => {
     <MarketStateDashboard
       state={state}
       skills={skills}
-      detail={detail}
-      selection={{ range, classification, mode, sort, query, skill }}
+      selection={{ range, classification, mode, sort, query, skill: null }}
     />
   );
 };

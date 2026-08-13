@@ -52,9 +52,12 @@ const fetchJobMarketOverviewUncached = () =>
     jobMarketOverviewSchema,
   );
 
-const fetchPillarMarketUncached = (slug: string) =>
+const fetchPillarMarketUncached = (
+  slug: string,
+  range: '90' | '365' | 'max' = '365',
+) =>
   fetchMarket<PillarMarket>(
-    `/v2/search/market/pillars/${encodeURIComponent(getApiSlug(slug))}?range=365`,
+    `/v2/search/market/pillars/${encodeURIComponent(getApiSlug(slug))}?range=${range}`,
     pillarMarketSchema,
   );
 

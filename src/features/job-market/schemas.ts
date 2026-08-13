@@ -36,6 +36,10 @@ export const jobMarketCompensationSchema = z.object({
   segment: z.enum(['remote', 'local']),
   regionSlug: z.string(),
   regionLabel: z.string(),
+  regionType: z
+    .enum(['remote', 'aggregate', 'continent', 'country'])
+    .default('continent'),
+  countryCode: z.string().nullable().default(null),
   medianMonthlyUsd: z.number().nullable(),
   p25MonthlyUsd: z.number().nullable(),
   p75MonthlyUsd: z.number().nullable(),

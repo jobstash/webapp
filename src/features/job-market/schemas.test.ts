@@ -21,6 +21,8 @@ describe('job-market schemas', () => {
     });
 
     expect(parsed).toMatchObject({
+      regionType: 'continent',
+      countryCode: null,
       activeJobs: 0,
       hiringCompanies: 0,
       activeOnsiteJobs: 0,

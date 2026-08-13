@@ -65,6 +65,8 @@ const market: PillarMarket = {
       segment: 'remote',
       regionSlug: 'remote',
       regionLabel: 'Remote',
+      regionType: 'remote',
+      countryCode: null,
       medianMonthlyUsd: 9_500,
       p25MonthlyUsd: 8_000,
       p75MonthlyUsd: 11_000,

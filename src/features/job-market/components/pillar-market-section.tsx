@@ -86,9 +86,15 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
   const localCompensation = market.compensation.find(
     (entry) => entry.segment === 'local' && entry.regionSlug === 'local',
   );
-  const localRegions = market.compensation.filter(
-    (entry) => entry.segment === 'local' && entry.regionSlug !== 'local',
+  const countryRegions = market.compensation.filter(
+    (entry) => entry.segment === 'local' && entry.regionType === 'country',
   );
+  const continentRegions = market.compensation.filter(
+    (entry) => entry.segment === 'local' && entry.regionType === 'continent',
+  );
+  const localRegions =
+    countryRegions.length > 0 ? countryRegions : continentRegions;
+  const localRegionLevel = countryRegions.length > 0 ? 'Country' : 'Continent';
   const signals = market.skillSignals.filter(
     (signal) => signal.status !== 'insufficient',
   );
@@ -238,7 +244,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
               <table className='w-full min-w-[840px] text-left text-sm'>
                 <thead className='text-xs text-muted-foreground uppercase'>
                   <tr>
-                    <th className='px-3 py-2'>Local region</th>
+                    <th className='px-3 py-2'>{localRegionLevel} market</th>
                     <th className='px-3 py-2'>Open jobs</th>
                     <th className='px-3 py-2'>Hiring companies</th>
                     <th className='px-3 py-2'>Median</th>
@@ -255,7 +261,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
                     )
                     .map((region) => (
                       <tr
-                        key={region.regionSlug}
+                        key={`${region.regionType}-${region.regionSlug}`}
                         className='border-t border-border/50'
                       >
                         <td className='px-3 py-3 font-medium'>
@@ -282,7 +288,8 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
               <p className='px-3 pt-3 text-xs leading-relaxed text-muted-foreground'>
                 Open jobs are current; salary evidence covers the past 12
                 months. City, state, and country matches roll up through the
-                canonical place hierarchy and count once per continent.
+                canonical place hierarchy and count once per{' '}
+                {localRegionLevel.toLowerCase()}.
               </p>
             </div>
           )}

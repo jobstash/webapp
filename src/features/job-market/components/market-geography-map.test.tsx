@@ -5,54 +5,76 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { JobMarketCompensation } from '../schemas';
 import { MarketGeographyMap } from './market-geography-map';
 
+const regionalMetric = (
+  overrides: Partial<JobMarketCompensation>,
+): JobMarketCompensation => ({
+  segment: 'local',
+  regionSlug: 'europe',
+  regionLabel: 'Europe',
+  regionType: 'continent',
+  countryCode: null,
+  medianMonthlyUsd: 8_500,
+  p25MonthlyUsd: 6_500,
+  p75MonthlyUsd: 10_500,
+  adjustedPremiumPercent: 2,
+  sampleCount: 50,
+  employerCount: 20,
+  onsiteCount: 35,
+  hybridCount: 15,
+  remoteCount: 0,
+  activeJobs: 90,
+  hiringCompanies: 40,
+  activeOnsiteJobs: 60,
+  activeHybridJobs: 30,
+  activeRemoteJobs: 0,
+  reliable: true,
+  ...overrides,
+});
+
 const geography: JobMarketCompensation[] = [
-  {
-    segment: 'local',
-    regionSlug: 'europe',
-    regionLabel: 'Europe',
-    medianMonthlyUsd: 9_000,
-    p25MonthlyUsd: 7_000,
-    p75MonthlyUsd: 11_000,
-    adjustedPremiumPercent: 2,
-    sampleCount: 50,
-    employerCount: 20,
-    onsiteCount: 35,
-    hybridCount: 15,
-    remoteCount: 0,
-    activeJobs: 90,
-    hiringCompanies: 40,
-    activeOnsiteJobs: 60,
-    activeHybridJobs: 30,
-    activeRemoteJobs: 0,
-    reliable: true,
-  },
-  {
-    segment: 'local',
-    regionSlug: 'africa',
-    regionLabel: 'Africa',
+  regionalMetric({}),
+  regionalMetric({
+    regionSlug: 'north-america',
+    regionLabel: 'North America',
+  }),
+  regionalMetric({
+    regionSlug: 'germany',
+    regionLabel: 'Germany',
+    regionType: 'country',
+    countryCode: 'DE',
+    medianMonthlyUsd: 10_000,
+    p25MonthlyUsd: 8_000,
+    p75MonthlyUsd: 12_000,
+    sampleCount: 24,
+    employerCount: 12,
+    activeJobs: 30,
+    hiringCompanies: 18,
+    activeOnsiteJobs: 20,
+    activeHybridJobs: 10,
+  }),
+  regionalMetric({
+    regionSlug: 'france',
+    regionLabel: 'France',
+    regionType: 'country',
+    countryCode: 'FRA',
     medianMonthlyUsd: null,
     p25MonthlyUsd: null,
     p75MonthlyUsd: null,
-    adjustedPremiumPercent: null,
-    sampleCount: 7,
-    employerCount: 4,
-    onsiteCount: 5,
-    hybridCount: 2,
-    remoteCount: 0,
-    activeJobs: 24,
-    hiringCompanies: 17,
-    activeOnsiteJobs: 18,
-    activeHybridJobs: 6,
-    activeRemoteJobs: 0,
+    sampleCount: 2,
+    employerCount: 2,
+    activeJobs: 11,
+    hiringCompanies: 8,
+    activeOnsiteJobs: 7,
+    activeHybridJobs: 4,
     reliable: false,
-  },
+  }),
 ];
 
 afterEach(cleanup);
 
 describe('MarketGeographyMap', () => {
-  it('publishes reliable regions and labels sparse evidence without inventing pay', () => {
-    render(
+  it('maps and links countries while labelling continent salary fallback', () => {
+    const { container } = render(
       <MarketGeographyMap
         geography={geography}
         classification='cl-engineering'
@@ -61,20 +83,28 @@ describe('MarketGeographyMap', () => {
 
     expect(
       screen.getByRole('img', {
-        name: /local monthly salaries by continent/i,
+        name: /local monthly salaries by country/i,
       }),
     ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Open Europe jobs' })).toBeNull();
     expect(
-      screen.getAllByRole('link', { name: 'Open Europe jobs' }).length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText('Europe')).toBeInTheDocument();
-    expect(screen.getByText('$9K/mo')).toBeInTheDocument();
-    expect(screen.getByText('Africa')).toBeInTheDocument();
-    expect(screen.getByText('24')).toBeInTheDocument();
-    expect(screen.getByText('17')).toBeInTheDocument();
-    expect(screen.getByText('Insufficient evidence')).toBeInTheDocument();
+      screen.getByRole('link', { name: 'Open Germany jobs' }),
+    ).toHaveAttribute('href', '/l-germany?classifications=engineering');
     expect(
-      screen.getByText('Fixed $3K–$20K monthly scale'),
+      screen.getByRole('link', { name: 'Open France jobs' }),
+    ).toHaveAttribute('href', '/l-france?classifications=engineering');
+    expect(screen.getByText('Germany')).toBeInTheDocument();
+    expect(screen.getByText('$10K/mo')).toBeInTheDocument();
+    expect(screen.getByText('France')).toBeInTheDocument();
+    expect(screen.getByText('$8.5K/mo')).toBeInTheDocument();
+    expect(screen.getByText('Europe fallback')).toBeInTheDocument();
+    expect(
+      screen.getByText('Country data · fixed $3K–$20K scale'),
     ).toBeInTheDocument();
+    const inactiveUnitedStates = [...container.querySelectorAll('path')].find(
+      (path) =>
+        path.querySelector('title')?.textContent?.includes('United States'),
+    );
+    expect(inactiveUnitedStates).toHaveAttribute('fill', '#18181b');
   });
 });

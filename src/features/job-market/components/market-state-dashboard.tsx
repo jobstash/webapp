@@ -5,7 +5,6 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowDownRightIcon,
-  ArrowRightIcon,
   ArrowUpRightIcon,
   BriefcaseBusinessIcon,
   Building2Icon,
@@ -18,11 +17,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { getFrontendSlug } from '@/features/pillar/constants';
-import {
-  marketTreemapOption,
-  skillAdjustedValueOption,
-  skillSalaryTrendOption,
-} from './chart-options';
+import { marketTreemapOption } from './chart-options';
 import { FlintEChart } from './flint-echart';
 import { MarketGeographyMap } from './market-geography-map';
 import {
@@ -33,7 +28,6 @@ import {
 } from '../lib/format';
 import type {
   JobMarketCompensation,
-  JobMarketSkillDetail,
   JobMarketSkillList,
   JobMarketSkillSignal,
   JobMarketState,
@@ -168,188 +162,13 @@ const ClassificationMove = ({ ticker }: { ticker: JobMarketTicker }) => (
   </Link>
 );
 
-const SkillDetail = ({
-  detail,
-  mode,
-}: {
-  detail: JobMarketSkillDetail;
-  mode: Segment;
-}) => {
-  const salaryOption = useMemo(
-    () => skillSalaryTrendOption(detail.history, mode),
-    [detail.history, mode],
-  );
-  const valueOption = useMemo(
-    () => skillAdjustedValueOption(detail.history, mode),
-    [detail.history, mode],
-  );
-  const signal = detail.signals.find((entry) => entry.segment === mode) ?? null;
-  const benchmark = detail.compensation.find(
-    (entry) =>
-      entry.segment === mode &&
-      entry.regionSlug === (mode === 'remote' ? 'remote' : 'local'),
-  );
-  const regions = detail.compensation.filter(
-    (entry) => entry.segment === 'local' && entry.regionSlug !== 'local',
-  );
-
-  return (
-    <section
-      id='selected-skill'
-      aria-labelledby='selected-skill-heading'
-      className='rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.04] p-4 md:p-6'
-    >
-      <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-        <div>
-          <div className='flex items-center gap-2'>
-            <SparklesIcon className='size-4 text-emerald-400' aria-hidden />
-            <span className='text-xs font-semibold tracking-widest text-emerald-400 uppercase'>
-              Skill alpha
-            </span>
-          </div>
-          <h2 id='selected-skill-heading' className='mt-2 text-3xl font-bold'>
-            {detail.skill.label}
-          </h2>
-          <p className='mt-1 max-w-2xl text-sm text-muted-foreground'>
-            Pay change after accounting for role, seniority, work mode, and
-            local continent. Signals compare the latest 28 days with the prior
-            84 days and require repeated, employer-diverse evidence.
-          </p>
-        </div>
-        <Link
-          href={`/${getFrontendSlug(detail.skill.slug)}`}
-          className='inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-background'
-        >
-          Browse jobs using {detail.skill.label}
-          <ArrowRightIcon className='size-4' aria-hidden />
-        </Link>
-      </div>
-
-      <div className='mt-5 grid gap-3 sm:grid-cols-3'>
-        <Metric
-          icon={CircleDollarSignIcon}
-          label={`${mode} median`}
-          value={monthlySalary(benchmark?.medianMonthlyUsd ?? null)}
-          detail={`${benchmark?.sampleCount ?? 0} salaries from ${benchmark?.employerCount ?? 0} employers`}
-        />
-        <Metric
-          icon={ChartNoAxesCombinedIcon}
-          label='Adjusted value change'
-          value={percentLabel(signal?.adjustedChangePercent ?? null)}
-          detail={
-            !signal ||
-            signal.confidenceLowPercent === null ||
-            signal?.confidenceHighPercent === null
-              ? 'No publishable confidence interval yet'
-              : `95% range ${percentLabel(signal.confidenceLowPercent)} to ${percentLabel(signal.confidenceHighPercent)}`
-          }
-        />
-        <div className='rounded-xl border border-border/60 bg-background/55 p-4'>
-          <p className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
-            Evidence status
-          </p>
-          <div className='mt-3'>
-            <SignalBadge signal={signal} />
-          </div>
-          <p className='mt-2 text-xs text-muted-foreground'>
-            {signal
-              ? `${signal.recentJobCount} recent jobs · ${signal.recentEmployerCount} recent employers`
-              : 'This skill has not met the publication threshold.'}
-          </p>
-        </div>
-      </div>
-
-      <div className='mt-4 grid gap-4 xl:grid-cols-2'>
-        <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
-          <h3 className='font-semibold'>Observed pay over time</h3>
-          <p className='text-xs text-muted-foreground'>
-            Weekly USD-converted monthly median and middle 50%
-          </p>
-          <FlintEChart
-            option={salaryOption}
-            className='mt-3 h-72 w-full'
-            ariaLabel={`${detail.skill.label} ${mode} weekly salary history`}
-          />
-        </div>
-        <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
-          <h3 className='font-semibold'>Value beyond job mix</h3>
-          <p className='text-xs text-muted-foreground'>
-            Premium after controlling for role and seniority cohorts
-          </p>
-          <FlintEChart
-            option={valueOption}
-            className='mt-3 h-72 w-full'
-            ariaLabel={`${detail.skill.label} ${mode} adjusted skill premium history`}
-          />
-        </div>
-      </div>
-
-      {regions.length > 0 && (
-        <div className='mt-4 overflow-x-auto rounded-xl border border-border/60 bg-background/45'>
-          <table className='w-full min-w-[980px] text-left text-sm'>
-            <thead className='text-xs text-muted-foreground uppercase'>
-              <tr>
-                <th className='px-4 py-3'>Local market</th>
-                <th className='px-4 py-3'>Open jobs</th>
-                <th className='px-4 py-3'>Hiring companies</th>
-                <th className='px-4 py-3'>Monthly median</th>
-                <th className='px-4 py-3'>Middle 50%</th>
-                <th className='px-4 py-3'>Evidence</th>
-                <th className='px-4 py-3'>Mix</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...regions]
-                .sort(
-                  (left, right) =>
-                    right.activeJobs - left.activeJobs ||
-                    left.regionLabel.localeCompare(right.regionLabel),
-                )
-                .map((region) => (
-                  <tr
-                    key={region.regionSlug}
-                    className='border-t border-border/50'
-                  >
-                    <td className='px-4 py-3 font-medium'>
-                      {region.regionLabel}
-                    </td>
-                    <td className='px-4 py-3'>{region.activeJobs}</td>
-                    <td className='px-4 py-3'>{region.hiringCompanies}</td>
-                    <td className='px-4 py-3'>
-                      {monthlySalary(region.medianMonthlyUsd)}
-                    </td>
-                    <td className='px-4 py-3 text-muted-foreground'>
-                      {region.reliable
-                        ? `${monthlySalary(region.p25MonthlyUsd)} – ${monthlySalary(region.p75MonthlyUsd)}`
-                        : 'Estimate withheld'}
-                    </td>
-                    <td className='px-4 py-3'>
-                      {region.sampleCount} salaries · {region.employerCount}{' '}
-                      employers
-                    </td>
-                    <td className='px-4 py-3 text-muted-foreground'>
-                      {region.activeOnsiteJobs} onsite ·{' '}
-                      {region.activeHybridJobs} hybrid
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </section>
-  );
-};
-
 export const MarketStateDashboard = ({
   state,
   skills,
-  detail,
   selection,
 }: {
   state: JobMarketState;
   skills: JobMarketSkillList;
-  detail: JobMarketSkillDetail | null;
   selection: Selection;
 }) => {
   const router = useRouter();
@@ -554,9 +373,10 @@ export const MarketStateDashboard = ({
         </div>
       </section>
 
-      {detail && <SkillDetail detail={detail} mode={selection.mode} />}
-
-      <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+      <section
+        id='skill-explorer'
+        className='scroll-mt-24 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'
+      >
         <div className='flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
           <div>
             <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-violet-400 uppercase'>
