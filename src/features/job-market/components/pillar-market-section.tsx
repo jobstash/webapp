@@ -18,6 +18,7 @@ import {
   momentumLabel,
   momentumTone,
   monthlySalary,
+  percentLabel,
 } from '../lib/format';
 import type { JobMarketPoint, PillarMarket } from '../schemas';
 
@@ -78,6 +79,18 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
   const hasSalaryHistory = history.some((point) => point.salary.reliable);
   const reconstructed = history.some(
     (point) => point.provenance === 'reconstructed',
+  );
+  const remoteCompensation = market.compensation.find(
+    (entry) => entry.segment === 'remote' && entry.regionSlug === 'remote',
+  );
+  const localCompensation = market.compensation.find(
+    (entry) => entry.segment === 'local' && entry.regionSlug === 'local',
+  );
+  const localRegions = market.compensation.filter(
+    (entry) => entry.segment === 'local' && entry.regionSlug !== 'local',
+  );
+  const signals = market.skillSignals.filter(
+    (signal) => signal.status !== 'insufficient',
   );
 
   return (
@@ -150,15 +163,112 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
         />
         <Metric
           icon={CircleDollarSignIcon}
-          label='Median pay'
-          value={monthlySalary(salary.medianMonthlyUsd)}
+          label='Salary samples'
+          value={compactNumber(salary.sampleCount)}
           detail={
             salary.reliable
-              ? `${salary.sampleCount} salary samples · ${Math.round(salary.coverage * 100)}% coverage`
+              ? `${Math.round(salary.coverage * 100)}% coverage · work modes split below`
               : `Hidden until 10 samples (${salary.sampleCount} available)`
           }
         />
       </div>
+
+      {(market.compensation.length > 0 || signals.length > 0) && (
+        <div className='mt-5 rounded-xl border border-border/60 bg-background/45 p-4'>
+          <div className='flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between'>
+            <div>
+              <h3 className='font-semibold'>Compensation by work market</h3>
+              <p className='text-xs text-muted-foreground'>
+                Remote pay is separated from onsite and hybrid pay so expensive
+                cities do not distort the remote benchmark.
+              </p>
+            </div>
+            {signals.length > 0 && (
+              <div className='flex flex-wrap gap-2'>
+                {signals.map((signal) => (
+                  <span
+                    key={signal.segment}
+                    className={cn(
+                      'rounded-full px-2.5 py-1 text-xs font-semibold',
+                      signal.status === 'rising' &&
+                        'bg-emerald-500/15 text-emerald-400',
+                      signal.status === 'falling' &&
+                        'bg-rose-500/15 text-rose-400',
+                      signal.status === 'stable' &&
+                        'bg-zinc-700/50 text-zinc-300',
+                    )}
+                  >
+                    {signal.segment}: {signal.status}{' '}
+                    {signal.status === 'stable'
+                      ? ''
+                      : percentLabel(signal.adjustedChangePercent)}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className='mt-4 grid gap-3 sm:grid-cols-2'>
+            {[remoteCompensation, localCompensation].map((entry, index) => (
+              <div
+                key={entry?.regionSlug ?? index}
+                className='rounded-lg border border-border/50 bg-background/55 p-4'
+              >
+                <p className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
+                  {index === 0 ? 'Remote' : 'Onsite + hybrid'}
+                </p>
+                <strong className='mt-2 block text-xl'>
+                  {monthlySalary(entry?.medianMonthlyUsd ?? null)}
+                </strong>
+                <p className='mt-1 text-xs text-muted-foreground'>
+                  {entry?.reliable
+                    ? `${entry.sampleCount} salaries from ${entry.employerCount} employers`
+                    : `${entry?.sampleCount ?? 0} salaries; estimate withheld until evidence is broad enough`}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {localRegions.length > 0 && (
+            <div className='mt-4 overflow-x-auto'>
+              <table className='w-full min-w-[640px] text-left text-sm'>
+                <thead className='text-xs text-muted-foreground uppercase'>
+                  <tr>
+                    <th className='px-3 py-2'>Local region</th>
+                    <th className='px-3 py-2'>Median</th>
+                    <th className='px-3 py-2'>Middle 50%</th>
+                    <th className='px-3 py-2'>Evidence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {localRegions.map((region) => (
+                    <tr
+                      key={region.regionSlug}
+                      className='border-t border-border/50'
+                    >
+                      <td className='px-3 py-3 font-medium'>
+                        {region.regionLabel}
+                      </td>
+                      <td className='px-3 py-3'>
+                        {monthlySalary(region.medianMonthlyUsd)}
+                      </td>
+                      <td className='px-3 py-3 text-muted-foreground'>
+                        {region.reliable
+                          ? `${monthlySalary(region.p25MonthlyUsd)} – ${monthlySalary(region.p75MonthlyUsd)}`
+                          : 'Estimate withheld'}
+                      </td>
+                      <td className='px-3 py-3 text-muted-foreground'>
+                        {region.sampleCount} salaries · {region.employerCount}{' '}
+                        employers
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className='mt-5 grid gap-4 xl:grid-cols-2'>
         <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
@@ -180,9 +290,10 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
         <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
           <div className='flex items-center justify-between gap-3'>
             <div>
-              <h3 className='font-semibold'>Monthly pay range</h3>
+              <h3 className='font-semibold'>All-mode pay history</h3>
               <p className='text-xs text-muted-foreground'>
-                USD-converted median and 25th–75th percentiles
+                Historical context; use the work-market split above for current
+                pay
               </p>
             </div>
             <CircleDollarSignIcon

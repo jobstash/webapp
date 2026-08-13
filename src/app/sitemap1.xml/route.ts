@@ -4,5 +4,8 @@ import { clientEnv } from '@/lib/env/client';
 export const dynamic = 'force-static';
 
 export function GET() {
-  return buildUrlsetResponse([{ loc: clientEnv.FRONTEND_URL }]);
+  return buildUrlsetResponse([
+    { loc: clientEnv.FRONTEND_URL },
+    { loc: `${clientEnv.FRONTEND_URL}/market` },
+  ]);
 }

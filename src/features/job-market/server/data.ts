@@ -7,8 +7,14 @@ import { clientEnv } from '@/lib/env/client';
 import { getApiSlug } from '@/features/pillar/constants';
 import {
   jobMarketOverviewSchema,
+  jobMarketSkillDetailSchema,
+  jobMarketSkillListSchema,
+  jobMarketStateSchema,
   pillarMarketSchema,
   type JobMarketOverview,
+  type JobMarketSkillDetail,
+  type JobMarketSkillList,
+  type JobMarketState,
   type PillarMarket,
 } from '../schemas';
 
@@ -52,8 +58,46 @@ const fetchPillarMarketUncached = (slug: string) =>
     pillarMarketSchema,
   );
 
+const fetchJobMarketStateUncached = (
+  range: '90' | '365' | 'max' = 'max',
+  classification = 'market',
+) => {
+  const params = new URLSearchParams({ range, classification });
+  return fetchMarket<JobMarketState>(
+    `/v2/search/market/state?${params.toString()}`,
+    jobMarketStateSchema,
+  );
+};
+
+const fetchJobMarketSkillsUncached = (
+  mode: 'remote' | 'local' = 'remote',
+  sort: 'breakout' | 'repricing' | 'salary' | 'demand' | 'cooling' = 'breakout',
+  query = '',
+) => {
+  const params = new URLSearchParams({ mode, sort });
+  if (query.trim()) params.set('q', query.trim());
+  return fetchMarket<JobMarketSkillList>(
+    `/v2/search/market/skills?${params.toString()}`,
+    jobMarketSkillListSchema,
+  );
+};
+
+const fetchJobMarketSkillDetailUncached = (
+  slug: string,
+  range: '90' | '365' | 'max' = 'max',
+) =>
+  fetchMarket<JobMarketSkillDetail>(
+    `/v2/search/market/skills/${encodeURIComponent(getApiSlug(slug))}?range=${range}`,
+    jobMarketSkillDetailSchema,
+  );
+
 // React cache deduplicates calls within a render without persisting a null
 // response across requests. The middleware owns the one-hour HTTP cache for
 // successful data; a temporary "not ready" response must recover immediately.
 export const fetchJobMarketOverview = cache(fetchJobMarketOverviewUncached);
 export const fetchPillarMarket = cache(fetchPillarMarketUncached);
+export const fetchJobMarketState = cache(fetchJobMarketStateUncached);
+export const fetchJobMarketSkills = cache(fetchJobMarketSkillsUncached);
+export const fetchJobMarketSkillDetail = cache(
+  fetchJobMarketSkillDetailUncached,
+);

@@ -1,1 +1,7 @@
-export { fetchJobMarketOverview, fetchPillarMarket } from './data';
+export {
+  fetchJobMarketOverview,
+  fetchJobMarketSkillDetail,
+  fetchJobMarketSkills,
+  fetchJobMarketState,
+  fetchPillarMarket,
+} from './data';

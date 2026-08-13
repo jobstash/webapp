@@ -1,8 +1,16 @@
 import { assembleECharts, type ChartAssemblyInput } from 'flint-chart';
 import type { EChartsCoreOption } from 'echarts/core';
 
-import type { JobMarketPoint, JobMarketTicker } from '../schemas';
-import { compactNumber, momentumLabel, monthlySalary } from '../lib/format';
+import type {
+  JobMarketPoint,
+  JobMarketSkillWeeklyPoint,
+  JobMarketTicker,
+} from '../schemas';
+import {
+  compactNumber,
+  monthlySalary,
+  relativeMomentumLabel,
+} from '../lib/format';
 
 const chartBase = {
   backgroundColor: 'transparent',
@@ -168,7 +176,8 @@ export const tickerColor = (ticker: JobMarketTicker): string => {
   if (ticker.momentum.direction === 'new') {
     return mix(neutral, [5, 150, 105], 0.85);
   }
-  const change = ticker.momentum.percentChange ?? 0;
+  const change =
+    ticker.momentum.marketRelativeScore ?? ticker.momentum.percentChange ?? 0;
   if (Math.abs(change) < 5) return mix(neutral, [82, 82, 91], 0.45);
   const strength = Math.min(1, 0.35 + Math.abs(change) / 100);
   return change > 0
@@ -218,7 +227,7 @@ export const marketTreemapOption = (
           ticker.label,
           `${compactNumber(ticker.current.activeJobs)} open jobs`,
           `${compactNumber(ticker.current.hiringCompanies)} hiring companies`,
-          `${momentumLabel(ticker.momentum)} job velocity`,
+          `${relativeMomentumLabel(ticker.momentum)} job velocity`,
           monthlySalary(ticker.current.salary.medianMonthlyUsd),
         ].join('\n');
       },
@@ -241,7 +250,7 @@ export const marketTreemapOption = (
             return [
               `{name|${ticker.label}}`,
               `{value|${compactNumber(ticker.current.activeJobs)} jobs}`,
-              `{move|${momentumLabel(ticker.momentum)}}`,
+              `{move|${relativeMomentumLabel(ticker.momentum)}}`,
               ...(salary === null ? [] : [`{salary|${monthlySalary(salary)}}`]),
             ].join('\n');
           },
@@ -266,4 +275,129 @@ export const marketTreemapOption = (
       },
     ],
   };
+};
+
+export const skillSalaryTrendOption = (
+  history: JobMarketSkillWeeklyPoint[],
+  segment: 'remote' | 'local',
+): EChartsCoreOption => {
+  const values = history
+    .filter(
+      (point) =>
+        point.segment === segment &&
+        point.regionSlug === 'all' &&
+        point.reliable,
+    )
+    .flatMap((point) => [
+      {
+        date: point.weekStart,
+        value: point.medianMonthlyUsd,
+        series: 'Median monthly pay',
+      },
+      {
+        date: point.weekStart,
+        value: point.p25MonthlyUsd,
+        series: '25th percentile',
+      },
+      {
+        date: point.weekStart,
+        value: point.p75MonthlyUsd,
+        series: '75th percentile',
+      },
+    ])
+    .filter(
+      (entry): entry is { date: string; value: number; series: string } =>
+        entry.value !== null,
+    );
+  if (values.length === 0) return { ...chartBase };
+  const input: ChartAssemblyInput = {
+    data: { values },
+    semantic_types: {
+      date: 'Date',
+      value: 'Amount',
+      series: 'Category',
+    },
+    chart_spec: {
+      chartType: 'Line Chart',
+      encodings: {
+        x: { field: 'date' },
+        y: { field: 'value' },
+        color: { field: 'series' },
+      },
+    },
+  };
+  const option = styleCartesian(assembleECharts(input));
+  const series = Array.isArray(option.series) ? option.series : [];
+  option.series = series.map((item) => {
+    const record = item as Record<string, unknown>;
+    const median = record.name === 'Median monthly pay';
+    return {
+      ...record,
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      lineStyle: {
+        width: median ? 3 : 1,
+        type: median ? 'solid' : 'dashed',
+        opacity: median ? 1 : 0.6,
+      },
+      itemStyle: {
+        color: median
+          ? '#34d399'
+          : record.name === '25th percentile'
+            ? '#60a5fa'
+            : '#f59e0b',
+      },
+    };
+  });
+  return option;
+};
+
+export const skillAdjustedValueOption = (
+  history: JobMarketSkillWeeklyPoint[],
+  segment: 'remote' | 'local',
+): EChartsCoreOption => {
+  const values = history
+    .filter(
+      (point) =>
+        point.segment === segment &&
+        point.regionSlug === 'all' &&
+        point.reliable &&
+        point.adjustedPremiumPercent !== null,
+    )
+    .map((point) => ({
+      date: point.weekStart,
+      value: point.adjustedPremiumPercent as number,
+      series: 'Adjusted skill premium',
+    }));
+  if (values.length === 0) return { ...chartBase };
+  const option = styleCartesian(
+    assembleECharts({
+      data: { values },
+      semantic_types: {
+        date: 'Date',
+        value: 'Percentage',
+        series: 'Category',
+      },
+      chart_spec: {
+        chartType: 'Line Chart',
+        encodings: {
+          x: { field: 'date' },
+          y: { field: 'value' },
+          color: { field: 'series' },
+        },
+      },
+    }),
+  );
+  const series = Array.isArray(option.series) ? option.series : [];
+  option.series = series.map((item) => ({
+    ...(item as Record<string, unknown>),
+    type: 'line',
+    smooth: true,
+    symbol: 'none',
+    areaStyle: { color: 'rgba(167, 139, 250, 0.16)' },
+    lineStyle: { width: 3, color: '#a78bfa' },
+    itemStyle: { color: '#a78bfa' },
+  }));
+  return option;
 };

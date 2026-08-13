@@ -6,6 +6,7 @@ const NAV_SECTIONS = [
   {
     title: 'Browse Jobs',
     links: [
+      { label: 'Job Market Intelligence', href: '/market' },
       { label: 'Remote', href: '/lt-remote' },
       { label: 'Full-time', href: '/co-full-time' },
       { label: 'Developer', href: '/cl-developer' },

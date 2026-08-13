@@ -1,10 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import type { JobMarketPoint, JobMarketTicker } from '../schemas';
+import type {
+  JobMarketPoint,
+  JobMarketSkillWeeklyPoint,
+  JobMarketTicker,
+} from '../schemas';
 import {
   activityChartOption,
   marketTreemapOption,
   salaryChartOption,
+  skillAdjustedValueOption,
+  skillSalaryTrendOption,
   tickerColor,
 } from './chart-options';
 
@@ -39,6 +45,9 @@ const ticker = (slug: string, percentChange: number): JobMarketTicker => ({
     absoluteChange: percentChange > 0 ? 4 : -4,
     percentChange,
     direction: percentChange > 0 ? 'up' : 'down',
+    marketRelativeScore: percentChange,
+    activeJobsChange: percentChange,
+    hiringCompaniesChange: percentChange,
   },
   eligibleMover: true,
 });
@@ -82,5 +91,30 @@ describe('job-market Flint chart options', () => {
       'cl-frontend',
     ]);
     expect(tickerColor(growing)).not.toBe(tickerColor(cooling));
+  });
+
+  it('builds observed and adjusted weekly skill-pay charts', () => {
+    const weekly: JobMarketSkillWeeklyPoint = {
+      weekStart: '2026-08-03',
+      segment: 'remote',
+      regionSlug: 'all',
+      regionLabel: 'Remote',
+      medianMonthlyUsd: 10_000,
+      p25MonthlyUsd: 8_000,
+      p75MonthlyUsd: 12_000,
+      adjustedPremiumPercent: 7.5,
+      sampleCount: 25,
+      employerCount: 12,
+      onsiteCount: 0,
+      hybridCount: 0,
+      remoteCount: 25,
+      reliable: true,
+    };
+    const salarySeries = skillSalaryTrendOption([weekly], 'remote').series;
+    const valueSeries = skillAdjustedValueOption([weekly], 'remote').series;
+
+    expect(Array.isArray(salarySeries) ? salarySeries : []).toHaveLength(3);
+    expect(Array.isArray(valueSeries) ? valueSeries : []).toHaveLength(1);
+    expect(skillSalaryTrendOption([weekly], 'local').series).toBeUndefined();
   });
 });

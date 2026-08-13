@@ -39,6 +39,9 @@ const market: PillarMarket = {
     absoluteChange: 3,
     percentChange: 50,
     direction: 'up',
+    marketRelativeScore: null,
+    activeJobsChange: null,
+    hiringCompaniesChange: null,
   },
   history: Array.from({ length: 100 }, (_, index) => ({
     date: new Date(Date.UTC(2026, 4, 5 + index)).toISOString().slice(0, 10),
@@ -57,6 +60,24 @@ const market: PillarMarket = {
     provenance: index < 99 ? ('reconstructed' as const) : ('snapshot' as const),
     sampledAt: '2026-08-12T00:15:00.000Z',
   })),
+  compensation: [
+    {
+      segment: 'remote',
+      regionSlug: 'remote',
+      regionLabel: 'Remote',
+      medianMonthlyUsd: 9_500,
+      p25MonthlyUsd: 8_000,
+      p75MonthlyUsd: 11_000,
+      adjustedPremiumPercent: null,
+      sampleCount: 18,
+      employerCount: 9,
+      onsiteCount: 0,
+      hybridCount: 0,
+      remoteCount: 18,
+      reliable: true,
+    },
+  ],
+  skillSignals: [],
 };
 
 afterEach(cleanup);
@@ -75,6 +96,7 @@ describe('PillarMarketSection', () => {
     expect(
       screen.getByText('Not enough salary samples yet'),
     ).toBeInTheDocument();
+    expect(screen.getByText('$9.5K/mo')).toBeInTheDocument();
 
     const oneYear = screen.getByRole('button', { name: '1Y' });
     await user.click(oneYear);
