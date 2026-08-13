@@ -44,7 +44,14 @@ export const GET = async () => {
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flexShrink: 0,
+            width: 900,
+          }}
+        >
           <div
             style={{
               color: '#6ee7b7',
