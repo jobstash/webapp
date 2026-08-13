@@ -35,14 +35,16 @@ const base = {
   },
 };
 
+const dated = (history: DeveloperReportPoint[]) => ({
+  ...(base.xAxis as object),
+  data: history.map((point) => point.period),
+});
+
 export const workforceChartOption = (
   history: DeveloperReportPoint[],
 ): EChartsCoreOption => ({
   ...base,
-  xAxis: {
-    ...(base.xAxis as object),
-    data: history.map((point) => point.period),
-  },
+  xAxis: dated(history),
   series: [
     {
       name: 'Internal people',
@@ -72,14 +74,11 @@ export const workforceChartOption = (
   ],
 });
 
-export const participationChartOption = (
+export const cadenceChartOption = (
   history: DeveloperReportPoint[],
 ): EChartsCoreOption => ({
   ...base,
-  xAxis: {
-    ...(base.xAxis as object),
-    data: history.map((point) => point.period),
-  },
+  xAxis: dated(history),
   series: [
     {
       name: 'Sustained · 10+ days',
@@ -87,7 +86,7 @@ export const participationChartOption = (
       stack: 'people',
       symbol: 'none',
       lineStyle: { width: 1, color: '#34d399' },
-      areaStyle: { color: 'rgba(52, 211, 153, .7)' },
+      areaStyle: { color: 'rgba(52, 211, 153, .68)' },
       data: history.map((point) => point.sustainedPeople),
     },
     {
@@ -96,7 +95,7 @@ export const participationChartOption = (
       stack: 'people',
       symbol: 'none',
       lineStyle: { width: 1, color: '#60a5fa' },
-      areaStyle: { color: 'rgba(96, 165, 250, .55)' },
+      areaStyle: { color: 'rgba(96, 165, 250, .54)' },
       data: history.map((point) => point.regularPeople),
     },
     {
@@ -105,8 +104,117 @@ export const participationChartOption = (
       stack: 'people',
       symbol: 'none',
       lineStyle: { width: 1, color: '#737a76' },
-      areaStyle: { color: 'rgba(115, 122, 118, .5)' },
+      areaStyle: { color: 'rgba(115, 122, 118, .48)' },
       data: history.map((point) => point.oneDayPeople),
+    },
+  ],
+});
+
+export const tenureChartOption = (
+  history: DeveloperReportPoint[],
+): EChartsCoreOption => ({
+  ...base,
+  xAxis: dated(history),
+  series: [
+    {
+      name: 'Established · 24+ months',
+      type: 'line',
+      stack: 'people',
+      symbol: 'none',
+      lineStyle: { width: 1, color: '#a3e635' },
+      areaStyle: { color: 'rgba(163, 230, 53, .52)' },
+      data: history.map((point) => point.establishedPeople),
+    },
+    {
+      name: 'Emerging · 3–23 months',
+      type: 'line',
+      stack: 'people',
+      symbol: 'none',
+      lineStyle: { width: 1, color: '#f59e0b' },
+      areaStyle: { color: 'rgba(245, 158, 11, .48)' },
+      data: history.map((point) => point.emergingPeople),
+    },
+    {
+      name: 'Newcomers · under 3 months',
+      type: 'line',
+      stack: 'people',
+      symbol: 'none',
+      lineStyle: { width: 1, color: '#f472b6' },
+      areaStyle: { color: 'rgba(244, 114, 182, .46)' },
+      data: history.map((point) => point.newcomerPeople),
+    },
+  ],
+});
+
+export const chainBreadthChartOption = (
+  history: DeveloperReportPoint[],
+): EChartsCoreOption => ({
+  ...base,
+  xAxis: dated(history),
+  series: [
+    {
+      name: 'Multi-chain',
+      type: 'line',
+      stack: 'people',
+      symbol: 'none',
+      lineStyle: { width: 1, color: '#c084fc' },
+      areaStyle: { color: 'rgba(192, 132, 252, .58)' },
+      data: history.map((point) => point.multiChainPeople),
+    },
+    {
+      name: 'Single-chain',
+      type: 'line',
+      stack: 'people',
+      symbol: 'none',
+      lineStyle: { width: 1, color: '#38bdf8' },
+      areaStyle: { color: 'rgba(56, 189, 248, .52)' },
+      data: history.map((point) => point.singleChainPeople),
+    },
+    {
+      name: 'Not chain-mapped',
+      type: 'line',
+      stack: 'people',
+      symbol: 'none',
+      lineStyle: { width: 1, color: '#71717a' },
+      areaStyle: { color: 'rgba(113, 113, 122, .42)' },
+      data: history.map((point) => point.unmappedChainPeople),
+    },
+  ],
+});
+
+export const newcomerChartOption = (
+  history: DeveloperReportPoint[],
+): EChartsCoreOption => ({
+  ...base,
+  xAxis: {
+    ...dated(history),
+    boundaryGap: true,
+  },
+  series: [
+    {
+      name: 'Newcomer internal people',
+      type: 'bar',
+      itemStyle: { color: '#f472b6', borderRadius: [3, 3, 0, 0] },
+      data: history.map((point) => point.newcomerPeople),
+    },
+  ],
+});
+
+export const repositoryChartOption = (
+  history: Array<{ period: string; newRepositories: number }>,
+): EChartsCoreOption => ({
+  ...base,
+  xAxis: {
+    ...(base.xAxis as object),
+    boundaryGap: true,
+    data: history.map((point) => point.period),
+  },
+  series: [
+    {
+      name: 'New non-fork repositories',
+      type: 'bar',
+      itemStyle: { color: '#34d399', borderRadius: [3, 3, 0, 0] },
+      data: history.map((point) => point.newRepositories),
     },
   ],
 });
@@ -116,9 +224,8 @@ export const movementChartOption = (
 ): EChartsCoreOption => ({
   ...base,
   xAxis: {
-    ...(base.xAxis as object),
+    ...dated(history),
     boundaryGap: true,
-    data: history.map((point) => point.period),
   },
   series: [
     {

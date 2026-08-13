@@ -43,7 +43,7 @@ export const generateMetadata = async ({
   const cohort = selectedCohort(await searchParams);
   const label = COHORT_LABELS[cohort];
   const title = `${label} Developer Report`;
-  const description = `Track verified internal ${label.toLowerCase()} developers, maintainers, active leads, retention, organization growth, and team movement using recorded GitHub work history.`;
+  const description = `Track verified internal ${label.toLowerCase()} developers, maintainers, active leads, contribution cadence, tenure, repositories, organization growth, and team movement.`;
   const pageUrl =
     cohort === 'crypto' ? canonical : `${canonical}?cohort=${cohort}`;
   const image = {

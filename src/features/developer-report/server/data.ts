@@ -10,11 +10,16 @@ import {
 } from '../schemas';
 
 const fetchDeveloperReportUncached = async (
-  cohort: DeveloperCohort = 'crypto',
+  cohort: DeveloperCohort | null = 'crypto',
+  chain?: string,
 ): Promise<DeveloperReport | null> => {
   try {
+    const search = new URLSearchParams();
+    if (chain) search.set('chain', chain);
+    else search.set('cohort', cohort ?? 'crypto');
+
     const response = await fetch(
-      `${clientEnv.MW_URL}/people/developer-report?cohort=${cohort}`,
+      `${clientEnv.MW_URL}/people/developer-report-v2?${search}`,
       { cache: 'no-store' },
     );
     if (!response.ok) return null;

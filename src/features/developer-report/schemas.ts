@@ -8,6 +8,12 @@ export const developerCohortSchema = z.enum([
   'tech',
 ]);
 
+const growthSchema = z.object({
+  oneYear: z.number().nullable(),
+  twoYear: z.number().nullable(),
+  threeYear: z.number().nullable(),
+});
+
 export const developerReportPointSchema = z.object({
   period: z.string(),
   activePeople: z.number().int().nonnegative(),
@@ -24,17 +30,34 @@ export const developerReportPointSchema = z.object({
   oneDayPeople: z.number().int().nonnegative(),
   regularPeople: z.number().int().nonnegative(),
   sustainedPeople: z.number().int().nonnegative(),
-  newPeople: z.number().int().nonnegative(),
+  singleChainPeople: z.number().int().nonnegative(),
+  multiChainPeople: z.number().int().nonnegative(),
+  unmappedChainPeople: z.number().int().nonnegative(),
+  newcomerPeople: z.number().int().nonnegative(),
+  emergingPeople: z.number().int().nonnegative(),
   establishedPeople: z.number().int().nonnegative(),
-  longTenuredPeople: z.number().int().nonnegative(),
 });
 
-const retentionCohortSchema = z.object({
-  cohortMonth: z.string(),
-  cohortSize: z.number().int().nonnegative(),
-  retainedMonth3: z.number().min(0).max(1),
-  retainedMonth6: z.number().min(0).max(1),
-  retainedMonth12: z.number().min(0).max(1),
+const cohortScopeSchema = z.object({
+  cohort: developerCohortSchema,
+  label: z.string(),
+  activePeople: z.number().int().nonnegative(),
+  activeMaintainers: z.number().int().nonnegative(),
+  activeOrganizations: z.number().int().nonnegative(),
+});
+
+const chainScopeSchema = z.object({
+  chainId: z.string(),
+  chainSlug: z.string(),
+  chainName: z.string(),
+  logoUrl: z.string().nullable(),
+  activePeople: z.number().int().nonnegative(),
+  activeMaintainers: z.number().int().nonnegative(),
+  activeLeads: z.number().int().nonnegative(),
+  establishedPeople: z.number().int().nonnegative(),
+  activeOrganizations: z.number().int().nonnegative(),
+  repositoryCount: z.number().int().nonnegative(),
+  growth: growthSchema,
 });
 
 const developerOrganizationSchema = z.object({
@@ -47,7 +70,8 @@ const developerOrganizationSchema = z.object({
   activePeople: z.number().int().nonnegative(),
   activeMaintainers: z.number().int().nonnegative(),
   activeLeads: z.number().int().nonnegative(),
-  activePeopleChange12m: z.number().int(),
+  establishedPeople: z.number().int().nonnegative(),
+  growth: growthSchema,
   joins12m: z.number().int().nonnegative(),
   exits12m: z.number().int().nonnegative(),
   netTeamChange12m: z.number().int(),
@@ -65,17 +89,25 @@ export const developerReportSchema = z.object({
   available: z.boolean(),
   asOf: z.string().nullable(),
   completeThrough: z.string().nullable(),
-  methodologyVersion: z.literal('developer-report-v1'),
-  selectedCohort: developerCohortSchema,
-  cohorts: z
-    .object({
-      cohort: developerCohortSchema,
-      label: z.string(),
-      activePeople: z.number().int().nonnegative(),
-      activeMaintainers: z.number().int().nonnegative(),
-      activeOrganizations: z.number().int().nonnegative(),
-    })
-    .array(),
+  methodologyVersion: z.literal('developer-report-v2'),
+  scope: z.object({
+    type: z.enum(['cohort', 'chain']),
+    key: z.string(),
+    label: z.string(),
+    slug: z.string().nullable(),
+    logoUrl: z.string().nullable(),
+    overlapping: z.boolean(),
+  }),
+  scopes: z.object({
+    cohorts: cohortScopeSchema.array(),
+    chains: chainScopeSchema.array(),
+  }),
+  coverage: z.object({
+    githubOrganizations: z.number().int().nonnegative(),
+    chainMappedGithubOrganizations: z.number().int().nonnegative(),
+    chainMappedPercent: z.number().nonnegative(),
+    note: z.string(),
+  }),
   population: z
     .object({
       label: z.string(),
@@ -99,15 +131,24 @@ export const developerReportSchema = z.object({
     }),
   current: developerReportPointSchema.nullable(),
   history: developerReportPointSchema.array(),
-  retention: retentionCohortSchema.array(),
-  maintainerLeverage: z.object({
-    period: z.string().nullable(),
-    maintainerCount: z.number().int().nonnegative(),
-    mergedPrCount: z.number().int().nonnegative(),
-    medianAuthorsSupported: z.number().nullable(),
-    p25AuthorsSupported: z.number().nullable(),
-    p75AuthorsSupported: z.number().nullable(),
+  totals: z.object({
+    repositoryCount: z.number().int().nonnegative(),
+    commitCount: z.number().int().nonnegative(),
   }),
+  repositoryHistory: z
+    .object({
+      period: z.string(),
+      newRepositories: z.number().int().nonnegative(),
+    })
+    .array(),
+  breakdown: z
+    .object({
+      key: z.enum(['internalPeople', 'maintainers', 'leads', 'established']),
+      label: z.string(),
+      current: z.number().int().nonnegative(),
+      growth: growthSchema,
+    })
+    .array(),
   organizations: developerOrganizationSchema.array(),
   movements: z
     .object({
@@ -125,3 +166,4 @@ export type DeveloperReportPoint = z.infer<typeof developerReportPointSchema>;
 export type DeveloperCohort = z.infer<typeof developerCohortSchema>;
 export type DeveloperReport = z.infer<typeof developerReportSchema>;
 export type DeveloperOrganization = DeveloperReport['organizations'][number];
+export type DeveloperChain = DeveloperReport['scopes']['chains'][number];
