@@ -236,10 +236,10 @@ export const DeveloperReportDashboard = ({
               {report.scope.label}
             </h1>
             <p className='mt-3 max-w-4xl text-sm text-muted-foreground md:text-base'>
-              Developers are counted when a new commit is attributed to them in
-              an included public GitHub repository. Older history brought into a
-              repository through a fork or an unattributed copy is measured
-              separately, while bots and banned organizations are excluded.
+              Developers are counted in a month when they write a new commit in
+              an included public GitHub repository. Commits already present in a
+              fork or copied repository are counted separately as older history.
+              Bots and banned organizations are excluded.
             </p>
           </div>
           <nav aria-label='Report range' className='flex flex-wrap gap-2'>
@@ -268,13 +268,13 @@ export const DeveloperReportDashboard = ({
             icon={DatabaseIcon}
             label='Commits scanned'
             value={compact(report.summary.rawIndexedCommitRecords)}
-            detail='Commit records considered before attribution'
+            detail='Every commit record found, including reused history'
           />
           <Metric
             icon={GitCommitHorizontalIcon}
             label='Commits written'
             value={compact(report.summary.commitsWritten)}
-            detail='New commits attributed to their source repository'
+            detail='New commits written in the selected period, counted once'
           />
           <Metric
             icon={CopyIcon}
@@ -298,7 +298,7 @@ export const DeveloperReportDashboard = ({
             icon={UserRoundCheckIcon}
             label='Active developers'
             value={compact(report.summary.activeDevelopers)}
-            detail='Developers who authored original code'
+            detail='Developers who wrote at least one new commit'
           />
           <Metric
             icon={ShieldCheckIcon}
@@ -345,7 +345,7 @@ export const DeveloperReportDashboard = ({
         />
         <ChartCard
           title='New repositories by how code arrived'
-          description='Repositories built from scratch, GitHub forks, and unattributed copies are counted in the destination repository’s creation month. An unattributed copy has no GitHub fork relationship, but its early commit hashes match an older repository owned elsewhere—the same signal used in threat intelligence.'
+          description='New repositories with no older matching history, GitHub forks, and unattributed copies are counted in the destination repository’s creation month. An unattributed copy has no GitHub fork relationship, but its early commit hashes match an older repository owned elsewhere—the same signal used in threat intelligence.'
           option={repositoryGrowth}
         />
         <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6 xl:col-span-2'>

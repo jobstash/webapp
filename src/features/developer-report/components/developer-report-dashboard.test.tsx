@@ -182,8 +182,15 @@ describe('DeveloperReportDashboard', () => {
     expect(screen.getAllByText('Commits written').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Active developers').length).toBeGreaterThan(0);
     expect(
+      screen.getByText('Developers who wrote at least one new commit'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/original code/i)).toBeNull();
+    expect(
+      screen.getByText(/no older matching history, GitHub forks/),
+    ).toBeInTheDocument();
+    expect(
       screen.getByText(
-        /Developers are counted when a new commit is attributed/,
+        /Developers are counted in a month when they write a new commit/,
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/provenance-approved/i)).toBeNull();

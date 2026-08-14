@@ -154,7 +154,7 @@ export const repositoryGrowthChartOption = (
   xAxis: { ...dated(history), boundaryGap: true },
   series: [
     {
-      name: 'New repositories · built from scratch',
+      name: 'New repositories · no older history matched',
       type: 'bar',
       stack: 'repositories',
       itemStyle: { color: '#34d399', borderRadius: [3, 3, 0, 0] },
