@@ -31,7 +31,10 @@ import { OrganizationBubbleTimeline } from './organization-bubble-timeline';
 type Range = '1y' | '3y' | 'all';
 
 const compact = (value: number) =>
-  new Intl.NumberFormat('en-US', { notation: 'compact' }).format(value);
+  new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value);
 
 const cohortHref = (cohort: DeveloperCohort) =>
   cohort === 'all' ? '/developers' : `/developers?cohort=${cohort}`;

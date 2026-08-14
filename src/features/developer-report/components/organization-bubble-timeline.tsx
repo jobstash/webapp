@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { FlintEChart } from '@/features/job-market/components/flint-echart';
 import { cn } from '@/lib/utils';
 import type { DeveloperOrganization } from '../schemas';
+import { buildStableAtlasPositions } from './organization-layout';
 
 type Range = '1y' | '3y' | 'all';
 
@@ -73,6 +74,17 @@ export const OrganizationBubbleTimeline = ({
   const [periodIndex, setPeriodIndex] = useState(
     Math.max(0, periods.length - 1),
   );
+  const atlasPositions = useMemo(
+    () =>
+      buildStableAtlasPositions(
+        positioned.map((organization) => ({
+          organizationKey: organization.organizationKey,
+          layoutX: organization.layoutX ?? 0,
+          layoutY: organization.layoutY ?? 0,
+        })),
+      ),
+    [positioned],
+  );
 
   useEffect(() => {
     setPeriodIndex(Math.max(0, periods.length - 1));
@@ -119,6 +131,7 @@ export const OrganizationBubbleTimeline = ({
     const data: BubbleDatum[] = positioned.map((organization) => {
       const activePeople = pointAt(organization, period);
       const change = activePeople - pointAt(organization, previousPeriod);
+      const atlasPosition = atlasPositions.get(organization.organizationKey);
       return {
         name: organization.organizationName,
         organizationSlug: organization.organizationSlug,
@@ -126,11 +139,7 @@ export const OrganizationBubbleTimeline = ({
         activePeople,
         change,
         labelVisible: labeled.has(organization.organizationKey),
-        value: [
-          organization.layoutX ?? 0,
-          organization.layoutY ?? 0,
-          activePeople,
-        ],
+        value: [atlasPosition?.x ?? 0, atlasPosition?.y ?? 0, activePeople],
         itemStyle: {
           color: change > 0 ? '#34d399' : change < 0 ? '#fb7185' : '#60a5fa',
           opacity: activePeople > 0 ? 0.78 : 0,
@@ -146,12 +155,14 @@ export const OrganizationBubbleTimeline = ({
       grid: { top: 10, right: 10, bottom: 10, left: 10 },
       xAxis: {
         type: 'value',
-        scale: true,
+        min: -1.08,
+        max: 1.08,
         show: false,
       },
       yAxis: {
         type: 'value',
-        scale: true,
+        min: -1.08,
+        max: 1.08,
         show: false,
       },
       tooltip: {
@@ -181,6 +192,7 @@ export const OrganizationBubbleTimeline = ({
             formatter: ({ data: rawData }: { data: BubbleDatum }) =>
               rawData.labelVisible ? rawData.name : '',
           },
+          labelLayout: { hideOverlap: true },
           emphasis: {
             focus: 'self',
             scale: 1.12,
@@ -189,7 +201,7 @@ export const OrganizationBubbleTimeline = ({
         },
       ],
     };
-  }, [globalMaximum, period, periodIndex, periods, positioned]);
+  }, [atlasPositions, globalMaximum, period, periodIndex, periods, positioned]);
 
   if (positioned.length === 0 || periods.length === 0) return null;
 

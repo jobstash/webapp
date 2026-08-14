@@ -3,7 +3,10 @@ import { ImageResponse } from 'next/og';
 import type { DeveloperReport } from '../schemas';
 
 const compact = (value: number) =>
-  new Intl.NumberFormat('en-US', { notation: 'compact' }).format(value);
+  new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value);
 
 const sparkline = (values: number[]) => {
   if (values.length < 2) return '';

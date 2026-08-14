@@ -151,4 +151,31 @@ describe('DeveloperReportDashboard', () => {
     );
     expect(screen.getByText('Uniswap')).toBeInTheDocument();
   });
+
+  it('shows the reconciled all-sector population without rounding it to 12K', () => {
+    render(
+      <DeveloperReportDashboard
+        report={{
+          ...report,
+          scope: { ...report.scope, key: 'all', label: 'All sectors' },
+          scopes: {
+            ...report.scopes,
+            cohorts: [
+              {
+                cohort: 'all',
+                label: 'All sectors',
+                activePeople: 11_552,
+                activeMaintainers: 10_138,
+                activeOrganizations: 2_069,
+              },
+            ],
+          },
+          current: point ? { ...point, activePeople: 11_552 } : null,
+        }}
+      />,
+    );
+
+    expect(screen.getAllByText('11.6K')).toHaveLength(2);
+    expect(screen.queryByText('12K')).toBeNull();
+  });
 });
