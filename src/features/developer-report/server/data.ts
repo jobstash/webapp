@@ -10,13 +10,13 @@ import {
 } from '../schemas';
 
 const fetchDeveloperReportUncached = async (
-  cohort: DeveloperCohort | null = 'crypto',
+  cohort: DeveloperCohort | null = 'all',
   chain?: string,
 ): Promise<DeveloperReport | null> => {
   try {
     const search = new URLSearchParams();
     if (chain) search.set('chain', chain);
-    else search.set('cohort', cohort ?? 'crypto');
+    else search.set('cohort', cohort ?? 'all');
 
     const response = await fetch(
       `${clientEnv.MW_URL}/people/developer-report-v2?${search}`,

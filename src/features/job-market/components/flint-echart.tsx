@@ -3,7 +3,12 @@
 import { useEffect, useRef } from 'react';
 import * as echarts from 'echarts/core';
 import type { EChartsCoreOption, EChartsType } from 'echarts/core';
-import { BarChart, LineChart, TreemapChart } from 'echarts/charts';
+import {
+  BarChart,
+  LineChart,
+  ScatterChart,
+  TreemapChart,
+} from 'echarts/charts';
 import {
   AriaComponent,
   GraphicComponent,
@@ -21,6 +26,7 @@ echarts.use([
   GridComponent,
   LegendComponent,
   LineChart,
+  ScatterChart,
   TooltipComponent,
   TreemapChart,
 ]);

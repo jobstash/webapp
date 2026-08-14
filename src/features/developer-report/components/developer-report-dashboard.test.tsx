@@ -105,6 +105,9 @@ const report: DeveloperReport = {
       organizationSlug: 'uniswap',
       cohort: 'crypto',
       logoUrl: null,
+      layoutX: 0.25,
+      layoutY: -0.5,
+      communityId: 7,
       activePeople: 25,
       activeMaintainers: 10,
       activeLeads: 6,
@@ -134,6 +137,12 @@ describe('DeveloperReportDashboard', () => {
     expect(screen.getByText('Developer tenure')).toBeInTheDocument();
     expect(screen.getByText('Chain breadth')).toBeInTheDocument();
     expect(screen.getByText('New repositories')).toBeInTheDocument();
+    expect(screen.getByText('Teams growing and shrinking')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', {
+        name: 'Organization bubble timeline for Crypto, July 2026',
+      }),
+    ).toBeInTheDocument();
     expect(screen.queryByText('Retention by starting cohort')).toBeNull();
     expect(screen.queryByText('Maintainer leverage')).toBeNull();
     expect(screen.getByRole('link', { name: 'Ethereum' })).toHaveAttribute(

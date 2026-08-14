@@ -26,6 +26,7 @@ import {
   tenureChartOption,
   workforceChartOption,
 } from './chart-options';
+import { OrganizationBubbleTimeline } from './organization-bubble-timeline';
 
 type Range = '1y' | '3y' | 'all';
 
@@ -33,7 +34,7 @@ const compact = (value: number) =>
   new Intl.NumberFormat('en-US', { notation: 'compact' }).format(value);
 
 const cohortHref = (cohort: DeveloperCohort) =>
-  cohort === 'crypto' ? '/developers' : `/developers?cohort=${cohort}`;
+  cohort === 'all' ? '/developers' : `/developers?cohort=${cohort}`;
 
 const rangeLength: Record<Range, number | null> = {
   '1y': 12,
@@ -131,7 +132,7 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
       </span>
     </div>
 
-    <div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
+    <div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'>
       {report.scopes.cohorts.map((cohort) => (
         <Link
           key={cohort.cohort}
@@ -248,8 +249,16 @@ export const DeveloperReportDashboard = ({
   if (!current) return null;
 
   const scopeLabel = report.scope.label;
-  const organizations = report.organizations.slice(0, 30);
+  const organizations = [...report.organizations]
+    .filter((organization) => organization.activePeople > 0)
+    .sort(
+      (left, right) =>
+        right.activePeople - left.activePeople ||
+        left.organizationName.localeCompare(right.organizationName),
+    )
+    .slice(0, 30);
   const isChain = report.scope.type === 'chain';
+  const isAll = report.scope.type === 'cohort' && report.scope.key === 'all';
 
   return (
     <div className='space-y-6 pb-16'>
@@ -259,10 +268,16 @@ export const DeveloperReportDashboard = ({
           <div className='max-w-4xl'>
             <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-emerald-400 uppercase'>
               <GitCommitHorizontalIcon className='size-4' aria-hidden />
-              {isChain ? 'Chain developer report' : 'Developer sector report'}
+              {isChain
+                ? 'Chain developer report'
+                : isAll
+                  ? 'Internal developer report'
+                  : 'Developer sector report'}
             </div>
             <h1 className='mt-3 text-4xl font-black tracking-tight md:text-6xl'>
-              The people building {scopeLabel}
+              {isAll
+                ? 'The internal developer ecosystem'
+                : `The people building ${scopeLabel}`}
             </h1>
             <p className='mt-4 max-w-3xl text-base text-muted-foreground md:text-lg'>
               Verified internal employees, maintainers, active leads,
@@ -470,11 +485,19 @@ export const DeveloperReportDashboard = ({
         />
       </section>
 
+      <OrganizationBubbleTimeline
+        organizations={report.organizations}
+        range={range}
+        scopeLabel={scopeLabel}
+      />
+
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
         <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
           <div>
             <h2 className='text-2xl font-bold'>
-              {scopeLabel} organizations building now
+              {isAll
+                ? 'Organizations building now'
+                : `${scopeLabel} organizations building now`}
             </h2>
             <p className='mt-1 text-sm text-muted-foreground'>
               Ranked by current verified internal people. Established people and

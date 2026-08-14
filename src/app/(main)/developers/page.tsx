@@ -13,6 +13,7 @@ interface Props {
 }
 
 const COHORTS: DeveloperCohort[] = [
+  'all',
   'crypto',
   'fintech',
   'ai',
@@ -21,6 +22,7 @@ const COHORTS: DeveloperCohort[] = [
 ];
 
 const COHORT_LABELS: Record<DeveloperCohort, string> = {
+  all: 'All Sectors',
   crypto: 'Crypto',
   fintech: 'Fintech',
   ai: 'AI',
@@ -34,7 +36,7 @@ const selectedCohort = (
   const raw = Array.isArray(params.cohort) ? params.cohort[0] : params.cohort;
   return COHORTS.includes(raw as DeveloperCohort)
     ? (raw as DeveloperCohort)
-    : 'crypto';
+    : 'all';
 };
 
 export const generateMetadata = async ({
@@ -42,10 +44,13 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
   const cohort = selectedCohort(await searchParams);
   const label = COHORT_LABELS[cohort];
-  const title = `${label} Developer Report`;
-  const description = `Track verified internal ${label.toLowerCase()} developers, maintainers, active leads, contribution cadence, tenure, repositories, organization growth, and team movement.`;
+  const title =
+    cohort === 'all'
+      ? 'Internal Developer Report'
+      : `${label} Developer Report`;
+  const description = `Track verified internal ${cohort === 'all' ? '' : `${label.toLowerCase()} `}developers, maintainers, active leads, contribution cadence, tenure, repositories, organization growth, and team movement.`;
   const pageUrl =
-    cohort === 'crypto' ? canonical : `${canonical}?cohort=${cohort}`;
+    cohort === 'all' ? canonical : `${canonical}?cohort=${cohort}`;
   const image = {
     url: `${canonical}/og?cohort=${cohort}`,
     width: 1200,

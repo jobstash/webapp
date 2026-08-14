@@ -1,11 +1,16 @@
 import { z } from 'zod';
 
-export const developerCohortSchema = z.enum([
+const developerSectorSchema = z.enum([
   'crypto',
   'fintech',
   'ai',
   'banking',
   'tech',
+]);
+
+export const developerCohortSchema = z.enum([
+  'all',
+  ...developerSectorSchema.options,
 ]);
 
 const growthSchema = z.object({
@@ -65,8 +70,11 @@ const developerOrganizationSchema = z.object({
   organizationId: z.string().nullable(),
   organizationName: z.string(),
   organizationSlug: z.string(),
-  cohort: developerCohortSchema,
+  cohort: developerSectorSchema,
   logoUrl: z.string().nullable(),
+  layoutX: z.number().nullable(),
+  layoutY: z.number().nullable(),
+  communityId: z.number().int().nonnegative().nullable(),
   activePeople: z.number().int().nonnegative(),
   activeMaintainers: z.number().int().nonnegative(),
   activeLeads: z.number().int().nonnegative(),
