@@ -1,65 +1,40 @@
 type AtlasPoint = {
   organizationKey: string;
-  layoutX: number;
-  layoutY: number;
+  layoutX: number | null;
+  layoutY: number | null;
 };
 
-type RankedPosition = {
-  x: number;
-  y: number;
-};
+type StablePosition = { x: number; y: number };
 
-const rankedAxis = (
-  points: AtlasPoint[],
-  valueOf: (point: AtlasPoint) => number,
-) => {
-  const sorted = [...points].sort(
-    (left, right) =>
-      valueOf(left) - valueOf(right) ||
-      left.organizationKey.localeCompare(right.organizationKey),
-  );
-  const positions = new Map<string, number>();
-
-  for (let start = 0; start < sorted.length; ) {
-    let end = start + 1;
-    while (
-      end < sorted.length &&
-      valueOf(sorted[end]) === valueOf(sorted[start])
-    ) {
-      end += 1;
-    }
-
-    const averageRank = (start + end - 1) / 2;
-    const normalized =
-      sorted.length === 1 ? 0 : (averageRank / (sorted.length - 1)) * 2 - 1;
-    for (let index = start; index < end; index += 1) {
-      positions.set(sorted[index].organizationKey, normalized);
-    }
-    start = end;
+const hashUnit = (value: string, seed: number) => {
+  let hash = seed >>> 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = Math.imul(hash ^ value.charCodeAt(index), 16_777_619);
   }
+  return (hash >>> 0) / 0xffff_ffff;
+};
 
-  return positions;
+const fallbackPosition = (organizationKey: string): StablePosition => {
+  const angle = hashUnit(organizationKey, 2_166_136_261) * Math.PI * 2;
+  const radius =
+    0.2 + Math.sqrt(hashUnit(organizationKey, 2_246_822_519)) * 0.75;
+  return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
 };
 
 /**
- * Spreads the atlas across both chart axes without changing its topology.
- *
- * The graph layout occasionally contains distant outliers. Plotting its raw
- * coordinates compresses the remaining organizations into a small knot. A
- * rank transform preserves the ordering on each axis, is deterministic, and
- * prevents a handful of outliers from consuming most of the canvas.
+ * The backend layout is calculated once from full-history organization edges
+ * on a -1000..1000 plane. Never rank or reflow the selected subset: filtering
+ * must change bubble size/visibility without moving an organization.
  */
-export const buildStableAtlasPositions = (points: AtlasPoint[]) => {
-  const xPositions = rankedAxis(points, (point) => point.layoutX);
-  const yPositions = rankedAxis(points, (point) => point.layoutY);
-
-  return new Map<string, RankedPosition>(
+export const buildStableAtlasPositions = (points: AtlasPoint[]) =>
+  new Map<string, StablePosition>(
     points.map((point) => [
       point.organizationKey,
-      {
-        x: xPositions.get(point.organizationKey) ?? 0,
-        y: yPositions.get(point.organizationKey) ?? 0,
-      },
+      point.layoutX === null || point.layoutY === null
+        ? fallbackPosition(point.organizationKey)
+        : {
+            x: Math.max(-1, Math.min(1, point.layoutX / 1000)),
+            y: Math.max(-1, Math.min(1, point.layoutY / 1000)),
+          },
     ]),
   );
-};

@@ -3,74 +3,63 @@ import Link from 'next/link';
 
 import { DeveloperReportDashboard } from '@/features/developer-report/components/developer-report-dashboard';
 import { fetchDeveloperReport } from '@/features/developer-report/server';
-import type {
-  DeveloperCohort,
-  DeveloperReportRange,
-} from '@/features/developer-report/schemas';
+import type { DeveloperReportRange } from '@/features/developer-report/schemas';
 import { clientEnv } from '@/lib/env/client';
 
 const canonical = `${clientEnv.FRONTEND_URL}/developers`;
+const ranges: DeveloperReportRange[] = ['3m', '6m', '1y', '3y', 'max'];
+const slugPattern = /^[a-z0-9][a-z0-9_-]{0,119}$/;
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-const COHORTS: DeveloperCohort[] = [
-  'all',
-  'crypto',
-  'fintech',
-  'ai',
-  'banking',
-  'tech',
-];
-
-const COHORT_LABELS: Record<DeveloperCohort, string> = {
-  all: 'All Sectors',
-  crypto: 'Crypto',
-  fintech: 'Fintech',
-  ai: 'AI',
-  banking: 'Banking',
-  tech: 'Tech',
-};
-
-const selectedCohort = (
-  params: Record<string, string | string[] | undefined>,
-): DeveloperCohort => {
-  const raw = Array.isArray(params.cohort) ? params.cohort[0] : params.cohort;
-  return COHORTS.includes(raw as DeveloperCohort)
-    ? (raw as DeveloperCohort)
-    : 'all';
-};
+const one = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
 
 const selectedRange = (
   params: Record<string, string | string[] | undefined>,
 ): DeveloperReportRange => {
-  const raw = Array.isArray(params.range) ? params.range[0] : params.range;
-  return raw === '1y' || raw === '3y' ? raw : 'all';
+  const raw = one(params.range);
+  return ranges.includes(raw as DeveloperReportRange)
+    ? (raw as DeveloperReportRange)
+    : 'max';
 };
+
+const selectedVertical = (
+  params: Record<string, string | string[] | undefined>,
+) => {
+  const raw = one(params.vertical);
+  return raw && slugPattern.test(raw) ? raw : undefined;
+};
+
+const labelFor = (slug?: string) =>
+  slug
+    ? slug
+        .split(/[-_]/)
+        .map((part) =>
+          part === 'ai'
+            ? 'AI'
+            : `${part.charAt(0).toUpperCase()}${part.slice(1)}`,
+        )
+        .join(' ')
+    : 'All';
 
 export const generateMetadata = async ({
   searchParams,
 }: Props): Promise<Metadata> => {
-  const cohort = selectedCohort(await searchParams);
-  const range = selectedRange(await searchParams);
-  const label = COHORT_LABELS[cohort];
-  const title =
-    cohort === 'all'
-      ? 'Developer Ecosystem Report'
-      : `${label} Developer Report`;
-  const description = `Track all ${cohort === 'all' ? '' : `${label.toLowerCase()} `}contributors, verified internal people, maintainers, leads, repositories, organizations, and team movement from one consistent historical range.`;
-  const pageSearch = new URLSearchParams();
-  if (cohort !== 'all') pageSearch.set('cohort', cohort);
-  if (range !== 'all') pageSearch.set('range', range);
-  const pageUrl = pageSearch.size ? `${canonical}?${pageSearch}` : canonical;
-  const imageSearch = new URLSearchParams({ cohort, range });
-  const image = {
-    url: `${canonical}/og?${imageSearch}`,
-    width: 1200,
-    height: 630,
-    alt: `${title} — JobStash`,
-  };
+  const params = await searchParams;
+  const vertical = selectedVertical(params);
+  const range = selectedRange(params);
+  const label = labelFor(vertical);
+  const title = vertical
+    ? `${label} Developer Report`
+    : 'Developer Ecosystem Report';
+  const description = `Track credited original work, active developers, internal developers, maintainers, leads, repositories, and organizations across ${vertical ? `${label.toLowerCase()} ` : ''}software ecosystems.`;
+  const search = new URLSearchParams();
+  if (vertical) search.set('vertical', vertical);
+  if (range !== 'max') search.set('range', range);
+  const pageUrl = search.size ? `${canonical}?${search}` : canonical;
 
   return {
     title,
@@ -82,22 +71,22 @@ export const generateMetadata = async ({
       title,
       description,
       url: pageUrl,
-      images: [image],
+      images: [`${canonical}/og?${search}`],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [image],
+      images: [`${canonical}/og?${search}`],
     },
   };
 };
 
 const DevelopersPage = async ({ searchParams }: Props) => {
   const params = await searchParams;
-  const cohort = selectedCohort(params);
+  const vertical = selectedVertical(params);
   const range = selectedRange(params);
-  const report = await fetchDeveloperReport(cohort, undefined, range);
+  const report = await fetchDeveloperReport(vertical, undefined, range);
 
   if (!report?.current) {
     return (
@@ -105,24 +94,14 @@ const DevelopersPage = async ({ searchParams }: Props) => {
         <div className='max-w-xl rounded-2xl border border-border/60 bg-card/60 p-8'>
           <h1 className='text-3xl font-bold'>Developer report is refreshing</h1>
           <p className='mt-3 text-muted-foreground'>
-            The latest contributor and verified-workforce history is being
-            prepared. You can still explore people and organizations on
-            Ecosystem Vision.
+            This selection has no completed original-work history yet.
           </p>
-          <div className='mt-5 flex flex-wrap justify-center gap-3'>
-            <a
-              href='https://ecosystem.vision/people'
-              className='rounded-lg bg-foreground px-4 py-2 text-sm font-bold text-background'
-            >
-              Explore people
-            </a>
-            <Link
-              href='/market'
-              className='rounded-lg border border-border px-4 py-2 text-sm font-bold'
-            >
-              View job market
-            </Link>
-          </div>
+          <Link
+            href='/developers'
+            className='mt-5 inline-flex rounded-lg bg-foreground px-4 py-2 text-sm font-bold text-background'
+          >
+            View all developers
+          </Link>
         </div>
       </div>
     );

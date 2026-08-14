@@ -27,7 +27,7 @@ export const renderDeveloperReportOg = (
   label: string,
 ) => {
   const points = sparkline(
-    report?.history.map((point) => point.activeContributors) ?? [],
+    report?.history.map((point) => point.activeDevelopers) ?? [],
   );
 
   return new ImageResponse(
@@ -79,7 +79,7 @@ export const renderDeveloperReportOg = (
             {label} Developer Report
           </div>
           <div style={{ marginTop: 14, color: '#a4ada8', fontSize: 25 }}>
-            Contributors, internal people, maintainers, and ecosystem activity
+            Original work, active developers, and nested internal roles
           </div>
         </div>
         <div
@@ -137,11 +137,14 @@ export const renderDeveloperReportOg = (
 
       <div style={{ display: 'flex', gap: 56 }}>
         {[
-          ['Contributors', compact(report?.summary.contributors ?? 0)],
-          ['Internal people', compact(report?.summary.internalPeople ?? 0)],
+          ['All contributors', compact(report?.summary.allContributors ?? 0)],
+          ['Active developers', compact(report?.summary.activeDevelopers ?? 0)],
+          [
+            'Internal developers',
+            compact(report?.summary.internalDevelopers ?? 0),
+          ],
           ['Maintainers', compact(report?.summary.maintainers ?? 0)],
           ['Organizations', compact(report?.summary.organizations ?? 0)],
-          ['Repositories', compact(report?.summary.repositoryCount ?? 0)],
         ].map(([metricLabel, value]) => (
           <div
             key={metricLabel}
@@ -155,7 +158,7 @@ export const renderDeveloperReportOg = (
         ))}
       </div>
       <div style={{ color: '#7f8d85', display: 'flex', fontSize: 17 }}>
-        {`${report?.range.label ?? 'Since inception'} · External and internal contributors shown separately · Complete through ${report?.completeThrough ?? 'latest snapshot'}`}
+        {`${report?.range.label ?? 'Since inception'} · Raw indexed records and credited originals are separate · Complete through ${report?.completeThrough ?? 'latest snapshot'}`}
       </div>
     </div>,
     { width: 1200, height: 630 },

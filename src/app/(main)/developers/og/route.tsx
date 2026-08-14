@@ -1,39 +1,22 @@
-import { renderDeveloperReportOg } from '@/features/developer-report/server/og';
 import { fetchDeveloperReport } from '@/features/developer-report/server';
-import type {
-  DeveloperCohort,
-  DeveloperReportRange,
-} from '@/features/developer-report/schemas';
+import { renderDeveloperReportOg } from '@/features/developer-report/server/og';
+import type { DeveloperReportRange } from '@/features/developer-report/schemas';
 
 export const runtime = 'nodejs';
 
-const COHORTS: DeveloperCohort[] = [
-  'all',
-  'crypto',
-  'fintech',
-  'ai',
-  'banking',
-  'tech',
-];
-
-const COHORT_LABELS: Record<DeveloperCohort, string> = {
-  all: 'Ecosystem',
-  crypto: 'Crypto',
-  fintech: 'Fintech',
-  ai: 'AI',
-  banking: 'Banking',
-  tech: 'Tech',
-};
+const ranges: DeveloperReportRange[] = ['3m', '6m', '1y', '3y', 'max'];
 
 export const GET = async (request: Request) => {
   const search = new URL(request.url).searchParams;
-  const rawCohort = search.get('cohort');
-  const cohort = COHORTS.includes(rawCohort as DeveloperCohort)
-    ? (rawCohort as DeveloperCohort)
-    : 'all';
+  const rawVertical = search.get('vertical');
+  const vertical =
+    rawVertical && /^[a-z0-9][a-z0-9_-]{0,119}$/.test(rawVertical)
+      ? rawVertical
+      : undefined;
   const rawRange = search.get('range');
-  const range: DeveloperReportRange =
-    rawRange === '1y' || rawRange === '3y' ? rawRange : 'all';
-  const report = await fetchDeveloperReport(cohort, undefined, range);
-  return renderDeveloperReportOg(report, COHORT_LABELS[cohort]);
+  const range = ranges.includes(rawRange as DeveloperReportRange)
+    ? (rawRange as DeveloperReportRange)
+    : 'max';
+  const report = await fetchDeveloperReport(vertical, undefined, range);
+  return renderDeveloperReportOg(report, report?.scope.label ?? 'Ecosystem');
 };

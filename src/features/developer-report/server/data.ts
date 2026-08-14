@@ -5,20 +5,19 @@ import { cache } from 'react';
 import { clientEnv } from '@/lib/env/client';
 import {
   developerReportSchema,
-  type DeveloperCohort,
   type DeveloperReport,
   type DeveloperReportRange,
 } from '../schemas';
 
 const fetchDeveloperReportUncached = async (
-  cohort: DeveloperCohort | null = 'all',
+  vertical?: string | null,
   chain?: string,
-  range: DeveloperReportRange = 'all',
+  range: DeveloperReportRange = 'max',
 ): Promise<DeveloperReport | null> => {
   try {
     const search = new URLSearchParams();
+    if (vertical) search.set('vertical', vertical);
     if (chain) search.set('chain', chain);
-    else search.set('cohort', cohort ?? 'all');
     search.set('range', range);
 
     const response = await fetch(

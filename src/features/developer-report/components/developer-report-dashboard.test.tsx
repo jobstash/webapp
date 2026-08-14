@@ -11,163 +11,158 @@ vi.mock('@/features/job-market/components/flint-echart', () => ({
 import type { DeveloperReport } from '../schemas';
 import { DeveloperReportDashboard } from './developer-report-dashboard';
 
-const point: DeveloperReport['current'] = {
+const point: NonNullable<DeveloperReport['current']> = {
   period: '2026-07-01',
-  activeContributors: 300,
-  activePeople: 100,
+  allContributors: 300,
+  activeDevelopers: 200,
+  internalDevelopers: 100,
+  canonicalInternalPeople: 98,
   activeMaintainers: 20,
   activeLeads: 12,
   activeOrganizations: 15,
-  joins: 8,
-  exits: 4,
-  returns: 2,
-  movements: 3,
-  activityCount: 1_000,
-  commitCount: 700,
-  mergeCount: 100,
-  oneDayPeople: 20,
-  regularPeople: 50,
-  sustainedPeople: 30,
-  singleChainPeople: 40,
-  multiChainPeople: 35,
-  unmappedChainPeople: 25,
-  newcomerPeople: 10,
-  emergingPeople: 30,
-  establishedPeople: 60,
+  activeRepositories: 80,
+  rawIndexedCommitRecords: 1_000,
+  creditedOriginalCommits: 700,
+  fullTimeDevelopers: 60,
+  partTimeDevelopers: 90,
+  oneTimeDevelopers: 50,
+  newcomerDevelopers: 30,
+  emergingDevelopers: 70,
+  establishedDevelopers: 100,
+  newDevelopers: 18,
+  newRepositories: 12,
+  internalDeveloperShare: 0.5,
+};
+
+const scope = {
+  slug: 'crypto',
+  label: 'Crypto',
+  logoUrl: null,
+  allContributors: 300,
+  activeDevelopers: 200,
+  internalDevelopers: 100,
+  activeMaintainers: 20,
+  activeLeads: 12,
+  activeOrganizations: 15,
+  activeRepositories: 80,
 };
 
 const report: DeveloperReport = {
   available: true,
   asOf: '2026-07-01T00:00:00.000Z',
   completeThrough: '2026-07-01',
-  methodologyVersion: 'developer-report',
+  methodologyVersion: 'developer-report-v2',
   range: {
-    key: 'all',
+    key: 'max',
     label: 'Since inception',
     from: '2008-01-01',
     to: '2026-07-01',
   },
   summary: {
-    contributors: 300,
-    internalPeople: 100,
+    rawIndexedCommitRecords: 10_000,
+    creditedOriginalCommits: 7_000,
+    allContributors: 300,
+    activeDevelopers: 200,
+    internalDevelopers: 100,
+    canonicalInternalPeople: 98,
     maintainers: 20,
     activeLeads: 12,
     organizations: 15,
-    repositoryCount: 400,
-    indexedCommitRecords: 10_000,
-    internalCommitRecords: 700,
-    mergeRecords: 100,
+    activeRepositories: 400,
+    newDevelopers: 18,
+    newRepositories: 12,
+    internalDeveloperShare: 0.5,
   },
   scope: {
-    type: 'cohort',
-    key: 'crypto',
+    type: 'vertical',
     label: 'Crypto',
-    slug: null,
+    vertical: 'crypto',
+    chain: null,
     logoUrl: null,
-    overlapping: false,
+    verticalsAreExclusive: true,
+    chainsOverlap: false,
   },
   scopes: {
-    cohorts: [
-      {
-        cohort: 'crypto',
-        label: 'Crypto',
-        contributors: 300,
-        activePeople: 100,
-        activeMaintainers: 20,
-        activeOrganizations: 15,
-      },
-    ],
-    chains: [
-      {
-        chainId: '1',
-        chainSlug: 'ethereum',
-        chainName: 'Ethereum',
-        logoUrl: null,
-        contributors: 210,
-        activePeople: 70,
-        activeMaintainers: 15,
-        activeLeads: 9,
-        activeOrganizations: 10,
-        repositoryCount: 300,
-      },
-    ],
+    verticals: [{ ...scope, exclusive: true, history: [point] }],
+    chains: [{ ...scope, slug: 'ethereum', label: 'Ethereum' }],
   },
   coverage: {
-    githubOrganizations: 100,
-    chainMappedGithubOrganizations: 75,
-    chainMappedPercent: 75,
-    note: 'Chain cohorts overlap.',
+    organizationsTotal: 20,
+    categorizedOrganizations: 15,
+    unclassifiedOrganizations: 5,
+    organizationPercent: 75,
+    developersTotal: 250,
+    categorizedDevelopers: 200,
+    unclassifiedDevelopers: 50,
+    developerPercent: 80,
+    note: 'Verticals are exclusive; chains overlap.',
   },
   population: {
-    label: 'Verified internal contributors',
-    definition: 'Canonical internal people only.',
-    excludes: ['external contributors', 'bots', 'banned organizations'],
-  },
-  corpus: {
-    indexedCommitRecords: 335_955_320,
-    distinctCommitShas: 92_889_595,
-    githubLinkedAuthors: 899_369,
-    indexedRepositories: 241_692,
-    indexedGithubOrganizations: 7_022,
-    historicalInternalPeople: 92_772,
-    currentInternalPeople: 15_965,
-    verifiedInternalCommitRecords: 25_656_248,
-    verifiedInternalMergeRecords: 7_443_234,
-    historicalMaintainers: 36_184,
-    currentMaintainers: 8_075,
-    currentActiveLeads: 6_776,
+    label: 'Original-work developers',
+    definition: 'Numeric GitHub authors of provenance-approved originals.',
+    excludes: ['bots', 'banned organizations', 'copied history'],
   },
   current: point,
-  history: point ? [point] : [],
-  repositoryHistory: [{ period: '2026-07-01', newRepositories: 12 }],
+  history: [point],
+  top: {
+    verticals: [scope],
+    chains: [{ ...scope, slug: 'ethereum', label: 'Ethereum' }],
+    organizations: [
+      {
+        organizationKey: 'jobstash:uniswap',
+        organizationName: 'Uniswap',
+        activeDevelopers: 60,
+      },
+    ],
+  },
   organizations: [
     {
-      organizationKey: 'uniswap',
+      organizationKey: 'jobstash:uniswap',
       organizationId: '1',
       organizationName: 'Uniswap',
       organizationSlug: 'uniswap',
-      cohort: 'crypto',
+      vertical: 'crypto',
       logoUrl: null,
-      layoutX: 0.25,
-      layoutY: -0.5,
+      layoutX: 250,
+      layoutY: -500,
       communityId: 7,
-      contributors: 60,
-      internalPeople: 25,
+      allContributors: 80,
+      activeDevelopers: 60,
+      internalDevelopers: 25,
+      canonicalInternalPeople: 24,
       maintainers: 10,
       leads: 6,
-      joins: 6,
-      exits: 2,
-      commitCount: 5_000,
-      mergeCount: 600,
+      creditedOriginalCommits: 5_000,
+      activeRepositories: 40,
       series: [
         {
           period: '2026-07-01',
-          activeContributors: 60,
-          activePeople: 25,
+          activeDevelopers: 60,
+          internalDevelopers: 25,
           activeMaintainers: 10,
           activeLeads: 6,
         },
       ],
     },
   ],
-  movements: [],
 };
 
 afterEach(cleanup);
 
 describe('DeveloperReportDashboard', () => {
-  it('shows one canonical range and contributor population layers', () => {
+  it('renders corrected activity, cadence, tenure, growth, and atlas sections', () => {
     render(<DeveloperReportDashboard report={report} />);
 
+    expect(screen.getByRole('heading', { name: 'Crypto' })).toBeInTheDocument();
+    expect(screen.getByText('Active developers over time')).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: 'The people building Crypto' }),
+      screen.getByText('Full-time, part-time, and one-time activity'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Contribution cadence')).toBeInTheDocument();
-    expect(screen.getByText('Developer tenure')).toBeInTheDocument();
-    expect(screen.getByText('Chain breadth')).toBeInTheDocument();
-    expect(screen.getByText('New repositories')).toBeInTheDocument();
     expect(
-      screen.getByText('Contributor and workforce layers over time'),
+      screen.getByText('Newcomer, emerging, and established tenure'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('New developers and repositories'),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('img', {
@@ -176,86 +171,20 @@ describe('DeveloperReportDashboard', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('Retention by starting cohort')).toBeNull();
     expect(screen.queryByText('Maintainer leverage')).toBeNull();
-    expect(screen.getByRole('link', { name: 'Ethereum' })).toHaveAttribute(
-      'href',
-      '/developers/chains/ethereum',
-    );
+    expect(screen.getAllByText('Credited originals').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Active developers').length).toBeGreaterThan(0);
     expect(screen.getByText('Uniswap')).toBeInTheDocument();
-    expect(screen.getAllByText('Since inception').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('All contributors').length).toBeGreaterThan(0);
-    expect(
-      screen.getAllByText('Verified internal people').length,
-    ).toBeGreaterThan(0);
   });
 
-  it('shows the reconciled all-sector population without rounding it to 12K', () => {
-    render(
-      <DeveloperReportDashboard
-        report={{
-          ...report,
-          scope: { ...report.scope, key: 'all', label: 'All sectors' },
-          scopes: {
-            ...report.scopes,
-            cohorts: [
-              {
-                cohort: 'all',
-                label: 'All sectors',
-                contributors: 899_369,
-                activePeople: 11_552,
-                activeMaintainers: 10_138,
-                activeOrganizations: 2_069,
-              },
-            ],
-          },
-          current: point ? { ...point, activePeople: 11_552 } : null,
-          summary: {
-            ...report.summary,
-            contributors: 899_369,
-            internalPeople: 92_772,
-            maintainers: 36_184,
-            organizations: 7_022,
-          },
-        }}
-      />,
-    );
+  it('preserves vertical and range in navigable chain and range links', () => {
+    render(<DeveloperReportDashboard report={report} />);
 
-    expect(screen.queryByText('12K')).toBeNull();
     expect(
-      screen.getByText('Contributor population layers'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('Corpus coverage')).toBeInTheDocument();
-    expect(screen.getAllByText('All contributors').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('899.4K').length).toBeGreaterThan(0);
-    expect(screen.getByText('336M')).toBeInTheDocument();
-    expect(screen.getByText('92.9M')).toBeInTheDocument();
-    expect(screen.getByText('92.8K')).toBeInTheDocument();
-    expect(screen.getByText('36.2K')).toBeInTheDocument();
-    expect(screen.getByText('10.3% of contributors')).toBeInTheDocument();
-    expect(screen.getByText('39.0% of internal people')).toBeInTheDocument();
-  });
-
-  it('preserves the report-wide interval in every scope link', () => {
-    render(
-      <DeveloperReportDashboard
-        report={{
-          ...report,
-          range: {
-            key: '1y',
-            label: 'Last year',
-            from: '2025-08-01',
-            to: '2026-07-01',
-          },
-        }}
-      />,
-    );
-
-    expect(screen.getByRole('link', { name: 'Ethereum' })).toHaveAttribute(
-      'href',
-      '/developers/chains/ethereum?range=1y',
-    );
+      screen.getAllByRole('link', { name: /Ethereum/ })[0],
+    ).toHaveAttribute('href', '/developers/chains/ethereum?vertical=crypto');
     expect(screen.getByRole('link', { name: '3 years' })).toHaveAttribute(
       'href',
-      '/developers?cohort=crypto&range=3y',
+      '/developers?vertical=crypto&range=3y',
     );
   });
 });

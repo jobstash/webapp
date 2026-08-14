@@ -15,7 +15,18 @@ const selectedRange = (
   params: Record<string, string | string[] | undefined>,
 ): DeveloperReportRange => {
   const raw = Array.isArray(params.range) ? params.range[0] : params.range;
-  return raw === '1y' || raw === '3y' ? raw : 'all';
+  return raw === '3m' || raw === '6m' || raw === '1y' || raw === '3y'
+    ? raw
+    : 'max';
+};
+
+const selectedVertical = (
+  params: Record<string, string | string[] | undefined>,
+) => {
+  const raw = Array.isArray(params.vertical)
+    ? params.vertical[0]
+    : params.vertical;
+  return raw && /^[a-z0-9][a-z0-9_-]{0,119}$/.test(raw) ? raw : undefined;
 };
 
 export const generateMetadata = async ({
@@ -23,15 +34,22 @@ export const generateMetadata = async ({
   searchParams,
 }: Props): Promise<Metadata> => {
   const { slug } = await params;
-  const range = selectedRange(await searchParams);
-  const report = await fetchDeveloperReport(null, slug, range);
+  const query = await searchParams;
+  const range = selectedRange(query);
+  const vertical = selectedVertical(query);
+  const report = await fetchDeveloperReport(vertical, slug, range);
   const label = report?.scope.label ?? slug;
   const title = `${label} Developer Report`;
   const description = `Track all ${label} contributors, verified internal people, maintainers, leads, repositories, organizations, and team movement from one consistent historical range.`;
   const baseUrl = `${clientEnv.FRONTEND_URL}/developers/chains/${slug}`;
-  const canonical = range === 'all' ? baseUrl : `${baseUrl}?range=${range}`;
+  const canonicalSearch = new URLSearchParams();
+  if (vertical) canonicalSearch.set('vertical', vertical);
+  if (range !== 'max') canonicalSearch.set('range', range);
+  const canonical = canonicalSearch.size
+    ? `${baseUrl}?${canonicalSearch}`
+    : baseUrl;
   const image = {
-    url: `${baseUrl}/og?range=${range}`,
+    url: `${baseUrl}/og?${canonicalSearch}`,
     width: 1200,
     height: 630,
     alt: `${title} — JobStash`,
@@ -60,8 +78,10 @@ export const generateMetadata = async ({
 
 const DeveloperChainPage = async ({ params, searchParams }: Props) => {
   const { slug } = await params;
-  const range = selectedRange(await searchParams);
-  const report = await fetchDeveloperReport(null, slug, range);
+  const query = await searchParams;
+  const range = selectedRange(query);
+  const vertical = selectedVertical(query);
+  const report = await fetchDeveloperReport(vertical, slug, range);
 
   if (!report?.current) {
     return (

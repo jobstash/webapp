@@ -18,14 +18,14 @@ interface Props {
 type BubbleDatum = {
   name: string;
   organizationSlug: string;
-  cohort: string;
-  contributors: number;
-  internalPeople: number;
+  vertical: string;
+  developers: number;
+  internalDevelopers: number;
   maintainers: number;
   activeLeads: number;
   change: number;
   labelVisible: boolean;
-  layer: 'contributors' | 'internal' | 'maintainers';
+  layer: 'developers' | 'internal' | 'maintainers' | 'leads';
   value: [number, number, number];
   itemStyle: {
     color: string;
@@ -53,14 +53,7 @@ export const OrganizationBubbleTimeline = ({
   rangeLabel,
 }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const positioned = useMemo(
-    () =>
-      organizations.filter(
-        (organization) =>
-          organization.layoutX !== null && organization.layoutY !== null,
-      ),
-    [organizations],
-  );
+  const positioned = organizations;
   const periods = useMemo(() => {
     const allPeriods = [
       ...new Set(
@@ -79,8 +72,8 @@ export const OrganizationBubbleTimeline = ({
       buildStableAtlasPositions(
         positioned.map((organization) => ({
           organizationKey: organization.organizationKey,
-          layoutX: organization.layoutX ?? 0,
-          layoutY: organization.layoutY ?? 0,
+          layoutX: organization.layoutX,
+          layoutY: organization.layoutY,
         })),
       ),
     [positioned],
@@ -107,7 +100,7 @@ export const OrganizationBubbleTimeline = ({
       Math.max(
         1,
         ...positioned.flatMap((organization) =>
-          organization.series.map((point) => point.activeContributors),
+          organization.series.map((point) => point.activeDevelopers),
         ),
       ),
     [positioned],
@@ -117,8 +110,8 @@ export const OrganizationBubbleTimeline = ({
     const pointAt = (organization: DeveloperOrganization, at: string) =>
       organization.series.find((point) => point.period === at) ?? {
         period: at,
-        activeContributors: 0,
-        activePeople: 0,
+        activeDevelopers: 0,
+        internalDevelopers: 0,
         activeMaintainers: 0,
         activeLeads: 0,
       };
@@ -126,7 +119,7 @@ export const OrganizationBubbleTimeline = ({
     const active = positioned
       .map((organization) => ({
         organization,
-        count: pointAt(organization, period).activeContributors,
+        count: pointAt(organization, period).activeDevelopers,
       }))
       .filter((entry) => entry.count > 0)
       .sort((left, right) => right.count - left.count);
@@ -141,12 +134,12 @@ export const OrganizationBubbleTimeline = ({
         const point = pointAt(organization, period);
         const prior = pointAt(organization, previousPeriod);
         const count = value(point);
-        const change = point.activeContributors - prior.activeContributors;
+        const change = point.activeDevelopers - prior.activeDevelopers;
         const atlasPosition = atlasPositions.get(organization.organizationKey);
         const growthColor =
           change > 0 ? '#34d399' : change < 0 ? '#fb7185' : '#60a5fa';
         const layerStyle = {
-          contributors: {
+          developers: {
             color: '#3b82f6',
             opacity: count > 0 ? 0.2 : 0,
             borderColor: growthColor,
@@ -164,13 +157,19 @@ export const OrganizationBubbleTimeline = ({
             borderColor: '#e9d5ff',
             borderWidth: 1,
           },
+          leads: {
+            color: '#fbbf24',
+            opacity: count > 0 ? 1 : 0,
+            borderColor: '#fef3c7',
+            borderWidth: 1,
+          },
         }[layer];
         return {
           name: organization.organizationName,
           organizationSlug: organization.organizationSlug,
-          cohort: organization.cohort,
-          contributors: point.activeContributors,
-          internalPeople: point.activePeople,
+          vertical: organization.vertical,
+          developers: point.activeDevelopers,
+          internalDevelopers: point.internalDevelopers,
           maintainers: point.activeMaintainers,
           activeLeads: point.activeLeads,
           change,
@@ -185,15 +184,16 @@ export const OrganizationBubbleTimeline = ({
       value[2] <= 0
         ? 0
         : Math.max(6, Math.sqrt(value[2] / globalMaximum) * 104);
-    const outerData = dataFor(
-      'contributors',
-      (point) => point.activeContributors,
+    const outerData = dataFor('developers', (point) => point.activeDevelopers);
+    const internalData = dataFor(
+      'internal',
+      (point) => point.internalDevelopers,
     );
-    const internalData = dataFor('internal', (point) => point.activePeople);
     const maintainerData = dataFor(
       'maintainers',
       (point) => point.activeMaintainers,
     );
+    const leadData = dataFor('leads', (point) => point.activeLeads);
 
     return {
       animationDuration: 300,
@@ -222,15 +222,15 @@ export const OrganizationBubbleTimeline = ({
         formatter: ({ data: rawData }: { data: BubbleDatum }) => {
           const item = rawData;
           const internalShare =
-            item.contributors > 0
-              ? `${((item.internalPeople / item.contributors) * 100).toFixed(1)}%`
+            item.developers > 0
+              ? `${((item.internalDevelopers / item.developers) * 100).toFixed(1)}%`
               : '—';
-          return `${item.name}\n${item.contributors.toLocaleString()} contributors\n${item.internalPeople.toLocaleString()} internal (${internalShare})\n${item.maintainers.toLocaleString()} maintainers · ${item.activeLeads.toLocaleString()} leads\n${changeLabel(item.change)} contributors\n${item.cohort}`;
+          return `${item.name}\n${item.developers.toLocaleString()} active developers\n${item.internalDevelopers.toLocaleString()} internal (${internalShare})\n${item.maintainers.toLocaleString()} maintainers · ${item.activeLeads.toLocaleString()} leads\n${changeLabel(item.change)} developers\n${item.vertical}`;
         },
       },
       series: [
         {
-          name: 'All contributors',
+          name: 'Active developers',
           type: 'scatter',
           z: 1,
           data: outerData,
@@ -251,7 +251,7 @@ export const OrganizationBubbleTimeline = ({
           },
         },
         {
-          name: 'Verified internal people',
+          name: 'Internal developers',
           type: 'scatter',
           z: 2,
           data: internalData,
@@ -274,6 +274,18 @@ export const OrganizationBubbleTimeline = ({
             itemStyle: { opacity: 1, borderColor: '#f8faf9', borderWidth: 2 },
           },
         },
+        {
+          name: 'Active leads',
+          type: 'scatter',
+          z: 4,
+          data: leadData,
+          symbolSize: bubbleSize,
+          emphasis: {
+            focus: 'self',
+            scale: 1.08,
+            itemStyle: { opacity: 1, borderColor: '#f8faf9', borderWidth: 2 },
+          },
+        },
       ],
     };
   }, [atlasPositions, globalMaximum, period, periodIndex, periods, positioned]);
@@ -281,7 +293,7 @@ export const OrganizationBubbleTimeline = ({
   if (positioned.length === 0 || periods.length === 0) return null;
 
   const organizationSubject =
-    scopeLabel.toLowerCase() === 'all sectors'
+    scopeLabel.toLowerCase() === 'all developers'
       ? 'Each organization'
       : `Each ${scopeLabel} organization`;
 
@@ -293,14 +305,13 @@ export const OrganizationBubbleTimeline = ({
             Organization atlas
           </p>
           <h2 className='mt-1 text-2xl font-bold'>
-            Contributor and workforce layers over time
+            Developer and workforce layers over time
           </h2>
           <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
             {organizationSubject} keeps the same position across{' '}
-            {rangeLabel.toLowerCase()}. Each outer circle is all contributors;
-            the inner green circle is verified internal people and the purple
-            core is maintainers. Outer borders show contributor growth or
-            contraction from the prior month.
+            {rangeLabel.toLowerCase()}. The fixed blue, green, purple, and gold
+            circles show active developers, internal developers, maintainers,
+            and leads. Borders show developer growth or contraction.
           </p>
         </div>
         <div className='flex items-center gap-3'>
@@ -356,11 +367,11 @@ export const OrganizationBubbleTimeline = ({
         />
         <div className='flex flex-wrap gap-4 text-xs text-muted-foreground'>
           {[
-            ['border-2 border-blue-400 bg-blue-400/20', 'All contributors'],
-            ['bg-emerald-400', 'Verified internal'],
+            ['border-2 border-blue-400 bg-blue-400/20', 'Active developers'],
+            ['bg-emerald-400', 'Internal developers'],
             ['bg-purple-400', 'Maintainers'],
-            ['border-2 border-emerald-400', 'Contributor count grew'],
-            ['border-2 border-rose-400', 'Contributor count shrank'],
+            ['bg-amber-400', 'Leads'],
+            ['border-2 border-emerald-400', 'Developer count grew'],
           ].map(([color, label]) => (
             <span key={label} className='inline-flex items-center gap-1.5'>
               <span className={cn('size-3 rounded-full', color)} />
