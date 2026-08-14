@@ -144,13 +144,18 @@ describe('job-market Flint chart options', () => {
       onsiteCount: 0,
       hybridCount: 0,
       remoteCount: 25,
-      reliable: true,
+      reliable: false,
     };
     const salarySeries = skillSalaryTrendOption([weekly], 'remote').series;
     const valueSeries = skillAdjustedValueOption([weekly], 'remote').series;
 
     expect(Array.isArray(salarySeries) ? salarySeries : []).toHaveLength(3);
     expect(Array.isArray(valueSeries) ? valueSeries : []).toHaveLength(1);
+    expect(
+      (Array.isArray(salarySeries) ? salarySeries : []).every(
+        (series) => (series as { showSymbol?: boolean }).showSymbol,
+      ),
+    ).toBe(true);
     expect(skillSalaryTrendOption([weekly], 'local').series).toBeUndefined();
   });
 });

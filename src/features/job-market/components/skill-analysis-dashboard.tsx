@@ -37,7 +37,7 @@ import type {
   JobMarketCompensation,
   JobMarketPoint,
   JobMarketSkillDetail,
-  JobMarketSkillSignal,
+  JobMarketSkillWeeklyPoint,
   PillarMarket,
 } from '../schemas';
 
@@ -90,26 +90,15 @@ const readableDate = (value: string): string =>
     timeZone: 'UTC',
   }).format(new Date(`${value}T00:00:00.000Z`));
 
-const evidenceGap = (compensation?: JobMarketCompensation): string => {
-  const salariesNeeded = Math.max(0, 10 - (compensation?.sampleCount ?? 0));
-  const employersNeeded = Math.max(0, 5 - (compensation?.employerCount ?? 0));
-  const gaps = [
-    salariesNeeded > 0
-      ? `${salariesNeeded} more ${salariesNeeded === 1 ? 'salary' : 'salaries'}`
-      : null,
-    employersNeeded > 0
-      ? `${employersNeeded} more ${employersNeeded === 1 ? 'employer' : 'employers'}`
-      : null,
-  ].filter(Boolean);
-  return gaps.length > 0
-    ? `Needs ${gaps.join(' and ')} before an estimate is published.`
-    : 'The publication threshold is met.';
-};
-
-const signalLabel = (signal: JobMarketSkillSignal | null): string => {
-  if (!signal || signal.status === 'insufficient') return 'Building evidence';
-  if (signal.status === 'stable') return 'Statistically stable';
-  return signal.status === 'rising' ? 'Value rising' : 'Value falling';
+const evidenceDescription = (compensation?: JobMarketCompensation): string => {
+  if (!compensation) return 'No salary records yet';
+  const breadth =
+    compensation.evidenceLevel === 'strong'
+      ? 'Broad sample'
+      : compensation.evidenceLevel === 'limited'
+        ? 'Limited sample'
+        : 'Small sample';
+  return `${compensation.employerCount} employers · ${breadth}`;
 };
 
 const CurrentJobs = ({
@@ -216,31 +205,45 @@ export const SkillAnalysisDashboard = ({
     () => activityChartOption(activityHistory),
     [activityHistory],
   );
-  const salaryHistoryReady =
-    detail.history.filter(
-      (point) =>
-        point.segment === selection.mode &&
-        point.regionSlug === 'all' &&
-        point.reliable &&
-        point.medianMonthlyUsd !== null,
-    ).length >= 2;
-  const adjustedHistoryReady =
-    signal !== null &&
-    signal.status !== 'insufficient' &&
-    detail.history.filter(
-      (point) =>
-        point.segment === selection.mode &&
-        point.regionSlug === 'all' &&
-        point.reliable &&
-        point.adjustedPremiumPercent !== null,
-    ).length >= 2;
-  const salaryOption = useMemo(
-    () => skillSalaryTrendOption(detail.history, selection.mode),
-    [detail.history, selection.mode],
+  const selectedHistory = detail.history.filter(
+    (point) => point.segment === selection.mode && point.regionSlug === 'all',
   );
-  const adjustedOption = useMemo(
-    () => skillAdjustedValueOption(detail.history, selection.mode),
-    [detail.history, selection.mode],
+  const hasSalaryHistory = selectedHistory.some(
+    (point) => point.medianMonthlyUsd !== null,
+  );
+  const hasAdjustedHistory = selectedHistory.some(
+    (point) => point.adjustedPremiumPercent !== null,
+  );
+  const fallbackPoint: JobMarketSkillWeeklyPoint = {
+    weekStart: detail.asOf,
+    segment: selection.mode,
+    regionSlug: 'all',
+    regionLabel: selection.mode === 'remote' ? 'Remote' : 'All local markets',
+    medianMonthlyUsd: hasSalaryHistory
+      ? null
+      : (benchmark?.medianMonthlyUsd ?? null),
+    p25MonthlyUsd: hasSalaryHistory ? null : (benchmark?.p25MonthlyUsd ?? null),
+    p75MonthlyUsd: hasSalaryHistory ? null : (benchmark?.p75MonthlyUsd ?? null),
+    adjustedPremiumPercent: hasAdjustedHistory
+      ? null
+      : (benchmark?.adjustedPremiumPercent ?? null),
+    sampleCount: benchmark?.sampleCount ?? 0,
+    employerCount: benchmark?.employerCount ?? 0,
+    onsiteCount: benchmark?.onsiteCount ?? 0,
+    hybridCount: benchmark?.hybridCount ?? 0,
+    remoteCount: benchmark?.remoteCount ?? 0,
+    reliable: benchmark?.reliable ?? false,
+  };
+  const hasFallback =
+    fallbackPoint.medianMonthlyUsd !== null ||
+    fallbackPoint.adjustedPremiumPercent !== null;
+  const displayedHistory = hasFallback
+    ? [...detail.history, fallbackPoint]
+    : detail.history;
+  const salaryOption = skillSalaryTrendOption(displayedHistory, selection.mode);
+  const adjustedOption = skillAdjustedValueOption(
+    displayedHistory,
+    selection.mode,
   );
   const localMarkets = actionableLocalCompensation(market.compensation);
   const firstActive = activityHistory.find(
@@ -412,85 +415,80 @@ export const SkillAnalysisDashboard = ({
           />
           <Metric
             icon={ChartNoAxesCombinedIcon}
-            label='Adjusted value trend'
-            value={
-              signal?.status === 'rising' || signal?.status === 'falling'
-                ? percentLabel(signal.adjustedChangePercent)
-                : signal?.status === 'stable'
-                  ? 'No significant change'
-                  : 'Not publishable yet'
+            label='Estimated pay change'
+            value={percentLabel(
+              signal?.adjustedChangePercent ?? signal?.rawChangePercent ?? null,
+            )}
+            detail={
+              signal
+                ? `${signal.recentJobCount} recent ${signal.recentJobCount === 1 ? 'job' : 'jobs'} vs ${signal.baselineJobCount} earlier`
+                : 'No comparison window yet'
             }
-            detail={signalLabel(signal)}
           />
           <Metric
             icon={Building2Icon}
             label='Salary evidence'
             value={`${benchmark?.sampleCount ?? 0} salaries`}
-            detail={
-              benchmark?.evidenceLevel === 'insufficient' || !benchmark
-                ? evidenceGap(benchmark)
-                : `${benchmark.employerCount} employers · ${benchmark.evidenceLevel === 'strong' ? 'Strong' : 'Limited'} evidence`
-            }
+            detail={evidenceDescription(benchmark)}
           />
         </div>
 
         <div className='mt-4 grid gap-4 xl:grid-cols-2'>
-          {salaryHistoryReady ? (
-            <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
-              <h3 className='font-semibold'>Observed pay over time</h3>
-              <p className='text-xs text-muted-foreground'>
-                Weekly USD-converted monthly median and middle 50%
-              </p>
-              <FlintEChart
-                option={salaryOption}
-                className='mt-3 h-72 w-full'
-                ariaLabel={`${label} ${selection.mode} weekly salary history`}
-              />
-            </div>
-          ) : (
-            <div className='rounded-xl border border-amber-500/25 bg-amber-500/[0.04] p-5'>
-              <h3 className='text-lg font-bold'>
-                No defensible {selection.mode} salary trend yet
-              </h3>
-              <p className='mt-2 text-sm leading-relaxed text-muted-foreground'>
-                We found {benchmark?.sampleCount ?? 0} salary records from{' '}
-                {benchmark?.employerCount ?? 0} employers.{' '}
-                {evidenceGap(benchmark)}
-              </p>
-              <p className='mt-3 text-sm leading-relaxed text-muted-foreground'>
-                An empty chart would imply knowledge we do not have, so it is
-                replaced with the evidence gap instead.
-              </p>
-            </div>
-          )}
+          <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
+            <h3 className='font-semibold'>Observed pay over time</h3>
+            <p className='text-xs text-muted-foreground'>
+              Weekly USD-converted monthly median and middle 50%. Every
+              available sample is shown.
+            </p>
+            <FlintEChart
+              option={salaryOption}
+              className='mt-3 h-72 w-full'
+              ariaLabel={`${label} ${selection.mode} weekly salary history`}
+            />
+          </div>
 
-          {adjustedHistoryReady ? (
-            <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
-              <h3 className='font-semibold'>Value beyond job mix</h3>
-              <p className='text-xs text-muted-foreground'>
-                Premium after controlling for role and seniority cohorts
-              </p>
-              <FlintEChart
-                option={adjustedOption}
-                className='mt-3 h-72 w-full'
-                ariaLabel={`${label} ${selection.mode} adjusted skill premium history`}
-              />
-            </div>
-          ) : (
-            <div className='rounded-xl border border-violet-500/25 bg-violet-500/[0.04] p-5'>
-              <h3 className='text-lg font-bold'>Repricing signal withheld</h3>
-              <p className='mt-2 text-sm leading-relaxed text-muted-foreground'>
-                The recent window has {signal?.recentJobCount ?? 0} jobs from{' '}
-                {signal?.recentEmployerCount ?? 0} employers; the baseline has{' '}
-                {signal?.baselineJobCount ?? 0} jobs from{' '}
-                {signal?.baselineEmployerCount ?? 0} employers.
-              </p>
-              <p className='mt-3 text-sm leading-relaxed text-muted-foreground'>
-                Unstable percentage swings are deliberately hidden until the
-                result has a publishable confidence interval.
-              </p>
-            </div>
-          )}
+          <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
+            <h3 className='font-semibold'>Value beyond job mix</h3>
+            <p className='text-xs text-muted-foreground'>
+              Weekly premium estimates after controlling for role and seniority.
+              Every available sample is shown.
+            </p>
+            <FlintEChart
+              option={adjustedOption}
+              className='mt-3 h-72 w-full'
+              ariaLabel={`${label} ${selection.mode} adjusted skill premium history`}
+            />
+            {signal && (
+              <div className='mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4'>
+                <div className='rounded-lg border border-border/50 p-2.5'>
+                  <span className='text-muted-foreground'>Recent median</span>
+                  <strong className='mt-1 block text-sm'>
+                    {monthlySalary(signal.currentMedianMonthlyUsd)}
+                  </strong>
+                </div>
+                <div className='rounded-lg border border-border/50 p-2.5'>
+                  <span className='text-muted-foreground'>Earlier median</span>
+                  <strong className='mt-1 block text-sm'>
+                    {monthlySalary(signal.baselineMedianMonthlyUsd)}
+                  </strong>
+                </div>
+                <div className='rounded-lg border border-border/50 p-2.5'>
+                  <span className='text-muted-foreground'>Observed change</span>
+                  <strong className='mt-1 block text-sm'>
+                    {percentLabel(signal.rawChangePercent)}
+                  </strong>
+                </div>
+                <div className='rounded-lg border border-border/50 p-2.5'>
+                  <span className='text-muted-foreground'>
+                    Adjusted estimate
+                  </span>
+                  <strong className='mt-1 block text-sm'>
+                    {percentLabel(signal.adjustedChangePercent)}
+                  </strong>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -516,9 +514,9 @@ export const SkillAnalysisDashboard = ({
         <strong className='text-foreground'>How to read this analysis.</strong>{' '}
         Opportunity history uses first and last observation dates. Salary
         evidence includes open and closed jobs in the selected history window,
-        uses the exchange rate from each observation date, and requires at least
-        10 salaries from five employers before publishing an estimate. Adjusted
-        skill repricing uses stricter repeated-window and confidence tests.
+        uses the exchange rate from each observation date, and is shown whenever
+        at least one estimate is available. Small samples can move sharply, so
+        the salary and employer counts provide important context.
       </section>
     </div>
   );

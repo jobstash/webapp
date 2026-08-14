@@ -285,12 +285,7 @@ export const skillSalaryTrendOption = (
   segment: 'remote' | 'local',
 ): EChartsCoreOption => {
   const values = history
-    .filter(
-      (point) =>
-        point.segment === segment &&
-        point.regionSlug === 'all' &&
-        point.reliable,
-    )
+    .filter((point) => point.segment === segment && point.regionSlug === 'all')
     .flatMap((point) => [
       {
         date: point.weekStart,
@@ -338,7 +333,9 @@ export const skillSalaryTrendOption = (
       ...record,
       type: 'line',
       smooth: true,
-      symbol: 'none',
+      symbol: 'circle',
+      symbolSize: median ? 7 : 5,
+      showSymbol: true,
       lineStyle: {
         width: median ? 3 : 1,
         type: median ? 'solid' : 'dashed',
@@ -365,7 +362,6 @@ export const skillAdjustedValueOption = (
       (point) =>
         point.segment === segment &&
         point.regionSlug === 'all' &&
-        point.reliable &&
         point.adjustedPremiumPercent !== null,
     )
     .map((point) => ({
@@ -397,7 +393,9 @@ export const skillAdjustedValueOption = (
     ...(item as Record<string, unknown>),
     type: 'line',
     smooth: true,
-    symbol: 'none',
+    symbol: 'circle',
+    symbolSize: 7,
+    showSymbol: true,
     areaStyle: { color: 'rgba(167, 139, 250, 0.16)' },
     lineStyle: { width: 3, color: '#a78bfa' },
     itemStyle: { color: '#a78bfa' },

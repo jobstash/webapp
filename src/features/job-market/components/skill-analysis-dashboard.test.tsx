@@ -169,6 +169,7 @@ const market: PillarMarket = {
       medianMonthlyUsd: 10_500,
       p25MonthlyUsd: 9_000,
       p75MonthlyUsd: 12_000,
+      adjustedPremiumPercent: 4.5,
       sampleCount: 12,
       employerCount: 6,
       activeJobs: 7,
@@ -183,6 +184,7 @@ const market: PillarMarket = {
       medianMonthlyUsd: 8_500,
       p25MonthlyUsd: 7_000,
       p75MonthlyUsd: 10_000,
+      adjustedPremiumPercent: -2.5,
       sampleCount: 14,
       employerCount: 7,
       activeJobs: 19,
@@ -331,7 +333,7 @@ describe('SkillAnalysisDashboard', () => {
     container.remove();
   });
 
-  it('keeps the analysis scoped to the selected skill and withholds noise', async () => {
+  it('keeps the analysis scoped to the selected skill and shows sparse estimates', async () => {
     const user = userEvent.setup();
     render(
       <SkillAnalysisDashboard
@@ -359,15 +361,27 @@ describe('SkillAnalysisDashboard', () => {
         name: /langgraph open jobs, hiring companies, and new jobs over time/i,
       }),
     ).toBeInTheDocument();
+    expect(screen.getByText('Observed pay over time')).toBeInTheDocument();
+    expect(screen.getByText('Value beyond job mix')).toBeInTheDocument();
     expect(
-      screen.getByText('No defensible remote salary trend yet'),
+      screen.getByRole('img', {
+        name: /langgraph remote weekly salary history/i,
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Repricing signal withheld')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', {
+        name: /langgraph remote adjusted skill premium history/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/no defensible remote salary trend/i)).toBeNull();
+    expect(screen.queryByText('Repricing signal withheld')).toBeNull();
+    expect(screen.getByText('1 recent job vs 4 earlier')).toBeInTheDocument();
+    expect(screen.getAllByText('+417.9%')).not.toHaveLength(0);
+    expect(screen.getByText('$2.3K/mo')).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /united states/i }),
     ).toHaveAttribute('href', '/?tags=langgraph&countries=united-states');
     expect(screen.queryByRole('link', { name: 'Germany' })).toBeNull();
-    expect(screen.queryByText('+417.9%')).toBeNull();
     expect(screen.queryByText('Opportunity map')).toBeNull();
     expect(screen.queryByText('What skills are worth now')).toBeNull();
 
@@ -395,7 +409,7 @@ describe('SkillAnalysisDashboard', () => {
     expect(screen.getByText('$8.5K/mo')).toBeInTheDocument();
     expect(screen.getByText('14 salaries')).toBeInTheDocument();
     expect(
-      screen.getByText('7 employers · Limited evidence'),
+      screen.getByText('7 employers · Limited sample'),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'Local LangGraph pay by place' }),
@@ -407,7 +421,7 @@ describe('SkillAnalysisDashboard', () => {
     expect(
       screen.getByRole('link', { name: /united states/i }),
     ).toHaveAttribute('href', '/?tags=langgraph&countries=united-states');
-    expect(screen.getByText('$12K/mo')).toBeInTheDocument();
+    expect(screen.getAllByText('$12K/mo')).not.toHaveLength(0);
     expect(screen.queryByRole('link', { name: 'Germany' })).toBeNull();
 
     await user.click(screen.getByRole('button', { name: 'Regions' }));
