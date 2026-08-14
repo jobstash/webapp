@@ -13,14 +13,11 @@ export const developerCohortSchema = z.enum([
   ...developerSectorSchema.options,
 ]);
 
-const growthSchema = z.object({
-  oneYear: z.number().nullable(),
-  twoYear: z.number().nullable(),
-  threeYear: z.number().nullable(),
-});
+export const developerReportRangeSchema = z.enum(['all', '3y', '1y']);
 
 export const developerReportPointSchema = z.object({
   period: z.string(),
+  activeContributors: z.number().int().nonnegative(),
   activePeople: z.number().int().nonnegative(),
   activeMaintainers: z.number().int().nonnegative(),
   activeLeads: z.number().int().nonnegative(),
@@ -46,6 +43,7 @@ export const developerReportPointSchema = z.object({
 const cohortScopeSchema = z.object({
   cohort: developerCohortSchema,
   label: z.string(),
+  contributors: z.number().int().nonnegative(),
   activePeople: z.number().int().nonnegative(),
   activeMaintainers: z.number().int().nonnegative(),
   activeOrganizations: z.number().int().nonnegative(),
@@ -56,13 +54,12 @@ const chainScopeSchema = z.object({
   chainSlug: z.string(),
   chainName: z.string(),
   logoUrl: z.string().nullable(),
+  contributors: z.number().int().nonnegative(),
   activePeople: z.number().int().nonnegative(),
   activeMaintainers: z.number().int().nonnegative(),
   activeLeads: z.number().int().nonnegative(),
-  establishedPeople: z.number().int().nonnegative(),
   activeOrganizations: z.number().int().nonnegative(),
   repositoryCount: z.number().int().nonnegative(),
-  growth: growthSchema,
 });
 
 const developerOrganizationSchema = z.object({
@@ -75,20 +72,21 @@ const developerOrganizationSchema = z.object({
   layoutX: z.number().nullable(),
   layoutY: z.number().nullable(),
   communityId: z.number().int().nonnegative().nullable(),
-  activePeople: z.number().int().nonnegative(),
-  activeMaintainers: z.number().int().nonnegative(),
-  activeLeads: z.number().int().nonnegative(),
-  establishedPeople: z.number().int().nonnegative(),
-  growth: growthSchema,
-  joins12m: z.number().int().nonnegative(),
-  exits12m: z.number().int().nonnegative(),
-  netTeamChange12m: z.number().int(),
-  commitCount12m: z.number().int().nonnegative(),
-  mergeCount12m: z.number().int().nonnegative(),
+  contributors: z.number().int().nonnegative(),
+  internalPeople: z.number().int().nonnegative(),
+  maintainers: z.number().int().nonnegative(),
+  leads: z.number().int().nonnegative(),
+  joins: z.number().int().nonnegative(),
+  exits: z.number().int().nonnegative(),
+  commitCount: z.number().int().nonnegative(),
+  mergeCount: z.number().int().nonnegative(),
   series: z
     .object({
       period: z.string(),
+      activeContributors: z.number().int().nonnegative(),
       activePeople: z.number().int().nonnegative(),
+      activeMaintainers: z.number().int().nonnegative(),
+      activeLeads: z.number().int().nonnegative(),
     })
     .array(),
 });
@@ -97,7 +95,24 @@ export const developerReportSchema = z.object({
   available: z.boolean(),
   asOf: z.string().nullable(),
   completeThrough: z.string().nullable(),
-  methodologyVersion: z.literal('developer-report-v2'),
+  methodologyVersion: z.literal('developer-report'),
+  range: z.object({
+    key: developerReportRangeSchema,
+    label: z.string(),
+    from: z.string(),
+    to: z.string(),
+  }),
+  summary: z.object({
+    contributors: z.number().int().nonnegative(),
+    internalPeople: z.number().int().nonnegative(),
+    maintainers: z.number().int().nonnegative(),
+    activeLeads: z.number().int().nonnegative(),
+    organizations: z.number().int().nonnegative(),
+    repositoryCount: z.number().int().nonnegative(),
+    indexedCommitRecords: z.number().int().nonnegative(),
+    internalCommitRecords: z.number().int().nonnegative(),
+    mergeRecords: z.number().int().nonnegative(),
+  }),
   scope: z.object({
     type: z.enum(['cohort', 'chain']),
     key: z.string(),
@@ -153,22 +168,10 @@ export const developerReportSchema = z.object({
   }),
   current: developerReportPointSchema.nullable(),
   history: developerReportPointSchema.array(),
-  totals: z.object({
-    repositoryCount: z.number().int().nonnegative(),
-    commitCount: z.number().int().nonnegative(),
-  }),
   repositoryHistory: z
     .object({
       period: z.string(),
       newRepositories: z.number().int().nonnegative(),
-    })
-    .array(),
-  breakdown: z
-    .object({
-      key: z.enum(['internalPeople', 'maintainers', 'leads', 'established']),
-      label: z.string(),
-      current: z.number().int().nonnegative(),
-      growth: growthSchema,
     })
     .array(),
   organizations: developerOrganizationSchema.array(),
@@ -186,6 +189,7 @@ export const developerReportSchema = z.object({
 
 export type DeveloperReportPoint = z.infer<typeof developerReportPointSchema>;
 export type DeveloperCohort = z.infer<typeof developerCohortSchema>;
+export type DeveloperReportRange = z.infer<typeof developerReportRangeSchema>;
 export type DeveloperReport = z.infer<typeof developerReportSchema>;
 export type DeveloperOrganization = DeveloperReport['organizations'][number];
 export type DeveloperChain = DeveloperReport['scopes']['chains'][number];

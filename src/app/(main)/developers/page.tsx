@@ -3,7 +3,10 @@ import Link from 'next/link';
 
 import { DeveloperReportDashboard } from '@/features/developer-report/components/developer-report-dashboard';
 import { fetchDeveloperReport } from '@/features/developer-report/server';
-import type { DeveloperCohort } from '@/features/developer-report/schemas';
+import type {
+  DeveloperCohort,
+  DeveloperReportRange,
+} from '@/features/developer-report/schemas';
 import { clientEnv } from '@/lib/env/client';
 
 const canonical = `${clientEnv.FRONTEND_URL}/developers`;
@@ -39,20 +42,31 @@ const selectedCohort = (
     : 'all';
 };
 
+const selectedRange = (
+  params: Record<string, string | string[] | undefined>,
+): DeveloperReportRange => {
+  const raw = Array.isArray(params.range) ? params.range[0] : params.range;
+  return raw === '1y' || raw === '3y' ? raw : 'all';
+};
+
 export const generateMetadata = async ({
   searchParams,
 }: Props): Promise<Metadata> => {
   const cohort = selectedCohort(await searchParams);
+  const range = selectedRange(await searchParams);
   const label = COHORT_LABELS[cohort];
   const title =
     cohort === 'all'
-      ? 'Internal Developer Report'
+      ? 'Developer Ecosystem Report'
       : `${label} Developer Report`;
-  const description = `Track verified internal ${cohort === 'all' ? '' : `${label.toLowerCase()} `}developers, maintainers, active leads, contribution cadence, tenure, repositories, organization growth, and team movement.`;
-  const pageUrl =
-    cohort === 'all' ? canonical : `${canonical}?cohort=${cohort}`;
+  const description = `Track all ${cohort === 'all' ? '' : `${label.toLowerCase()} `}contributors, verified internal people, maintainers, leads, repositories, organizations, and team movement from one consistent historical range.`;
+  const pageSearch = new URLSearchParams();
+  if (cohort !== 'all') pageSearch.set('cohort', cohort);
+  if (range !== 'all') pageSearch.set('range', range);
+  const pageUrl = pageSearch.size ? `${canonical}?${pageSearch}` : canonical;
+  const imageSearch = new URLSearchParams({ cohort, range });
   const image = {
-    url: `${canonical}/og?cohort=${cohort}`,
+    url: `${canonical}/og?${imageSearch}`,
     width: 1200,
     height: 630,
     alt: `${title} — JobStash`,
@@ -82,7 +96,8 @@ export const generateMetadata = async ({
 const DevelopersPage = async ({ searchParams }: Props) => {
   const params = await searchParams;
   const cohort = selectedCohort(params);
-  const report = await fetchDeveloperReport(cohort);
+  const range = selectedRange(params);
+  const report = await fetchDeveloperReport(cohort, undefined, range);
 
   if (!report?.current) {
     return (
@@ -90,8 +105,9 @@ const DevelopersPage = async ({ searchParams }: Props) => {
         <div className='max-w-xl rounded-2xl border border-border/60 bg-card/60 p-8'>
           <h1 className='text-3xl font-bold'>Developer report is refreshing</h1>
           <p className='mt-3 text-muted-foreground'>
-            The latest complete internal-developer snapshot is being prepared.
-            You can still explore people and organizations on Ecosystem Vision.
+            The latest contributor and verified-workforce history is being
+            prepared. You can still explore people and organizations on
+            Ecosystem Vision.
           </p>
           <div className='mt-5 flex flex-wrap justify-center gap-3'>
             <a

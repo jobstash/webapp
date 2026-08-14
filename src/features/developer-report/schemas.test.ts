@@ -4,6 +4,7 @@ import { developerReportSchema } from './schemas';
 
 const point = {
   period: '2026-07-01',
+  activeContributors: 300,
   activePeople: 100,
   activeMaintainers: 20,
   activeLeads: 12,
@@ -27,12 +28,29 @@ const point = {
 };
 
 describe('developerReportSchema', () => {
-  it('accepts v2 internal-developer data and rejects external populations', () => {
+  it('accepts the canonical report contract and rejects unsafe populations', () => {
     const report = {
       available: true,
       asOf: '2026-08-01',
       completeThrough: '2026-07-01',
-      methodologyVersion: 'developer-report-v2',
+      methodologyVersion: 'developer-report',
+      range: {
+        key: 'all',
+        label: 'Since inception',
+        from: '2008-01-01',
+        to: '2026-07-01',
+      },
+      summary: {
+        contributors: 300,
+        internalPeople: 100,
+        maintainers: 20,
+        activeLeads: 12,
+        organizations: 15,
+        repositoryCount: 400,
+        indexedCommitRecords: 10_000,
+        internalCommitRecords: 700,
+        mergeRecords: 100,
+      },
       scope: {
         type: 'cohort',
         key: 'crypto',
@@ -46,6 +64,7 @@ describe('developerReportSchema', () => {
           {
             cohort: 'crypto',
             label: 'Crypto',
+            contributors: 300,
             activePeople: 100,
             activeMaintainers: 20,
             activeOrganizations: 15,
@@ -80,16 +99,7 @@ describe('developerReportSchema', () => {
       },
       current: point,
       history: [point],
-      totals: { repositoryCount: 400, commitCount: 10_000 },
       repositoryHistory: [{ period: '2026-07-01', newRepositories: 12 }],
-      breakdown: [
-        {
-          key: 'internalPeople',
-          label: 'Internal people',
-          current: 100,
-          growth: { oneYear: 10, twoYear: null, threeYear: null },
-        },
-      ],
       organizations: [],
       movements: [],
     } as const;
@@ -106,7 +116,7 @@ describe('developerReportSchema', () => {
   it('does not accept the retired retention and maintainer-leverage payload', () => {
     expect(
       developerReportSchema.safeParse({
-        methodologyVersion: 'developer-report-v1',
+        methodologyVersion: 'obsolete-contract',
         retention: [],
         maintainerLeverage: {},
       }).success,

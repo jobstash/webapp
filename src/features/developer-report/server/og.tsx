@@ -26,11 +26,9 @@ export const renderDeveloperReportOg = (
   report: DeveloperReport | null,
   label: string,
 ) => {
-  const current = report?.current;
   const points = sparkline(
-    report?.history.slice(-36).map((point) => point.activePeople) ?? [],
+    report?.history.map((point) => point.activeContributors) ?? [],
   );
-  const established = current?.establishedPeople ?? 0;
 
   return new ImageResponse(
     <div
@@ -81,7 +79,7 @@ export const renderDeveloperReportOg = (
             {label} Developer Report
           </div>
           <div style={{ marginTop: 14, color: '#a4ada8', fontSize: 25 }}>
-            Internal people, maintainers, leads, tenure, and chain activity
+            Contributors, internal people, maintainers, and ecosystem activity
           </div>
         </div>
         <div
@@ -139,11 +137,11 @@ export const renderDeveloperReportOg = (
 
       <div style={{ display: 'flex', gap: 56 }}>
         {[
-          ['Internal people', compact(current?.activePeople ?? 0)],
-          ['Maintainers', compact(current?.activeMaintainers ?? 0)],
-          ['Established', compact(established)],
-          ['Organizations', compact(current?.activeOrganizations ?? 0)],
-          ['Repositories', compact(report?.totals.repositoryCount ?? 0)],
+          ['Contributors', compact(report?.summary.contributors ?? 0)],
+          ['Internal people', compact(report?.summary.internalPeople ?? 0)],
+          ['Maintainers', compact(report?.summary.maintainers ?? 0)],
+          ['Organizations', compact(report?.summary.organizations ?? 0)],
+          ['Repositories', compact(report?.summary.repositoryCount ?? 0)],
         ].map(([metricLabel, value]) => (
           <div
             key={metricLabel}
@@ -157,7 +155,7 @@ export const renderDeveloperReportOg = (
         ))}
       </div>
       <div style={{ color: '#7f8d85', display: 'flex', fontSize: 17 }}>
-        {`Verified internal contributors only · External contributors excluded · Complete through ${report?.completeThrough ?? 'latest snapshot'}`}
+        {`${report?.range.label ?? 'Since inception'} · External and internal contributors shown separately · Complete through ${report?.completeThrough ?? 'latest snapshot'}`}
       </div>
     </div>,
     { width: 1200, height: 630 },

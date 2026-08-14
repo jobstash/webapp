@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   ArrowRightIcon,
   Building2Icon,
@@ -9,7 +9,6 @@ import {
   FingerprintIcon,
   GitBranchIcon,
   GitCommitHorizontalIcon,
-  GitMergeIcon,
   NetworkIcon,
   ShieldCheckIcon,
   UserRoundCheckIcon,
@@ -18,7 +17,11 @@ import {
 
 import { FlintEChart } from '@/features/job-market/components/flint-echart';
 import { cn } from '@/lib/utils';
-import type { DeveloperCohort, DeveloperReport } from '../schemas';
+import type {
+  DeveloperCohort,
+  DeveloperReport,
+  DeveloperReportRange,
+} from '../schemas';
 import {
   cadenceChartOption,
   chainBreadthChartOption,
@@ -30,51 +33,33 @@ import {
 } from './chart-options';
 import { OrganizationBubbleTimeline } from './organization-bubble-timeline';
 
-type Range = '1y' | '3y' | 'all';
-
 const compact = (value: number) =>
   new Intl.NumberFormat('en-US', {
     notation: 'compact',
     maximumFractionDigits: 1,
   }).format(value);
 
-const cohortHref = (cohort: DeveloperCohort) =>
-  cohort === 'all' ? '/developers' : `/developers?cohort=${cohort}`;
-
-const rangeLength: Record<Range, number | null> = {
-  '1y': 12,
-  '3y': 36,
-  all: null,
+const cohortHref = (cohort: DeveloperCohort, range: DeveloperReportRange) => {
+  const search = new URLSearchParams();
+  if (cohort !== 'all') search.set('cohort', cohort);
+  if (range !== 'all') search.set('range', range);
+  return search.size ? `/developers?${search}` : '/developers';
 };
 
-const clipped = <T,>(values: T[], range: Range) => {
-  const length = rangeLength[range];
-  return length === null ? values : values.slice(-length);
-};
+const chainHref = (slug: string, range: DeveloperReportRange) =>
+  range === 'all'
+    ? `/developers/chains/${slug}`
+    : `/developers/chains/${slug}?range=${range}`;
 
-const growth = (value: number | null) =>
-  value === null ? '—' : `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+const rangeHref = (report: DeveloperReport, range: DeveloperReportRange) => {
+  if (report.scope.type === 'chain' && report.scope.slug) {
+    return chainHref(report.scope.slug, range);
+  }
+  return cohortHref(report.scope.key as DeveloperCohort, range);
+};
 
 const share = (part: number, total: number) =>
   total > 0 ? `${((part / total) * 100).toFixed(1)}%` : '—';
-
-const Growth = ({ value }: { value: number | null }) => (
-  <span
-    className={cn(
-      'font-semibold tabular-nums',
-      value !== null && value > 0 && 'text-emerald-400',
-      value !== null && value < 0 && 'text-rose-400',
-      value === null && 'text-muted-foreground',
-    )}
-    title={
-      value === null
-        ? 'Not published: current or baseline cohort is below 10 people'
-        : undefined
-    }
-  >
-    {growth(value)}
-  </span>
-);
 
 const Metric = ({
   label,
@@ -128,9 +113,9 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
       <div>
         <h2 className='text-2xl font-bold'>Compare sectors and chains</h2>
         <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
-          Sector totals assign each organization once. Chain reports overlap by
-          design because the same internal person can build across more than one
-          chain.
+          Every card uses {report.range.label.toLowerCase()}. The population
+          spread shows all contributors, verified internal people, and
+          maintainers; chain reports overlap when people build across chains.
         </p>
       </div>
       <span className='text-xs text-muted-foreground'>
@@ -144,7 +129,7 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
       {report.scopes.cohorts.map((cohort) => (
         <Link
           key={cohort.cohort}
-          href={cohortHref(cohort.cohort)}
+          href={cohortHref(cohort.cohort, report.range.key)}
           aria-current={
             report.scope.type === 'cohort' && cohort.cohort === report.scope.key
               ? 'page'
@@ -161,10 +146,11 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
             {cohort.label}
           </span>
           <strong className='mt-2 block text-2xl'>
-            {compact(cohort.activePeople)}
+            {compact(cohort.contributors)}
           </strong>
           <span className='mt-1 block text-xs text-muted-foreground'>
-            internal people · {compact(cohort.activeOrganizations)} orgs
+            contributors · {compact(cohort.activePeople)} internal ·{' '}
+            {compact(cohort.activeMaintainers)} maintainers
           </span>
         </Link>
       ))}
@@ -172,16 +158,16 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
 
     {report.scopes.chains.length > 0 && (
       <div className='mt-5 overflow-x-auto rounded-xl border border-border/60'>
-        <table className='w-full min-w-[860px] text-left text-sm'>
+        <table className='w-full min-w-[920px] text-left text-sm'>
           <thead className='bg-background/60 text-xs text-muted-foreground uppercase'>
             <tr>
               <th className='px-4 py-3'>Chain</th>
+              <th className='px-4 py-3'>Contributors</th>
               <th className='px-4 py-3'>Internal people</th>
-              <th className='px-4 py-3'>Established</th>
               <th className='px-4 py-3'>Maintainers</th>
+              <th className='px-4 py-3'>Leads</th>
               <th className='px-4 py-3'>Organizations</th>
               <th className='px-4 py-3'>Repositories</th>
-              <th className='px-4 py-3'>1 year</th>
             </tr>
           </thead>
           <tbody>
@@ -197,26 +183,22 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
               >
                 <td className='px-4 py-3'>
                   <Link
-                    href={`/developers/chains/${chain.chainSlug}`}
+                    href={chainHref(chain.chainSlug, report.range.key)}
                     className='font-semibold hover:text-emerald-400'
                   >
                     {chain.chainName}
                   </Link>
                 </td>
+                <td className='px-4 py-3'>{compact(chain.contributors)}</td>
                 <td className='px-4 py-3'>{compact(chain.activePeople)}</td>
-                <td className='px-4 py-3'>
-                  {compact(chain.establishedPeople)}
-                </td>
                 <td className='px-4 py-3'>
                   {compact(chain.activeMaintainers)}
                 </td>
+                <td className='px-4 py-3'>{compact(chain.activeLeads)}</td>
                 <td className='px-4 py-3'>
                   {compact(chain.activeOrganizations)}
                 </td>
                 <td className='px-4 py-3'>{compact(chain.repositoryCount)}</td>
-                <td className='px-4 py-3'>
-                  <Growth value={chain.growth.oneYear} />
-                </td>
               </tr>
             ))}
           </tbody>
@@ -231,15 +213,8 @@ export const DeveloperReportDashboard = ({
 }: {
   report: DeveloperReport;
 }) => {
-  const [range, setRange] = useState<Range>('3y');
-  const history = useMemo(
-    () => clipped(report.history, range),
-    [range, report.history],
-  );
-  const repositoryHistory = useMemo(
-    () => clipped(report.repositoryHistory, range),
-    [range, report.repositoryHistory],
-  );
+  const history = report.history;
+  const repositoryHistory = report.repositoryHistory;
   const workforce = useMemo(() => workforceChartOption(history), [history]);
   const cadence = useMemo(() => cadenceChartOption(history), [history]);
   const tenure = useMemo(() => tenureChartOption(history), [history]);
@@ -258,10 +233,10 @@ export const DeveloperReportDashboard = ({
 
   const scopeLabel = report.scope.label;
   const organizations = [...report.organizations]
-    .filter((organization) => organization.activePeople > 0)
+    .filter((organization) => organization.contributors > 0)
     .sort(
       (left, right) =>
-        right.activePeople - left.activePeople ||
+        right.contributors - left.contributors ||
         left.organizationName.localeCompare(right.organizationName),
     )
     .slice(0, 30);
@@ -279,22 +254,25 @@ export const DeveloperReportDashboard = ({
               {isChain
                 ? 'Chain developer report'
                 : isAll
-                  ? 'Internal developer report'
+                  ? 'Developer ecosystem report'
                   : 'Developer sector report'}
             </div>
             <h1 className='mt-3 text-4xl font-black tracking-tight md:text-6xl'>
               {isAll
-                ? 'The internal developer ecosystem'
+                ? report.range.key === 'all'
+                  ? 'The developer ecosystem since inception'
+                  : `The developer ecosystem — ${report.range.label}`
                 : `The people building ${scopeLabel}`}
             </h1>
             <p className='mt-4 max-w-3xl text-base text-muted-foreground md:text-lg'>
-              Verified internal employees, maintainers, active leads,
-              contribution cadence, tenure, repository creation, organization
-              growth, and team movement from recorded GitHub work history.
+              All code contributors, verified internal employees, maintainers,
+              active leads, repositories, organizations, and team movement from
+              the same recorded GitHub history.
             </p>
             <p className='mt-4 text-xs text-muted-foreground'>
-              Complete through {report.completeThrough ?? report.asOf} ·{' '}
-              {report.population.definition}
+              {report.range.label}: {report.range.from} through{' '}
+              {report.range.to}
+              {' · '}complete through {report.completeThrough ?? report.asOf}
             </p>
             {isChain && (
               <p className='mt-2 text-xs text-amber-300/80'>
@@ -304,22 +282,50 @@ export const DeveloperReportDashboard = ({
               </p>
             )}
           </div>
-          <div className='flex flex-wrap gap-3'>
-            {isChain && (
-              <Link
-                href='/developers'
-                className='inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-bold'
-              >
-                All developers
-              </Link>
-            )}
-            <a
-              href='https://ecosystem.vision/people'
-              className='inline-flex w-fit items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-background'
+          <div className='flex flex-col items-start gap-3 lg:items-end'>
+            <div
+              className='flex rounded-lg border border-border/60 bg-background/70 p-1'
+              aria-label='Report time range'
             >
-              Explore people
-              <ArrowRightIcon className='size-4' aria-hidden />
-            </a>
+              {(
+                [
+                  ['all', 'Since inception'],
+                  ['3y', '3 years'],
+                  ['1y', '1 year'],
+                ] as const
+              ).map(([value, label]) => (
+                <Link
+                  key={value}
+                  href={rangeHref(report, value)}
+                  aria-current={report.range.key === value ? 'page' : undefined}
+                  className={cn(
+                    'rounded-md px-3 py-2 text-xs font-bold',
+                    report.range.key === value
+                      ? 'bg-foreground text-background'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <div className='flex flex-wrap gap-3'>
+              {isChain && (
+                <Link
+                  href={cohortHref('all', report.range.key)}
+                  className='inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-bold'
+                >
+                  All developers
+                </Link>
+              )}
+              <a
+                href='https://ecosystem.vision/people'
+                className='inline-flex w-fit items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-background'
+              >
+                Explore people
+                <ArrowRightIcon className='size-4' aria-hidden />
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -327,256 +333,115 @@ export const DeveloperReportDashboard = ({
       <ScopeSelector report={report} />
 
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-        <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-          <div>
-            <h2 className='text-2xl font-bold'>{scopeLabel} at a glance</h2>
-            <p className='mt-1 text-sm text-muted-foreground'>
-              Latest complete month, with historical totals clearly labeled.
-            </p>
-          </div>
-          <div
-            className='flex w-fit rounded-lg border border-border/60 bg-background/70 p-1'
-            aria-label='Chart time range'
-          >
-            {(['1y', '3y', 'all'] as const).map((value) => (
-              <button
-                key={value}
-                type='button'
-                onClick={() => setRange(value)}
-                aria-pressed={range === value}
-                className={cn(
-                  'rounded-md px-3 py-1.5 text-xs font-bold uppercase',
-                  range === value
-                    ? 'bg-foreground text-background'
-                    : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {value}
-              </button>
-            ))}
-          </div>
+        <div className='mb-4'>
+          <h2 className='text-2xl font-bold'>{scopeLabel} at a glance</h2>
+          <p className='mt-1 text-sm text-muted-foreground'>
+            Distinct populations and recorded work across{' '}
+            {report.range.label.toLowerCase()}. Every value below uses the same
+            interval as the rest of this report.
+          </p>
         </div>
-        <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-6'>
+        <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
           <Metric
             icon={UsersRoundIcon}
-            label='Monthly active internal people'
-            value={compact(current.activePeople)}
-            detail='Active in the complete month'
-          />
-          <Metric
-            icon={GitMergeIcon}
-            label='Monthly active maintainers'
-            value={compact(current.activeMaintainers)}
-            detail='Merged PRs in the complete month'
+            label='All contributors'
+            value={compact(report.summary.contributors)}
+            detail='Any human commit author in this scope'
           />
           <Metric
             icon={UserRoundCheckIcon}
-            label='Active leads'
-            value={compact(current.activeLeads)}
-            detail='Recent merge authority'
+            label='Verified internal people'
+            value={compact(report.summary.internalPeople)}
+            detail={`${share(report.summary.internalPeople, report.summary.contributors)} of contributors`}
+          />
+          <Metric
+            icon={ShieldCheckIcon}
+            label='Maintainers'
+            value={compact(report.summary.maintainers)}
+            detail={`${share(report.summary.maintainers, report.summary.internalPeople)} of internal people`}
           />
           <Metric
             icon={Building2Icon}
             label='Organizations'
-            value={compact(current.activeOrganizations)}
-            detail='With verified internal activity'
+            value={compact(report.summary.organizations)}
+            detail='With contributor activity in this interval'
           />
           <Metric
             icon={GitBranchIcon}
-            label={isAll ? 'Indexed repositories' : 'Internal repositories'}
-            value={compact(
-              isAll
-                ? report.corpus.indexedRepositories
-                : report.totals.repositoryCount,
-            )}
-            detail={
-              isAll
-                ? 'Across the non-banned corpus'
-                : 'Created within this report scope'
-            }
+            label='Repositories created'
+            value={compact(report.summary.repositoryCount)}
+            detail='Original non-fork repositories in this interval'
+          />
+          <Metric
+            icon={DatabaseIcon}
+            label='Contributor commit records'
+            value={compact(report.summary.indexedCommitRecords)}
+            detail='All human contributor activity in this scope'
           />
           <Metric
             icon={GitCommitHorizontalIcon}
-            label='Verified internal commit records'
-            value={compact(
-              isAll
-                ? report.corpus.verifiedInternalCommitRecords
-                : report.totals.commitCount,
-            )}
-            detail={
-              isAll
-                ? 'Canonical internal employees only'
-                : 'Primary-attributed within this scope'
-            }
+            label='Internal commit records'
+            value={compact(report.summary.internalCommitRecords)}
+            detail='Commit activity attributed to internal people'
+          />
+          <Metric
+            icon={UserRoundCheckIcon}
+            label='Active leads'
+            value={compact(report.summary.activeLeads)}
+            detail='Internal maintainers with recent merge authority'
           />
         </div>
       </section>
 
-      {isAll && (
+      {isAll && report.range.key === 'all' && (
         <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-          <h2 className='text-2xl font-bold'>
-            Total developers and verified workforce
-          </h2>
+          <h2 className='text-2xl font-bold'>Corpus coverage</h2>
           <p className='mt-1 max-w-5xl text-sm text-muted-foreground'>
-            The broad developer count used by most reports includes every
-            GitHub-linked commit author. JobStash goes further by identifying
-            which contributors are internal employees and which internal people
-            have merged pull requests as maintainers.
+            All retained, non-banned GitHub records behind the since-inception
+            report. Distinct people are shown in the population cards above;
+            these figures describe the underlying record set.
           </p>
-          <div className='mt-5'>
-            <h3 className='font-bold'>Developer population layers</h3>
-            <p className='mt-1 text-xs text-muted-foreground'>
-              Historical people in the non-banned corpus, counted once in each
-              layer.
-            </p>
-            <div className='mt-4 grid gap-3 md:grid-cols-3'>
-              <Metric
-                icon={UsersRoundIcon}
-                label='Total code contributors'
-                value={compact(report.corpus.githubLinkedAuthors)}
-                detail='Any GitHub-linked commit author'
-              />
-              <Metric
-                icon={UserRoundCheckIcon}
-                label='Verified internal people'
-                value={compact(report.corpus.historicalInternalPeople)}
-                detail={`${share(
-                  report.corpus.historicalInternalPeople,
-                  report.corpus.githubLinkedAuthors,
-                )} of total code contributors`}
-              />
-              <Metric
-                icon={ShieldCheckIcon}
-                label='Maintainers'
-                value={compact(report.corpus.historicalMaintainers)}
-                detail={`${share(
-                  report.corpus.historicalMaintainers,
-                  report.corpus.historicalInternalPeople,
-                )} of verified internal people`}
-              />
-            </div>
-          </div>
-          <div className='mt-5 grid gap-5 xl:grid-cols-2'>
-            <div className='rounded-xl border border-border/60 bg-background/35 p-4'>
-              <h3 className='font-bold'>Indexed GitHub coverage</h3>
-              <p className='mt-1 text-xs text-muted-foreground'>
-                Complete records retained for analysis, after banned
-                organizations and their linked GitHub accounts are excluded.
-              </p>
-              <div className='mt-4 grid gap-3 sm:grid-cols-2'>
-                <Metric
-                  icon={DatabaseIcon}
-                  label='Commit records'
-                  value={compact(report.corpus.indexedCommitRecords)}
-                  detail='Unique owner / repository / SHA rows'
-                />
-                <Metric
-                  icon={FingerprintIcon}
-                  label='Distinct commit SHAs'
-                  value={compact(report.corpus.distinctCommitShas)}
-                  detail='Deduplicated across repositories and forks'
-                />
-                <Metric
-                  icon={GitBranchIcon}
-                  label='Indexed repositories'
-                  value={compact(report.corpus.indexedRepositories)}
-                  detail='Repositories retained for analysis'
-                />
-                <Metric
-                  icon={NetworkIcon}
-                  label='GitHub organizations'
-                  value={compact(report.corpus.indexedGithubOrganizations)}
-                  detail='Non-banned indexed owners'
-                />
-              </div>
-            </div>
-            <div className='rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4'>
-              <h3 className='font-bold'>Current verified workforce</h3>
-              <p className='mt-1 text-xs text-muted-foreground'>
-                Recent internal activity, kept separate from the historical
-                population above.
-              </p>
-              <div className='mt-4 grid gap-3 sm:grid-cols-2'>
-                <Metric
-                  icon={UserRoundCheckIcon}
-                  label='Current internal people'
-                  value={compact(report.corpus.currentInternalPeople)}
-                  detail='Internal activity within three months'
-                />
-                <Metric
-                  icon={GitCommitHorizontalIcon}
-                  label='Internal commit records'
-                  value={compact(report.corpus.verifiedInternalCommitRecords)}
-                  detail='Across verified employee history'
-                />
-                <Metric
-                  icon={ShieldCheckIcon}
-                  label='Current maintainers'
-                  value={compact(report.corpus.currentMaintainers)}
-                  detail='Merged PRs during recent internal activity'
-                />
-                <Metric
-                  icon={GitMergeIcon}
-                  label='Current active leads'
-                  value={compact(report.corpus.currentActiveLeads)}
-                  detail='Recent merge authority'
-                />
-              </div>
-            </div>
+          <div className='mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
+            <Metric
+              icon={DatabaseIcon}
+              label='Commit records'
+              value={compact(report.corpus.indexedCommitRecords)}
+              detail='Unique owner / repository / SHA rows'
+            />
+            <Metric
+              icon={FingerprintIcon}
+              label='Distinct commit SHAs'
+              value={compact(report.corpus.distinctCommitShas)}
+              detail='Deduplicated across repositories and forks'
+            />
+            <Metric
+              icon={GitBranchIcon}
+              label='Indexed repositories'
+              value={compact(report.corpus.indexedRepositories)}
+              detail='Repositories retained for analysis'
+            />
+            <Metric
+              icon={NetworkIcon}
+              label='GitHub organizations'
+              value={compact(report.corpus.indexedGithubOrganizations)}
+              detail='Non-banned indexed owners'
+            />
           </div>
         </section>
       )}
 
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-        <h2 className='text-2xl font-bold'>Internal developer population</h2>
+        <h2 className='text-2xl font-bold'>Contributor population layers</h2>
         <p className='mt-1 max-w-4xl text-sm text-muted-foreground'>
-          People are counted once in their primary organization per month.
-          Maintainers merge pull requests; active leads have recent merge
-          authority. External drive-by contributors do not enter this report.
+          All human commit authors form the outer population. Internal people
+          are the verified subset with repeated organizational write authority;
+          maintainers and active leads are progressively narrower subsets.
         </p>
         <FlintEChart
           option={workforce}
           className='mt-5 h-96 w-full'
-          ariaLabel='Monthly verified internal people, maintainers, and active leads'
+          ariaLabel='Monthly all contributors, verified internal people, maintainers, and active leads'
         />
-      </section>
-
-      <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-        <h2 className='text-2xl font-bold'>Comparable developer signals</h2>
-        <p className='mt-1 text-sm text-muted-foreground'>
-          Current headcount and change from the matching complete month. Growth
-          is withheld when either side contains fewer than ten people.
-        </p>
-        <div className='mt-5 overflow-x-auto rounded-xl border border-border/60'>
-          <table className='w-full min-w-[640px] text-left text-sm'>
-            <thead className='bg-background/60 text-xs text-muted-foreground uppercase'>
-              <tr>
-                <th className='px-4 py-3'>Measure</th>
-                <th className='px-4 py-3'>Current</th>
-                <th className='px-4 py-3'>1 year</th>
-                <th className='px-4 py-3'>2 years</th>
-                <th className='px-4 py-3'>3 years</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.breakdown.map((row) => (
-                <tr key={row.key} className='border-t border-border/50'>
-                  <td className='px-4 py-3 font-semibold'>{row.label}</td>
-                  <td className='px-4 py-3'>{compact(row.current)}</td>
-                  <td className='px-4 py-3'>
-                    <Growth value={row.growth.oneYear} />
-                  </td>
-                  <td className='px-4 py-3'>
-                    <Growth value={row.growth.twoYear} />
-                  </td>
-                  <td className='px-4 py-3'>
-                    <Growth value={row.growth.threeYear} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </section>
 
       <section className='grid gap-4 xl:grid-cols-2'>
@@ -626,8 +491,8 @@ export const DeveloperReportDashboard = ({
 
       <OrganizationBubbleTimeline
         organizations={report.organizations}
-        range={range}
         scopeLabel={scopeLabel}
+        rangeLabel={report.range.label}
       />
 
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
@@ -635,13 +500,13 @@ export const DeveloperReportDashboard = ({
           <div>
             <h2 className='text-2xl font-bold'>
               {isAll
-                ? 'Organizations building now'
-                : `${scopeLabel} organizations building now`}
+                ? 'Organization populations'
+                : `${scopeLabel} organization populations`}
             </h2>
             <p className='mt-1 text-sm text-muted-foreground'>
-              Ranked by current verified internal people. Established people and
-              one-, two-, and three-year comparisons make team depth and
-              direction visible.
+              Ranked by distinct contributors across{' '}
+              {report.range.label.toLowerCase()}. Every nested population and
+              work total uses that same interval.
             </p>
           </div>
           <a
@@ -652,19 +517,18 @@ export const DeveloperReportDashboard = ({
           </a>
         </div>
         <div className='mt-5 overflow-x-auto rounded-xl border border-border/60'>
-          <table className='w-full min-w-[1080px] text-left text-sm'>
+          <table className='w-full min-w-[1120px] text-left text-sm'>
             <thead className='bg-background/60 text-xs text-muted-foreground uppercase'>
               <tr>
                 <th className='px-4 py-3'>Organization</th>
+                <th className='px-4 py-3'>Contributors</th>
                 <th className='px-4 py-3'>Internal</th>
-                <th className='px-4 py-3'>Established</th>
                 <th className='px-4 py-3'>Maintainers</th>
                 <th className='px-4 py-3'>Leads</th>
-                <th className='px-4 py-3'>1 year</th>
-                <th className='px-4 py-3'>2 years</th>
-                <th className='px-4 py-3'>3 years</th>
+                <th className='px-4 py-3'>Internal share</th>
                 <th className='px-4 py-3'>Joined / exited</th>
-                <th className='px-4 py-3'>12m commits</th>
+                <th className='px-4 py-3'>Internal commits</th>
+                <th className='px-4 py-3'>Merged PRs</th>
               </tr>
             </thead>
             <tbody>
@@ -682,37 +546,33 @@ export const DeveloperReportDashboard = ({
                     </Link>
                   </td>
                   <td className='px-4 py-3'>
-                    {compact(organization.activePeople)}
+                    {compact(organization.contributors)}
                   </td>
                   <td className='px-4 py-3'>
-                    {compact(organization.establishedPeople)}
+                    {compact(organization.internalPeople)}
                   </td>
                   <td className='px-4 py-3'>
-                    {compact(organization.activeMaintainers)}
+                    {compact(organization.maintainers)}
                   </td>
+                  <td className='px-4 py-3'>{compact(organization.leads)}</td>
                   <td className='px-4 py-3'>
-                    {compact(organization.activeLeads)}
-                  </td>
-                  <td className='px-4 py-3'>
-                    <Growth value={organization.growth.oneYear} />
-                  </td>
-                  <td className='px-4 py-3'>
-                    <Growth value={organization.growth.twoYear} />
-                  </td>
-                  <td className='px-4 py-3'>
-                    <Growth value={organization.growth.threeYear} />
+                    {share(
+                      organization.internalPeople,
+                      organization.contributors,
+                    )}
                   </td>
                   <td className='px-4 py-3'>
                     <span className='text-emerald-400'>
-                      +{organization.joins12m}
+                      +{organization.joins}
                     </span>
                     {' / '}
-                    <span className='text-rose-400'>
-                      −{organization.exits12m}
-                    </span>
+                    <span className='text-rose-400'>−{organization.exits}</span>
                   </td>
                   <td className='px-4 py-3'>
-                    {compact(organization.commitCount12m)}
+                    {compact(organization.commitCount)}
+                  </td>
+                  <td className='px-4 py-3'>
+                    {compact(organization.mergeCount)}
                   </td>
                 </tr>
               ))}
@@ -728,9 +588,9 @@ export const DeveloperReportDashboard = ({
             <h2 className='text-2xl font-bold'>Largest observed team flows</h2>
           </div>
           <p className='mt-1 text-sm text-muted-foreground'>
-            Top organization-to-organization moves in the trailing twelve
-            months, inferred from confirmed changes in primary internal
-            affiliation rather than profile claims.
+            Top organization-to-organization moves across{' '}
+            {report.range.label.toLowerCase()}, inferred from confirmed changes
+            in primary internal affiliation rather than profile claims.
           </p>
           <div className='mt-5 grid gap-3 md:grid-cols-2'>
             {report.movements.slice(0, 12).map((flow) => (
@@ -765,11 +625,13 @@ export const DeveloperReportDashboard = ({
           />
           <p>
             <strong className='text-foreground'>Population and limits.</strong>{' '}
-            {report.population.definition} This report excludes{' '}
-            {report.population.excludes.join(', ')}. Activity cadence counts
-            distinct active days; tenure starts with the first observed internal
-            month. Repositories exclude forks. GitHub cannot observe private
-            work, so every count is a lower bound. {report.coverage.note}
+            {report.population.definition} The verified-internal layer excludes{' '}
+            {report.population.excludes.join(', ')}, while the outer contributor
+            layer includes human external commit authors. Activity cadence
+            counts distinct active days; tenure starts with the first observed
+            internal month. Repositories exclude forks. GitHub cannot observe
+            private work, so every count is a lower bound.{' '}
+            {report.coverage.note}
           </p>
         </div>
       </section>

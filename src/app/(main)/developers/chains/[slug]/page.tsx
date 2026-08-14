@@ -3,23 +3,35 @@ import Link from 'next/link';
 
 import { DeveloperReportDashboard } from '@/features/developer-report/components/developer-report-dashboard';
 import { fetchDeveloperReport } from '@/features/developer-report/server';
+import type { DeveloperReportRange } from '@/features/developer-report/schemas';
 import { clientEnv } from '@/lib/env/client';
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
+
+const selectedRange = (
+  params: Record<string, string | string[] | undefined>,
+): DeveloperReportRange => {
+  const raw = Array.isArray(params.range) ? params.range[0] : params.range;
+  return raw === '1y' || raw === '3y' ? raw : 'all';
+};
 
 export const generateMetadata = async ({
   params,
+  searchParams,
 }: Props): Promise<Metadata> => {
   const { slug } = await params;
-  const report = await fetchDeveloperReport(null, slug);
+  const range = selectedRange(await searchParams);
+  const report = await fetchDeveloperReport(null, slug, range);
   const label = report?.scope.label ?? slug;
   const title = `${label} Developer Report`;
-  const description = `Track verified internal ${label} developers, maintainers, active leads, contribution cadence, tenure, repositories, organization growth, and team movement.`;
-  const canonical = `${clientEnv.FRONTEND_URL}/developers/chains/${slug}`;
+  const description = `Track all ${label} contributors, verified internal people, maintainers, leads, repositories, organizations, and team movement from one consistent historical range.`;
+  const baseUrl = `${clientEnv.FRONTEND_URL}/developers/chains/${slug}`;
+  const canonical = range === 'all' ? baseUrl : `${baseUrl}?range=${range}`;
   const image = {
-    url: `${canonical}/og`,
+    url: `${baseUrl}/og?range=${range}`,
     width: 1200,
     height: 630,
     alt: `${title} — JobStash`,
@@ -46,9 +58,10 @@ export const generateMetadata = async ({
   };
 };
 
-const DeveloperChainPage = async ({ params }: Props) => {
+const DeveloperChainPage = async ({ params, searchParams }: Props) => {
   const { slug } = await params;
-  const report = await fetchDeveloperReport(null, slug);
+  const range = selectedRange(await searchParams);
+  const report = await fetchDeveloperReport(null, slug, range);
 
   if (!report?.current) {
     return (
@@ -56,7 +69,8 @@ const DeveloperChainPage = async ({ params }: Props) => {
         <div className='max-w-xl rounded-2xl border border-border/60 bg-card/60 p-8'>
           <h1 className='text-3xl font-bold'>Chain report is refreshing</h1>
           <p className='mt-3 text-muted-foreground'>
-            This chain does not yet have a complete internal-developer snapshot.
+            This chain does not yet have a complete contributor and verified
+            workforce history.
           </p>
           <Link
             href='/developers'

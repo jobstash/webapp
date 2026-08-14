@@ -13,6 +13,7 @@ import { DeveloperReportDashboard } from './developer-report-dashboard';
 
 const point: DeveloperReport['current'] = {
   period: '2026-07-01',
+  activeContributors: 300,
   activePeople: 100,
   activeMaintainers: 20,
   activeLeads: 12,
@@ -39,7 +40,24 @@ const report: DeveloperReport = {
   available: true,
   asOf: '2026-07-01T00:00:00.000Z',
   completeThrough: '2026-07-01',
-  methodologyVersion: 'developer-report-v2',
+  methodologyVersion: 'developer-report',
+  range: {
+    key: 'all',
+    label: 'Since inception',
+    from: '2008-01-01',
+    to: '2026-07-01',
+  },
+  summary: {
+    contributors: 300,
+    internalPeople: 100,
+    maintainers: 20,
+    activeLeads: 12,
+    organizations: 15,
+    repositoryCount: 400,
+    indexedCommitRecords: 10_000,
+    internalCommitRecords: 700,
+    mergeRecords: 100,
+  },
   scope: {
     type: 'cohort',
     key: 'crypto',
@@ -53,6 +71,7 @@ const report: DeveloperReport = {
       {
         cohort: 'crypto',
         label: 'Crypto',
+        contributors: 300,
         activePeople: 100,
         activeMaintainers: 20,
         activeOrganizations: 15,
@@ -64,13 +83,12 @@ const report: DeveloperReport = {
         chainSlug: 'ethereum',
         chainName: 'Ethereum',
         logoUrl: null,
+        contributors: 210,
         activePeople: 70,
         activeMaintainers: 15,
         activeLeads: 9,
-        establishedPeople: 40,
         activeOrganizations: 10,
         repositoryCount: 300,
-        growth: { oneYear: 12.5, twoYear: null, threeYear: null },
       },
     ],
   },
@@ -101,16 +119,7 @@ const report: DeveloperReport = {
   },
   current: point,
   history: point ? [point] : [],
-  totals: { repositoryCount: 400, commitCount: 10_000 },
   repositoryHistory: [{ period: '2026-07-01', newRepositories: 12 }],
-  breakdown: [
-    {
-      key: 'internalPeople',
-      label: 'Internal people',
-      current: 100,
-      growth: { oneYear: 10, twoYear: null, threeYear: null },
-    },
-  ],
   organizations: [
     {
       organizationKey: 'uniswap',
@@ -122,17 +131,23 @@ const report: DeveloperReport = {
       layoutX: 0.25,
       layoutY: -0.5,
       communityId: 7,
-      activePeople: 25,
-      activeMaintainers: 10,
-      activeLeads: 6,
-      establishedPeople: 18,
-      growth: { oneYear: 8, twoYear: null, threeYear: null },
-      joins12m: 6,
-      exits12m: 2,
-      netTeamChange12m: 4,
-      commitCount12m: 5_000,
-      mergeCount12m: 600,
-      series: [{ period: '2026-07-01', activePeople: 25 }],
+      contributors: 60,
+      internalPeople: 25,
+      maintainers: 10,
+      leads: 6,
+      joins: 6,
+      exits: 2,
+      commitCount: 5_000,
+      mergeCount: 600,
+      series: [
+        {
+          period: '2026-07-01',
+          activeContributors: 60,
+          activePeople: 25,
+          activeMaintainers: 10,
+          activeLeads: 6,
+        },
+      ],
     },
   ],
   movements: [],
@@ -141,7 +156,7 @@ const report: DeveloperReport = {
 afterEach(cleanup);
 
 describe('DeveloperReportDashboard', () => {
-  it('shows actionable v2 developer signals without retired sections', () => {
+  it('shows one canonical range and contributor population layers', () => {
     render(<DeveloperReportDashboard report={report} />);
 
     expect(
@@ -151,7 +166,9 @@ describe('DeveloperReportDashboard', () => {
     expect(screen.getByText('Developer tenure')).toBeInTheDocument();
     expect(screen.getByText('Chain breadth')).toBeInTheDocument();
     expect(screen.getByText('New repositories')).toBeInTheDocument();
-    expect(screen.getByText('Teams growing and shrinking')).toBeInTheDocument();
+    expect(
+      screen.getByText('Contributor and workforce layers over time'),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('img', {
         name: 'Organization bubble timeline for Crypto, July 2026',
@@ -164,6 +181,11 @@ describe('DeveloperReportDashboard', () => {
       '/developers/chains/ethereum',
     );
     expect(screen.getByText('Uniswap')).toBeInTheDocument();
+    expect(screen.getAllByText('Since inception').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('All contributors').length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText('Verified internal people').length,
+    ).toBeGreaterThan(0);
   });
 
   it('shows the reconciled all-sector population without rounding it to 12K', () => {
@@ -178,6 +200,7 @@ describe('DeveloperReportDashboard', () => {
               {
                 cohort: 'all',
                 label: 'All sectors',
+                contributors: 899_369,
                 activePeople: 11_552,
                 activeMaintainers: 10_138,
                 activeOrganizations: 2_069,
@@ -185,30 +208,54 @@ describe('DeveloperReportDashboard', () => {
             ],
           },
           current: point ? { ...point, activePeople: 11_552 } : null,
+          summary: {
+            ...report.summary,
+            contributors: 899_369,
+            internalPeople: 92_772,
+            maintainers: 36_184,
+            organizations: 7_022,
+          },
         }}
       />,
     );
 
-    expect(screen.getAllByText('11.6K')).toHaveLength(2);
     expect(screen.queryByText('12K')).toBeNull();
     expect(
-      screen.getByText('Total developers and verified workforce'),
+      screen.getByText('Contributor population layers'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Developer population layers')).toBeInTheDocument();
-    expect(screen.getByText('Total code contributors')).toBeInTheDocument();
-    expect(screen.getByText('Indexed GitHub coverage')).toBeInTheDocument();
-    expect(screen.getByText('Current verified workforce')).toBeInTheDocument();
-    expect(screen.getByText('899.4K')).toBeInTheDocument();
+    expect(screen.getByText('Corpus coverage')).toBeInTheDocument();
+    expect(screen.getAllByText('All contributors').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('899.4K').length).toBeGreaterThan(0);
     expect(screen.getByText('336M')).toBeInTheDocument();
     expect(screen.getByText('92.9M')).toBeInTheDocument();
     expect(screen.getByText('92.8K')).toBeInTheDocument();
     expect(screen.getByText('36.2K')).toBeInTheDocument();
-    expect(screen.getByText('16K')).toBeInTheDocument();
-    expect(
-      screen.getByText('10.3% of total code contributors'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('39.0% of verified internal people'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('10.3% of contributors')).toBeInTheDocument();
+    expect(screen.getByText('39.0% of internal people')).toBeInTheDocument();
+  });
+
+  it('preserves the report-wide interval in every scope link', () => {
+    render(
+      <DeveloperReportDashboard
+        report={{
+          ...report,
+          range: {
+            key: '1y',
+            label: 'Last year',
+            from: '2025-08-01',
+            to: '2026-07-01',
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Ethereum' })).toHaveAttribute(
+      'href',
+      '/developers/chains/ethereum?range=1y',
+    );
+    expect(screen.getByRole('link', { name: '3 years' })).toHaveAttribute(
+      'href',
+      '/developers?cohort=crypto&range=3y',
+    );
   });
 });

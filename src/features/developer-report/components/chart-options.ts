@@ -47,6 +47,15 @@ export const workforceChartOption = (
   xAxis: dated(history),
   series: [
     {
+      name: 'All contributors',
+      type: 'line',
+      symbol: 'none',
+      smooth: 0.18,
+      lineStyle: { width: 3, color: '#60a5fa' },
+      areaStyle: { color: 'rgba(59, 130, 246, .09)' },
+      data: history.map((point) => point.activeContributors),
+    },
+    {
       name: 'Internal people',
       type: 'line',
       symbol: 'none',
@@ -60,7 +69,7 @@ export const workforceChartOption = (
       type: 'line',
       symbol: 'none',
       smooth: 0.18,
-      lineStyle: { width: 2, color: '#60a5fa' },
+      lineStyle: { width: 2, color: '#fbbf24' },
       data: history.map((point) => point.activeMaintainers),
     },
     {
