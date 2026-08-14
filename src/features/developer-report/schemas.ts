@@ -99,6 +99,8 @@ export const developerReportSchema = z.object({
     to: z.string(),
   }),
   summary: z.object({
+    allTimeIngestedCommitRows: z.number().int().nonnegative(),
+    reportCommitRecords: z.number().int().nonnegative(),
     rawIndexedCommitRecords: z.number().int().nonnegative(),
     commitsWritten: z.number().int().nonnegative(),
     creditedOriginalCommits: z.number().int().nonnegative(),

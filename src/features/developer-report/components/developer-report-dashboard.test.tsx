@@ -64,6 +64,8 @@ const report: DeveloperReport = {
     to: '2026-07-01',
   },
   summary: {
+    allTimeIngestedCommitRows: 48_000,
+    reportCommitRecords: 10_000,
     rawIndexedCommitRecords: 10_000,
     commitsWritten: 7_000,
     creditedOriginalCommits: 7_000,
@@ -180,6 +182,13 @@ describe('DeveloperReportDashboard', () => {
     expect(screen.queryByText('Retention by starting cohort')).toBeNull();
     expect(screen.queryByText('Maintainer leverage')).toBeNull();
     expect(screen.getAllByText('Commits written').length).toBeGreaterThan(0);
+    expect(screen.getByText('Raw commit rows ingested')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /including repeat crawls.*unique records match this report/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Commits scanned')).toBeNull();
     expect(screen.getAllByText('Active developers').length).toBeGreaterThan(0);
     expect(
       screen.getByText('Developers who wrote at least one new commit'),
@@ -192,6 +201,9 @@ describe('DeveloperReportDashboard', () => {
       screen.getByText(
         /Developers are counted in a month when they write a new commit/,
       ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Raw ingestion includes repeat crawl snapshots/),
     ).toBeInTheDocument();
     expect(screen.queryByText(/provenance-approved/i)).toBeNull();
     expect(screen.queryByText(/organization-gated/i)).toBeNull();

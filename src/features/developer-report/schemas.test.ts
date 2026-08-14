@@ -57,6 +57,8 @@ describe('developerReportSchema', () => {
         to: '2026-07-01',
       },
       summary: {
+        allTimeIngestedCommitRows: 4_800,
+        reportCommitRecords: 1_000,
         rawIndexedCommitRecords: 1_000,
         commitsWritten: 700,
         creditedOriginalCommits: 700,

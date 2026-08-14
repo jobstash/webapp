@@ -239,7 +239,9 @@ export const DeveloperReportDashboard = ({
               Developers are counted in a month when they write a new commit in
               an included public GitHub repository. Commits already present in a
               fork or copied repository are counted separately as older history.
-              Bots and banned organizations are excluded.
+              Bots and banned organizations are excluded. Raw ingestion includes
+              repeat crawl snapshots; report totals count each repository–commit
+              pair once, then apply the selected scope.
             </p>
           </div>
           <nav aria-label='Report range' className='flex flex-wrap gap-2'>
@@ -266,9 +268,9 @@ export const DeveloperReportDashboard = ({
         <div className='mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
           <Metric
             icon={DatabaseIcon}
-            label='Commits scanned'
-            value={compact(report.summary.rawIndexedCommitRecords)}
-            detail='Every commit record found, including reused history'
+            label='Raw commit rows ingested'
+            value={compact(report.summary.allTimeIngestedCommitRows)}
+            detail={`All time, including repeat crawls · ${compact(report.summary.reportCommitRecords)} unique records match this report`}
           />
           <Metric
             icon={GitCommitHorizontalIcon}
