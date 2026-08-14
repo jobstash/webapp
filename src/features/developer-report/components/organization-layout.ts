@@ -28,13 +28,30 @@ const fallbackPosition = (organizationKey: string): StablePosition => {
   return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
 };
 
+const spreadAxis = (
+  positions: Map<string, StablePosition>,
+  axis: keyof StablePosition,
+) => {
+  const ordered = [...positions.entries()].sort(
+    ([leftKey, left], [rightKey, right]) =>
+      left[axis] - right[axis] || leftKey.localeCompare(rightKey),
+  );
+
+  return new Map(
+    ordered.map(([key], index) => [
+      key,
+      ordered.length === 1 ? 0 : -0.88 + (index / (ordered.length - 1)) * 1.76,
+    ]),
+  );
+};
+
 /**
- * The backend layout is calculated once from full-history organization edges
- * on a -1000..1000 plane. Never rank or reflow the selected subset. The chart
- * can reframe that stable layout, but it must not invent new point positions.
+ * Preserve the backend graph's horizontal and vertical ordering, then spread
+ * the selected organizations across the canvas. The result is deterministic
+ * for a report scope and remains fixed throughout timeline playback.
  */
-export const buildStableAtlasPositions = (points: AtlasPoint[]) =>
-  new Map<string, StablePosition>(
+export const buildStableAtlasPositions = (points: AtlasPoint[]) => {
+  const source = new Map<string, StablePosition>(
     points.map((point) => [
       point.organizationKey,
       point.layoutX === null || point.layoutY === null
@@ -45,6 +62,16 @@ export const buildStableAtlasPositions = (points: AtlasPoint[]) =>
           },
     ]),
   );
+  const xPositions = spreadAxis(source, 'x');
+  const yPositions = spreadAxis(source, 'y');
+
+  return new Map(
+    [...source.keys()].map((key) => [
+      key,
+      { x: xPositions.get(key) ?? 0, y: yPositions.get(key) ?? 0 },
+    ]),
+  );
+};
 
 const viewportFor = (values: number[]): AxisViewport => {
   if (values.length === 0) return { min: -1.08, max: 1.08 };
@@ -53,7 +80,7 @@ const viewportFor = (values: number[]): AxisViewport => {
   const maximum = Math.max(...values);
   const center = (minimum + maximum) / 2;
   const contentSpan = Math.max(0.32, maximum - minimum);
-  const paddedSpan = contentSpan * 1.36;
+  const paddedSpan = contentSpan * 1.25;
 
   return {
     min: center - paddedSpan / 2,
