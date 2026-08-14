@@ -85,6 +85,20 @@ const report: DeveloperReport = {
     definition: 'Canonical internal people only.',
     excludes: ['external contributors', 'bots', 'banned organizations'],
   },
+  corpus: {
+    indexedCommitRecords: 335_955_320,
+    distinctCommitShas: 92_889_595,
+    githubLinkedAuthors: 899_369,
+    indexedRepositories: 241_692,
+    indexedGithubOrganizations: 7_022,
+    historicalInternalPeople: 92_772,
+    currentInternalPeople: 15_965,
+    verifiedInternalCommitRecords: 25_656_248,
+    verifiedInternalMergeRecords: 7_443_234,
+    historicalMaintainers: 36_184,
+    currentMaintainers: 8_075,
+    currentActiveLeads: 6_776,
+  },
   current: point,
   history: point ? [point] : [],
   totals: { repositoryCount: 400, commitCount: 10_000 },
@@ -177,5 +191,11 @@ describe('DeveloperReportDashboard', () => {
 
     expect(screen.getAllByText('11.6K')).toHaveLength(2);
     expect(screen.queryByText('12K')).toBeNull();
+    expect(screen.getByText('Indexed GitHub coverage')).toBeInTheDocument();
+    expect(screen.getByText('Verified internal workforce')).toBeInTheDocument();
+    expect(screen.getByText('336M')).toBeInTheDocument();
+    expect(screen.getByText('92.9M')).toBeInTheDocument();
+    expect(screen.getByText('92.8K')).toBeInTheDocument();
+    expect(screen.getByText('16K')).toBeInTheDocument();
   });
 });

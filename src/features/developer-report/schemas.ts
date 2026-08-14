@@ -137,6 +137,20 @@ export const developerReportSchema = z.object({
         }
       }
     }),
+  corpus: z.object({
+    indexedCommitRecords: z.number().int().nonnegative(),
+    distinctCommitShas: z.number().int().nonnegative(),
+    githubLinkedAuthors: z.number().int().nonnegative(),
+    indexedRepositories: z.number().int().nonnegative(),
+    indexedGithubOrganizations: z.number().int().nonnegative(),
+    historicalInternalPeople: z.number().int().nonnegative(),
+    currentInternalPeople: z.number().int().nonnegative(),
+    verifiedInternalCommitRecords: z.number().int().nonnegative(),
+    verifiedInternalMergeRecords: z.number().int().nonnegative(),
+    historicalMaintainers: z.number().int().nonnegative(),
+    currentMaintainers: z.number().int().nonnegative(),
+    currentActiveLeads: z.number().int().nonnegative(),
+  }),
   current: developerReportPointSchema.nullable(),
   history: developerReportPointSchema.array(),
   totals: z.object({

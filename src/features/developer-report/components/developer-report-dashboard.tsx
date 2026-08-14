@@ -5,6 +5,8 @@ import { useMemo, useState } from 'react';
 import {
   ArrowRightIcon,
   Building2Icon,
+  DatabaseIcon,
+  FingerprintIcon,
   GitBranchIcon,
   GitCommitHorizontalIcon,
   GitMergeIcon,
@@ -354,15 +356,15 @@ export const DeveloperReportDashboard = ({
         <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-6'>
           <Metric
             icon={UsersRoundIcon}
-            label='Internal people'
+            label='Monthly active internal people'
             value={compact(current.activePeople)}
             detail='Active in the complete month'
           />
           <Metric
             icon={GitMergeIcon}
-            label='Maintainers'
+            label='Monthly active maintainers'
             value={compact(current.activeMaintainers)}
-            detail='Internal people who merge PRs'
+            detail='Merged PRs in the complete month'
           />
           <Metric
             icon={UserRoundCheckIcon}
@@ -378,18 +380,114 @@ export const DeveloperReportDashboard = ({
           />
           <Metric
             icon={GitBranchIcon}
-            label='Non-fork repositories'
-            value={compact(report.totals.repositoryCount)}
-            detail='Created through the complete month'
+            label={isAll ? 'Indexed repositories' : 'Internal repositories'}
+            value={compact(
+              isAll
+                ? report.corpus.indexedRepositories
+                : report.totals.repositoryCount,
+            )}
+            detail={
+              isAll
+                ? 'Across the non-banned corpus'
+                : 'Created within this report scope'
+            }
           />
           <Metric
             icon={GitCommitHorizontalIcon}
-            label='Recorded commits'
-            value={compact(report.totals.commitCount)}
-            detail='Across published report history'
+            label='Verified internal commit records'
+            value={compact(
+              isAll
+                ? report.corpus.verifiedInternalCommitRecords
+                : report.totals.commitCount,
+            )}
+            detail={
+              isAll
+                ? 'Canonical internal employees only'
+                : 'Primary-attributed within this scope'
+            }
           />
         </div>
       </section>
+
+      {isAll && (
+        <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+          <h2 className='text-2xl font-bold'>Corpus and workforce coverage</h2>
+          <p className='mt-1 max-w-5xl text-sm text-muted-foreground'>
+            These are two different populations. Indexed coverage describes all
+            non-banned GitHub history we hold. The verified workforce contains
+            only people classified as internal employees; external contributors
+            are never counted as internal developers.
+          </p>
+          <div className='mt-5 grid gap-5 xl:grid-cols-2'>
+            <div className='rounded-xl border border-border/60 bg-background/35 p-4'>
+              <h3 className='font-bold'>Indexed GitHub coverage</h3>
+              <p className='mt-1 text-xs text-muted-foreground'>
+                Complete records retained for analysis, after banned
+                organizations and their linked GitHub accounts are excluded.
+              </p>
+              <div className='mt-4 grid gap-3 sm:grid-cols-2'>
+                <Metric
+                  icon={DatabaseIcon}
+                  label='Commit records'
+                  value={compact(report.corpus.indexedCommitRecords)}
+                  detail='Unique owner / repository / SHA rows'
+                />
+                <Metric
+                  icon={FingerprintIcon}
+                  label='Distinct commit SHAs'
+                  value={compact(report.corpus.distinctCommitShas)}
+                  detail='Deduplicated across repositories and forks'
+                />
+                <Metric
+                  icon={UsersRoundIcon}
+                  label='GitHub-linked authors'
+                  value={compact(report.corpus.githubLinkedAuthors)}
+                  detail='Includes internal and external authors'
+                />
+                <Metric
+                  icon={NetworkIcon}
+                  label='GitHub organizations'
+                  value={compact(report.corpus.indexedGithubOrganizations)}
+                  detail='Non-banned indexed owners'
+                />
+              </div>
+            </div>
+            <div className='rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4'>
+              <h3 className='font-bold'>Verified internal workforce</h3>
+              <p className='mt-1 text-xs text-muted-foreground'>
+                The battle-tested employee and maintainer models, never the full
+                set of external GitHub contributors.
+              </p>
+              <div className='mt-4 grid gap-3 sm:grid-cols-2'>
+                <Metric
+                  icon={UsersRoundIcon}
+                  label='Historical internal people'
+                  value={compact(report.corpus.historicalInternalPeople)}
+                  detail='Verified at any point in recorded history'
+                />
+                <Metric
+                  icon={UserRoundCheckIcon}
+                  label='Current internal people'
+                  value={compact(report.corpus.currentInternalPeople)}
+                  detail='Internal activity within three months'
+                />
+                <Metric
+                  icon={GitCommitHorizontalIcon}
+                  label='Internal commit records'
+                  value={compact(report.corpus.verifiedInternalCommitRecords)}
+                  detail='Across verified employee history'
+                />
+                <Metric
+                  icon={ShieldCheckIcon}
+                  label='Historical maintainers'
+                  value={compact(report.corpus.historicalMaintainers)}
+                  detail={`${compact(report.corpus.currentMaintainers)} current`}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
         <h2 className='text-2xl font-bold'>Internal developer population</h2>
