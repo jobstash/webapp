@@ -66,6 +66,7 @@ export const renderDeveloperReportOg = (
           </div>
           <div
             style={{
+              display: 'flex',
               maxWidth: 940,
               marginTop: 18,
               fontSize: 64,
