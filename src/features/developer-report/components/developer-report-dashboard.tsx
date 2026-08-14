@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import {
   Building2Icon,
+  CopyIcon,
   DatabaseIcon,
   GitBranchIcon,
   GitCommitHorizontalIcon,
@@ -17,10 +18,11 @@ import { cn } from '@/lib/utils';
 import type { DeveloperReport, DeveloperReportRange } from '../schemas';
 import {
   cadenceChartOption,
-  growthChartOption,
+  codeFlowChartOption,
+  newDevelopersChartOption,
+  repositoryGrowthChartOption,
   tenureChartOption,
   workforceChartOption,
-  workChartOption,
 } from './chart-options';
 import { OrganizationBubbleTimeline } from './organization-bubble-timeline';
 
@@ -206,11 +208,21 @@ export const DeveloperReportDashboard = ({
     () => tenureChartOption(report.history),
     [report.history],
   );
-  const growth = useMemo(
-    () => growthChartOption(report.history),
+  const newDevelopers = useMemo(
+    () => newDevelopersChartOption(report.history),
     [report.history],
   );
-  const work = useMemo(() => workChartOption(report.history), [report.history]);
+  const repositoryGrowth = useMemo(
+    () => repositoryGrowthChartOption(report.history),
+    [report.history],
+  );
+  const codeFlow = useMemo(
+    () => codeFlowChartOption(report.history),
+    [report.history],
+  );
+  const inheritedCommits =
+    report.summary.inheritedForkCommits +
+    report.summary.inheritedUnattributedCopyCommits;
 
   return (
     <main className='mx-auto w-full max-w-[1600px] space-y-6 px-4 py-8 md:px-8'>
@@ -224,9 +236,10 @@ export const DeveloperReportDashboard = ({
               {report.scope.label}
             </h1>
             <p className='mt-3 max-w-4xl text-sm text-muted-foreground md:text-base'>
-              Developers are counted when they author original code in an
-              included public GitHub repository. Copied code, inherited fork
-              history, bots, and banned organizations are removed.
+              Developers are counted when a new commit is attributed to them in
+              an included public GitHub repository. Older history brought into a
+              repository through a fork or an unattributed copy is measured
+              separately, while bots and banned organizations are excluded.
             </p>
           </div>
           <nav aria-label='Report range' className='flex flex-wrap gap-2'>
@@ -250,18 +263,30 @@ export const DeveloperReportDashboard = ({
           </nav>
         </div>
 
-        <div className='mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6'>
+        <div className='mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
           <Metric
             icon={DatabaseIcon}
             label='Commits scanned'
             value={compact(report.summary.rawIndexedCommitRecords)}
-            detail='Every commit record found before filtering'
+            detail='Commit records considered before attribution'
           />
           <Metric
             icon={GitCommitHorizontalIcon}
-            label='Original commits'
-            value={compact(report.summary.creditedOriginalCommits)}
-            detail='Commits kept after copies and fork history are removed'
+            label='Commits written'
+            value={compact(report.summary.commitsWritten)}
+            detail='New commits attributed to their source repository'
+          />
+          <Metric
+            icon={CopyIcon}
+            label='Inherited commits'
+            value={compact(inheritedCommits)}
+            detail='Older history found in forks and unattributed copies'
+          />
+          <Metric
+            icon={GitBranchIcon}
+            label='Forks · unattributed copies'
+            value={`${compact(report.summary.newForkRepositories)} · ${compact(report.summary.newUnattributedCopyRepositories)}`}
+            detail='Destination repositories created in this period'
           />
           <Metric
             icon={UsersRoundIcon}
@@ -295,13 +320,13 @@ export const DeveloperReportDashboard = ({
       <div className='grid gap-6 xl:grid-cols-2'>
         <ChartCard
           title='Active developers over time'
-          description='The gray line shows everyone found in scanned commits. The colored lines show developers whose original work was counted, including team developers, maintainers, and leads.'
+          description='The gray line shows everyone found in scanned commits. The colored lines show developers with newly written commits that month, including team developers, maintainers, and leads.'
           option={workforce}
         />
         <ChartCard
-          title='Original commits and all commits scanned'
-          description='Original commits are credited to the people who wrote them. The comparison line includes every commit we scanned, including copies and inherited fork history.'
-          option={work}
+          title='Code written and inherited each month'
+          description='The green line is new commits written that month. The bars are older commits found inside forked or copied repositories created that month. Each month stands alone; nothing accumulates from earlier months.'
+          option={codeFlow}
         />
         <ChartCard
           title='Active developers by contribution frequency'
@@ -314,11 +339,16 @@ export const DeveloperReportDashboard = ({
           option={tenure}
         />
         <ChartCard
-          title='New developers and repositories'
-          description='Developers are counted in the month of their first original commit. Repositories are counted when we first see a non-fork project from an included organization.'
-          option={growth}
+          title='New developers'
+          description='A developer is counted once, in the month of their first newly written commit in the report.'
+          option={newDevelopers}
         />
-        <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+        <ChartCard
+          title='New repositories by how code arrived'
+          description='Repositories built from scratch, GitHub forks, and unattributed copies are counted in the destination repository’s creation month. An unattributed copy has no GitHub fork relationship, but its early commit hashes match an older repository owned elsewhere—the same signal used in threat intelligence.'
+          option={repositoryGrowth}
+        />
+        <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6 xl:col-span-2'>
           <h2 className='text-2xl font-bold'>
             How much of the dataset is categorized
           </h2>

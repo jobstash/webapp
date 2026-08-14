@@ -13,7 +13,10 @@ const point = {
   activeOrganizations: 15,
   activeRepositories: 80,
   rawIndexedCommitRecords: 1_000,
+  commitsWritten: 700,
   creditedOriginalCommits: 700,
+  inheritedForkCommits: 120,
+  inheritedUnattributedCopyCommits: 10,
   fullTimeDevelopers: 60,
   partTimeDevelopers: 90,
   oneTimeDevelopers: 50,
@@ -22,6 +25,8 @@ const point = {
   establishedDevelopers: 100,
   newDevelopers: 18,
   newRepositories: 12,
+  newForkRepositories: 4,
+  newUnattributedCopyRepositories: 1,
   internalDeveloperShare: 0.5,
 };
 
@@ -53,7 +58,10 @@ describe('developerReportSchema', () => {
       },
       summary: {
         rawIndexedCommitRecords: 1_000,
+        commitsWritten: 700,
         creditedOriginalCommits: 700,
+        inheritedForkCommits: 120,
+        inheritedUnattributedCopyCommits: 10,
         allContributors: 300,
         activeDevelopers: 200,
         internalDevelopers: 100,
@@ -64,6 +72,8 @@ describe('developerReportSchema', () => {
         activeRepositories: 80,
         newDevelopers: 18,
         newRepositories: 12,
+        newForkRepositories: 4,
+        newUnattributedCopyRepositories: 1,
         internalDeveloperShare: 0.5,
       },
       scope: {

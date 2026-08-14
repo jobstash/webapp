@@ -22,7 +22,10 @@ const point: NonNullable<DeveloperReport['current']> = {
   activeOrganizations: 15,
   activeRepositories: 80,
   rawIndexedCommitRecords: 1_000,
+  commitsWritten: 700,
   creditedOriginalCommits: 700,
+  inheritedForkCommits: 120,
+  inheritedUnattributedCopyCommits: 10,
   fullTimeDevelopers: 60,
   partTimeDevelopers: 90,
   oneTimeDevelopers: 50,
@@ -31,6 +34,8 @@ const point: NonNullable<DeveloperReport['current']> = {
   establishedDevelopers: 100,
   newDevelopers: 18,
   newRepositories: 12,
+  newForkRepositories: 4,
+  newUnattributedCopyRepositories: 1,
   internalDeveloperShare: 0.5,
 };
 
@@ -60,7 +65,10 @@ const report: DeveloperReport = {
   },
   summary: {
     rawIndexedCommitRecords: 10_000,
+    commitsWritten: 7_000,
     creditedOriginalCommits: 7_000,
+    inheritedForkCommits: 1_200,
+    inheritedUnattributedCopyCommits: 100,
     allContributors: 300,
     activeDevelopers: 200,
     internalDevelopers: 100,
@@ -71,6 +79,8 @@ const report: DeveloperReport = {
     activeRepositories: 400,
     newDevelopers: 18,
     newRepositories: 12,
+    newForkRepositories: 4,
+    newUnattributedCopyRepositories: 1,
     internalDeveloperShare: 0.5,
   },
   scope: {
@@ -160,7 +170,7 @@ describe('DeveloperReportDashboard', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Active developers by tenure')).toBeInTheDocument();
     expect(
-      screen.getByText('New developers and repositories'),
+      screen.getByText('New repositories by how code arrived'),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('img', {
@@ -169,10 +179,12 @@ describe('DeveloperReportDashboard', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('Retention by starting cohort')).toBeNull();
     expect(screen.queryByText('Maintainer leverage')).toBeNull();
-    expect(screen.getAllByText('Original commits').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Commits written').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Active developers').length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/Developers are counted when they author original code/),
+      screen.getByText(
+        /Developers are counted when a new commit is attributed/,
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/provenance-approved/i)).toBeNull();
     expect(screen.queryByText(/organization-gated/i)).toBeNull();

@@ -23,7 +23,10 @@ export const developerReportPointSchema = z.object({
   activeOrganizations: z.number().int().nonnegative(),
   activeRepositories: z.number().int().nonnegative(),
   rawIndexedCommitRecords: z.number().int().nonnegative(),
+  commitsWritten: z.number().int().nonnegative(),
   creditedOriginalCommits: z.number().int().nonnegative(),
+  inheritedForkCommits: z.number().int().nonnegative(),
+  inheritedUnattributedCopyCommits: z.number().int().nonnegative(),
   fullTimeDevelopers: z.number().int().nonnegative(),
   partTimeDevelopers: z.number().int().nonnegative(),
   oneTimeDevelopers: z.number().int().nonnegative(),
@@ -32,6 +35,8 @@ export const developerReportPointSchema = z.object({
   establishedDevelopers: z.number().int().nonnegative(),
   newDevelopers: z.number().int().nonnegative(),
   newRepositories: z.number().int().nonnegative(),
+  newForkRepositories: z.number().int().nonnegative(),
+  newUnattributedCopyRepositories: z.number().int().nonnegative(),
   internalDeveloperShare: z.number().nonnegative(),
 });
 
@@ -95,7 +100,10 @@ export const developerReportSchema = z.object({
   }),
   summary: z.object({
     rawIndexedCommitRecords: z.number().int().nonnegative(),
+    commitsWritten: z.number().int().nonnegative(),
     creditedOriginalCommits: z.number().int().nonnegative(),
+    inheritedForkCommits: z.number().int().nonnegative(),
+    inheritedUnattributedCopyCommits: z.number().int().nonnegative(),
     allContributors: z.number().int().nonnegative(),
     activeDevelopers: z.number().int().nonnegative(),
     internalDevelopers: z.number().int().nonnegative(),
@@ -106,6 +114,8 @@ export const developerReportSchema = z.object({
     activeRepositories: z.number().int().nonnegative(),
     newDevelopers: z.number().int().nonnegative(),
     newRepositories: z.number().int().nonnegative(),
+    newForkRepositories: z.number().int().nonnegative(),
+    newUnattributedCopyRepositories: z.number().int().nonnegative(),
     internalDeveloperShare: z.number().nonnegative(),
   }),
   scope: z.object({
