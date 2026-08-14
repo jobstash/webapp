@@ -3,6 +3,7 @@ import 'server-only';
 import { cache } from 'react';
 
 import { clientEnv } from '@/lib/env/client';
+import { slugify } from '@/lib/server/utils';
 import {
   developerReportSchema,
   type DeveloperReport,
@@ -16,8 +17,8 @@ const fetchDeveloperReportUncached = async (
 ): Promise<DeveloperReport | null> => {
   try {
     const search = new URLSearchParams();
-    if (vertical) search.set('vertical', vertical);
-    if (chain) search.set('chain', chain);
+    if (vertical) search.set('vertical', slugify(vertical));
+    if (chain) search.set('chain', slugify(chain));
     search.set('range', range);
 
     const response = await fetch(
