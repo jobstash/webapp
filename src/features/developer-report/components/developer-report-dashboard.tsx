@@ -55,6 +55,9 @@ const clipped = <T,>(values: T[], range: Range) => {
 const growth = (value: number | null) =>
   value === null ? '—' : `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
 
+const share = (part: number, total: number) =>
+  total > 0 ? `${((part / total) * 100).toFixed(1)}%` : '—';
+
 const Growth = ({ value }: { value: number | null }) => (
   <span
     className={cn(
@@ -411,13 +414,48 @@ export const DeveloperReportDashboard = ({
 
       {isAll && (
         <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-          <h2 className='text-2xl font-bold'>Corpus and workforce coverage</h2>
+          <h2 className='text-2xl font-bold'>
+            Total developers and verified workforce
+          </h2>
           <p className='mt-1 max-w-5xl text-sm text-muted-foreground'>
-            These are two different populations. Indexed coverage describes all
-            non-banned GitHub history we hold. The verified workforce contains
-            only people classified as internal employees; external contributors
-            are never counted as internal developers.
+            The broad developer count used by most reports includes every
+            GitHub-linked commit author. JobStash goes further by identifying
+            which contributors are internal employees and which internal people
+            have merged pull requests as maintainers.
           </p>
+          <div className='mt-5'>
+            <h3 className='font-bold'>Developer population layers</h3>
+            <p className='mt-1 text-xs text-muted-foreground'>
+              Historical people in the non-banned corpus, counted once in each
+              layer.
+            </p>
+            <div className='mt-4 grid gap-3 md:grid-cols-3'>
+              <Metric
+                icon={UsersRoundIcon}
+                label='Total code contributors'
+                value={compact(report.corpus.githubLinkedAuthors)}
+                detail='Any GitHub-linked commit author'
+              />
+              <Metric
+                icon={UserRoundCheckIcon}
+                label='Verified internal people'
+                value={compact(report.corpus.historicalInternalPeople)}
+                detail={`${share(
+                  report.corpus.historicalInternalPeople,
+                  report.corpus.githubLinkedAuthors,
+                )} of total code contributors`}
+              />
+              <Metric
+                icon={ShieldCheckIcon}
+                label='Maintainers'
+                value={compact(report.corpus.historicalMaintainers)}
+                detail={`${share(
+                  report.corpus.historicalMaintainers,
+                  report.corpus.historicalInternalPeople,
+                )} of verified internal people`}
+              />
+            </div>
+          </div>
           <div className='mt-5 grid gap-5 xl:grid-cols-2'>
             <div className='rounded-xl border border-border/60 bg-background/35 p-4'>
               <h3 className='font-bold'>Indexed GitHub coverage</h3>
@@ -439,10 +477,10 @@ export const DeveloperReportDashboard = ({
                   detail='Deduplicated across repositories and forks'
                 />
                 <Metric
-                  icon={UsersRoundIcon}
-                  label='GitHub-linked authors'
-                  value={compact(report.corpus.githubLinkedAuthors)}
-                  detail='Includes internal and external authors'
+                  icon={GitBranchIcon}
+                  label='Indexed repositories'
+                  value={compact(report.corpus.indexedRepositories)}
+                  detail='Repositories retained for analysis'
                 />
                 <Metric
                   icon={NetworkIcon}
@@ -453,18 +491,12 @@ export const DeveloperReportDashboard = ({
               </div>
             </div>
             <div className='rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4'>
-              <h3 className='font-bold'>Verified internal workforce</h3>
+              <h3 className='font-bold'>Current verified workforce</h3>
               <p className='mt-1 text-xs text-muted-foreground'>
-                The battle-tested employee and maintainer models, never the full
-                set of external GitHub contributors.
+                Recent internal activity, kept separate from the historical
+                population above.
               </p>
               <div className='mt-4 grid gap-3 sm:grid-cols-2'>
-                <Metric
-                  icon={UsersRoundIcon}
-                  label='Historical internal people'
-                  value={compact(report.corpus.historicalInternalPeople)}
-                  detail='Verified at any point in recorded history'
-                />
                 <Metric
                   icon={UserRoundCheckIcon}
                   label='Current internal people'
@@ -479,9 +511,15 @@ export const DeveloperReportDashboard = ({
                 />
                 <Metric
                   icon={ShieldCheckIcon}
-                  label='Historical maintainers'
-                  value={compact(report.corpus.historicalMaintainers)}
-                  detail={`${compact(report.corpus.currentMaintainers)} current`}
+                  label='Current maintainers'
+                  value={compact(report.corpus.currentMaintainers)}
+                  detail='Merged PRs during recent internal activity'
+                />
+                <Metric
+                  icon={GitMergeIcon}
+                  label='Current active leads'
+                  value={compact(report.corpus.currentActiveLeads)}
+                  detail='Recent merge authority'
                 />
               </div>
             </div>

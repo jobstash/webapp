@@ -191,11 +191,24 @@ describe('DeveloperReportDashboard', () => {
 
     expect(screen.getAllByText('11.6K')).toHaveLength(2);
     expect(screen.queryByText('12K')).toBeNull();
+    expect(
+      screen.getByText('Total developers and verified workforce'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Developer population layers')).toBeInTheDocument();
+    expect(screen.getByText('Total code contributors')).toBeInTheDocument();
     expect(screen.getByText('Indexed GitHub coverage')).toBeInTheDocument();
-    expect(screen.getByText('Verified internal workforce')).toBeInTheDocument();
+    expect(screen.getByText('Current verified workforce')).toBeInTheDocument();
+    expect(screen.getByText('899.4K')).toBeInTheDocument();
     expect(screen.getByText('336M')).toBeInTheDocument();
     expect(screen.getByText('92.9M')).toBeInTheDocument();
     expect(screen.getByText('92.8K')).toBeInTheDocument();
+    expect(screen.getByText('36.2K')).toBeInTheDocument();
     expect(screen.getByText('16K')).toBeInTheDocument();
+    expect(
+      screen.getByText('10.3% of total code contributors'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('39.0% of verified internal people'),
+    ).toBeInTheDocument();
   });
 });
