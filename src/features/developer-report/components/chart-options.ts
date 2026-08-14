@@ -158,7 +158,12 @@ export const repositoryGrowthChartOption = (
       type: 'bar',
       stack: 'repositories',
       itemStyle: { color: '#34d399', borderRadius: [3, 3, 0, 0] },
-      data: history.map((point) => point.newRepositories),
+      data: history.map((point) =>
+        Math.max(
+          0,
+          point.newRepositories - point.newUnattributedCopyRepositories,
+        ),
+      ),
     },
     {
       name: 'New GitHub forks',
