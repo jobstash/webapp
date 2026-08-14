@@ -172,8 +172,9 @@ describe('DeveloperReportDashboard', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Active developers by tenure')).toBeInTheDocument();
     expect(
-      screen.getByText('New repositories by how code arrived'),
+      screen.getByText('New repositories and GitHub forks'),
     ).toBeInTheDocument();
+    expect(screen.getByText('Commits written each month')).toBeInTheDocument();
     expect(
       screen.getByRole('img', {
         name: 'Organization bubble timeline for Crypto, July 2026',
@@ -194,9 +195,7 @@ describe('DeveloperReportDashboard', () => {
       screen.getByText('Developers who wrote at least one new commit'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/original code/i)).toBeNull();
-    expect(
-      screen.getByText(/no older matching history, GitHub forks/),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/unattributed cop/i)).toBeNull();
     expect(
       screen.getByText(
         /Developers are counted in a month when they write a new commit/,
@@ -220,5 +219,33 @@ describe('DeveloperReportDashboard', () => {
       'href',
       '/developers?vertical=crypto&range=3y',
     );
+  });
+
+  it('makes an active chain filter explicit in every overall count', () => {
+    render(
+      <DeveloperReportDashboard
+        report={{
+          ...report,
+          scope: {
+            ...report.scope,
+            type: 'vertical_chain',
+            label: 'Crypto · Ethereum',
+            chain: 'ethereum',
+            chainsOverlap: true,
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText('Explore Ethereum by category'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('All categories · Ethereum')).toBeInTheDocument();
+    expect(
+      screen.getByText('active developers on Ethereum'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Show all chains' }),
+    ).toHaveAttribute('href', '/developers?vertical=crypto');
   });
 });

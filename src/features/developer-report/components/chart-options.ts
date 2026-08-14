@@ -154,14 +154,16 @@ export const repositoryGrowthChartOption = (
   xAxis: { ...dated(history), boundaryGap: true },
   series: [
     {
-      name: 'New repositories · no older history matched',
+      name: 'New repositories',
       type: 'bar',
       stack: 'repositories',
       itemStyle: { color: '#34d399', borderRadius: [3, 3, 0, 0] },
       data: history.map((point) =>
         Math.max(
           0,
-          point.newRepositories - point.newUnattributedCopyRepositories,
+          point.newRepositories -
+            point.newForkRepositories -
+            point.newUnattributedCopyRepositories,
         ),
       ),
     },
@@ -172,21 +174,14 @@ export const repositoryGrowthChartOption = (
       itemStyle: { color: '#60a5fa' },
       data: history.map((point) => point.newForkRepositories),
     },
-    {
-      name: 'Copied without GitHub attribution',
-      type: 'bar',
-      stack: 'repositories',
-      itemStyle: { color: '#c084fc', borderRadius: [3, 3, 0, 0] },
-      data: history.map((point) => point.newUnattributedCopyRepositories),
-    },
   ],
 });
 
-export const codeFlowChartOption = (
+export const commitsWrittenChartOption = (
   history: DeveloperReportPoint[],
 ): EChartsCoreOption => ({
   ...base,
-  xAxis: { ...dated(history), boundaryGap: true },
+  xAxis: dated(history),
   series: [
     line(
       'Commits written',
@@ -194,19 +189,5 @@ export const codeFlowChartOption = (
       history.map((point) => point.commitsWritten),
       3,
     ),
-    {
-      name: 'Older commits inherited through new forks',
-      type: 'bar',
-      stack: 'inherited',
-      itemStyle: { color: '#60a5fa' },
-      data: history.map((point) => point.inheritedForkCommits),
-    },
-    {
-      name: 'Older commits in unattributed copies',
-      type: 'bar',
-      stack: 'inherited',
-      itemStyle: { color: '#c084fc', borderRadius: [3, 3, 0, 0] },
-      data: history.map((point) => point.inheritedUnattributedCopyCommits),
-    },
   ],
 });

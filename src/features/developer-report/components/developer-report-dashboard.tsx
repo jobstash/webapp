@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import {
   Building2Icon,
-  CopyIcon,
   DatabaseIcon,
   GitBranchIcon,
   GitCommitHorizontalIcon,
@@ -18,7 +17,7 @@ import { cn } from '@/lib/utils';
 import type { DeveloperReport, DeveloperReportRange } from '../schemas';
 import {
   cadenceChartOption,
-  codeFlowChartOption,
+  commitsWrittenChartOption,
   newDevelopersChartOption,
   repositoryGrowthChartOption,
   tenureChartOption,
@@ -100,96 +99,116 @@ const ChartCard = ({
   </section>
 );
 
-const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
-  <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-    <div className='flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between'>
-      <div>
-        <h2 className='text-2xl font-bold'>Explore by category or chain</h2>
-        <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
-          Each organization belongs to one category, but it can build on more
-          than one chain. Choose a category, a chain, or both to update every
-          chart.
-        </p>
-      </div>
-      <span className='text-xs text-muted-foreground'>
-        {report.coverage.organizationPercent.toFixed(1)}% of organizations ·{' '}
-        {report.coverage.developerPercent.toFixed(1)}% of developers categorized
-      </span>
-    </div>
+const ScopeSelector = ({ report }: { report: DeveloperReport }) => {
+  const selectedChain = report.scope.chain
+    ? report.scopes.chains.find((chain) => chain.slug === report.scope.chain)
+    : null;
+  const selectedChainLabel = selectedChain?.label ?? report.scope.chain;
 
-    <div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-      <Link
-        href={reportHref(report, { vertical: null })}
-        className={cn(
-          'rounded-xl border p-4 transition-colors',
-          report.scope.vertical === null
-            ? 'border-emerald-500/60 bg-emerald-500/10'
-            : 'border-border/60 bg-background/50 hover:border-emerald-500/35',
-        )}
-      >
-        <span className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
-          Overall
+  return (
+    <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
+      <div className='flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between'>
+        <div>
+          <h2 className='text-2xl font-bold'>
+            {selectedChainLabel
+              ? `Explore ${selectedChainLabel} by category`
+              : 'Explore by category or chain'}
+          </h2>
+          <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
+            {selectedChainLabel
+              ? `Every number below is filtered to ${selectedChainLabel}. Choose a category to narrow it further, or show all chains to return to the complete dataset.`
+              : 'Each organization belongs to one category, but it can build on more than one chain. Choose a category, a chain, or both to update every chart.'}
+          </p>
+        </div>
+        <span className='text-xs text-muted-foreground'>
+          {report.coverage.organizationPercent.toFixed(1)}% of organizations ·{' '}
+          {report.coverage.developerPercent.toFixed(1)}% of developers
+          categorized
         </span>
-        <strong className='mt-2 block text-2xl'>
-          {compact(report.summary.activeDevelopers)}
-        </strong>
-        <span className='text-xs text-muted-foreground'>active developers</span>
-      </Link>
-      {report.scopes.verticals.map((vertical) => (
+      </div>
+
+      <div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
         <Link
-          key={vertical.slug}
-          href={reportHref(report, { vertical: vertical.slug })}
-          aria-current={
-            report.scope.vertical === vertical.slug ? 'page' : undefined
-          }
+          href={reportHref(report, { vertical: null })}
           className={cn(
             'rounded-xl border p-4 transition-colors',
-            report.scope.vertical === vertical.slug
+            report.scope.vertical === null
               ? 'border-emerald-500/60 bg-emerald-500/10'
               : 'border-border/60 bg-background/50 hover:border-emerald-500/35',
           )}
         >
           <span className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
-            {vertical.label}
+            {selectedChainLabel
+              ? `All categories · ${selectedChainLabel}`
+              : 'Overall'}
           </span>
           <strong className='mt-2 block text-2xl'>
-            {compact(vertical.activeDevelopers)}
+            {compact(report.summary.activeDevelopers)}
           </strong>
           <span className='text-xs text-muted-foreground'>
-            {compact(vertical.internalDevelopers)} team developers ·{' '}
-            {compact(vertical.activeOrganizations)} organizations
+            {selectedChainLabel
+              ? `active developers on ${selectedChainLabel}`
+              : 'active developers'}
           </span>
         </Link>
-      ))}
-    </div>
+        {report.scopes.verticals.map((vertical) => (
+          <Link
+            key={vertical.slug}
+            href={reportHref(report, { vertical: vertical.slug })}
+            aria-current={
+              report.scope.vertical === vertical.slug ? 'page' : undefined
+            }
+            className={cn(
+              'rounded-xl border p-4 transition-colors',
+              report.scope.vertical === vertical.slug
+                ? 'border-emerald-500/60 bg-emerald-500/10'
+                : 'border-border/60 bg-background/50 hover:border-emerald-500/35',
+            )}
+          >
+            <span className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
+              {vertical.label}
+            </span>
+            <strong className='mt-2 block text-2xl'>
+              {compact(vertical.activeDevelopers)}
+            </strong>
+            <span className='text-xs text-muted-foreground'>
+              {compact(vertical.internalDevelopers)} team developers ·{' '}
+              {compact(vertical.activeOrganizations)} organizations
+            </span>
+          </Link>
+        ))}
+      </div>
 
-    <div className='mt-5 flex gap-2 overflow-x-auto pb-1'>
-      {report.scope.chain ? (
-        <Link
-          href={reportHref(report, { chain: null })}
-          className='shrink-0 rounded-full border border-border px-3 py-2 text-sm font-semibold hover:border-emerald-500/50'
-        >
-          Clear chain
-        </Link>
-      ) : null}
-      {report.scopes.chains.map((chain) => (
-        <Link
-          key={chain.slug}
-          href={reportHref(report, { chain: chain.slug })}
-          aria-current={report.scope.chain === chain.slug ? 'page' : undefined}
-          className={cn(
-            'shrink-0 rounded-full border px-3 py-2 text-sm font-semibold',
-            report.scope.chain === chain.slug
-              ? 'border-sky-400/60 bg-sky-400/10'
-              : 'border-border hover:border-sky-400/50',
-          )}
-        >
-          {chain.label} · {compact(chain.activeDevelopers)}
-        </Link>
-      ))}
-    </div>
-  </section>
-);
+      <div className='mt-5 flex gap-2 overflow-x-auto pb-1'>
+        {report.scope.chain ? (
+          <Link
+            href={reportHref(report, { chain: null })}
+            className='shrink-0 rounded-full border border-border px-3 py-2 text-sm font-semibold hover:border-emerald-500/50'
+          >
+            Show all chains
+          </Link>
+        ) : null}
+        {report.scopes.chains.map((chain) => (
+          <Link
+            key={chain.slug}
+            href={reportHref(report, { chain: chain.slug })}
+            aria-current={
+              report.scope.chain === chain.slug ? 'page' : undefined
+            }
+            className={cn(
+              'shrink-0 rounded-full border px-3 py-2 text-sm font-semibold',
+              report.scope.chain === chain.slug
+                ? 'border-sky-400/60 bg-sky-400/10'
+                : 'border-border hover:border-sky-400/50',
+            )}
+          >
+            {chain.label} · {compact(chain.activeDevelopers)}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+};
 
 export const DeveloperReportDashboard = ({
   report,
@@ -216,13 +235,10 @@ export const DeveloperReportDashboard = ({
     () => repositoryGrowthChartOption(report.history),
     [report.history],
   );
-  const codeFlow = useMemo(
-    () => codeFlowChartOption(report.history),
+  const commitsWritten = useMemo(
+    () => commitsWrittenChartOption(report.history),
     [report.history],
   );
-  const inheritedCommits =
-    report.summary.inheritedForkCommits +
-    report.summary.inheritedUnattributedCopyCommits;
 
   return (
     <main className='mx-auto w-full max-w-[1600px] space-y-6 px-4 py-8 md:px-8'>
@@ -237,11 +253,11 @@ export const DeveloperReportDashboard = ({
             </h1>
             <p className='mt-3 max-w-4xl text-sm text-muted-foreground md:text-base'>
               Developers are counted in a month when they write a new commit in
-              an included public GitHub repository. Commits already present in a
-              fork or copied repository are counted separately as older history.
-              Bots and banned organizations are excluded. Raw ingestion includes
-              repeat crawl snapshots; report totals count each repository–commit
-              pair once, then apply the selected scope.
+              an included public GitHub repository. History already present in a
+              fork is not treated as newly written code. Bots and banned
+              organizations are excluded. Raw ingestion includes repeat crawl
+              snapshots; report totals count each repository–commit pair once,
+              then apply the selected scope.
             </p>
           </div>
           <nav aria-label='Report range' className='flex flex-wrap gap-2'>
@@ -279,16 +295,16 @@ export const DeveloperReportDashboard = ({
             detail='New commits written in the selected period, counted once'
           />
           <Metric
-            icon={CopyIcon}
-            label='Inherited commits'
-            value={compact(inheritedCommits)}
-            detail='Older history found in forks and unattributed copies'
+            icon={GitBranchIcon}
+            label='Commits inherited through forks'
+            value={compact(report.summary.inheritedForkCommits)}
+            detail='Older history present when a GitHub fork was created'
           />
           <Metric
             icon={GitBranchIcon}
-            label='Forks · unattributed copies'
-            value={`${compact(report.summary.newForkRepositories)} · ${compact(report.summary.newUnattributedCopyRepositories)}`}
-            detail='Destination repositories created in this period'
+            label='New GitHub forks'
+            value={compact(report.summary.newForkRepositories)}
+            detail='Forked repositories created in the selected period'
           />
           <Metric
             icon={UsersRoundIcon}
@@ -326,9 +342,9 @@ export const DeveloperReportDashboard = ({
           option={workforce}
         />
         <ChartCard
-          title='Code written and inherited each month'
-          description='The green line is new commits written that month. The bars are older commits found inside forked or copied repositories created that month. Each month stands alone; nothing accumulates from earlier months.'
-          option={codeFlow}
+          title='Commits written each month'
+          description='Each point is the number of new commits written in included repositories during that month. Months stand alone; nothing accumulates from earlier months.'
+          option={commitsWritten}
         />
         <ChartCard
           title='Active developers by contribution frequency'
@@ -346,8 +362,8 @@ export const DeveloperReportDashboard = ({
           option={newDevelopers}
         />
         <ChartCard
-          title='New repositories by how code arrived'
-          description='New repositories with no older matching history, GitHub forks, and unattributed copies are counted in the destination repository’s creation month. An unattributed copy has no GitHub fork relationship, but its early commit hashes match an older repository owned elsewhere—the same signal used in threat intelligence.'
+          title='New repositories and GitHub forks'
+          description='Repositories are counted in their creation month. GitHub forks are shown separately from repositories that began without inherited fork history.'
           option={repositoryGrowth}
         />
         <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6 xl:col-span-2'>
