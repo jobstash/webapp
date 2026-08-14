@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { DeveloperReportDashboard } from '@/features/developer-report/components/developer-report-dashboard';
+import { developerReportOgImage } from '@/features/developer-report/og-image';
 import { fetchDeveloperReport } from '@/features/developer-report/server';
 import type { DeveloperReportRange } from '@/features/developer-report/schemas';
 import { clientEnv } from '@/lib/env/client';
@@ -48,12 +49,7 @@ export const generateMetadata = async ({
   const canonical = canonicalSearch.size
     ? `${baseUrl}?${canonicalSearch}`
     : baseUrl;
-  const image = {
-    url: `${baseUrl}/og?${canonicalSearch}`,
-    width: 1200,
-    height: 630,
-    alt: `${title} — JobStash`,
-  };
+  const image = developerReportOgImage(baseUrl, title, canonicalSearch);
 
   return {
     title,

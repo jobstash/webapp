@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { DeveloperReportDashboard } from '@/features/developer-report/components/developer-report-dashboard';
+import { developerReportOgImage } from '@/features/developer-report/og-image';
 import { fetchDeveloperReport } from '@/features/developer-report/server';
 import type { DeveloperReportRange } from '@/features/developer-report/schemas';
 import { clientEnv } from '@/lib/env/client';
@@ -60,6 +61,7 @@ export const generateMetadata = async ({
   if (vertical) search.set('vertical', vertical);
   if (range !== 'max') search.set('range', range);
   const pageUrl = search.size ? `${canonical}?${search}` : canonical;
+  const image = developerReportOgImage(canonical, title, search);
 
   return {
     title,
@@ -71,13 +73,13 @@ export const generateMetadata = async ({
       title,
       description,
       url: pageUrl,
-      images: [`${canonical}/og?${search}`],
+      images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [`${canonical}/og?${search}`],
+      images: [image],
     },
   };
 };
