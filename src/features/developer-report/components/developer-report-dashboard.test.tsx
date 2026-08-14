@@ -95,6 +95,13 @@ const report: DeveloperReport = {
     chainsOverlap: false,
   },
   scopes: {
+    overall: {
+      ...scope,
+      slug: 'overall',
+      label: 'Overall',
+      allContributors: 360,
+      activeDevelopers: 250,
+    },
     verticals: [{ ...scope, exclusive: true, history: [point] }],
     chains: [{ ...scope, slug: 'ethereum', label: 'Ethereum' }],
   },
@@ -241,6 +248,7 @@ describe('DeveloperReportDashboard', () => {
       screen.getByText('Explore Ethereum by category'),
     ).toBeInTheDocument();
     expect(screen.getByText('All categories · Ethereum')).toBeInTheDocument();
+    expect(screen.getByText('250')).toBeInTheDocument();
     expect(
       screen.getByText('active developers on Ethereum'),
     ).toBeInTheDocument();

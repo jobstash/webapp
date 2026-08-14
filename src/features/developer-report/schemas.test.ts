@@ -88,6 +88,7 @@ describe('developerReportSchema', () => {
         chainsOverlap: true,
       },
       scopes: {
+        overall: { ...scope, slug: 'overall', label: 'Overall' },
         verticals: [{ ...scope, exclusive: true, history: [point] }],
         chains: [{ ...scope, slug: 'ethereum', label: 'Ethereum' }],
       },

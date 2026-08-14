@@ -130,6 +130,7 @@ export const developerReportSchema = z.object({
     chainsOverlap: z.boolean(),
   }),
   scopes: z.object({
+    overall: scopeSummarySchema,
     verticals: verticalSummarySchema.array(),
     chains: scopeSummarySchema.array(),
   }),

@@ -143,7 +143,7 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => {
               : 'Overall'}
           </span>
           <strong className='mt-2 block text-2xl'>
-            {compact(report.summary.activeDevelopers)}
+            {compact(report.scopes.overall.activeDevelopers)}
           </strong>
           <span className='text-xs text-muted-foreground'>
             {selectedChainLabel
