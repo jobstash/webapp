@@ -24,6 +24,10 @@ import {
 } from './chart-options';
 import { FlintEChart } from './flint-echart';
 import {
+  actionableLocalCompensation,
+  LocalCompensationTable,
+} from './local-compensation-table';
+import {
   compactNumber,
   monthlySalary,
   momentumLabel,
@@ -87,8 +91,8 @@ const readableDate = (value: string): string =>
   }).format(new Date(`${value}T00:00:00.000Z`));
 
 const evidenceGap = (compensation?: JobMarketCompensation): string => {
-  const salariesNeeded = Math.max(0, 20 - (compensation?.sampleCount ?? 0));
-  const employersNeeded = Math.max(0, 10 - (compensation?.employerCount ?? 0));
+  const salariesNeeded = Math.max(0, 10 - (compensation?.sampleCount ?? 0));
+  const employersNeeded = Math.max(0, 5 - (compensation?.employerCount ?? 0));
   const gaps = [
     salariesNeeded > 0
       ? `${salariesNeeded} more ${salariesNeeded === 1 ? 'salary' : 'salaries'}`
@@ -174,7 +178,6 @@ export const SkillAnalysisDashboard = ({
   const router = useRouter();
   const label = detail.skill.label;
   const jobsHref = `/${getFrontendSlug(detail.skill.slug)}`;
-  const skillFilter = detail.skill.slug.replace(/^t-/, '');
   const paramsFor = (updates: Partial<Pick<Selection, 'range' | 'mode'>>) => {
     const next = { ...selection, ...updates };
     const params = new URLSearchParams();
@@ -184,7 +187,7 @@ export const SkillAnalysisDashboard = ({
     return `/market?${params.toString()}`;
   };
 
-  const benchmark = detail.compensation.find(
+  const benchmark = market.compensation.find(
     (entry) =>
       entry.segment === selection.mode &&
       (entry.regionSlug ===
@@ -192,18 +195,19 @@ export const SkillAnalysisDashboard = ({
         entry.regionType ===
           (selection.mode === 'remote' ? 'remote' : 'aggregate')),
   );
-  const remote = detail.compensation.find(
+  const remote = market.compensation.find(
     (entry) =>
       entry.segment === 'remote' &&
       (entry.regionSlug === 'remote' || entry.regionType === 'remote'),
   );
-  const local = detail.compensation.find(
+  const local = market.compensation.find(
     (entry) =>
       entry.segment === 'local' &&
       (entry.regionSlug === 'local' || entry.regionType === 'aggregate'),
   );
   const signal =
-    detail.signals.find((entry) => entry.segment === selection.mode) ?? null;
+    market.skillSignals.find((entry) => entry.segment === selection.mode) ??
+    null;
   const activityHistory = useMemo(
     () => trimInactiveHistory(market.history),
     [market.history],
@@ -238,20 +242,7 @@ export const SkillAnalysisDashboard = ({
     () => skillAdjustedValueOption(detail.history, selection.mode),
     [detail.history, selection.mode],
   );
-  const countryRegions = detail.compensation.filter(
-    (entry) =>
-      entry.segment === 'local' &&
-      entry.regionType === 'country' &&
-      entry.activeJobs > 0,
-  );
-  const continentRegions = detail.compensation.filter(
-    (entry) =>
-      entry.segment === 'local' &&
-      entry.regionType === 'continent' &&
-      entry.activeJobs > 0,
-  );
-  const regions = countryRegions.length > 0 ? countryRegions : continentRegions;
-  const regionLevel = countryRegions.length > 0 ? 'Country' : 'Continent';
+  const localMarkets = actionableLocalCompensation(market.compensation);
   const firstActive = activityHistory.find(
     (point) => point.activeJobs > 0 || point.newJobs > 0,
   );
@@ -433,9 +424,13 @@ export const SkillAnalysisDashboard = ({
           />
           <Metric
             icon={Building2Icon}
-            label='Evidence threshold'
-            value={`${benchmark?.sampleCount ?? 0}/20 salaries`}
-            detail={evidenceGap(benchmark)}
+            label='Salary evidence'
+            value={`${benchmark?.sampleCount ?? 0} salaries`}
+            detail={
+              benchmark?.evidenceLevel === 'insufficient' || !benchmark
+                ? evidenceGap(benchmark)
+                : `${benchmark.employerCount} employers · ${benchmark.evidenceLevel === 'strong' ? 'Strong' : 'Limited'} evidence`
+            }
           />
         </div>
 
@@ -499,67 +494,14 @@ export const SkillAnalysisDashboard = ({
         </div>
       </section>
 
-      {regions.length > 0 && (
+      {localMarkets.length > 0 && (
         <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-          <h2 className='text-2xl font-bold'>Where {label} jobs are open</h2>
+          <h2 className='text-2xl font-bold'>Local {label} pay by place</h2>
           <p className='mt-1 text-sm text-muted-foreground'>
-            Current onsite and hybrid availability by{' '}
-            {regionLevel.toLowerCase()}. Salary estimates remain hidden where
-            evidence is sparse.
+            Compare onsite and hybrid salaries only where enough listings and
+            employers support a useful estimate.
           </p>
-          <div className='mt-4 overflow-x-auto rounded-xl border border-border/60'>
-            <table className='w-full min-w-[880px] text-left text-sm'>
-              <thead className='text-xs text-muted-foreground uppercase'>
-                <tr>
-                  <th className='px-4 py-3'>{regionLevel}</th>
-                  <th className='px-4 py-3'>Open jobs</th>
-                  <th className='px-4 py-3'>Hiring companies</th>
-                  <th className='px-4 py-3'>Onsite / hybrid</th>
-                  <th className='px-4 py-3'>Monthly median</th>
-                  <th className='px-4 py-3'>Salary evidence</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...regions]
-                  .sort(
-                    (left, right) =>
-                      right.activeJobs - left.activeJobs ||
-                      left.regionLabel.localeCompare(right.regionLabel),
-                  )
-                  .map((region) => (
-                    <tr
-                      key={`${region.regionType}-${region.regionSlug}`}
-                      className='border-t border-border/50'
-                    >
-                      <td className='px-4 py-3 font-semibold'>
-                        <Link
-                          href={`/l-${region.regionSlug}?tags=${encodeURIComponent(skillFilter)}`}
-                          className='hover:text-emerald-400 hover:underline'
-                        >
-                          {region.regionLabel}
-                        </Link>
-                      </td>
-                      <td className='px-4 py-3'>{region.activeJobs}</td>
-                      <td className='px-4 py-3'>{region.hiringCompanies}</td>
-                      <td className='px-4 py-3 text-muted-foreground'>
-                        {region.activeOnsiteJobs} / {region.activeHybridJobs}
-                      </td>
-                      <td className='px-4 py-3'>
-                        {monthlySalary(region.medianMonthlyUsd)}
-                      </td>
-                      <td className='px-4 py-3 text-muted-foreground'>
-                        {region.sampleCount} salaries · {region.employerCount}{' '}
-                        employers
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-          <p className='mt-3 text-xs text-muted-foreground'>
-            A job available in several countries can appear in more than one
-            country row; the headline open-job count remains deduplicated.
-          </p>
+          <LocalCompensationTable market={market} />
         </section>
       )}
 

@@ -164,7 +164,116 @@ const market: PillarMarket = {
     point('2026-07-01', 4),
     point('2026-08-12', 20),
   ],
-  compensation: detail.compensation,
+  compensation: [
+    compensation({
+      medianMonthlyUsd: 10_500,
+      p25MonthlyUsd: 9_000,
+      p75MonthlyUsd: 12_000,
+      sampleCount: 12,
+      employerCount: 6,
+      activeJobs: 7,
+      hiringCompanies: 5,
+      evidenceLevel: 'limited',
+    }),
+    compensation({
+      segment: 'local',
+      regionSlug: 'local',
+      regionLabel: 'All local markets',
+      regionType: 'aggregate',
+      medianMonthlyUsd: 8_500,
+      p25MonthlyUsd: 7_000,
+      p75MonthlyUsd: 10_000,
+      sampleCount: 14,
+      employerCount: 7,
+      activeJobs: 19,
+      hiringCompanies: 11,
+      activeOnsiteJobs: 12,
+      activeHybridJobs: 7,
+      activeRemoteJobs: 0,
+      remoteCount: 0,
+      onsiteCount: 8,
+      hybridCount: 6,
+      evidenceLevel: 'limited',
+    }),
+    compensation({
+      segment: 'local',
+      regionSlug: 'united-states',
+      regionLabel: 'United States',
+      regionType: 'country',
+      filter: { paramKey: 'countries', value: 'united-states' },
+      countryCode: 'USA',
+      medianMonthlyUsd: 12_000,
+      p25MonthlyUsd: 10_000,
+      p75MonthlyUsd: 14_000,
+      sampleCount: 12,
+      employerCount: 6,
+      activeJobs: 9,
+      hiringCompanies: 6,
+      activeOnsiteJobs: 6,
+      activeHybridJobs: 3,
+      activeRemoteJobs: 0,
+      remoteCount: 0,
+      onsiteCount: 8,
+      hybridCount: 4,
+      evidenceLevel: 'limited',
+    }),
+    compensation({
+      segment: 'local',
+      regionSlug: 'germany',
+      regionLabel: 'Germany',
+      regionType: 'country',
+      filter: { paramKey: 'countries', value: 'germany' },
+      countryCode: 'DEU',
+      evidenceLevel: 'insufficient',
+      activeJobs: 4,
+      hiringCompanies: 3,
+    }),
+    compensation({
+      segment: 'local',
+      regionSlug: 'asia-pacific',
+      regionLabel: 'Asia-Pacific',
+      regionType: 'region',
+      filter: { paramKey: 'regions', value: 'asia-pacific' },
+      medianMonthlyUsd: 7_000,
+      p25MonthlyUsd: 6_000,
+      p75MonthlyUsd: 8_000,
+      sampleCount: 11,
+      employerCount: 5,
+      activeJobs: 8,
+      hiringCompanies: 5,
+      evidenceLevel: 'limited',
+    }),
+    compensation({
+      segment: 'local',
+      regionSlug: 'berlin',
+      regionLabel: 'Berlin',
+      regionType: 'city',
+      filter: { paramKey: 'cities', value: 'berlin' },
+      medianMonthlyUsd: 8_000,
+      p25MonthlyUsd: 7_000,
+      p75MonthlyUsd: 9_000,
+      sampleCount: 10,
+      employerCount: 5,
+      activeJobs: 6,
+      hiringCompanies: 5,
+      evidenceLevel: 'limited',
+    }),
+    compensation({
+      segment: 'local',
+      regionSlug: 'europe',
+      regionLabel: 'Europe',
+      regionType: 'continent',
+      filter: { paramKey: 'continents', value: 'europe' },
+      medianMonthlyUsd: 9_000,
+      p25MonthlyUsd: 8_000,
+      p75MonthlyUsd: 10_000,
+      sampleCount: 15,
+      employerCount: 8,
+      activeJobs: 12,
+      hiringCompanies: 8,
+      evidenceLevel: 'limited',
+    }),
+  ],
   skillSignals: detail.signals,
 };
 
@@ -254,15 +363,15 @@ describe('SkillAnalysisDashboard', () => {
       screen.getByText('No defensible remote salary trend yet'),
     ).toBeInTheDocument();
     expect(screen.getByText('Repricing signal withheld')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Germany' })).toHaveAttribute(
-      'href',
-      '/l-germany?tags=langgraph',
-    );
+    expect(
+      screen.getByRole('link', { name: /united states/i }),
+    ).toHaveAttribute('href', '/?tags=langgraph&countries=united-states');
+    expect(screen.queryByRole('link', { name: 'Germany' })).toBeNull();
     expect(screen.queryByText('+417.9%')).toBeNull();
     expect(screen.queryByText('Opportunity map')).toBeNull();
     expect(screen.queryByText('What skills are worth now')).toBeNull();
 
-    await user.click(screen.getByRole('button', { name: 'local · 11 open' }));
+    await user.click(screen.getByRole('button', { name: 'local · 19 open' }));
     expect(push).toHaveBeenCalledWith('/market?mode=local&skill=t-langgraph');
 
     await user.selectOptions(
@@ -270,5 +379,53 @@ describe('SkillAnalysisDashboard', () => {
       '365',
     );
     expect(push).toHaveBeenCalledWith('/market?range=365&skill=t-langgraph');
+  });
+
+  it('uses the pillar local-pay facts and exposes every supported place level', async () => {
+    const user = userEvent.setup();
+    render(
+      <SkillAnalysisDashboard
+        detail={detail}
+        market={market}
+        jobs={jobs}
+        selection={{ range: 'max', mode: 'local', skill: 't-langgraph' }}
+      />,
+    );
+
+    expect(screen.getByText('$8.5K/mo')).toBeInTheDocument();
+    expect(screen.getByText('14 salaries')).toBeInTheDocument();
+    expect(
+      screen.getByText('7 employers · Limited evidence'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Local LangGraph pay by place' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Countries' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(
+      screen.getByRole('link', { name: /united states/i }),
+    ).toHaveAttribute('href', '/?tags=langgraph&countries=united-states');
+    expect(screen.getByText('$12K/mo')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Germany' })).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: 'Regions' }));
+    expect(screen.getByRole('link', { name: /asia-pacific/i })).toHaveAttribute(
+      'href',
+      '/?tags=langgraph&regions=asia-pacific',
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Cities' }));
+    expect(screen.getByRole('link', { name: /berlin/i })).toHaveAttribute(
+      'href',
+      '/?tags=langgraph&cities=berlin',
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Continents' }));
+    expect(screen.getByRole('link', { name: /europe/i })).toHaveAttribute(
+      'href',
+      '/?tags=langgraph&continents=europe',
+    );
   });
 });

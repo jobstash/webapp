@@ -1,9 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import {
-  ArrowRightIcon,
   BriefcaseBusinessIcon,
   Building2Icon,
   CalendarPlusIcon,
@@ -16,6 +14,11 @@ import { cn } from '@/lib/utils';
 import { activityChartOption, salaryChartOption } from './chart-options';
 import { FlintEChart } from './flint-echart';
 import {
+  actionableLocalCompensation,
+  compensationEvidenceCopy,
+  LocalCompensationTable,
+} from './local-compensation-table';
+import {
   compactNumber,
   momentumLabel,
   momentumTone,
@@ -26,43 +29,6 @@ import type { JobMarketPoint, PillarMarket } from '../schemas';
 
 const RANGES = [30, 90, 365] as const;
 type Range = (typeof RANGES)[number];
-type GeographyLevel = 'country' | 'region' | 'city' | 'continent';
-
-const GEOGRAPHY_LEVELS: {
-  value: GeographyLevel;
-  label: string;
-  heading: string;
-}[] = [
-  { value: 'country', label: 'Countries', heading: 'Country market' },
-  { value: 'region', label: 'Regions', heading: 'Regional market' },
-  { value: 'city', label: 'Cities', heading: 'City market' },
-  { value: 'continent', label: 'Continents', heading: 'Continent market' },
-];
-
-const jobsHref = (
-  pillar: PillarMarket['pillar']['filter'],
-  place: PillarMarket['compensation'][number]['filter'],
-) => {
-  const params = new URLSearchParams();
-  for (const filter of [pillar, place]) {
-    if (!filter) continue;
-    const current = params.get(filter.paramKey);
-    if (!current) params.set(filter.paramKey, filter.value);
-    else if (!current.split(',').includes(filter.value)) {
-      params.set(filter.paramKey, `${current},${filter.value}`);
-    }
-  }
-  const query = params.toString();
-  return query ? `/?${query}` : '/';
-};
-
-const evidenceCopy = (
-  entry: PillarMarket['compensation'][number],
-  organization: boolean,
-) =>
-  organization
-    ? `${entry.sampleCount} salary listings from this company`
-    : `${entry.sampleCount} salaries from ${entry.employerCount} employers`;
 
 const withinRange = (history: JobMarketPoint[], days: Range) => {
   const latest = history.at(-1);
@@ -107,9 +73,6 @@ const Metric = ({
 
 export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
   const [range, setRange] = useState<Range>(365);
-  const [geographyLevel, setGeographyLevel] =
-    useState<GeographyLevel>('country');
-  const [showAllGeography, setShowAllGeography] = useState(false);
   const history = useMemo(
     () => withinRange(market.history, range),
     [market.history, range],
@@ -133,35 +96,13 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
     (entry): entry is NonNullable<typeof entry> =>
       Boolean(entry && entry.evidenceLevel !== 'insufficient'),
   );
-  const actionableGeography = market.compensation.filter(
-    (entry) =>
-      entry.segment === 'local' &&
-      ['country', 'region', 'city', 'continent'].includes(entry.regionType) &&
-      entry.evidenceLevel !== 'insufficient' &&
-      entry.activeJobs > 0 &&
-      entry.filter !== null,
-  );
-  const availableLevels = GEOGRAPHY_LEVELS.filter((level) =>
-    actionableGeography.some((entry) => entry.regionType === level.value),
-  );
-  const activeLevel =
-    availableLevels.find((level) => level.value === geographyLevel) ??
-    availableLevels[0];
-  const levelRows = actionableGeography
-    .filter((entry) => entry.regionType === activeLevel?.value)
-    .sort(
-      (left, right) =>
-        right.activeJobs - left.activeJobs ||
-        right.sampleCount - left.sampleCount ||
-        left.regionLabel.localeCompare(right.regionLabel),
-    );
-  const visibleRows = showAllGeography ? levelRows : levelRows.slice(0, 12);
   const organizationPillar = market.pillar.kind === 'organizations';
   const signals = market.skillSignals.filter(
     (signal) => signal.status !== 'insufficient',
   );
   const hasCompensation =
-    workMarkets.length > 0 || actionableGeography.length > 0;
+    workMarkets.length > 0 ||
+    actionableLocalCompensation(market.compensation).length > 0;
 
   return (
     <section
@@ -296,7 +237,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
                     {monthlySalary(entry.medianMonthlyUsd)}
                   </strong>
                   <p className='mt-1 text-xs text-muted-foreground'>
-                    {evidenceCopy(entry, organizationPillar)}
+                    {compensationEvidenceCopy(entry, organizationPillar)}
                   </p>
                   <p className='mt-2 text-xs text-muted-foreground'>
                     {entry.activeJobs} open jobs at {entry.hiringCompanies}{' '}
@@ -307,118 +248,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
             </div>
           )}
 
-          {availableLevels.length > 0 && activeLevel && (
-            <div className='mt-5'>
-              <div
-                className='flex flex-wrap gap-2'
-                aria-label='Geographic salary level'
-              >
-                {availableLevels.map((level) => (
-                  <button
-                    key={level.value}
-                    type='button'
-                    onClick={() => {
-                      setGeographyLevel(level.value);
-                      setShowAllGeography(false);
-                    }}
-                    aria-pressed={activeLevel.value === level.value}
-                    className={cn(
-                      'rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors',
-                      activeLevel.value === level.value
-                        ? 'border-emerald-400/50 bg-emerald-500/15 text-emerald-300'
-                        : 'border-border/60 text-muted-foreground hover:text-foreground',
-                    )}
-                  >
-                    {level.label}
-                  </button>
-                ))}
-              </div>
-              <div className='mt-3 overflow-x-auto'>
-                <table className='w-full min-w-[920px] text-left text-sm'>
-                  <thead className='text-xs text-muted-foreground uppercase'>
-                    <tr>
-                      <th className='px-3 py-2'>{activeLevel.heading}</th>
-                      <th className='px-3 py-2'>Open jobs</th>
-                      <th className='px-3 py-2'>Hiring companies</th>
-                      <th className='px-3 py-2'>Median</th>
-                      <th className='px-3 py-2'>Middle 50%</th>
-                      <th className='px-3 py-2'>Evidence</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleRows.map((region) => {
-                      const href = jobsHref(
-                        market.pillar.filter,
-                        region.filter,
-                      );
-                      return (
-                        <tr
-                          key={`${region.regionType}-${region.regionSlug}-${region.filter?.value}`}
-                          className='border-t border-border/50 transition-colors hover:bg-muted/20'
-                        >
-                          <td className='px-3 py-3 font-medium'>
-                            <Link
-                              href={href}
-                              className='inline-flex items-center gap-1.5 hover:text-emerald-300'
-                            >
-                              {region.regionLabel}
-                              <ArrowRightIcon
-                                className='size-3.5'
-                                aria-hidden
-                              />
-                            </Link>
-                          </td>
-                          <td className='px-3 py-3'>
-                            <Link
-                              href={href}
-                              className='hover:text-emerald-300'
-                            >
-                              {region.activeJobs}
-                            </Link>
-                          </td>
-                          <td className='px-3 py-3'>
-                            {region.hiringCompanies}
-                          </td>
-                          <td className='px-3 py-3'>
-                            {monthlySalary(region.medianMonthlyUsd)}
-                          </td>
-                          <td className='px-3 py-3 text-muted-foreground'>
-                            {monthlySalary(region.p25MonthlyUsd)} –{' '}
-                            {monthlySalary(region.p75MonthlyUsd)}
-                          </td>
-                          <td className='px-3 py-3 text-muted-foreground'>
-                            {evidenceCopy(region, organizationPillar)}
-                            {region.evidenceLevel === 'limited' && (
-                              <span className='ml-2 text-amber-300'>
-                                Limited
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              {levelRows.length > 12 && (
-                <button
-                  type='button'
-                  onClick={() => setShowAllGeography((current) => !current)}
-                  className='mt-3 text-sm font-semibold text-emerald-400 hover:text-emerald-300'
-                >
-                  {showAllGeography
-                    ? 'Show fewer markets'
-                    : `Show all ${levelRows.length} markets`}
-                </button>
-              )}
-              <p className='px-3 pt-3 text-xs leading-relaxed text-muted-foreground'>
-                Open jobs are current; salary evidence covers the past 12 months
-                and also uses closed postings. Every place rolls up through its
-                canonical city, region, country, and continent hierarchy exactly
-                once.
-              </p>
-            </div>
-          )}
+          <LocalCompensationTable market={market} />
         </div>
       )}
 
