@@ -94,7 +94,11 @@ export const OrganizationBubbleTimeline = ({
     return () => window.clearInterval(interval);
   }, [isPlaying, periods.length]);
 
-  const period = periods[periodIndex] ?? '';
+  const selectedPeriodIndex = Math.min(
+    periodIndex,
+    Math.max(0, periods.length - 1),
+  );
+  const period = periods[selectedPeriodIndex] ?? '';
   const globalMaximum = useMemo(
     () =>
       Math.max(
@@ -115,7 +119,8 @@ export const OrganizationBubbleTimeline = ({
         activeMaintainers: 0,
         activeLeads: 0,
       };
-    const previousPeriod = periods[Math.max(0, periodIndex - 1)] ?? period;
+    const previousPeriod =
+      periods[Math.max(0, selectedPeriodIndex - 1)] ?? period;
     const active = positioned
       .map((organization) => ({
         organization,
@@ -288,7 +293,14 @@ export const OrganizationBubbleTimeline = ({
         },
       ],
     };
-  }, [atlasPositions, globalMaximum, period, periodIndex, periods, positioned]);
+  }, [
+    atlasPositions,
+    globalMaximum,
+    period,
+    periods,
+    positioned,
+    selectedPeriodIndex,
+  ]);
 
   if (positioned.length === 0 || periods.length === 0) return null;
 
@@ -357,7 +369,7 @@ export const OrganizationBubbleTimeline = ({
           type='range'
           min={0}
           max={Math.max(0, periods.length - 1)}
-          value={periodIndex}
+          value={selectedPeriodIndex}
           onChange={(event) => {
             setPeriodIndex(Number(event.target.value));
             setIsPlaying(false);
