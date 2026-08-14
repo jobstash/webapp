@@ -102,16 +102,16 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
   <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
     <div className='flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between'>
       <div>
-        <h2 className='text-2xl font-bold'>Verticals and chains</h2>
+        <h2 className='text-2xl font-bold'>Explore by category or chain</h2>
         <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
-          Current verticals are exclusive and restate the complete history.
-          Chains overlap. Selecting one of each applies both filters to every
-          panel.
+          Each organization belongs to one category, but it can build on more
+          than one chain. Choose a category, a chain, or both to update every
+          chart.
         </p>
       </div>
       <span className='text-xs text-muted-foreground'>
-        {report.coverage.organizationPercent.toFixed(1)}% organization ·{' '}
-        {report.coverage.developerPercent.toFixed(1)}% developer coverage
+        {report.coverage.organizationPercent.toFixed(1)}% of organizations ·{' '}
+        {report.coverage.developerPercent.toFixed(1)}% of developers categorized
       </span>
     </div>
 
@@ -154,8 +154,8 @@ const ScopeSelector = ({ report }: { report: DeveloperReport }) => (
             {compact(vertical.activeDevelopers)}
           </strong>
           <span className='text-xs text-muted-foreground'>
-            {compact(vertical.internalDevelopers)} internal ·{' '}
-            {compact(vertical.activeOrganizations)} orgs
+            {compact(vertical.internalDevelopers)} team developers ·{' '}
+            {compact(vertical.activeOrganizations)} organizations
           </span>
         </Link>
       ))}
@@ -216,7 +216,7 @@ export const DeveloperReportDashboard = ({
     <main className='mx-auto w-full max-w-[1600px] space-y-6 px-4 py-8 md:px-8'>
       <header className='overflow-hidden rounded-3xl border border-border/60 bg-card/70 p-6 md:p-9'>
         <p className='text-xs font-semibold tracking-[0.2em] text-emerald-400 uppercase'>
-          Developer ecosystem report
+          Open-source developer report
         </p>
         <div className='mt-3 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between'>
           <div>
@@ -224,7 +224,9 @@ export const DeveloperReportDashboard = ({
               {report.scope.label}
             </h1>
             <p className='mt-3 max-w-4xl text-sm text-muted-foreground md:text-base'>
-              {report.population.definition}
+              Developers are counted when they author original code in an
+              included public GitHub repository. Copied code, inherited fork
+              history, bots, and banned organizations are removed.
             </p>
           </div>
           <nav aria-label='Report range' className='flex flex-wrap gap-2'>
@@ -251,37 +253,37 @@ export const DeveloperReportDashboard = ({
         <div className='mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6'>
           <Metric
             icon={DatabaseIcon}
-            label='Raw indexed records'
+            label='Commits scanned'
             value={compact(report.summary.rawIndexedCommitRecords)}
-            detail='Corpus size; not credited work'
+            detail='Every commit record found before filtering'
           />
           <Metric
             icon={GitCommitHorizontalIcon}
-            label='Credited originals'
+            label='Original commits'
             value={compact(report.summary.creditedOriginalCommits)}
-            detail='Provenance-approved commits'
+            detail='Commits kept after copies and fork history are removed'
           />
           <Metric
             icon={UsersRoundIcon}
-            label='All contributors'
+            label='Contributors found'
             value={compact(report.summary.allContributors)}
-            detail='Numeric GitHub author IDs in raw activity'
+            detail='Unique GitHub developers seen before filtering'
           />
           <Metric
             icon={UserRoundCheckIcon}
             label='Active developers'
             value={compact(report.summary.activeDevelopers)}
-            detail='Authors of credited originals'
+            detail='Developers who authored original code'
           />
           <Metric
             icon={ShieldCheckIcon}
-            label='Internal developers'
+            label='Team developers'
             value={compact(report.summary.internalDevelopers)}
             detail={`${(report.summary.internalDeveloperShare * 100).toFixed(1)}% of active developers`}
           />
           <Metric
             icon={Building2Icon}
-            label='Maintainers · leads'
+            label='Maintainers · team leads'
             value={`${compact(report.summary.maintainers)} · ${compact(report.summary.activeLeads)}`}
             detail={`${compact(report.summary.organizations)} organizations`}
           />
@@ -293,48 +295,50 @@ export const DeveloperReportDashboard = ({
       <div className='grid gap-6 xl:grid-cols-2'>
         <ChartCard
           title='Active developers over time'
-          description='Raw participation, credited developers, and the nested internal, maintainer, and lead layers.'
+          description='The gray line shows everyone found in scanned commits. The colored lines show developers whose original work was counted, including team developers, maintainers, and leads.'
           option={workforce}
         />
         <ChartCard
-          title='Original work versus indexed corpus'
-          description='Credited original commits are never conflated with all raw indexed commit records.'
+          title='Original commits and all commits scanned'
+          description='Original commits are credited to the people who wrote them. The comparison line includes every commit we scanned, including copies and inherited fork history.'
           option={work}
         />
         <ChartCard
-          title='Full-time, part-time, and one-time activity'
-          description='Monthly segments use 10+, 2–9, and exactly 1 active day.'
+          title='Active developers by contribution frequency'
+          description='Full-time developers contributed on 10 or more days that month, part-time developers on 2–9 days, and one-time developers on 1 day.'
           option={cadence}
         />
         <ChartCard
-          title='Newcomer, emerging, and established tenure'
-          description='Tenure is measured from each numeric GitHub developer’s first credited month.'
+          title='Active developers by tenure'
+          description='Newcomers started contributing less than 3 months ago, emerging developers 3 months to 2 years ago, and established developers 2 or more years ago.'
           option={tenure}
         />
         <ChartCard
           title='New developers and repositories'
-          description='First credited developer appearances and organization-gated non-fork repositories.'
+          description='Developers are counted in the month of their first original commit. Repositories are counted when we first see a non-fork project from an included organization.'
           option={growth}
         />
         <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-          <h2 className='text-2xl font-bold'>Classification coverage</h2>
+          <h2 className='text-2xl font-bold'>
+            How much of the dataset is categorized
+          </h2>
           <p className='mt-1 text-sm text-muted-foreground'>
-            GitHub-only organizations remain unclassified in overall analytics;
-            out-of-scope entities stay in the corpus but not vertical
-            comparisons.
+            Organizations known only from GitHub may not have a category yet.
+            They still appear in overall totals, but not in comparisons between
+            categories.
           </p>
           <div className='mt-6 grid grid-cols-2 gap-4'>
             <Metric
               icon={Building2Icon}
               label='Organizations'
               value={`${report.coverage.organizationPercent.toFixed(1)}%`}
-              detail={`${compact(report.coverage.categorizedOrganizations)} categorized · ${compact(report.coverage.unclassifiedOrganizations)} unclassified`}
+              detail={`${compact(report.coverage.categorizedOrganizations)} categorized · ${compact(report.coverage.unclassifiedOrganizations)} not yet categorized`}
             />
             <Metric
               icon={UsersRoundIcon}
               label='Developers'
               value={`${report.coverage.developerPercent.toFixed(1)}%`}
-              detail={`${compact(report.coverage.categorizedDevelopers)} categorized · ${compact(report.coverage.unclassifiedDevelopers)} unclassified`}
+              detail={`${compact(report.coverage.categorizedDevelopers)} categorized · ${compact(report.coverage.unclassifiedDevelopers)} not yet categorized`}
             />
           </div>
         </section>
@@ -348,7 +352,7 @@ export const DeveloperReportDashboard = ({
 
       <section className='grid gap-6 lg:grid-cols-3'>
         <div className='rounded-2xl border border-border/60 bg-card/60 p-5'>
-          <h2 className='text-xl font-bold'>Top verticals</h2>
+          <h2 className='text-xl font-bold'>Largest categories</h2>
           <div className='mt-4 space-y-2'>
             {report.top.verticals.map((vertical) => (
               <Link
@@ -363,7 +367,7 @@ export const DeveloperReportDashboard = ({
           </div>
         </div>
         <div className='rounded-2xl border border-border/60 bg-card/60 p-5'>
-          <h2 className='text-xl font-bold'>Top chains</h2>
+          <h2 className='text-xl font-bold'>Most active chains</h2>
           <div className='mt-4 space-y-2'>
             {report.top.chains.map((chain) => (
               <Link
@@ -378,7 +382,7 @@ export const DeveloperReportDashboard = ({
           </div>
         </div>
         <div className='rounded-2xl border border-border/60 bg-card/60 p-5'>
-          <h2 className='text-xl font-bold'>Top organizations</h2>
+          <h2 className='text-xl font-bold'>Most active organizations</h2>
           <div className='mt-4 space-y-2'>
             {report.top.organizations.map((organization) => (
               <div
@@ -399,7 +403,8 @@ export const DeveloperReportDashboard = ({
         </span>
         <span className='inline-flex items-center gap-1'>
           <GitBranchIcon className='size-3' aria-hidden />
-          Current scalar vertical applied retroactively; chains overlap.
+          Each organization’s current category is used for all dates.
+          Organizations may appear under more than one chain.
         </span>
       </footer>
     </main>

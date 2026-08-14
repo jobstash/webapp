@@ -40,7 +40,7 @@ export const generateMetadata = async ({
   const report = await fetchDeveloperReport(vertical, slug, range);
   const label = report?.scope.label ?? slug;
   const title = `${label} Developer Report`;
-  const description = `Track all ${label} contributors, verified internal people, maintainers, leads, repositories, organizations, and team movement from one consistent historical range.`;
+  const description = `Track active open-source developers, original commits, contribution frequency, experience, repositories, and organizations across ${label}.`;
   const baseUrl = `${clientEnv.FRONTEND_URL}/developers/chains/${slug}`;
   const canonicalSearch = new URLSearchParams();
   if (vertical) canonicalSearch.set('vertical', vertical);
@@ -87,10 +87,9 @@ const DeveloperChainPage = async ({ params, searchParams }: Props) => {
     return (
       <div className='flex min-h-[65vh] items-center justify-center pb-16 text-center'>
         <div className='max-w-xl rounded-2xl border border-border/60 bg-card/60 p-8'>
-          <h1 className='text-3xl font-bold'>Chain report is refreshing</h1>
+          <h1 className='text-3xl font-bold'>Developer data is refreshing</h1>
           <p className='mt-3 text-muted-foreground'>
-            This chain does not yet have a complete contributor and verified
-            workforce history.
+            We do not have a completed developer history for this chain yet.
           </p>
           <Link
             href='/developers'

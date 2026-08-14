@@ -7,7 +7,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { FlintEChart } from '@/features/job-market/components/flint-echart';
 import { cn } from '@/lib/utils';
 import type { DeveloperOrganization } from '../schemas';
-import { buildStableAtlasPositions } from './organization-layout';
+import {
+  buildAtlasViewport,
+  buildStableAtlasPositions,
+} from './organization-layout';
 
 interface Props {
   organizations: DeveloperOrganization[];
@@ -44,8 +47,8 @@ const monthLabel = (period: string) =>
 
 const changeLabel = (value: number) =>
   value === 0
-    ? 'no monthly change'
-    : `${value > 0 ? '+' : ''}${value} vs prior month`;
+    ? 'unchanged since last month'
+    : `${value > 0 ? '+' : ''}${value} since last month`;
 
 export const OrganizationBubbleTimeline = ({
   organizations,
@@ -77,6 +80,10 @@ export const OrganizationBubbleTimeline = ({
         })),
       ),
     [positioned],
+  );
+  const atlasViewport = useMemo(
+    () => buildAtlasViewport(atlasPositions.values()),
+    [atlasPositions],
   );
 
   useEffect(() => {
@@ -208,14 +215,14 @@ export const OrganizationBubbleTimeline = ({
       grid: { top: 10, right: 10, bottom: 10, left: 10 },
       xAxis: {
         type: 'value',
-        min: -1.08,
-        max: 1.08,
+        min: atlasViewport.x.min,
+        max: atlasViewport.x.max,
         show: false,
       },
       yAxis: {
         type: 'value',
-        min: -1.08,
-        max: 1.08,
+        min: atlasViewport.y.min,
+        max: atlasViewport.y.max,
         show: false,
       },
       tooltip: {
@@ -230,7 +237,7 @@ export const OrganizationBubbleTimeline = ({
             item.developers > 0
               ? `${((item.internalDevelopers / item.developers) * 100).toFixed(1)}%`
               : '—';
-          return `${item.name}\n${item.developers.toLocaleString()} active developers\n${item.internalDevelopers.toLocaleString()} internal (${internalShare})\n${item.maintainers.toLocaleString()} maintainers · ${item.activeLeads.toLocaleString()} leads\n${changeLabel(item.change)} developers\n${item.vertical}`;
+          return `${item.name}\n${item.developers.toLocaleString()} active developers\n${item.internalDevelopers.toLocaleString()} team developers (${internalShare})\n${item.maintainers.toLocaleString()} maintainers · ${item.activeLeads.toLocaleString()} leads\n${changeLabel(item.change)}\n${item.vertical}`;
         },
       },
       series: [
@@ -295,6 +302,7 @@ export const OrganizationBubbleTimeline = ({
     };
   }, [
     atlasPositions,
+    atlasViewport,
     globalMaximum,
     period,
     periods,
@@ -304,26 +312,22 @@ export const OrganizationBubbleTimeline = ({
 
   if (positioned.length === 0 || periods.length === 0) return null;
 
-  const organizationSubject =
-    scopeLabel.toLowerCase() === 'all developers'
-      ? 'Each organization'
-      : `Each ${scopeLabel} organization`;
-
   return (
     <section className='overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
       <div className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
         <div>
           <p className='text-xs font-semibold tracking-[0.18em] text-emerald-400 uppercase'>
-            Organization atlas
+            Organizations
           </p>
           <h2 className='mt-1 text-2xl font-bold'>
-            Developer and workforce layers over time
+            Developer activity by organization
           </h2>
           <p className='mt-1 max-w-3xl text-sm text-muted-foreground'>
-            {organizationSubject} keeps the same position across{' '}
-            {rangeLabel.toLowerCase()}. The fixed blue, green, purple, and gold
-            circles show active developers, internal developers, maintainers,
-            and leads. Borders show developer growth or contraction.
+            Each organization keeps the same spot as you move through{' '}
+            {rangeLabel.toLowerCase()}. Larger circles mean more active
+            developers. Inner circles show team developers, maintainers, and
+            leads. A green border means the organization grew since last month;
+            pink means it shrank.
           </p>
         </div>
         <div className='flex items-center gap-3'>
@@ -380,10 +384,10 @@ export const OrganizationBubbleTimeline = ({
         <div className='flex flex-wrap gap-4 text-xs text-muted-foreground'>
           {[
             ['border-2 border-blue-400 bg-blue-400/20', 'Active developers'],
-            ['bg-emerald-400', 'Internal developers'],
+            ['bg-emerald-400', 'Team developers'],
             ['bg-purple-400', 'Maintainers'],
             ['bg-amber-400', 'Leads'],
-            ['border-2 border-emerald-400', 'Developer count grew'],
+            ['border-2 border-emerald-400', 'Grew since last month'],
           ].map(([color, label]) => (
             <span key={label} className='inline-flex items-center gap-1.5'>
               <span className={cn('size-3 rounded-full', color)} />
@@ -393,10 +397,9 @@ export const OrganizationBubbleTimeline = ({
         </div>
       </div>
       <p className='mt-3 text-xs text-muted-foreground'>
-        The slider covers the complete selected report interval. Fixed positions
-        come from the collaboration graph, so only the nested population sizes
-        change. Select any circle to inspect the organization on Ecosystem
-        Vision.
+        Use the slider or Play button to move through time. Positions stay fixed
+        so you can follow the same organization from month to month. Select a
+        circle to open its profile on Ecosystem Vision.
       </p>
     </section>
   );

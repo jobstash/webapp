@@ -156,11 +156,9 @@ describe('DeveloperReportDashboard', () => {
     expect(screen.getByRole('heading', { name: 'Crypto' })).toBeInTheDocument();
     expect(screen.getByText('Active developers over time')).toBeInTheDocument();
     expect(
-      screen.getByText('Full-time, part-time, and one-time activity'),
+      screen.getByText('Active developers by contribution frequency'),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText('Newcomer, emerging, and established tenure'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Active developers by tenure')).toBeInTheDocument();
     expect(
       screen.getByText('New developers and repositories'),
     ).toBeInTheDocument();
@@ -171,8 +169,13 @@ describe('DeveloperReportDashboard', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('Retention by starting cohort')).toBeNull();
     expect(screen.queryByText('Maintainer leverage')).toBeNull();
-    expect(screen.getAllByText('Credited originals').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Original commits').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Active developers').length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/Developers are counted when they author original code/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/provenance-approved/i)).toBeNull();
+    expect(screen.queryByText(/organization-gated/i)).toBeNull();
     expect(screen.getByText('Uniswap')).toBeInTheDocument();
   });
 

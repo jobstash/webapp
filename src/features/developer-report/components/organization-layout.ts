@@ -6,6 +6,13 @@ type AtlasPoint = {
 
 type StablePosition = { x: number; y: number };
 
+type AxisViewport = { min: number; max: number };
+
+export type AtlasViewport = {
+  x: AxisViewport;
+  y: AxisViewport;
+};
+
 const hashUnit = (value: string, seed: number) => {
   let hash = seed >>> 0;
   for (let index = 0; index < value.length; index += 1) {
@@ -23,8 +30,8 @@ const fallbackPosition = (organizationKey: string): StablePosition => {
 
 /**
  * The backend layout is calculated once from full-history organization edges
- * on a -1000..1000 plane. Never rank or reflow the selected subset: filtering
- * must change bubble size/visibility without moving an organization.
+ * on a -1000..1000 plane. Never rank or reflow the selected subset. The chart
+ * can reframe that stable layout, but it must not invent new point positions.
  */
 export const buildStableAtlasPositions = (points: AtlasPoint[]) =>
   new Map<string, StablePosition>(
@@ -38,3 +45,32 @@ export const buildStableAtlasPositions = (points: AtlasPoint[]) =>
           },
     ]),
   );
+
+const viewportFor = (values: number[]): AxisViewport => {
+  if (values.length === 0) return { min: -1.08, max: 1.08 };
+
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const center = (minimum + maximum) / 2;
+  const contentSpan = Math.max(0.32, maximum - minimum);
+  const paddedSpan = contentSpan * 1.36;
+
+  return {
+    min: center - paddedSpan / 2,
+    max: center + paddedSpan / 2,
+  };
+};
+
+/**
+ * Keep every organization's graph position stable while fitting the selected
+ * set to the available canvas. This changes only the camera, not the layout.
+ */
+export const buildAtlasViewport = (
+  positions: Iterable<StablePosition>,
+): AtlasViewport => {
+  const points = [...positions];
+  return {
+    x: viewportFor(points.map((point) => point.x)),
+    y: viewportFor(points.map((point) => point.y)),
+  };
+};

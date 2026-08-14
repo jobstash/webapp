@@ -55,7 +55,7 @@ export const generateMetadata = async ({
   const title = vertical
     ? `${label} Developer Report`
     : 'Developer Ecosystem Report';
-  const description = `Track credited original work, active developers, internal developers, maintainers, leads, repositories, and organizations across ${vertical ? `${label.toLowerCase()} ` : ''}software ecosystems.`;
+  const description = `Track active open-source developers, original commits, contribution frequency, experience, repositories, and organizations across ${vertical ? `${label.toLowerCase()} ` : ''}software ecosystems.`;
   const search = new URLSearchParams();
   if (vertical) search.set('vertical', vertical);
   if (range !== 'max') search.set('range', range);
@@ -92,9 +92,9 @@ const DevelopersPage = async ({ searchParams }: Props) => {
     return (
       <div className='flex min-h-[65vh] items-center justify-center pb-16 text-center'>
         <div className='max-w-xl rounded-2xl border border-border/60 bg-card/60 p-8'>
-          <h1 className='text-3xl font-bold'>Developer report is refreshing</h1>
+          <h1 className='text-3xl font-bold'>Developer data is refreshing</h1>
           <p className='mt-3 text-muted-foreground'>
-            This selection has no completed original-work history yet.
+            We do not have a completed activity history for this selection yet.
           </p>
           <Link
             href='/developers'

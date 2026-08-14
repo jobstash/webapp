@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildStableAtlasPositions } from './organization-layout';
+import {
+  buildAtlasViewport,
+  buildStableAtlasPositions,
+} from './organization-layout';
 
 describe('buildStableAtlasPositions', () => {
   it('uses full-history backend coordinates without subset re-ranking', () => {
@@ -40,5 +43,22 @@ describe('buildStableAtlasPositions', () => {
     expect(full.get('missing')).not.toEqual(full.get('other'));
     expect(Math.abs(full.get('missing')?.x ?? 2)).toBeLessThanOrEqual(1);
     expect(Math.abs(full.get('missing')?.y ?? 2)).toBeLessThanOrEqual(1);
+  });
+
+  it('fits a clustered selection to the chart without moving its points', () => {
+    const positions = buildStableAtlasPositions([
+      { organizationKey: 'a', layoutX: -559, layoutY: -321 },
+      { organizationKey: 'b', layoutX: -200, layoutY: 56 },
+      { organizationKey: 'c', layoutX: -90, layoutY: 304 },
+    ]);
+    const viewport = buildAtlasViewport(positions.values());
+
+    expect(positions.get('b')).toEqual({ x: -0.2, y: 0.056 });
+    expect(viewport.x.min).toBeLessThan(-0.559);
+    expect(viewport.x.max).toBeGreaterThan(-0.09);
+    expect(viewport.y.min).toBeLessThan(-0.321);
+    expect(viewport.y.max).toBeGreaterThan(0.304);
+    expect(viewport.x.max - viewport.x.min).toBeLessThan(1);
+    expect(viewport.y.max - viewport.y.min).toBeLessThan(1);
   });
 });

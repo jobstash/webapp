@@ -79,7 +79,7 @@ export const renderDeveloperReportOg = (
             {label} Developer Report
           </div>
           <div style={{ marginTop: 14, color: '#a4ada8', fontSize: 25 }}>
-            Original work, active developers, and nested internal roles
+            Open-source developer activity, original commits, and team growth
           </div>
         </div>
         <div
@@ -139,10 +139,7 @@ export const renderDeveloperReportOg = (
         {[
           ['All contributors', compact(report?.summary.allContributors ?? 0)],
           ['Active developers', compact(report?.summary.activeDevelopers ?? 0)],
-          [
-            'Internal developers',
-            compact(report?.summary.internalDevelopers ?? 0),
-          ],
+          ['Team developers', compact(report?.summary.internalDevelopers ?? 0)],
           ['Maintainers', compact(report?.summary.maintainers ?? 0)],
           ['Organizations', compact(report?.summary.organizations ?? 0)],
         ].map(([metricLabel, value]) => (
@@ -158,7 +155,7 @@ export const renderDeveloperReportOg = (
         ))}
       </div>
       <div style={{ color: '#7f8d85', display: 'flex', fontSize: 17 }}>
-        {`${report?.range.label ?? 'Since inception'} · Raw indexed records and credited originals are separate · Complete through ${report?.completeThrough ?? 'latest snapshot'}`}
+        {`${report?.range.label ?? 'Since inception'} · Copied and inherited fork history is removed · Complete through ${report?.completeThrough ?? 'latest snapshot'}`}
       </div>
     </div>,
     { width: 1200, height: 630 },

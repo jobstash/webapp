@@ -45,7 +45,7 @@ export const workforceChartOption = (
   xAxis: dated(history),
   series: [
     line(
-      'All indexed contributors',
+      'All contributors found',
       '#64748b',
       history.map((point) => point.allContributors),
     ),
@@ -56,7 +56,7 @@ export const workforceChartOption = (
       3,
     ),
     line(
-      'Internal developers',
+      'Team developers',
       '#34d399',
       history.map((point) => point.internalDevelopers),
       3,
@@ -91,7 +91,7 @@ export const cadenceChartOption = (
   xAxis: dated(history),
   series: [
     stacked(
-      'Full-time · 10+ active days',
+      'Full-time · 10+ days',
       '#34d399',
       history.map((point) => point.fullTimeDevelopers),
     ),
@@ -115,17 +115,17 @@ export const tenureChartOption = (
   xAxis: dated(history),
   series: [
     stacked(
-      'Established · 24+ months',
+      'Established · 2+ years',
       '#a3e635',
       history.map((point) => point.establishedDevelopers),
     ),
     stacked(
-      'Emerging · 3–23 months',
+      'Emerging · 3 months–2 years',
       '#f59e0b',
       history.map((point) => point.emergingDevelopers),
     ),
     stacked(
-      'Newcomer · under 3 months',
+      'Newcomers · under 3 months',
       '#f472b6',
       history.map((point) => point.newcomerDevelopers),
     ),
@@ -160,13 +160,13 @@ export const workChartOption = (
   xAxis: dated(history),
   series: [
     line(
-      'Credited original commits',
+      'Original commits',
       '#34d399',
       history.map((point) => point.creditedOriginalCommits),
       3,
     ),
     line(
-      'Raw indexed records',
+      'All commits scanned',
       '#64748b',
       history.map((point) => point.rawIndexedCommitRecords),
     ),
