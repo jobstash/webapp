@@ -22,6 +22,7 @@ import type {
   JobMarketSkillList,
   JobMarketState,
   JobMarketTicker,
+  JobMarketTopPaying,
 } from '../schemas';
 import { MarketStateDashboard } from './market-state-dashboard';
 
@@ -216,6 +217,97 @@ const skills: JobMarketSkillList = {
   ],
 };
 
+const topPaying: JobMarketTopPaying = {
+  asOf: '2026-08-12',
+  methodologyVersion: 'market-top-pay-v1',
+  scope: {
+    classification: 'market',
+    classificationLabel: 'Crypto Job Market',
+    segment: 'remote',
+    regionSlug: 'remote',
+    regionLabel: 'Remote',
+    regionType: 'remote',
+    filter: null,
+  },
+  availableRegions: [
+    {
+      regionSlug: 'local',
+      regionLabel: 'All local markets',
+      regionType: 'aggregate',
+      activeJobs: 500,
+      salarySampleCount: 200,
+    },
+    {
+      regionSlug: 'europe',
+      regionLabel: 'Europe',
+      regionType: 'continent',
+      activeJobs: 300,
+      salarySampleCount: 90,
+    },
+    {
+      regionSlug: 'amsterdam',
+      regionLabel: 'Amsterdam',
+      regionType: 'city',
+      activeJobs: 24,
+      salarySampleCount: 8,
+    },
+  ],
+  openJobsInScope: 120,
+  salaryJobCount: 40,
+  salaryCoveragePercent: 33.3,
+  topDecileThresholdMonthlyUsd: 15_000,
+  topDecileJobCount: 4,
+  medianTopDecileMonthlyUsd: 18_000,
+  breakdowns: {
+    classifications: [
+      {
+        slug: 'cl-engineering',
+        label: 'Engineering',
+        jobCount: 3,
+        sharePercent: 75,
+        medianMonthlyUsd: 18_000,
+      },
+    ],
+    seniorities: [
+      {
+        slug: 's-lead',
+        label: 'Lead',
+        jobCount: 3,
+        sharePercent: 75,
+        medianMonthlyUsd: 18_000,
+      },
+    ],
+    tags: [
+      {
+        slug: 't-typescript',
+        label: 'TypeScript',
+        jobCount: 2,
+        sharePercent: 50,
+        medianMonthlyUsd: 17_500,
+      },
+    ],
+  },
+  jobs: [
+    {
+      id: '101',
+      shortUuid: 'abc123',
+      title: 'Staff Engineer',
+      href: '/staff-engineer-acme/abc123',
+      organizationName: 'Acme',
+      organizationLogoUrl: null,
+      classificationSlug: 'cl-engineering',
+      classificationLabel: 'Engineering',
+      senioritySlug: 's-lead',
+      seniorityLabel: 'Lead',
+      location: 'Remote',
+      workModes: ['remote'],
+      publishedAt: '2026-08-11T00:00:00.000Z',
+      salaryMonthlyUsd: 20_000,
+      tags: [{ slug: 't-typescript', label: 'TypeScript' }],
+    },
+  ],
+};
+
 afterEach(() => {
   cleanup();
   push.mockClear();
@@ -229,6 +321,7 @@ describe('MarketStateDashboard', () => {
         state={state}
         skills={skills}
         scopeMarket={null}
+        topPaying={topPaying}
         selection={{
           range: 'max',
           classification: 'market',
@@ -236,6 +329,7 @@ describe('MarketStateDashboard', () => {
           sort: 'breakout',
           query: '',
           skill: null,
+          payRegion: null,
         }}
       />,
     );
@@ -251,7 +345,7 @@ describe('MarketStateDashboard', () => {
     expect(screen.getByText('Remote benchmark')).toBeInTheDocument();
     expect(screen.getByText('Local benchmark')).toBeInTheDocument();
     expect(screen.getByTestId('salary-map')).toBeInTheDocument();
-    expect(screen.getAllByText('TypeScript')).toHaveLength(2);
+    expect(screen.getAllByText('TypeScript').length).toBeGreaterThanOrEqual(2);
     expect(screen.queryByText('Sparse Skill')).not.toBeInTheDocument();
     const skillRow = screen.getByRole('row', { name: /TypeScript/ });
     expect(within(skillRow).getByText('$9K/mo')).toBeInTheDocument();
@@ -261,9 +355,21 @@ describe('MarketStateDashboard', () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByText('+11.2%')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        name: 'What the top 10% of open jobs pay',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('$15K/mo')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Staff Engineer' }),
+    ).toHaveAttribute('href', '/staff-engineer-acme/abc123');
 
     await user.click(screen.getByRole('button', { name: 'Analyze' }));
     expect(push).toHaveBeenCalledWith('/market?skill=t-typescript');
+
+    await user.click(screen.getByRole('button', { name: 'Onsite & hybrid' }));
+    expect(push).toHaveBeenCalledWith('/market?mode=local');
   });
 
   it('uses the API-selected market scope when a URL classification is invalid', () => {
@@ -272,6 +378,7 @@ describe('MarketStateDashboard', () => {
         state={state}
         skills={skills}
         scopeMarket={null}
+        topPaying={topPaying}
         selection={{
           range: 'max',
           classification: 'cl-not-real',
@@ -279,6 +386,7 @@ describe('MarketStateDashboard', () => {
           sort: 'breakout',
           query: '',
           skill: null,
+          payRegion: null,
         }}
       />,
     );
@@ -286,6 +394,70 @@ describe('MarketStateDashboard', () => {
     expect(
       screen.getByRole('combobox', { name: /classification/i }),
     ).toHaveValue('market');
+  });
+
+  it('navigates top-pay analysis between a city and continent', async () => {
+    const user = userEvent.setup();
+    const localTopPaying: JobMarketTopPaying = {
+      ...topPaying,
+      scope: {
+        ...topPaying.scope,
+        segment: 'local',
+        regionSlug: 'amsterdam',
+        regionLabel: 'Amsterdam',
+        regionType: 'city',
+        filter: { paramKey: 'cities', value: 'amsterdam' },
+      },
+    };
+    render(
+      <MarketStateDashboard
+        state={{
+          ...state,
+          geography: [
+            ...state.geography,
+            compensation({
+              segment: 'local',
+              regionSlug: 'amsterdam',
+              regionLabel: 'Amsterdam',
+              regionType: 'city',
+              activeJobs: 24,
+              sampleCount: 8,
+            }),
+            compensation({
+              segment: 'local',
+              regionSlug: 'europe',
+              regionLabel: 'Europe',
+              regionType: 'continent',
+              activeJobs: 300,
+              sampleCount: 90,
+            }),
+          ],
+        }}
+        skills={skills}
+        scopeMarket={null}
+        topPaying={localTopPaying}
+        selection={{
+          range: 'max',
+          classification: 'market',
+          mode: 'local',
+          sort: 'breakout',
+          query: '',
+          skill: null,
+          payRegion: 'city:amsterdam',
+        }}
+      />,
+    );
+
+    await user.selectOptions(
+      screen.getByRole('combobox', {
+        name: /continent, country, region, or city/i,
+      }),
+      'continent:europe',
+    );
+
+    expect(push).toHaveBeenCalledWith(
+      '/market?mode=local&payRegion=continent%3Aeurope',
+    );
   });
 
   it('makes a selected classification explicit and only links scoped skills to jobs', () => {
@@ -305,6 +477,14 @@ describe('MarketStateDashboard', () => {
         state={scopedState}
         skills={scopedSkills}
         scopeMarket={null}
+        topPaying={{
+          ...topPaying,
+          scope: {
+            ...topPaying.scope,
+            classification: 'cl-engineering-management',
+            classificationLabel: 'Engineering Management',
+          },
+        }}
         selection={{
           range: 'max',
           classification: 'cl-engineering-management',
@@ -312,6 +492,7 @@ describe('MarketStateDashboard', () => {
           sort: 'breakout',
           query: '',
           skill: null,
+          payRegion: null,
         }}
       />,
     );

@@ -8,6 +8,7 @@ import {
   fetchJobMarketSkillDetail,
   fetchJobMarketSkills,
   fetchJobMarketState,
+  fetchJobMarketTopPaying,
   fetchPillarMarket,
 } from '@/features/job-market/server';
 import { fetchPillarPageStatic } from '@/features/pillar/server';
@@ -118,6 +119,24 @@ const MarketPage = async ({ searchParams }: Props) => {
     : 'breakout';
   const query = first(params.q).trim();
   const skill = first(params.skill).trim() || null;
+  const rawPayRegion = first(params.payRegion).trim();
+  const [rawPayRegionType, ...rawPayRegionParts] = rawPayRegion.split(':');
+  const rawPayRegionSlug = rawPayRegionParts.join(':');
+  const payRegionType = new Set([
+    'aggregate',
+    'continent',
+    'country',
+    'region',
+    'city',
+  ]).has(rawPayRegionType)
+    ? rawPayRegionType
+    : 'aggregate';
+  const payRegionSlug =
+    mode === 'local' && payRegionType !== 'aggregate' && rawPayRegionSlug
+      ? rawPayRegionSlug
+      : 'local';
+  const payRegion =
+    mode === 'local' ? `${payRegionType}:${payRegionSlug}` : null;
 
   if (skill) {
     const [detail, market, pillar] = await Promise.all([
@@ -164,10 +183,16 @@ const MarketPage = async ({ searchParams }: Props) => {
     );
   }
 
-  const [state, skills, scopeMarket] = await Promise.all([
+  const [state, skills, scopeMarket, topPaying] = await Promise.all([
     fetchJobMarketState(range, classification),
     fetchJobMarketSkills(mode, sort, query, classification),
     fetchPillarMarket(classification, range).catch(() => null),
+    fetchJobMarketTopPaying(
+      mode,
+      classification,
+      mode === 'local' ? payRegionType : 'remote',
+      mode === 'local' ? payRegionSlug : 'remote',
+    ),
   ]);
 
   if (!state || !skills) {
@@ -191,7 +216,16 @@ const MarketPage = async ({ searchParams }: Props) => {
       state={state}
       skills={withPublishableSkillCompensation(skills)}
       scopeMarket={scopeMarket}
-      selection={{ range, classification, mode, sort, query, skill: null }}
+      topPaying={topPaying}
+      selection={{
+        range,
+        classification,
+        mode,
+        sort,
+        query,
+        skill: null,
+        payRegion,
+      }}
     />
   );
 };

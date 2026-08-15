@@ -19,6 +19,7 @@ import { activityChartOption, marketTreemapOption } from './chart-options';
 import { CompensationBandChart } from './compensation-band-chart';
 import { FlintEChart } from './flint-echart';
 import { MarketGeographyMap } from './market-geography-map';
+import { TopPayingOpportunities } from './top-paying-opportunities';
 import { compactNumber, monthlySalary, percentLabel } from '../lib/format';
 import { hasPublishableSkillCompensation } from '../lib/skill-evidence';
 import type {
@@ -26,6 +27,7 @@ import type {
   JobMarketSkillList,
   JobMarketState,
   JobMarketTicker,
+  JobMarketTopPaying,
   PillarMarket,
 } from '../schemas';
 
@@ -40,6 +42,7 @@ interface Selection {
   sort: SkillSort;
   query: string;
   skill: string | null;
+  payRegion: string | null;
 }
 
 const TRENDS: Array<{ value: SkillSort; label: string }> = [
@@ -133,11 +136,13 @@ export const MarketStateDashboard = ({
   state,
   skills,
   scopeMarket,
+  topPaying,
   selection,
 }: {
   state: JobMarketState;
   skills: JobMarketSkillList;
   scopeMarket: PillarMarket | null;
+  topPaying: JobMarketTopPaying | null;
   selection: Selection;
 }) => {
   const router = useRouter();
@@ -166,6 +171,14 @@ export const MarketStateDashboard = ({
     if (next.sort !== 'breakout') params.set('sort', next.sort);
     if (next.query) params.set('q', next.query);
     if (next.skill) params.set('skill', next.skill);
+    if (
+      !next.skill &&
+      next.mode === 'local' &&
+      next.payRegion &&
+      next.payRegion !== 'aggregate:local'
+    ) {
+      params.set('payRegion', next.payRegion);
+    }
     const suffix = params.toString();
     return `/market${suffix ? `?${suffix}` : ''}`;
   };
@@ -327,6 +340,23 @@ export const MarketStateDashboard = ({
           />
         </div>
       </section>
+
+      {topPaying && (
+        <TopPayingOpportunities
+          data={topPaying}
+          mode={selection.mode}
+          onModeChange={(mode) =>
+            navigate({
+              mode,
+              skill: null,
+              payRegion: mode === 'local' ? 'aggregate:local' : null,
+            })
+          }
+          onRegionChange={(payRegion) =>
+            navigate({ mode: 'local', skill: null, payRegion })
+          }
+        />
+      )}
 
       {scopeMarket && (
         <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>

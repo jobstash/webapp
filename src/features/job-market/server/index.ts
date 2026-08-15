@@ -3,5 +3,6 @@ export {
   fetchJobMarketSkillDetail,
   fetchJobMarketSkills,
   fetchJobMarketState,
+  fetchJobMarketTopPaying,
   fetchPillarMarket,
 } from './data';

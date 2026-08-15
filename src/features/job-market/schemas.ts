@@ -189,6 +189,80 @@ export const jobMarketStateSchema = jobMarketOverviewSchema.extend({
     .array(),
 });
 
+const jobMarketTopPayingBreakdownSchema = z.object({
+  slug: z.string(),
+  label: z.string(),
+  jobCount: z.number().int().nonnegative(),
+  sharePercent: z.number().min(0).max(100),
+  medianMonthlyUsd: z.number().nonnegative(),
+});
+
+export const jobMarketTopPayingSchema = z.object({
+  asOf: z.string(),
+  methodologyVersion: z.literal('market-top-pay-v1'),
+  scope: z.object({
+    classification: z.string(),
+    classificationLabel: z.string(),
+    segment: z.enum(['remote', 'local']),
+    regionSlug: z.string(),
+    regionLabel: z.string(),
+    regionType: z.enum([
+      'remote',
+      'aggregate',
+      'continent',
+      'country',
+      'region',
+      'city',
+    ]),
+    filter: jobMarketFilterSchema.nullable(),
+  }),
+  availableRegions: z
+    .object({
+      regionSlug: z.string(),
+      regionLabel: z.string(),
+      regionType: z.enum([
+        'aggregate',
+        'continent',
+        'country',
+        'region',
+        'city',
+      ]),
+      activeJobs: z.number().int().nonnegative(),
+      salarySampleCount: z.number().int().nonnegative(),
+    })
+    .array(),
+  openJobsInScope: z.number().int().nonnegative(),
+  salaryJobCount: z.number().int().nonnegative(),
+  salaryCoveragePercent: z.number().min(0).max(100),
+  topDecileThresholdMonthlyUsd: z.number().nonnegative().nullable(),
+  topDecileJobCount: z.number().int().nonnegative(),
+  medianTopDecileMonthlyUsd: z.number().nonnegative().nullable(),
+  breakdowns: z.object({
+    classifications: jobMarketTopPayingBreakdownSchema.array(),
+    seniorities: jobMarketTopPayingBreakdownSchema.array(),
+    tags: jobMarketTopPayingBreakdownSchema.array(),
+  }),
+  jobs: z
+    .object({
+      id: z.string(),
+      shortUuid: z.string(),
+      title: z.string(),
+      href: z.string().startsWith('/'),
+      organizationName: z.string().nullable(),
+      organizationLogoUrl: z.string().nullable(),
+      classificationSlug: z.string(),
+      classificationLabel: z.string(),
+      senioritySlug: z.string().nullable(),
+      seniorityLabel: z.string().nullable(),
+      location: z.string().nullable(),
+      workModes: z.string().array(),
+      publishedAt: z.string().nullable(),
+      salaryMonthlyUsd: z.number().nonnegative(),
+      tags: z.object({ slug: z.string(), label: z.string() }).array(),
+    })
+    .array(),
+});
+
 export const jobMarketSkillSummarySchema = z.object({
   slug: z.string(),
   label: z.string(),
@@ -251,6 +325,9 @@ export type JobMarketOverview = z.infer<typeof jobMarketOverviewSchema>;
 export type JobMarketCompensation = z.infer<typeof jobMarketCompensationSchema>;
 export type JobMarketSkillSignal = z.infer<typeof jobMarketSkillSignalSchema>;
 export type JobMarketState = z.infer<typeof jobMarketStateSchema>;
+export type JobMarketTopPaying = z.infer<typeof jobMarketTopPayingSchema>;
+export type JobMarketTopPayingBreakdown =
+  JobMarketTopPaying['breakdowns']['classifications'][number];
 export type JobMarketCompensationBand =
   JobMarketState['compensationBands'][number];
 export type JobMarketSkillSummary = z.infer<typeof jobMarketSkillSummarySchema>;

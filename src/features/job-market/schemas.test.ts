@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { jobMarketCompensationSchema } from './schemas';
+import {
+  jobMarketCompensationSchema,
+  jobMarketTopPayingSchema,
+} from './schemas';
 
 describe('job-market schemas', () => {
   it('accepts cached compensation created before opportunity counts existed', () => {
@@ -30,5 +33,37 @@ describe('job-market schemas', () => {
       activeHybridJobs: 0,
       activeRemoteJobs: 0,
     });
+  });
+
+  it('accepts a sparse top-pay cohort without suppressing its estimate', () => {
+    const parsed = jobMarketTopPayingSchema.parse({
+      asOf: '2026-08-12',
+      methodologyVersion: 'market-top-pay-v1',
+      scope: {
+        classification: 'market',
+        classificationLabel: 'Crypto Job Market',
+        segment: 'local',
+        regionSlug: 'amsterdam',
+        regionLabel: 'Amsterdam',
+        regionType: 'city',
+        filter: { paramKey: 'cities', value: 'amsterdam' },
+      },
+      availableRegions: [],
+      openJobsInScope: 10,
+      salaryJobCount: 1,
+      salaryCoveragePercent: 10,
+      topDecileThresholdMonthlyUsd: 8_500,
+      topDecileJobCount: 1,
+      medianTopDecileMonthlyUsd: 8_500,
+      breakdowns: {
+        classifications: [],
+        seniorities: [],
+        tags: [],
+      },
+      jobs: [],
+    });
+
+    expect(parsed.topDecileThresholdMonthlyUsd).toBe(8_500);
+    expect(parsed.salaryJobCount).toBe(1);
   });
 });

@@ -10,11 +10,13 @@ import {
   jobMarketSkillDetailSchema,
   jobMarketSkillListSchema,
   jobMarketStateSchema,
+  jobMarketTopPayingSchema,
   pillarMarketSchema,
   type JobMarketOverview,
   type JobMarketSkillDetail,
   type JobMarketSkillList,
   type JobMarketState,
+  type JobMarketTopPaying,
   type PillarMarket,
 } from '../schemas';
 
@@ -72,6 +74,21 @@ const fetchJobMarketStateUncached = (
   );
 };
 
+const fetchJobMarketTopPayingUncached = (
+  mode: 'remote' | 'local' = 'remote',
+  classification = 'market',
+  regionType = '',
+  region = '',
+) => {
+  const params = new URLSearchParams({ mode, classification });
+  if (regionType) params.set('regionType', regionType);
+  if (region) params.set('region', region);
+  return fetchMarket<JobMarketTopPaying>(
+    `/v2/search/market/top-paying?${params.toString()}`,
+    jobMarketTopPayingSchema,
+  );
+};
+
 const fetchJobMarketSkillsUncached = (
   mode: 'remote' | 'local' = 'remote',
   sort: 'breakout' | 'repricing' | 'salary' | 'demand' | 'cooling' = 'breakout',
@@ -101,6 +118,7 @@ const fetchJobMarketSkillDetailUncached = (
 export const fetchJobMarketOverview = cache(fetchJobMarketOverviewUncached);
 export const fetchPillarMarket = cache(fetchPillarMarketUncached);
 export const fetchJobMarketState = cache(fetchJobMarketStateUncached);
+export const fetchJobMarketTopPaying = cache(fetchJobMarketTopPayingUncached);
 export const fetchJobMarketSkills = cache(fetchJobMarketSkillsUncached);
 export const fetchJobMarketSkillDetail = cache(
   fetchJobMarketSkillDetailUncached,
