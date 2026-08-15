@@ -6,7 +6,7 @@ import {
   Building2Icon,
   DatabaseIcon,
   GitBranchIcon,
-  GitCommitHorizontalIcon,
+  GitPullRequestClosedIcon,
   ShieldCheckIcon,
   UserRoundCheckIcon,
   UsersRoundIcon,
@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import type { DeveloperReport, DeveloperReportRange } from '../schemas';
 import {
   cadenceChartOption,
-  commitsWrittenChartOption,
+  mergedPullRequestsChartOption,
   newDevelopersChartOption,
   repositoryGrowthChartOption,
   tenureChartOption,
@@ -235,8 +235,8 @@ export const DeveloperReportDashboard = ({
     () => repositoryGrowthChartOption(report.history),
     [report.history],
   );
-  const commitsWritten = useMemo(
-    () => commitsWrittenChartOption(report.history),
+  const mergedPullRequests = useMemo(
+    () => mergedPullRequestsChartOption(report.history),
     [report.history],
   );
 
@@ -286,19 +286,19 @@ export const DeveloperReportDashboard = ({
             icon={DatabaseIcon}
             label='Raw commit rows ingested'
             value={compact(report.summary.allTimeIngestedCommitRows)}
-            detail={`All time, including repeat crawls · ${compact(report.summary.reportCommitRecords)} unique records match this report`}
+            detail='All time, including repeat crawl snapshots'
           />
           <Metric
-            icon={GitCommitHorizontalIcon}
-            label='Commits written'
-            value={compact(report.summary.commitsWritten)}
-            detail='New commits written in the selected period, counted once'
+            icon={GitPullRequestClosedIcon}
+            label='Pull requests merged'
+            value={compact(report.summary.mergedPullRequests)}
+            detail='Distinct pull requests merged in included repositories during the selected period'
           />
           <Metric
             icon={GitBranchIcon}
             label='Commits inherited through forks'
             value={compact(report.summary.inheritedForkCommits)}
-            detail='Older history present when a GitHub fork was created'
+            detail='Older commit records copied into GitHub forks before each fork was created'
           />
           <Metric
             icon={GitBranchIcon}
@@ -342,9 +342,9 @@ export const DeveloperReportDashboard = ({
           option={workforce}
         />
         <ChartCard
-          title='Commits written each month'
-          description='Each point is the number of new commits written in included repositories during that month. Months stand alone; nothing accumulates from earlier months.'
-          option={commitsWritten}
+          title='Pull requests merged each month'
+          description='Each point is the number of distinct pull requests merged in included repositories during that month. Months stand alone; nothing accumulates from earlier months.'
+          option={mergedPullRequests}
         />
         <ChartCard
           title='Active developers by contribution frequency'

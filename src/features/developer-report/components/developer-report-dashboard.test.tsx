@@ -24,6 +24,7 @@ const point: NonNullable<DeveloperReport['current']> = {
   rawIndexedCommitRecords: 1_000,
   commitsWritten: 700,
   creditedOriginalCommits: 700,
+  mergedPullRequests: 240,
   inheritedForkCommits: 120,
   inheritedUnattributedCopyCommits: 10,
   fullTimeDevelopers: 60,
@@ -69,6 +70,7 @@ const report: DeveloperReport = {
     rawIndexedCommitRecords: 10_000,
     commitsWritten: 7_000,
     creditedOriginalCommits: 7_000,
+    mergedPullRequests: 2_400,
     inheritedForkCommits: 1_200,
     inheritedUnattributedCopyCommits: 100,
     allContributors: 300,
@@ -181,7 +183,9 @@ describe('DeveloperReportDashboard', () => {
     expect(
       screen.getByText('New repositories and GitHub forks'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Commits written each month')).toBeInTheDocument();
+    expect(
+      screen.getByText('Pull requests merged each month'),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('img', {
         name: 'Organization bubble timeline for Crypto, July 2026',
@@ -189,13 +193,11 @@ describe('DeveloperReportDashboard', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('Retention by starting cohort')).toBeNull();
     expect(screen.queryByText('Maintainer leverage')).toBeNull();
-    expect(screen.getAllByText('Commits written').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Pull requests merged').length).toBeGreaterThan(
+      0,
+    );
     expect(screen.getByText('Raw commit rows ingested')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /including repeat crawls.*unique records match this report/,
-      ),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/unique records match this report/)).toBeNull();
     expect(screen.queryByText('Commits scanned')).toBeNull();
     expect(
       screen.getByText('Active developers · Since inception'),

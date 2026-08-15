@@ -88,9 +88,6 @@ export const TopPayingOpportunities = ({
   const selectedRegion = `${data.scope.regionType}:${data.scope.regionSlug}`;
   const analysis = data.breakdowns[breakdown];
   const largestGroup = Math.max(1, ...analysis.map((item) => item.jobCount));
-  const leadingRole = data.breakdowns.classifications[0];
-  const leadingSkill = data.breakdowns.tags[0];
-  const leadingLevel = data.breakdowns.seniorities[0];
   const browseParams = new URLSearchParams();
   if (data.scope.classification !== 'market') {
     browseParams.set(
@@ -237,19 +234,6 @@ export const TopPayingOpportunities = ({
 
         {data.topDecileJobCount > 0 ? (
           <>
-            <div className='mt-5 rounded-xl border border-amber-400/20 bg-amber-400/[0.06] p-4 text-sm'>
-              Among these {compactNumber(data.topDecileJobCount)} jobs,
-              {leadingLevel
-                ? ` ${leadingLevel.label} is the most common level`
-                : ''}
-              {leadingSkill
-                ? ` and ${leadingSkill.label} is the most common skill`
-                : ''}
-              {leadingRole
-                ? `. ${leadingRole.label} roles make up ${leadingRole.sharePercent.toFixed(1)}% of the group.`
-                : '.'}
-            </div>
-
             <div className='mt-6 grid gap-6 xl:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)]'>
               <div>
                 <div className='flex flex-wrap gap-2'>

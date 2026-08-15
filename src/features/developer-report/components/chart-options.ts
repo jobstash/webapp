@@ -177,16 +177,16 @@ export const repositoryGrowthChartOption = (
   ],
 });
 
-export const commitsWrittenChartOption = (
+export const mergedPullRequestsChartOption = (
   history: DeveloperReportPoint[],
 ): EChartsCoreOption => ({
   ...base,
   xAxis: dated(history),
   series: [
     line(
-      'Commits written',
+      'Pull requests merged',
       '#34d399',
-      history.map((point) => point.commitsWritten),
+      history.map((point) => point.mergedPullRequests),
       3,
     ),
   ],

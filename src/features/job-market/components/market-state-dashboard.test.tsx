@@ -361,6 +361,7 @@ describe('MarketStateDashboard', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByText('$15K/mo')).toBeInTheDocument();
+    expect(screen.queryByText(/most common/i)).not.toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Staff Engineer' }),
     ).toHaveAttribute('href', '/staff-engineer-acme/abc123');
