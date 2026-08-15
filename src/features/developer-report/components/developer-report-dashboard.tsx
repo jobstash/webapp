@@ -314,9 +314,9 @@ export const DeveloperReportDashboard = ({
           />
           <Metric
             icon={UserRoundCheckIcon}
-            label='Active developers'
+            label={`Active developers · ${report.range.label}`}
             value={compact(report.summary.activeDevelopers)}
-            detail='Developers who wrote at least one new commit'
+            detail='Unique developers who wrote at least one new commit during this period'
           />
           <Metric
             icon={ShieldCheckIcon}

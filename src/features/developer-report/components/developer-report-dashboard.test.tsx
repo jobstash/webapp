@@ -197,9 +197,13 @@ describe('DeveloperReportDashboard', () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText('Commits scanned')).toBeNull();
-    expect(screen.getAllByText('Active developers').length).toBeGreaterThan(0);
     expect(
-      screen.getByText('Developers who wrote at least one new commit'),
+      screen.getByText('Active developers · Since inception'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Unique developers who wrote at least one new commit during this period',
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/original code/i)).toBeNull();
     expect(screen.queryByText(/unattributed cop/i)).toBeNull();
@@ -226,6 +230,25 @@ describe('DeveloperReportDashboard', () => {
       'href',
       '/developers?vertical=crypto&range=3y',
     );
+  });
+
+  it('shows the selected period in the active developer metric title', () => {
+    render(
+      <DeveloperReportDashboard
+        report={{
+          ...report,
+          range: {
+            ...report.range,
+            key: '1y',
+            label: 'Last year',
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText('Active developers · Last year'),
+    ).toBeInTheDocument();
   });
 
   it('makes an active chain filter explicit in every overall count', () => {
