@@ -53,11 +53,22 @@ export const useProfileCompleteness = (): ProfileCompleteness => {
     ).length ?? 0;
 
   const showcaseItems = showcase ?? [];
+  const MANUAL_LINK_LABELS = new Set([
+    'Linkedin',
+    'Website',
+    'Lens',
+    'X',
+    'Telegram',
+    'Discord',
+    'Phone',
+  ]);
   const completionMap: Record<string, boolean> = {
     skills: (skills ?? []).length > 0,
     resume: showcaseItems.some((item) => item.label === 'CV'),
     'linked-accounts': linkedAccountCount > 0,
-    'manual-links': showcaseItems.some((item) => item.label === 'Linkedin'),
+    'manual-links': showcaseItems.some((item) =>
+      MANUAL_LINK_LABELS.has(item.label),
+    ),
   };
 
   const completedCount = COMPLETENESS_ITEMS.filter(
