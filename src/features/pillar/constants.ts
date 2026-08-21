@@ -11,6 +11,7 @@ export type PillarCategory =
   | 'classification'
   | 'location'
   | 'timezone'
+  | 'collaborationHours'
   | 'commitment'
   | 'locationType'
   | 'organization'
@@ -56,6 +57,13 @@ export const PILLAR_CATEGORY_CONFIG: Record<PillarCategory, CategoryConfig> = {
     accent: 'text-sky-400',
     dot: 'bg-sky-400',
     nameFirst: false,
+  },
+  collaborationHours: {
+    label: 'Team Hours',
+    tagline: 'Collaboration Jobs',
+    accent: 'text-sky-300',
+    dot: 'bg-sky-300',
+    nameFirst: true,
   },
   commitment: {
     label: 'Work Type',
@@ -137,6 +145,11 @@ const PREFIX_MAPPINGS: PrefixMapping[] = [
   { prefix: 'fs-', category: 'fundingStage', paramKey: 'fundingStages' },
   { prefix: 't-', category: 'tag', paramKey: 'tags' },
   { prefix: 'tz-', category: 'timezone', paramKey: null },
+  {
+    prefix: 'ct-',
+    category: 'collaborationHours',
+    paramKey: 'collaborationHours',
+  },
   { prefix: 'l-', category: 'location', paramKey: null },
   { prefix: 'o-', category: 'organization', paramKey: 'organizations' },
   { prefix: 's-', category: 'seniority', paramKey: 'seniority' },
@@ -187,6 +200,10 @@ const toTitleCase = (str: string): string =>
 
 export const getPillarName = (slug: string): string => {
   const withoutPrefix = slug.replace(PREFIX_REGEX, '');
+  const collaborationHour = withoutPrefix.match(/^utc-(\d{2})$/);
+  if (getPillarCategory(slug) === 'collaborationHours' && collaborationHour) {
+    return `${collaborationHour[1]}:00 UTC`;
+  }
   return PILLAR_NAME_OVERRIDES[withoutPrefix] ?? toTitleCase(withoutPrefix);
 };
 

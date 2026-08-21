@@ -1,5 +1,5 @@
-import { ProfileJobs } from '@/features/profile/components/profile-jobs';
+import { JobsForMe } from '@/features/profile/components/jobs-for-me';
 
-const ProfileJobsPage = () => <ProfileJobs />;
+const ProfileJobsPage = () => <JobsForMe />;
 
 export default ProfileJobsPage;

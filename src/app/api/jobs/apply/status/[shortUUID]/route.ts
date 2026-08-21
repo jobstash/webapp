@@ -26,7 +26,7 @@ export const GET = async (
       return jsonError('Missing job shortUUID', 400);
     }
 
-    const url = `${clientEnv.MW_URL}/v2/profile/jobs/apply/status/${shortUUID}`;
+    const url = `${clientEnv.MW_URL}/profile/jobs/apply/status/${shortUUID}`;
 
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${session.apiToken}` },

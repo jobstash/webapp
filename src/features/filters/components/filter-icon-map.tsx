@@ -41,6 +41,7 @@ export const filterIconMap: IconMap = {
   countries: <Globe2Icon />,
   continents: <Globe2Icon />,
   timezones: <Clock3Icon />,
+  collaborationHours: <Clock3Icon />,
   seniority: <SeniorityIcon className='size-3' />,
   tags: <CodeXmlIcon className='mt-0.25 size-4' />,
   publicationDate: <CalendarDaysIcon />,

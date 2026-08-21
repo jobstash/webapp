@@ -24,7 +24,7 @@ export const POST = async (req: Request): Promise<NextResponse> => {
     );
   }
 
-  const response = await fetch(`${clientEnv.MW_URL}/v2/profile/jobs/view`, {
+  const response = await fetch(`${clientEnv.MW_URL}/profile/jobs/view`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

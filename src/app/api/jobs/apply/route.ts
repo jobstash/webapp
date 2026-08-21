@@ -23,7 +23,7 @@ export const POST = async (req: Request): Promise<NextResponse> => {
       return jsonError('Invalid request body', 400);
     }
 
-    const url = `${clientEnv.MW_URL}/v2/profile/jobs/apply`;
+    const url = `${clientEnv.MW_URL}/profile/jobs/apply`;
 
     const res = await fetch(url, {
       method: 'POST',
