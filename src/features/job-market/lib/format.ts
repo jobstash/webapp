@@ -13,6 +13,7 @@ export const monthlySalary = (value: number | null): string =>
         style: 'currency',
         currency: 'USD',
         notation: 'compact',
+        minimumFractionDigits: 0,
         maximumFractionDigits: 1,
       }).format(value)}/mo`;
 
