@@ -4,32 +4,32 @@ import { buildFilterModeHref } from './build-filter-mode-href';
 
 const REMOTE_PILLAR_BASE = {
   publicationDate: 'this-month',
-  locations: 'remote',
+  workModes: 'remote',
 };
 
 describe('buildFilterModeHref', () => {
   it('adds a new filter on top of the pillar criteria', () => {
     expect(buildFilterModeHref(REMOTE_PILLAR_BASE, { tags: 'react' })).toBe(
-      '/?publicationDate=this-month&locations=remote&tags=react',
+      '/?publicationDate=this-month&workModes=remote&tags=react',
     );
   });
 
   it('removes the publication date chip', () => {
     expect(
       buildFilterModeHref(REMOTE_PILLAR_BASE, { publicationDate: null }),
-    ).toBe('/?locations=remote');
+    ).toBe('/?workModes=remote');
   });
 
   it('removes the pillar chip', () => {
-    expect(buildFilterModeHref(REMOTE_PILLAR_BASE, { locations: null })).toBe(
+    expect(buildFilterModeHref(REMOTE_PILLAR_BASE, { workModes: null })).toBe(
       '/?publicationDate=this-month',
     );
   });
 
   it('replaces the pillar value when changed', () => {
     expect(
-      buildFilterModeHref(REMOTE_PILLAR_BASE, { locations: 'hybrid' }),
-    ).toBe('/?publicationDate=this-month&locations=hybrid');
+      buildFilterModeHref(REMOTE_PILLAR_BASE, { workModes: 'hybrid' }),
+    ).toBe('/?publicationDate=this-month&workModes=hybrid');
   });
 
   it('falls back to the bare home page when everything is removed', () => {

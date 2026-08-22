@@ -3,7 +3,7 @@ name: Auto Label
 on:
   pull_request:
     types: [opened, synchronize]
-    branches: [dev]
+    branches: [main]
 
 jobs:
   label:

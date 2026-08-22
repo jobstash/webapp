@@ -11,6 +11,8 @@ import {
   HandCoinsIcon,
   LinkIcon,
   MapPinIcon,
+  PlaneIcon,
+  ShieldCheckIcon,
   SquareChevronRightIcon,
 } from 'lucide-react';
 
@@ -33,8 +35,13 @@ import { WizardHatIcon } from '@/components/svg/wizard-hat-icon';
 import { WorkModeIcon } from '@/components/svg/work-mode-icon';
 
 export const filterIconMap: IconMap = {
-  locations: <WorkModeIcon />,
   workModes: <WorkModeIcon />,
+  residenceCountry: <Globe2Icon />,
+  utcOffset: <Clock3Icon />,
+  workAuthorization: <ShieldCheckIcon />,
+  requiresSponsorship: <HandCoinsIcon />,
+  attendancePreference: <CalendarDaysIcon />,
+  travelTolerance: <PlaneIcon />,
   availability: <MapPinIcon />,
   cities: <MapPinIcon />,
   regions: <MapPinIcon />,
@@ -57,9 +64,6 @@ export const filterIconMap: IconMap = {
   steppedDownLeads: <UsersIcon />,
   movedLeads: <UsersIcon />,
   earlyLeadDepartures: <UsersIcon />,
-  growingTeam: <UsersIcon />,
-  shrinkingTeam: <UsersIcon />,
-  earlyTeamShrinkage: <UsersIcon />,
   recentlyFunded: <HandCoinsIcon />,
   investors: <HandCoinsIcon />,
   audits: <AuditIcon />,

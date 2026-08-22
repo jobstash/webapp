@@ -26,7 +26,7 @@ type BubbleDatum = {
   internalDevelopers: number;
   maintainers: number;
   activeLeads: number;
-  change: number;
+  change: number | null;
   labelVisible: boolean;
   layer: 'developers' | 'internal' | 'maintainers' | 'leads';
   value: [number, number, number];
@@ -45,10 +45,33 @@ const monthLabel = (period: string) =>
     timeZone: 'UTC',
   }).format(new Date(`${period}T00:00:00Z`));
 
-const changeLabel = (value: number) =>
-  value === 0
-    ? 'unchanged since last month'
-    : `${value > 0 ? '+' : ''}${value} since last month`;
+export const threeMonthDeveloperGrowth = (
+  monthlyActiveDevelopers: number[],
+  selectedPeriodIndex: number,
+): number | null => {
+  if (selectedPeriodIndex < 5) return null;
+
+  const average = (values: number[]) =>
+    values.reduce((total, value) => total + value, 0) / values.length;
+  const selected = monthlyActiveDevelopers.slice(
+    selectedPeriodIndex - 2,
+    selectedPeriodIndex + 1,
+  );
+  const previous = monthlyActiveDevelopers.slice(
+    selectedPeriodIndex - 5,
+    selectedPeriodIndex - 2,
+  );
+
+  if (selected.length !== 3 || previous.length !== 3) return null;
+  return average(selected) - average(previous);
+};
+
+const changeLabel = (value: number | null) => {
+  if (value === null) return 'six months required for a growth comparison';
+  if (value === 0) return 'three-month average unchanged';
+  const formatted = Number.isInteger(value) ? String(value) : value.toFixed(1);
+  return `${value > 0 ? '+' : ''}${formatted} active developers: latest three-month average versus prior three months`;
+};
 
 export const OrganizationBubbleTimeline = ({
   organizations,
@@ -126,8 +149,6 @@ export const OrganizationBubbleTimeline = ({
         activeMaintainers: 0,
         activeLeads: 0,
       };
-    const previousPeriod =
-      periods[Math.max(0, selectedPeriodIndex - 1)] ?? period;
     const active = positioned
       .map((organization) => ({
         organization,
@@ -144,12 +165,21 @@ export const OrganizationBubbleTimeline = ({
     ): BubbleDatum[] =>
       positioned.map((organization) => {
         const point = pointAt(organization, period);
-        const prior = pointAt(organization, previousPeriod);
         const count = value(point);
-        const change = point.activeDevelopers - prior.activeDevelopers;
+        const change = threeMonthDeveloperGrowth(
+          periods.map(
+            (candidatePeriod) =>
+              pointAt(organization, candidatePeriod).activeDevelopers,
+          ),
+          selectedPeriodIndex,
+        );
         const atlasPosition = atlasPositions.get(organization.organizationKey);
         const growthColor =
-          change > 0 ? '#34d399' : change < 0 ? '#fb7185' : '#60a5fa';
+          change !== null && change > 0
+            ? '#34d399'
+            : change !== null && change < 0
+              ? '#fb7185'
+              : '#60a5fa';
         const layerStyle = {
           developers: {
             color: '#3b82f6',
@@ -326,8 +356,9 @@ export const OrganizationBubbleTimeline = ({
             Each organization keeps the same spot as you move through{' '}
             {rangeLabel.toLowerCase()}. Larger circles mean more active
             developers. Inner circles show team developers, maintainers, and
-            leads. A green border means the organization grew since last month;
-            pink means it shrank.
+            leads. A green border means its latest three-month average active
+            developer count grew versus the prior three months; pink means it
+            shrank. Six months are required for a comparison.
           </p>
         </div>
         <div className='flex items-center gap-3'>
@@ -387,7 +418,7 @@ export const OrganizationBubbleTimeline = ({
             ['bg-emerald-400', 'Team developers'],
             ['bg-purple-400', 'Maintainers'],
             ['bg-amber-400', 'Leads'],
-            ['border-2 border-emerald-400', 'Grew since last month'],
+            ['border-2 border-emerald-400', 'Latest 3-month average grew'],
           ].map(([color, label]) => (
             <span key={label} className='inline-flex items-center gap-1.5'>
               <span className={cn('size-3 rounded-full', color)} />

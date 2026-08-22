@@ -2,12 +2,12 @@
 
 ## Development Workflow
 
-This project uses a two-branch workflow with automated releases.
+Production deploys from reviewed changes pushed to `main`. Coolify observes
+`main` and starts the existing automatic build.
 
 ### Branches
 
-- `dev` - Integration branch. All PRs merge here.
-- `main` - Production branch. Only updated via release publish.
+- `main` - Reviewed production branch and Coolify deployment source.
 
 ### Branch Naming
 
@@ -21,39 +21,26 @@ Branch names must use one of these prefixes:
 
 ### Creating a Feature
 
-1. Create a branch from `dev`:
+1. Create a branch from `main`:
 
    ```bash
-   git checkout dev && git pull
+   git checkout main && git pull
    git checkout -b feat/my-feature
    ```
 
 2. Make your changes and commit
 
-3. Bump the version:
-
-   ```bash
-   pnpm version:bump
-   ```
-
-4. Push and create a PR to `dev`:
+3. Push and create a PR to `main`:
 
    ```bash
    git push -u origin feat/my-feature
    ```
 
-5. CI will validate branch prefix and version, then run lint/build/test
+4. CI validates the branch and runs lint, build, and tests. Merge only after
+   review and green acceptance gates.
 
 ### Releasing to Production
 
-1. Go to GitHub Releases
-2. Review the draft release (auto-generated from merged PRs)
-3. Click "Publish release"
-4. This triggers:
-   - Auto-merge `dev` → `main`
-   - DevOps deploys from `main`
-
-### Version Tracking
-
-The app version is exposed via `X-App-Version` header on API responses
-for client staleness detection.
+Merge the reviewed PR into `main`. Coolify then builds and deploys that commit.
+No release publication, version header, release environment variable, or
+automatic branch merge is part of deployment.

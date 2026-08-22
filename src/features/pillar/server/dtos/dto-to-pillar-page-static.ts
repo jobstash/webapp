@@ -30,6 +30,8 @@ export const dtoToPillarPageStatic = (
     title: dto.data.title,
     description: dto.data.description,
     jobs: dto.data.jobs.map(dtoToJobListItem),
+    indexing: dto.data.indexing,
+    hasEligibleOpenJobs: dto.data.hasEligibleOpenJobs,
     organization: org
       ? dtoToOrgInfo(org, `/o-${org.normalizedName ?? slugify(org.name)}`)
       : null,

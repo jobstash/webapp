@@ -40,7 +40,6 @@ pnpm format           # Prettier over ts/tsx/js/jsx/css/md/json
 pnpm test             # Vitest (watch)
 pnpm test:run         # Vitest (single run — used in CI and pre-push)
 pnpm analyze          # Build with the bundle analyzer (ANALYZE_BUNDLE=true)
-pnpm version:bump     # Bump package.json version (semver, by branch prefix or flag)
 ```
 
 - Builds use **`--webpack`** (opting out of Turbopack) because of the custom `splitChunks` config and Sentry wrapping in `next.config.ts`.
@@ -140,13 +139,15 @@ There is **no central fetch client**. The convention is: build a URL from `clien
 | Route                           | Methods         | Purpose                                                                                                                                                                                                     |
 | ------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `auth/session`                  | POST/GET/DELETE | Session lifecycle. POST verifies Privy token, requires an embedded wallet, exchanges it via `MW/privy/check-wallet`, stores `apiToken`/`isExpert`/`displayName`. GET expires after ~55min. DELETE destroys. |
-| `jobs/apply`                    | POST            | → `MW/v2/profile/jobs/apply`                                                                                                                                                                                |
-| `jobs/apply/status/[shortUUID]` | GET             | → `MW/v2/profile/jobs/apply/status/{id}`                                                                                                                                                                    |
+| `jobs/apply`                    | POST            | → `MW/profile/jobs/apply`                                                                                                                                                                                   |
+| `jobs/apply/status/[shortUUID]` | GET             | → `MW/profile/jobs/apply/status/{id}`                                                                                                                                                                       |
+| `jobs/for-me`                   | GET             | → `MW/jobs/for-me`; validates the explained work-location match                                                                                                                                             |
 | `jobs/match/[uuid]`             | GET             | → `MW/jobs/match/{uuid}` (server injects `isExpert` from session)                                                                                                                                           |
 | `profile/skills`                | GET             | → `MW/profile/skills`                                                                                                                                                                                       |
 | `profile/showcase`              | GET/POST        | → `MW/profile/showcase` (socials, email, CV link)                                                                                                                                                           |
 | `profile/suggested-jobs`        | GET             | → `MW/jobs/suggested` (maps via `dtoToJobListPage`, adds `hasMore`)                                                                                                                                         |
 | `profile/linked-accounts`       | GET             | Reads Privy user (no MW)                                                                                                                                                                                    |
+| `profile/job-preferences`       | GET/PATCH       | → `MW/profile/job-preferences`; validates the complete saved preference object                                                                                                                              |
 | `profile/sync`                  | POST            | Fan-out: skills → `MW/profile/skills` + showcase → `MW/profile/showcase` (207 on partial)                                                                                                                   |
 | `profile/delete`                | POST            | → `MW/profile/delete`, then destroys session                                                                                                                                                                |
 | `profile/resume/parse`          | POST            | **Not a proxy** — guards → text extract → LLM parse → R2 upload → skill match                                                                                                                               |
@@ -154,7 +155,8 @@ There is **no central fetch client**. The convention is: build a URL from `clien
 | `search/suggestions`            | GET             | → `MW/search/jobs/suggestions`                                                                                                                                                                              |
 | `search/tags/suggestions`       | GET             | → `MW/search/tags/suggestions`                                                                                                                                                                              |
 
-`src/proxy.ts` is Next.js middleware (renamed from `middleware.ts` in Next 16). It only sets an `X-App-Version` response header on `/api/*` for client staleness detection — **no auth, redirects, or rewrites**.
+There is no Next.js proxy/middleware layer. Authentication and validation are
+enforced independently by each BFF route handler.
 
 ## DTO-to-Schema Mapping
 
@@ -278,7 +280,6 @@ Two Zod-validated layers. **No `.env` / `.env.example` is committed** (`.env*` i
 - `NEXT_PUBLIC_ALLOW_INDEXING` — `'true'` enables indexing _(optional)_
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` — GA4 id _(optional)_
 - `NEXT_PUBLIC_SENTRY_DSN` — Sentry DSN
-- `NEXT_PUBLIC_APP_VERSION` — auto-injected from `package.json` (do not set manually)
 
 **Server-only** — validated at import in `src/lib/env/server.ts` (`import 'server-only'`), exported as `serverEnv`:
 
@@ -310,11 +311,12 @@ Vitest runs in the **node** environment (not jsdom, despite jsdom being installe
 
 `docs/todo-tests/` holds per-feature spec notes worth consulting for expected behavior.
 
-## Release Workflow
+## Deployment Workflow
 
-- Two branches: PRs target **`dev`**; **`main`** is production (updated only when a GitHub release is published, which auto-merges `dev` → `main`).
-- Branch prefix drives the version bump: `feat`/`feature` → minor, `major` → major, everything else → patch. Run `pnpm version:bump` before opening a PR.
-- CI (`.github/workflows/ci.yml`, on PR → `dev`): `validate-branch` (prefix), `validate-version` (must be `> dev`), `lint`, `build`, `test`.
+- PRs target **`main`**, the reviewed production branch.
+- CI (`.github/workflows/ci.yml`, on PR → `main`): `validate-branch`, `lint`, `build`, `test`.
+- Coolify automatically builds reviewed commits after they reach `main`.
+- Do not add release publication gates, automatic branch merges, image/release identity variables, or version headers.
 - Git hooks (`simple-git-hooks`): **commit-msg** = commitlint (conventional), **pre-commit** = `lint-staged` (prettier + oxlint), **pre-push** = `pnpm build && pnpm test`.
 
 ## Git Commit Rules

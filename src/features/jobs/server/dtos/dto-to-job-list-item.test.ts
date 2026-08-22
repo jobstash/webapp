@@ -41,6 +41,7 @@ const makeJobListItemDto = (
   offersTokenAllocation: null,
   salaryCurrency: null,
   classification: null,
+  workArrangement: null,
   tags: [],
   access: 'public',
   featured: false,
@@ -48,7 +49,63 @@ const makeJobListItemDto = (
   featureEndDate: null,
   onboardIntoWeb3: false,
   organization: makeOrganizationDto(),
+  project: null,
   ...overrides,
+});
+
+describe('dtoToJobListItem — direct Project employer', () => {
+  it('maps a Project-owned job to a visible employer with Project routes', () => {
+    const dto = jobListItemDto.parse(
+      makeJobListItemDto({
+        organization: null,
+        project: {
+          id: 'project-1',
+          name: 'Uniswap',
+          normalizedName: 'uniswap',
+          logo: 'https://uniswap.org/logo.png',
+          website: 'https://uniswap.org',
+          summary: 'A decentralized exchange protocol.',
+          description: 'Builds open liquidity infrastructure.',
+          category: 'DEX',
+          fundingRounds: [],
+          investors: [],
+        },
+      }),
+    );
+    const item = dtoToJobListItem(dto);
+
+    expect(item.href).toBe('/senior-frontend-engineer-uniswap/abc123');
+    expect(item.organization).toMatchObject({
+      entityType: 'project',
+      name: 'Uniswap',
+      logo: 'https://uniswap.org/logo.png',
+      href: '/?projects=uniswap',
+      intelligenceUrl: 'https://ecosystem.vision/projects/info/uniswap',
+    });
+  });
+});
+
+describe('jobListItemDto — canonical employer union', () => {
+  it('requires the project key at the API boundary', () => {
+    const { project: _project, ...withoutProject } = makeJobListItemDto();
+    expect(jobListItemDto.safeParse(withoutProject).success).toBe(false);
+  });
+
+  it.each([
+    ['no employer', makeJobListItemDto({ organization: null, project: null })],
+    [
+      'two employers',
+      makeJobListItemDto({
+        project: {
+          id: 'project-1',
+          name: 'Uniswap',
+          normalizedName: 'uniswap',
+        },
+      }),
+    ],
+  ])('rejects %s', (_label, value) => {
+    expect(jobListItemDto.safeParse(value).success).toBe(false);
+  });
 });
 
 describe('dtoToJobListItem — organization summary/description', () => {
@@ -160,9 +217,6 @@ describe('dtoToJobListItem — company intelligence', () => {
           steppedDownLeadCount: 0,
           movedLeadCount: 1,
           earlyLeadDepartureCount: 0,
-          growingTeam: true,
-          shrinkingTeam: false,
-          earlyTeamShrinkage: false,
         }),
       }),
     );
@@ -178,9 +232,6 @@ describe('dtoToJobListItem — company intelligence', () => {
       steppedDownLeadCount: 0,
       movedLeadCount: 1,
       earlyLeadDepartureCount: 0,
-      growingTeam: true,
-      shrinkingTeam: false,
-      earlyTeamShrinkage: false,
       intelligenceUrl: 'https://ecosystem.vision/organizations/info/bitrefill',
     });
   });
@@ -198,9 +249,6 @@ describe('dtoToJobListItem — company intelligence', () => {
       steppedDownLeadCount: null,
       movedLeadCount: null,
       earlyLeadDepartureCount: null,
-      growingTeam: null,
-      shrinkingTeam: null,
-      earlyTeamShrinkage: null,
     });
   });
 });
@@ -249,6 +297,26 @@ describe('dtoToJobListItem — publishedTimestampIsVerified', () => {
     );
     expect(tag).toBeDefined();
     expect(tag).not.toHaveProperty('verified');
+  });
+});
+
+describe('dtoToJobListItem — Forward Deployed Engineer', () => {
+  it('keeps the canonical code while exposing the canonical label and pillar', () => {
+    const item = dtoToJobListItem(
+      makeJobListItemDto({
+        title: 'Senior Forward Deployed Engineer',
+        classification: 'FORWARD_DEPLOYED_ENGINEER',
+      }),
+    );
+
+    expect(item.classification).toBe('FORWARD_DEPLOYED_ENGINEER');
+    expect(item.infoTags).toContainEqual(
+      expect.objectContaining({
+        iconKey: 'category',
+        label: 'Forward Deployed Engineer',
+        href: '/cl-forward-deployed-engineer',
+      }),
+    );
   });
 });
 

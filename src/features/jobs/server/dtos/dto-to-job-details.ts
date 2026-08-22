@@ -10,15 +10,15 @@ import {
 } from '@/features/jobs/schemas';
 
 export const dtoToSimilarJob = (dto: SimilarJobItemDto): SimilarJobSchema => {
-  const { shortUUID, timestamp, organization } = dto;
+  const { shortUUID, timestamp, organization, project } = dto;
+  const employer = organization ?? project;
 
   const title =
-    dto.title ??
-    (organization?.name ? `Role at ${organization.name}` : 'Open Role');
-  const orgSlug = organization?.name ? `-${organization.name}` : '';
-  const href = `/${slugify(`${title}${orgSlug}`)}/${shortUUID}`;
+    dto.title ?? (employer?.name ? `Role at ${employer.name}` : 'Open Role');
+  const employerSlug = employer?.name ? `-${employer.name}` : '';
+  const href = `/${slugify(`${title}${employerSlug}`)}/${shortUUID}`;
 
-  const normalizedName = organization?.normalizedName;
+  const normalizedName = employer?.normalizedName;
   const id = normalizedName ? `${shortUUID}-${normalizedName}` : shortUUID;
 
   return {
@@ -26,9 +26,12 @@ export const dtoToSimilarJob = (dto: SimilarJobItemDto): SimilarJobSchema => {
     title,
     href,
     timestampText: prettyTimestamp(timestamp),
-    companyName: organization?.name ?? null,
-    companyLogo: organization
-      ? getLogoUrl(organization.website, organization.logoUrl)
+    companyName: employer?.name ?? null,
+    companyLogo: employer
+      ? getLogoUrl(
+          employer.website,
+          organization?.logoUrl ?? project?.logo ?? null,
+        )
       : null,
   };
 };

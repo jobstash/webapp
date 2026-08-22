@@ -3,8 +3,6 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
 import { z } from 'zod';
 
-import packageJson from './package.json';
-
 // Validate public env vars at build/dev start (never ships to client bundle)
 z.object({
   NEXT_PUBLIC_FRONTEND_URL: z.url(),
@@ -26,9 +24,6 @@ z.object({
 const nextConfig: NextConfig = {
   output: 'standalone',
   serverExternalPackages: ['pdf-parse'],
-  env: {
-    NEXT_PUBLIC_APP_VERSION: packageJson.version,
-  },
   reactCompiler: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {

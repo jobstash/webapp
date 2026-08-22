@@ -1,4 +1,5 @@
 import type { Address, MappedInfoTagSchema } from '@/lib/schemas';
+import type { WorkArrangementV1 } from '@/features/jobs/work-arrangement';
 
 interface SalaryData {
   currency: string;
@@ -86,6 +87,18 @@ export const extractEmploymentType = (
  */
 type SchemaJobLocationType = 'TELECOMMUTE' | null;
 
+const EMPLOYER_EVIDENCE_SOURCES = new Set([
+  'employer_body',
+  'employer_ats_field',
+  'verified_employer_policy',
+]);
+
+const hasEmployerEvidence = (
+  evidence: WorkArrangementV1['remoteOptions'][number]['evidence'][number],
+): boolean =>
+  EMPLOYER_EVIDENCE_SOURCES.has(evidence.source) &&
+  EMPLOYER_EVIDENCE_SOURCES.has(evidence.trust);
+
 /**
  * Extracts job location type for Schema.org structured data.
  * Returns 'TELECOMMUTE' for fully remote positions, null for hybrid/on-site.
@@ -96,36 +109,22 @@ export const extractJobLocationType = (
   infoTags: MappedInfoTagSchema[],
   addresses?: Address[] | null,
   sourceLocationType?: string | null,
+  workArrangement?: WorkArrangementV1 | null,
 ): SchemaJobLocationType => {
-  // Prefer the first-party work-mode field. A known non-remote value must win
-  // over address mappings whose free-form text happens to mention "remote".
-  if (sourceLocationType) {
-    return sourceLocationType.trim().toLowerCase() === 'remote'
-      ? 'TELECOMMUTE'
-      : null;
-  }
-
-  // Check addresses first - most reliable source
-  if (addresses?.some((addr) => addr.isRemote)) {
-    return 'TELECOMMUTE';
-  }
-
-  // Legacy fallback for callers that don't carry the source work-mode field.
-  const workModeTag = infoTags.find((tag) => tag.iconKey === 'workMode');
-  if (workModeTag) {
-    const label = workModeTag.label.toLowerCase();
-    if (label.includes('remote') && !label.includes('hybrid')) {
-      return 'TELECOMMUTE';
-    }
-  }
-
-  // Check location tag for explicit "Remote" label
-  const locationTag = infoTags.find((tag) => tag.iconKey === 'location');
-  if (locationTag?.label.toLowerCase() === 'remote') {
-    return 'TELECOMMUTE';
-  }
-
-  // On-site positions don't need jobLocationType
+  // Legacy labels, addresses, and aggregator fields are claims rather than
+  // proof. TELECOMMUTE is emitted only from a validated employer-backed
+  // WorkArrangementV1 option.
+  void infoTags;
+  void addresses;
+  void sourceLocationType;
+  if (workArrangement?.classification !== 'verified_remote') return null;
+  const hasEmployerRemoteEvidence = workArrangement.remoteOptions.some(
+    (option) =>
+      option.mode === 'remote' &&
+      option.classification === 'verified_remote' &&
+      option.evidence.some(hasEmployerEvidence),
+  );
+  if (hasEmployerRemoteEvidence) return 'TELECOMMUTE';
   return null;
 };
 
@@ -144,13 +143,22 @@ interface SchemaCountry {
  * skip jobLocationType entirely in that case to avoid invalid structured data.
  */
 export const extractApplicantLocationRequirements = (
-  addresses?: Address[] | null,
+  workArrangement?: WorkArrangementV1 | null,
 ): SchemaCountry[] | null => {
-  if (!addresses?.length) return null;
+  if (workArrangement?.classification !== 'verified_remote') return null;
 
-  const remoteCountries = addresses
-    .filter((addr) => addr.isRemote)
-    .map((addr) => addr.country);
+  const remoteCountries = workArrangement.remoteOptions
+    .filter(
+      (option) =>
+        option.mode === 'remote' &&
+        option.classification === 'verified_remote' &&
+        option.evidence.some(hasEmployerEvidence),
+    )
+    .flatMap((option) =>
+      option.includedCountries.filter(
+        (country) => !option.excludedCountries.includes(country),
+      ),
+    );
 
   if (remoteCountries.length === 0) return null;
 

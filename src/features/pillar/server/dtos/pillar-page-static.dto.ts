@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 import {
   nonEmptyStringSchema,
-  nullableBooleanSchema,
   nullableStringSchema,
   optionalStringSchema,
 } from '@/lib/schemas';
@@ -44,9 +43,6 @@ const pillarOrganizationDto = z.object({
   steppedDownLeadCount: z.number().nullable().optional(),
   movedLeadCount: z.number().nullable().optional(),
   earlyLeadDepartureCount: z.number().nullable().optional(),
-  growingTeam: nullableBooleanSchema.optional(),
-  shrinkingTeam: nullableBooleanSchema.optional(),
-  earlyTeamShrinkage: nullableBooleanSchema.optional(),
 });
 
 export const pillarPageStaticDto = z.object({
@@ -56,6 +52,11 @@ export const pillarPageStaticDto = z.object({
     title: nonEmptyStringSchema,
     description: nonEmptyStringSchema,
     jobs: jobListItemDto.array(),
+    // Middleware is authoritative for canonical zero-inventory pillars (for
+    // example FDE). Optional during a rolling deploy so older payloads still
+    // parse and the page can fall back to the local thin-pillar rule.
+    indexing: z.enum(['index', 'noindex']).optional(),
+    hasEligibleOpenJobs: z.boolean().optional(),
     organization: pillarOrganizationDto.nullish(),
     suggestedPillars: z
       .array(z.object({ label: z.string(), href: z.string() }))

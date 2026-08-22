@@ -22,6 +22,8 @@ export const pillarPageStaticSchema = z.object({
   title: nonEmptyStringSchema,
   description: nonEmptyStringSchema,
   jobs: jobListItemSchema.array(),
+  indexing: z.enum(['index', 'noindex']).optional(),
+  hasEligibleOpenJobs: z.boolean().optional(),
   // Org pillars: the same UI-optimized org shape jobs use, so the org
   // info card renders identically on pillar and job detail pages.
   organization: jobOrganizationSchema.nullable(),

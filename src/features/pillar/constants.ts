@@ -6,6 +6,9 @@ import type { PillarFilterContext, SuggestedPillar } from './schemas';
 // they render normally for humans but are noindexed.
 export const PILLAR_MIN_INDEXABLE_JOBS = 3;
 
+export const isPillarIndexable = (openJobCount: number): boolean =>
+  openJobCount >= PILLAR_MIN_INDEXABLE_JOBS;
+
 export type PillarCategory =
   | 'tag'
   | 'classification'

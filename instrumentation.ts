@@ -5,7 +5,6 @@ export const register = async () => {
 
   Sentry.init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-    release: `webapp@${process.env.NEXT_PUBLIC_APP_VERSION}`,
     tracesSampleRate: 0,
     sendDefaultPii: false,
     beforeSend: (event) => {

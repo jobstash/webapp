@@ -12,6 +12,8 @@ interface JobListItemOrgProps {
 
 export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
   const { summary, fundingRounds, investors } = organization;
+  const entityLabel =
+    organization.entityType === 'project' ? 'project' : 'organization';
 
   const hasIntelligence =
     !!organization.fundingStage ||
@@ -21,10 +23,7 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
     (organization.newActiveLeadCount ?? 0) > 0 ||
     (organization.steppedDownLeadCount ?? 0) > 0 ||
     (organization.movedLeadCount ?? 0) > 0 ||
-    (organization.earlyLeadDepartureCount ?? 0) > 0 ||
-    !!organization.growingTeam ||
-    !!organization.shrinkingTeam ||
-    !!organization.earlyTeamShrinkage;
+    (organization.earlyLeadDepartureCount ?? 0) > 0;
   const hasExpandableContent =
     !!summary ||
     fundingRounds.length > 0 ||
@@ -48,9 +47,9 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
           className='size-3.5 transition-transform duration-200 group-open:rotate-90'
           aria-hidden='true'
         />
-        <span className='group-open:hidden'>View organization details</span>
+        <span className='group-open:hidden'>View {entityLabel} details</span>
         <span className='hidden group-open:inline'>
-          Hide organization details
+          Hide {entityLabel} details
         </span>
       </summary>
 

@@ -15,6 +15,7 @@ vi.mock('next/link', () => ({
     children: React.ReactNode;
     href: string;
   }) => (
+    // eslint-disable-next-line @next/next/no-html-link-for-pages
     <a href={href} {...props}>
       {children}
     </a>
@@ -48,9 +49,6 @@ const organization = (
   steppedDownLeadCount: 0,
   movedLeadCount: 0,
   earlyLeadDepartureCount: 0,
-  growingTeam: true,
-  shrinkingTeam: false,
-  earlyTeamShrinkage: false,
   intelligenceUrl: 'https://ecosystem.vision/organizations/info/safe',
   ...overrides,
 });

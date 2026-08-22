@@ -1,11 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 
 import { jobPreferencesSchema, type JobPreferences } from '../job-preferences';
+import {
+  JOB_PREFERENCE_FIELD_IDS,
+  parseJobsForMeReturnTo,
+} from '../jobs-for-me-resolution';
 import { ProfileCard } from './profile-card';
 
 const loadPreferences = async (): Promise<JobPreferences> => {
@@ -36,9 +41,33 @@ export const JobPreferencesForm = () => {
     queryFn: loadPreferences,
   });
   const [draft, setDraft] = useState<JobPreferences | null>(null);
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+  const focusedHash = useRef<string | null>(null);
+
   useEffect(() => {
     if (query.data) setDraft(query.data);
   }, [query.data]);
+
+  useEffect(() => {
+    setReturnTo(
+      parseJobsForMeReturnTo(
+        new URLSearchParams(window.location.search).get('returnTo'),
+      ),
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!draft) return;
+    const hash = window.location.hash.slice(1);
+    const isPreferenceField = Object.values(JOB_PREFERENCE_FIELD_IDS).some(
+      (fieldId) => fieldId === hash,
+    );
+    if (!isPreferenceField || focusedHash.current === hash) return;
+
+    document.getElementById(hash)?.focus();
+    focusedHash.current = hash;
+  }, [draft]);
+
   const mutation = useMutation({
     mutationFn: savePreferences,
     onSuccess: (data) => {
@@ -70,18 +99,20 @@ export const JobPreferencesForm = () => {
     );
   }
 
-  const toggleMode = (mode: JobPreferences['acceptableWorkModes'][number]) => {
+  const toggleMode = (mode: JobPreferences['workModes'][number]) => {
     setDraft((current) => {
       if (!current) return current;
-      const selected = current.acceptableWorkModes.includes(mode);
+      const selected = current.workModes.includes(mode);
       return {
         ...current,
-        acceptableWorkModes: selected
-          ? current.acceptableWorkModes.filter((item) => item !== mode)
-          : [...current.acceptableWorkModes, mode],
+        workModes: selected
+          ? current.workModes.filter((item) => item !== mode)
+          : [...current.workModes, mode],
       };
     });
   };
+
+  const validation = jobPreferencesSchema.safeParse(draft);
 
   return (
     <ProfileCard
@@ -97,6 +128,7 @@ export const JobPreferencesForm = () => {
         <label className='text-sm'>
           Country (two-letter code)
           <input
+            id={JOB_PREFERENCE_FIELD_IDS.country}
             className={fieldClass}
             value={draft.residenceCountry ?? ''}
             maxLength={2}
@@ -110,43 +142,40 @@ export const JobPreferencesForm = () => {
           />
         </label>
         <label className='text-sm'>
-          Region
+          UTC offset
           <input
+            id={JOB_PREFERENCE_FIELD_IDS.utcOffset}
+            aria-label='UTC offset'
+            type='number'
+            min={-12}
+            max={14}
+            step={0.25}
             className={fieldClass}
-            value={draft.residenceRegion ?? ''}
-            placeholder='EU'
+            value={draft.utcOffset ?? ''}
+            placeholder='+1'
             onChange={(event) =>
               setDraft({
                 ...draft,
-                residenceRegion: event.target.value || null,
+                utcOffset:
+                  event.target.value === '' ? null : Number(event.target.value),
               })
             }
           />
-        </label>
-        <label className='text-sm'>
-          IANA timezone
-          <input
-            className={fieldClass}
-            value={draft.ianaTimezone ?? ''}
-            placeholder='Europe/Amsterdam'
-            onChange={(event) =>
-              setDraft({ ...draft, ianaTimezone: event.target.value || null })
-            }
-          />
+          <span className='mt-1 block text-xs text-muted-foreground'>
+            Fractional offsets such as +5.5 and +5.75 are supported.
+          </span>
         </label>
         <label className='text-sm'>
           Work authorization
           <input
+            id={JOB_PREFERENCE_FIELD_IDS.workAuthorization}
             className={fieldClass}
-            value={draft.workAuthorizations.join(', ')}
-            placeholder='EU, NL'
+            value={draft.workAuthorization ?? ''}
+            placeholder='EU / Netherlands'
             onChange={(event) =>
               setDraft({
                 ...draft,
-                workAuthorizations: event.target.value
-                  .split(',')
-                  .map((item) => item.trim())
-                  .filter(Boolean),
+                workAuthorization: event.target.value.trim() || null,
               })
             }
           />
@@ -154,16 +183,17 @@ export const JobPreferencesForm = () => {
         <label className='text-sm'>
           Sponsorship need
           <select
+            id={JOB_PREFERENCE_FIELD_IDS.sponsorship}
             className={fieldClass}
             value={
-              draft.needsSponsorship === null
+              draft.requiresSponsorship === null
                 ? 'unstated'
-                : String(draft.needsSponsorship)
+                : String(draft.requiresSponsorship)
             }
             onChange={(event) =>
               setDraft({
                 ...draft,
-                needsSponsorship:
+                requiresSponsorship:
                   event.target.value === 'unstated'
                     ? null
                     : event.target.value === 'true',
@@ -176,8 +206,24 @@ export const JobPreferencesForm = () => {
           </select>
         </label>
         <label className='text-sm'>
+          Attendance preference
+          <input
+            id={JOB_PREFERENCE_FIELD_IDS.attendancePreference}
+            className={fieldClass}
+            value={draft.attendancePreference ?? ''}
+            placeholder='Remote only / up to 1 day a week'
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                attendancePreference: event.target.value.trim() || null,
+              })
+            }
+          />
+        </label>
+        <label className='text-sm'>
           Travel tolerance
           <input
+            id={JOB_PREFERENCE_FIELD_IDS.travelTolerance}
             className={fieldClass}
             value={draft.travelTolerance ?? ''}
             placeholder='Occasional travel'
@@ -198,13 +244,12 @@ export const JobPreferencesForm = () => {
               ['remote', 'Remote'],
               ['hybrid', 'Hybrid'],
               ['onsite', 'On-site'],
-              ['remote_or_office', 'Remote or office'],
             ] as const
           ).map(([value, label]) => (
             <label key={value} className='flex items-center gap-2 text-sm'>
               <input
                 type='checkbox'
-                checked={draft.acceptableWorkModes.includes(value)}
+                checked={draft.workModes.includes(value)}
                 onChange={() => toggleMode(value)}
               />
               {label}
@@ -212,21 +257,16 @@ export const JobPreferencesForm = () => {
           ))}
         </div>
       </fieldset>
-      <label className='mt-4 flex items-start gap-2 text-sm'>
-        <input
-          type='checkbox'
-          className='mt-1'
-          checked={draft.useInferredCollaborationHours}
-          onChange={(event) =>
-            setDraft({
-              ...draft,
-              useInferredCollaborationHours: event.target.checked,
-            })
-          }
-        />
-        Allow team-level collaboration hours inferred from credited GitHub
-        activity. This signal does not affect ranking yet.
-      </label>
+      {draft.workModes.length === 0 && (
+        <p className='mt-3 text-sm text-destructive'>
+          Select at least one work mode above before saving.
+        </p>
+      )}
+      {!validation.success && draft.workModes.length > 0 && (
+        <p className='mt-3 text-sm text-destructive'>
+          Check that the country and UTC offset use the formats shown above.
+        </p>
+      )}
       {mutation.isError && (
         <p className='mt-3 text-sm text-destructive'>
           Your changes were not saved. Retry or cancel to restore the previous
@@ -239,12 +279,10 @@ export const JobPreferencesForm = () => {
       <div className='mt-4 flex gap-2'>
         <Button
           size='sm'
-          disabled={
-            mutation.isPending || draft.acceptableWorkModes.length === 0
-          }
+          disabled={mutation.isPending || !validation.success}
           onClick={() => mutation.mutate(draft)}
         >
-          Save preferences
+          {mutation.isError ? 'Retry save' : 'Save preferences'}
         </Button>
         <Button
           size='sm'
@@ -254,6 +292,11 @@ export const JobPreferencesForm = () => {
         >
           Cancel
         </Button>
+        {returnTo && (
+          <Button size='sm' variant='ghost' asChild>
+            <Link href={returnTo}>Back to Jobs for me</Link>
+          </Button>
+        )}
       </div>
     </ProfileCard>
   );

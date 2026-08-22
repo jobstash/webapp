@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { workArrangementV1Schema } from './work-arrangement';
+
 import {
   addressSchema,
   mappedInfoTagSchema,
@@ -58,6 +60,7 @@ export const jobAvailabilitySchema = z.object({
 export type JobAvailabilitySchema = z.infer<typeof jobAvailabilitySchema>;
 
 export const jobOrganizationSchema = z.object({
+  entityType: z.enum(['organization', 'project']).optional(),
   name: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
   websiteUrl: nullableStringSchema,
@@ -81,9 +84,6 @@ export const jobOrganizationSchema = z.object({
   steppedDownLeadCount: z.number().nullable(),
   movedLeadCount: z.number().nullable(),
   earlyLeadDepartureCount: z.number().nullable(),
-  growingTeam: z.boolean().nullable(),
-  shrinkingTeam: z.boolean().nullable(),
-  earlyTeamShrinkage: z.boolean().nullable(),
   intelligenceUrl: nonEmptyStringSchema,
 });
 export type JobOrganizationSchema = z.infer<typeof jobOrganizationSchema>;
@@ -94,6 +94,7 @@ export const jobListItemSchema = z.object({
   href: nonEmptyStringSchema,
   hasApplyUrl: z.boolean(),
   classification: nullableStringSchema,
+  workArrangement: workArrangementV1Schema.nullable().optional(),
   summary: nullableStringSchema,
   location: nullableStringSchema,
   locationType: nullableStringSchema,

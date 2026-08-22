@@ -20,6 +20,7 @@ export const buildJobPostingSchema = (
     job.infoTags,
     job.addresses,
     job.locationType,
+    job.workArrangement,
   );
   const description = job.description || job.summary;
   const physicalAddresses =
@@ -28,8 +29,11 @@ export const buildJobPostingSchema = (
       : (job.addresses ?? []);
   const locationRequirements =
     jobLocationType === 'TELECOMMUTE'
-      ? extractApplicantLocationRequirements(job.addresses)
+      ? extractApplicantLocationRequirements(job.workArrangement)
       : null;
+  const sourceClaimsRemote = job.locationType
+    ? job.locationType.trim().toLowerCase() === 'remote'
+    : (job.addresses?.some((address) => address.isRemote) ?? false);
 
   // Google requires an employer, a way to apply, and either a physical
   // location or valid country restrictions for a fully remote role. When
@@ -40,6 +44,7 @@ export const buildJobPostingSchema = (
     !description ||
     !job.organization ||
     !job.hasApplyUrl ||
+    (sourceClaimsRemote && jobLocationType !== 'TELECOMMUTE') ||
     (jobLocationType === 'TELECOMMUTE'
       ? !locationRequirements
       : physicalAddresses.length === 0)

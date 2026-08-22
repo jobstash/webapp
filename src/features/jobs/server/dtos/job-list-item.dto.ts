@@ -10,6 +10,7 @@ import {
   optionalStringSchema,
 } from '@/lib/schemas';
 import { fundingRoundDto, investorDto, tagDto } from '@/lib/server/dtos';
+import { workArrangementV1Schema } from '@/features/jobs/work-arrangement';
 
 export const jobOrgProjectDto = z.object({
   id: nonEmptyStringSchema,
@@ -20,6 +21,34 @@ export const jobOrgProjectDto = z.object({
   category: optionalStringSchema,
 });
 export type JobOrgProjectDto = z.infer<typeof jobOrgProjectDto>;
+
+const jobEmployerProjectDto = z.object({
+  id: nonEmptyStringSchema,
+  name: nonEmptyStringSchema,
+  normalizedName: nonEmptyStringSchema,
+  logo: nullableStringSchema.optional(),
+  website: nullableStringSchema.optional(),
+  summary: nullableStringSchema.optional(),
+  description: nullableStringSchema.optional(),
+  category: nullableStringSchema.optional(),
+  github: nullableStringSchema.optional(),
+  twitter: nullableStringSchema.optional(),
+  telegram: nullableStringSchema.optional(),
+  discord: nullableStringSchema.optional(),
+  docs: nullableStringSchema.optional(),
+  fundingRounds: fundingRoundDto.array().optional(),
+  investors: investorDto.array().optional(),
+  fundingStage: nullableStringSchema.optional(),
+  recentlyFunded: z.boolean().optional(),
+  teamCoverageStatus: z.enum(['current', 'unknown']).nullable().optional(),
+  teamSignalsAsOf: nullableStringSchema.optional(),
+  currentMaintainerCount: nullableNumberSchema.optional(),
+  activeLeadCount: nullableNumberSchema.optional(),
+  newActiveLeadCount: nullableNumberSchema.optional(),
+  steppedDownLeadCount: nullableNumberSchema.optional(),
+  movedLeadCount: nullableNumberSchema.optional(),
+  earlyLeadDepartureCount: nullableNumberSchema.optional(),
+});
 
 export const jobAvailabilityDto = z.object({
   requirement: z.enum(['required', 'preferred']),
@@ -49,7 +78,7 @@ export const jobAvailabilityDto = z.object({
 });
 export type JobAvailabilityDto = z.infer<typeof jobAvailabilityDto>;
 
-export const jobListItemDto = z.object({
+const jobListItemBaseDto = z.object({
   id: nonEmptyStringSchema,
   title: nullableStringSchema,
   url: nullableStringSchema,
@@ -71,6 +100,7 @@ export const jobListItemDto = z.object({
   offersTokenAllocation: nullableBooleanSchema,
   salaryCurrency: nullableStringSchema,
   classification: nullableStringSchema,
+  workArrangement: workArrangementV1Schema.nullable().optional().default(null),
   tags: tagDto.array(),
   availability: jobAvailabilityDto.array().optional(),
 
@@ -106,9 +136,6 @@ export const jobListItemDto = z.object({
       steppedDownLeadCount: nullableNumberSchema.optional(),
       movedLeadCount: nullableNumberSchema.optional(),
       earlyLeadDepartureCount: nullableNumberSchema.optional(),
-      growingTeam: nullableBooleanSchema.optional(),
-      shrinkingTeam: nullableBooleanSchema.optional(),
-      earlyTeamShrinkage: nullableBooleanSchema.optional(),
       // Enriched org metadata — emitted by /jobs/details and the pillar
       // static endpoint; absent on /jobs/list.
       discord: optionalStringSchema,
@@ -119,5 +146,33 @@ export const jobListItemDto = z.object({
       projects: jobOrgProjectDto.array().optional(),
     })
     .nullable(),
+  project: jobEmployerProjectDto.nullable(),
 });
+
+const requireExactlyOneEmployer = (
+  value: z.infer<typeof jobListItemBaseDto>,
+  context: z.RefinementCtx,
+) => {
+  if ((value.organization === null) === (value.project === null)) {
+    context.addIssue({
+      code: 'custom',
+      message: 'A job must have exactly one organization or project employer',
+      path: ['organization'],
+    });
+  }
+};
+
+export const jobListItemDto = jobListItemBaseDto.superRefine(
+  requireExactlyOneEmployer,
+);
 export type JobListItemDto = z.infer<typeof jobListItemDto>;
+
+export const extendJobListItemDto = <T extends z.ZodRawShape>(shape: T) =>
+  jobListItemBaseDto
+    .extend(shape)
+    .superRefine((value, context) =>
+      requireExactlyOneEmployer(
+        value as z.infer<typeof jobListItemBaseDto>,
+        context,
+      ),
+    );

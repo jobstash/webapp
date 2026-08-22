@@ -15,9 +15,9 @@ import {
   SuggestedPillars,
 } from '@/features/pillar/components';
 import {
-  PILLAR_MIN_INDEXABLE_JOBS,
   getPillarCategory,
   getPillarFilterContext,
+  isPillarIndexable,
   isValidPillarSlug,
 } from '@/features/pillar/constants';
 import { fetchPillarPageStatic } from '@/features/pillar/server';
@@ -56,15 +56,19 @@ export const generateMetadata = async ({
   const { title, description } = pillarPage;
   const url = `${clientEnv.FRONTEND_URL}/${slug}`;
 
-  // Thin pillars (junk/low-volume tags) stay usable for humans but are
-  // kept out of the index; no canonical alongside noindex.
-  const isThin = pillarPage.jobs.length < PILLAR_MIN_INDEXABLE_JOBS;
+  // Middleware owns canonical indexability, including known zero-inventory
+  // classifications such as FDE. Keep the count fallback only for a rolling
+  // deploy where an older middleware payload has no explicit decision.
+  const isNoindex =
+    pillarPage.indexing === 'noindex' ||
+    (pillarPage.indexing === undefined &&
+      !isPillarIndexable(pillarPage.jobs.length));
 
   // og/twitter titles inherit the templated page title when unset.
   return {
     title,
     description,
-    ...(isThin
+    ...(isNoindex
       ? { robots: robotsNoindexFollow() }
       : { alternates: { canonical: url } }),
     openGraph: {

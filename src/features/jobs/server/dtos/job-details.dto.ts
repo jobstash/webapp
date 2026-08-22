@@ -3,9 +3,9 @@ import 'server-only';
 import { z } from 'zod';
 
 import { nullableStringSchema } from '@/lib/schemas';
-import { jobListItemDto } from './job-list-item.dto';
+import { extendJobListItemDto } from './job-list-item.dto';
 
-export const jobDetailsDto = jobListItemDto.extend({
+export const jobDetailsDto = extendJobListItemDto({
   description: nullableStringSchema,
   requirements: z.string().array().nullable(),
   responsibilities: z.string().array().nullable(),

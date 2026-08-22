@@ -139,7 +139,15 @@ const state: JobMarketState = {
     slug: 'market',
     label: 'Crypto Job Market',
   }),
-  classifications: [ticker()],
+  classifications: [
+    ticker(),
+    ticker({
+      slug: 'cl-forward-deployed-engineer',
+      label: 'Forward Deployed Engineer',
+      current: { ...point, activeJobs: 0, hiringCompanies: 0, newJobs: 0 },
+      eligibleMover: false,
+    }),
+  ],
   movers: { bullish: [ticker()], cooling: [] },
   geography: [
     compensation(),
@@ -342,6 +350,9 @@ describe('MarketStateDashboard', () => {
     expect(
       screen.getByRole('option', { name: 'Engineering Management' }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: 'Forward Deployed Engineer' }),
+    ).toHaveValue('cl-forward-deployed-engineer');
     expect(screen.getByText('Remote benchmark')).toBeInTheDocument();
     expect(screen.getByText('Local benchmark')).toBeInTheDocument();
     expect(screen.getByTestId('salary-map')).toBeInTheDocument();

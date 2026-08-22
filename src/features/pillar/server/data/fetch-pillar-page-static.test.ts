@@ -48,6 +48,11 @@ const validJob = {
   featureEndDate: null,
   onboardIntoWeb3: false,
   organization: null,
+  project: {
+    id: 'project-1',
+    name: 'React Protocol',
+    normalizedName: 'react-protocol',
+  },
 };
 
 const stubFetchResponse = (init: {
@@ -129,6 +134,31 @@ describe('fetchPillarPageStatic', () => {
     const result = await fetchPillarPageStatic('t-react');
     expect(result?.title).toBe('React Jobs');
     expect(result?.jobs).toHaveLength(1);
+  });
+
+  it('retains the authoritative noindex decision for a canonical empty FDE pillar', async () => {
+    stubFetchResponse({
+      body: {
+        success: true,
+        message: 'Retrieved pillar page data',
+        data: {
+          title: 'Forward Deployed Engineer Jobs',
+          description: 'Find forward deployed engineer jobs',
+          jobs: [],
+          indexing: 'noindex',
+          hasEligibleOpenJobs: false,
+          organization: null,
+        },
+      },
+    });
+
+    await expect(
+      fetchPillarPageStatic('cl-forward-deployed-engineer'),
+    ).resolves.toMatchObject({
+      jobs: [],
+      indexing: 'noindex',
+      hasEligibleOpenJobs: false,
+    });
   });
 
   it('caches a validated pillar result', async () => {

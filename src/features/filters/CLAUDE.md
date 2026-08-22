@@ -18,7 +18,7 @@ Defined in `constants.ts`:
 `components/filter-icon-map.tsx` maps `paramKey` to icons:
 
 ```
-locations       → WorkModeIcon
+workModes       → WorkModeIcon
 seniority       → SeniorityIcon
 tags            → CodeXmlIcon
 publicationDate → CalendarDaysIcon

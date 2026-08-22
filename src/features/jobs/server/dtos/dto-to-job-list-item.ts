@@ -40,7 +40,7 @@ const getDefaultTitle = (dto: JobListItemDto): string => {
   const classification = dto.classification
     ? titleCase(dto.classification)
     : null;
-  const orgName = dto.organization?.name ?? null;
+  const orgName = dto.organization?.name ?? dto.project?.name ?? null;
 
   const role = classification ?? 'Role';
   const roleWithSeniority = seniority ? `${seniority} ${role}` : role;
@@ -52,7 +52,7 @@ const getDefaultTitle = (dto: JobListItemDto): string => {
 };
 
 const getDefaultSummary = (dto: JobListItemDto): string => {
-  const orgName = dto.organization?.name;
+  const orgName = dto.organization?.name ?? dto.project?.name;
   const title = dto.title ?? getDefaultTitle(dto);
   return orgName
     ? `${orgName} is looking for a ${title}.`
@@ -68,6 +68,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     locationType,
     tags,
     organization,
+    project,
   } = dto;
 
   const lookupKey =
@@ -79,7 +80,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const href = createJobItemHref(title, dto);
   const infoTags = createJobInfoTags(dto, addressLookup, timestamp);
   const mappedTags = dtoToJobItemTag(tags);
-  const mappedOrg = dtoToJobItemOrg(organization);
+  const mappedOrg = dtoToJobItemEmployer(organization, project ?? null);
   const badge = dtoToJobItemBadge(dto);
   const timestampText = prettyTimestamp(timestamp);
   const datePosted = new Date(timestamp).toISOString().split('T')[0];
@@ -90,6 +91,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     href,
     hasApplyUrl: !!dto.url,
     classification: dto.classification,
+    workArrangement: dto.workArrangement ?? null,
     summary: summary || getDefaultSummary(dto),
     location,
     locationType,
@@ -144,7 +146,8 @@ const dtoToAvailability = (
 };
 
 const createJobItemHref = (title: string, dto: JobListItemDto) => {
-  const orgText = dto.organization?.name ? `-${dto.organization?.name}` : '';
+  const employerName = dto.organization?.name ?? dto.project?.name;
+  const orgText = employerName ? `-${employerName}` : '';
   const slug = slugify(`${title}${orgText}`);
   return `/${slug}/${dto.shortUUID}`;
 };
@@ -233,10 +236,11 @@ const createJobInfoTags = (
   }
 
   if (classification) {
+    const label = titleCase(classification);
     tags.push({
       iconKey: 'category',
-      label: titleCase(classification),
-      href: `/cl-${slugify(classification)}`,
+      label,
+      href: `/cl-${slugify(label)}`,
     });
   }
 
@@ -333,9 +337,6 @@ export interface OrgInfoSource {
   steppedDownLeadCount?: number | null;
   movedLeadCount?: number | null;
   earlyLeadDepartureCount?: number | null;
-  growingTeam?: boolean | null;
-  shrinkingTeam?: boolean | null;
-  earlyTeamShrinkage?: boolean | null;
 }
 
 const dtoToOrgSocials = (
@@ -373,7 +374,9 @@ const dtoToOrgProjects = (
 export const dtoToOrgInfo = (
   dto: OrgInfoSource,
   href: string,
+  entityType: 'organization' | 'project' = 'organization',
 ): JobOrganizationSchema => ({
+  entityType,
   name: dto.name,
   href,
   websiteUrl: dto.website ?? null,
@@ -396,10 +399,7 @@ export const dtoToOrgInfo = (
   steppedDownLeadCount: dto.steppedDownLeadCount ?? null,
   movedLeadCount: dto.movedLeadCount ?? null,
   earlyLeadDepartureCount: dto.earlyLeadDepartureCount ?? null,
-  growingTeam: dto.growingTeam ?? null,
-  shrinkingTeam: dto.shrinkingTeam ?? null,
-  earlyTeamShrinkage: dto.earlyTeamShrinkage ?? null,
-  intelligenceUrl: `https://ecosystem.vision/organizations/info/${dto.normalizedName ?? slugify(dto.name)}`,
+  intelligenceUrl: `https://ecosystem.vision/${entityType === 'project' ? 'projects' : 'organizations'}/info/${dto.normalizedName ?? slugify(dto.name)}`,
 });
 
 export const dtoToJobItemOrg = (
@@ -407,6 +407,25 @@ export const dtoToJobItemOrg = (
 ): JobOrganizationSchema | null => {
   if (!dto) return null;
   return dtoToOrgInfo(dto, `/o-${dto.normalizedName}`);
+};
+
+export const dtoToJobItemEmployer = (
+  organization: JobListItemDto['organization'],
+  project: JobListItemDto['project'],
+): JobOrganizationSchema | null => {
+  if (organization) return dtoToJobItemOrg(organization);
+  if (!project) return null;
+
+  const projectSlug = project.normalizedName ?? slugify(project.name);
+  return dtoToOrgInfo(
+    {
+      ...project,
+      logoUrl: project.logo ?? null,
+      projects: [],
+    },
+    `/?projects=${encodeURIComponent(projectSlug)}`,
+    'project',
+  );
 };
 
 const dtoToJobItemBadge = (dto: JobListItemDto): JobListItemSchema['badge'] => {

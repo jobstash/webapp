@@ -16,6 +16,7 @@ afterEach(() => {
 vi.mock('@/components/hero-ctas', () => ({
   HeroCtas: () => (
     <div>
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <a href='/urgently-hiring'>Urgently Hiring</a>
       <button>Jobs For You</button>
     </div>

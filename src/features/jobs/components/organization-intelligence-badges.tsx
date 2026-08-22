@@ -74,28 +74,6 @@ export const OrganizationIntelligenceBadges = ({
         : 'early lead departures';
     badges.push({ label: `${organization.earlyLeadDepartureCount} ${label}` });
   }
-  if (
-    hasCurrentTeamCoverage &&
-    organization.newActiveLeadCount === null &&
-    organization.growingTeam
-  ) {
-    badges.push({ label: 'New active leads' });
-  }
-  if (
-    hasCurrentTeamCoverage &&
-    organization.steppedDownLeadCount === null &&
-    organization.shrinkingTeam
-  ) {
-    badges.push({ label: 'Lead step-downs' });
-  }
-  if (
-    hasCurrentTeamCoverage &&
-    organization.earlyLeadDepartureCount === null &&
-    organization.earlyTeamShrinkage
-  ) {
-    badges.push({ label: 'Early lead departures' });
-  }
-
   if (badges.length === 0 && !includeEcosystemLink) return null;
 
   return (

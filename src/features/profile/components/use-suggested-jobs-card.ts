@@ -22,6 +22,8 @@ export const useSuggestedJobsCard = () => {
     fetchNextPage,
     isFetchingNextPage,
     isPending,
+    refetch,
+    isFetching,
   } = useSuggestedJobs({
     enabled: isSessionReady,
     skills,
@@ -38,5 +40,7 @@ export const useSuggestedJobsCard = () => {
     hasMore,
     fetchNextPage,
     isFetchingNextPage,
+    refetch,
+    isFetching,
   };
 };

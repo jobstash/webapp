@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/nextjs';
+import { captureRouterTransitionStart, init } from '@sentry/nextjs';
 
-Sentry.init({
+init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   tracesSampleRate: 0,
   sendDefaultPii: false,
@@ -8,4 +8,4 @@ Sentry.init({
     defaults.filter((i) => i.name !== 'BrowserTracing'),
 });
 
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+export const onRouterTransitionStart = captureRouterTransitionStart;

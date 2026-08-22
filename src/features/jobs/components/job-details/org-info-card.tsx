@@ -58,11 +58,13 @@ const OrgSocials = ({
           href={socials[key] as string}
           target='_blank'
           rel='noopener noreferrer'
-          aria-label={`${name} on ${label}`}
           title={label}
           className='text-muted-foreground transition-colors hover:text-foreground'
         >
           <Icon className='size-4' />
+          <span className='sr-only'>
+            {name} on {label}
+          </span>
         </Link>
       ))}
     </div>
@@ -188,10 +190,10 @@ export const OrgInfoCard = ({
               href={websiteUrl}
               target='_blank'
               rel='noopener noreferrer'
-              aria-label={`Visit ${name} website`}
               className='text-muted-foreground transition-colors hover:text-foreground'
             >
               <ExternalLinkIcon className='size-3.5' />
+              <span className='sr-only'>Visit {name} website</span>
             </Link>
           )}
         </div>

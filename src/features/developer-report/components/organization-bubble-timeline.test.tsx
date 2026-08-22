@@ -3,7 +3,10 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { DeveloperOrganization } from '../schemas';
-import { OrganizationBubbleTimeline } from './organization-bubble-timeline';
+import {
+  OrganizationBubbleTimeline,
+  threeMonthDeveloperGrowth,
+} from './organization-bubble-timeline';
 
 vi.mock('@/features/job-market/components/flint-echart', () => ({
   FlintEChart: ({ ariaLabel }: { ariaLabel: string }) => (
@@ -41,6 +44,12 @@ const organization = (periods: string[]): DeveloperOrganization => ({
 });
 
 describe('OrganizationBubbleTimeline', () => {
+  it('compares the selected three-month average with the prior three months', () => {
+    expect(threeMonthDeveloperGrowth([1, 2, 3, 4, 5, 6], 5)).toBe(3);
+    expect(threeMonthDeveloperGrowth([6, 5, 4, 3, 2, 1], 5)).toBe(-3);
+    expect(threeMonthDeveloperGrowth([1, 2, 3, 4, 5], 4)).toBeNull();
+  });
+
   it('clamps the selected month while a report range shrinks', () => {
     const view = render(
       <OrganizationBubbleTimeline

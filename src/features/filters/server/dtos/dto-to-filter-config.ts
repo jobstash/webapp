@@ -27,8 +27,13 @@ import {
 import { checkIsRemoteFilter } from '@/features/filters/utils';
 
 const PARAM_KEYS = {
-  LOCATIONS: 'locations',
   WORK_MODES: 'workModes',
+  RESIDENCE_COUNTRY: 'residenceCountry',
+  UTC_OFFSET: 'utcOffset',
+  WORK_AUTHORIZATION: 'workAuthorization',
+  REQUIRES_SPONSORSHIP: 'requiresSponsorship',
+  ATTENDANCE_PREFERENCE: 'attendancePreference',
+  TRAVEL_TOLERANCE: 'travelTolerance',
   AVAILABILITY: 'availability',
   CITIES: 'cities',
   REGIONS: 'regions',
@@ -48,9 +53,6 @@ const PARAM_KEYS = {
   STEPPED_DOWN_LEADS: 'steppedDownLeads',
   MOVED_LEADS: 'movedLeads',
   EARLY_LEAD_DEPARTURES: 'earlyLeadDepartures',
-  GROWING_TEAM: 'growingTeam',
-  SHRINKING_TEAM: 'shrinkingTeam',
-  EARLY_TEAM_SHRINKAGE: 'earlyTeamShrinkage',
   RECENTLY_FUNDED: 'recentlyFunded',
 } as const;
 
@@ -63,8 +65,13 @@ const LABELS = {
 } as const;
 
 const SUGGESTED_FILTERS = new Set<ParamKey>([
-  PARAM_KEYS.LOCATIONS,
   PARAM_KEYS.WORK_MODES,
+  PARAM_KEYS.RESIDENCE_COUNTRY,
+  PARAM_KEYS.UTC_OFFSET,
+  PARAM_KEYS.WORK_AUTHORIZATION,
+  PARAM_KEYS.REQUIRES_SPONSORSHIP,
+  PARAM_KEYS.ATTENDANCE_PREFERENCE,
+  PARAM_KEYS.TRAVEL_TOLERANCE,
   PARAM_KEYS.AVAILABILITY,
   PARAM_KEYS.CITIES,
   PARAM_KEYS.REGIONS,
@@ -84,9 +91,6 @@ const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.STEPPED_DOWN_LEADS,
   PARAM_KEYS.MOVED_LEADS,
   PARAM_KEYS.EARLY_LEAD_DEPARTURES,
-  PARAM_KEYS.GROWING_TEAM,
-  PARAM_KEYS.SHRINKING_TEAM,
-  PARAM_KEYS.EARLY_TEAM_SHRINKAGE,
   PARAM_KEYS.RECENTLY_FUNDED,
 ]);
 
@@ -251,10 +255,7 @@ const adjustLocationLabel = (
     | SearchFilterConfigSchema
     | RemoteSearchFilterConfigSchema,
 ) => {
-  if (
-    dto.paramKey === PARAM_KEYS.LOCATIONS ||
-    dto.paramKey === PARAM_KEYS.WORK_MODES
-  ) {
+  if (dto.paramKey === PARAM_KEYS.WORK_MODES) {
     baseFilter.label = LABELS.WORK_MODE;
   }
 };

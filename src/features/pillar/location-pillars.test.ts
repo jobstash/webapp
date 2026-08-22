@@ -4,6 +4,7 @@ import {
   getPillarCategory,
   getPillarFilterContext,
   getPillarHeadline,
+  isPillarIndexable,
   isValidPillarSlug,
 } from './constants';
 
@@ -38,5 +39,19 @@ describe('location pillars', () => {
 
   it('builds a plain-language collaboration-hour headline', () => {
     expect(getPillarHeadline('ct-utc-08')).toBe('08:00 UTC Collaboration Jobs');
+  });
+
+  it('exposes the canonical Forward Deployed Engineer pillar and filter', () => {
+    const slug = 'cl-forward-deployed-engineer';
+
+    expect(isValidPillarSlug(slug)).toBe(true);
+    expect(getPillarCategory(slug)).toBe('classification');
+    expect(getPillarHeadline(slug)).toBe('Forward Deployed Engineer Jobs');
+    expect(getPillarFilterContext(slug)).toEqual({
+      paramKey: 'classifications',
+      value: 'forward-deployed-engineer',
+    });
+    expect(isPillarIndexable(0)).toBe(false);
+    expect(isPillarIndexable(3)).toBe(true);
   });
 });

@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { permanentRedirect } from 'next/navigation';
 
 import { SocialsAside } from '@/components/socials-aside';
 import {
@@ -13,11 +12,6 @@ import { JobListSkeleton } from '@/features/jobs/components/job-list/job-list.sk
 import { fetchJobListPage } from '@/features/jobs/server/data';
 import { SuggestedPillars } from '@/features/pillar/components';
 import { getPillarLinksFromSearchParams } from '@/features/pillar/constants';
-import { fetchFilterConfigs } from '@/features/filters/server/data';
-import {
-  canonicalizeGeographySearchParams,
-  hasLegacyGeographySearchParams,
-} from '@/features/filters/utils';
 import { clientEnv } from '@/lib/env/client';
 import { robotsNoindexFollow } from '@/lib/seo';
 
@@ -69,27 +63,6 @@ const preload = (currentPage: number, searchParams: Record<string, string>) => {
 
 const HomePage = async ({ searchParams }: Props) => {
   const rawSearchParams = await searchParams;
-  if (rawSearchParams.locations) {
-    const canonical = new URLSearchParams(rawSearchParams);
-    const workModes = [
-      ...(rawSearchParams.workModes?.split(',') ?? []),
-      ...rawSearchParams.locations.split(','),
-    ]
-      .map((value) => value.trim())
-      .filter(Boolean);
-    canonical.set('workModes', [...new Set(workModes)].join(','));
-    canonical.delete('locations');
-    permanentRedirect(`/?${canonical.toString()}`);
-  }
-  if (hasLegacyGeographySearchParams(rawSearchParams)) {
-    const canonical = canonicalizeGeographySearchParams(
-      rawSearchParams,
-      await fetchFilterConfigs(),
-    );
-    if (canonical.changed) {
-      permanentRedirect(`/?${new URLSearchParams(canonical.searchParams)}`);
-    }
-  }
   const { page, ...restSearchParams } = rawSearchParams;
   const currentPage = Number(page) || 1;
   preload(currentPage, restSearchParams);

@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import {
   AlertCircle,
   FileTextIcon,
   Loader2Icon,
+  RefreshCwIcon,
   SearchIcon,
   TagsIcon,
 } from 'lucide-react';
@@ -28,6 +30,8 @@ export const ProfileJobs = () => {
     hasMore,
     fetchNextPage,
     isFetchingNextPage,
+    refetch,
+    isFetching,
   } = useSuggestedJobsCard();
 
   if (isSkillsPending) {
@@ -42,7 +46,7 @@ export const ProfileJobs = () => {
 
   if (!hasSkills && !hasResume) {
     return (
-      <ProfileCard title='Jobs For You'>
+      <ProfileCard title='Skill matches'>
         <div className='flex flex-col items-center gap-3 py-6'>
           <FileTextIcon className='size-8 text-muted-foreground/50' />
           <p className='text-center text-sm text-muted-foreground'>
@@ -58,7 +62,7 @@ export const ProfileJobs = () => {
 
   if (!hasSkills) {
     return (
-      <ProfileCard title='Jobs For You'>
+      <ProfileCard title='Skill matches'>
         <div className='flex flex-col items-center gap-3 py-6'>
           <TagsIcon className='size-8 text-muted-foreground/50' />
           <p className='text-center text-sm text-muted-foreground'>
@@ -84,12 +88,20 @@ export const ProfileJobs = () => {
 
   if (isError) {
     return (
-      <ProfileCard title='Jobs For You'>
+      <ProfileCard title='Skill matches'>
         <div className='flex flex-col items-center gap-3 py-6'>
           <AlertCircle className='size-8 text-destructive' />
           <p className='text-center text-sm text-muted-foreground'>
-            Failed to load job suggestions
+            We could not load your skill matches.
           </p>
+          <div className='flex gap-2'>
+            <Button size='sm' onClick={() => refetch()} disabled={isFetching}>
+              <RefreshCwIcon className='size-4' /> Retry
+            </Button>
+            <Button size='sm' variant='secondary' asChild>
+              <Link href='/'>Browse all jobs</Link>
+            </Button>
+          </div>
         </div>
       </ProfileCard>
     );
@@ -97,12 +109,15 @@ export const ProfileJobs = () => {
 
   if (jobs.length === 0) {
     return (
-      <ProfileCard title='Jobs For You'>
+      <ProfileCard title='Skill matches'>
         <div className='flex flex-col items-center gap-3 py-6'>
           <SearchIcon className='size-8 text-muted-foreground/50' />
           <p className='text-center text-sm text-muted-foreground'>
             No matching jobs found. Check back soon.
           </p>
+          <Button size='sm' variant='secondary' asChild>
+            <Link href='/'>Browse all jobs</Link>
+          </Button>
         </div>
       </ProfileCard>
     );
@@ -110,6 +125,11 @@ export const ProfileJobs = () => {
 
   return (
     <div className='space-y-4'>
+      <ProfileCard title='Skill matches'>
+        <p className='text-sm text-muted-foreground'>
+          These roles match the skills saved on your profile.
+        </p>
+      </ProfileCard>
       {jobs.map((job) => (
         <JobListItem key={job.id} job={job} />
       ))}

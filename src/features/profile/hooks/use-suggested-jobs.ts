@@ -46,6 +46,8 @@ export const useSuggestedJobs = ({
     isFetchingNextPage,
     isPending,
     isError,
+    refetch,
+    isFetching,
   } = useInfiniteQuery({
     queryKey: ['profile-suggested-jobs', skills, isExpert],
     queryFn: ({ pageParam }) => fetchSuggestedJobs(skills, pageParam),
@@ -69,5 +71,7 @@ export const useSuggestedJobs = ({
     fetchNextPage,
     isFetchingNextPage,
     isPending,
+    refetch,
+    isFetching,
   };
 };
