@@ -15,6 +15,7 @@ const CATEGORY_ACCENT_HEX: Record<PillarCategory, string> = {
   classification: '#60A5FA',
   location: '#FBBF24',
   timezone: '#38BDF8',
+  collaborationHours: '#7DD3FC',
   commitment: '#A78BFA',
   locationType: '#22D3EE',
   organization: '#FB7185',

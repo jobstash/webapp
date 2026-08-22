@@ -16,6 +16,15 @@ describe('getPillarLinksFromSearchParams', () => {
     ]);
   });
 
+  it('maps selected collaboration hours to their pillar pages', () => {
+    expect(
+      getPillarLinksFromSearchParams({ collaborationHours: 'utc-08,utc-17' }),
+    ).toEqual([
+      { label: '08:00 UTC', href: '/ct-utc-08' },
+      { label: '17:00 UTC', href: '/ct-utc-17' },
+    ]);
+  });
+
   it('maps boolean params to alias pillar slugs', () => {
     expect(
       getPillarLinksFromSearchParams({

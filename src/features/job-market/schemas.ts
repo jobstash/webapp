@@ -22,6 +22,7 @@ export const jobMarketFilterSchema = z.object({
     'countries',
     'continents',
     'timezones',
+    'collaborationHours',
   ]),
   value: z.string().min(1),
 });

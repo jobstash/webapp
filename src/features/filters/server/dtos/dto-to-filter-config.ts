@@ -35,6 +35,7 @@ const PARAM_KEYS = {
   COUNTRIES: 'countries',
   CONTINENTS: 'continents',
   TIMEZONES: 'timezones',
+  COLLABORATION_HOURS: 'collaborationHours',
   SENIORITY: 'seniority',
   TAGS: 'tags',
   ORGANIZATIONS: 'organizations',
@@ -70,6 +71,7 @@ const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.COUNTRIES,
   PARAM_KEYS.CONTINENTS,
   PARAM_KEYS.TIMEZONES,
+  PARAM_KEYS.COLLABORATION_HOURS,
   PARAM_KEYS.SENIORITY,
   PARAM_KEYS.TAGS,
   PARAM_KEYS.ORGANIZATIONS,
@@ -276,7 +278,11 @@ const handleMultiSelect = (
   dto: MultiSelectFilterConfigDto,
 ): FilterConfigSchema | null => {
   // Get rid of issues where options look borked
-  const hasNoOptions = dto.options.length < SELECT_OPTION_THRESHOLD;
+  const minimumOptions =
+    dto.paramKey === PARAM_KEYS.COLLABORATION_HOURS
+      ? 1
+      : SELECT_OPTION_THRESHOLD;
+  const hasNoOptions = dto.options.length < minimumOptions;
   if (hasNoOptions) return null;
 
   const isCheckbox = dto.options.length <= CHECKBOX_FILTER_OPTION_THRESHOLD;

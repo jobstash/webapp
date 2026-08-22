@@ -72,4 +72,25 @@ describe('dtoToFilterConfig location facets', () => {
       }
     }
   });
+
+  it('keeps a collaboration-hours filter when one UTC bucket is available', () => {
+    const [result] = dtoToFilterConfig({
+      collaborationHours: {
+        ...locationConfig(
+          1,
+          'Team Collaboration Hours (UTC)',
+          'collaborationHours',
+        ),
+        options: [{ label: '08:00 UTC', value: 'utc-08' }],
+      },
+    });
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        paramKey: 'collaborationHours',
+        isSuggested: true,
+        options: [{ label: '08:00 UTC', value: 'utc-08' }],
+      }),
+    );
+  });
 });
