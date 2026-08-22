@@ -13,12 +13,16 @@ import {
   slugify,
   titleCase,
 } from '@/lib/server/utils';
-import { type JobListItemDto } from './job-list-item.dto';
+import {
+  type JobListItemDto,
+  type JobOrgProjectDto,
+} from './job-list-item.dto';
 import {
   type JobFundingRoundSchema,
   type JobInvestorSchema,
   type JobListItemSchema,
   type JobOrganizationSchema,
+  type JobAvailabilitySchema,
 } from '@/features/jobs/schemas';
 import type { MappedInfoTagSchema } from '@/lib/schemas';
 import { SENIORITY_MAPPING } from '@/lib/constants';
@@ -85,14 +89,57 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
     title,
     href,
     hasApplyUrl: !!dto.url,
+    classification: dto.classification,
     summary: summary || getDefaultSummary(dto),
+    location,
+    locationType,
     addresses: addressLookup?.addresses ?? null,
     infoTags,
     tags: mappedTags,
     organization: mappedOrg,
+    availability: dto.availability?.map(dtoToAvailability) ?? [],
     badge,
     timestampText,
     datePosted,
+  };
+};
+
+const formatUtcOffset = (minutes: number): string => {
+  const sign = minutes >= 0 ? '+' : '-';
+  const absolute = Math.abs(minutes);
+  const hours = Math.floor(absolute / 60);
+  const remainder = absolute % 60;
+  return `UTC${sign}${hours}${remainder ? `:${String(remainder).padStart(2, '0')}` : ''}`;
+};
+
+const dtoToAvailability = (
+  item: NonNullable<JobListItemDto['availability']>[number],
+): JobAvailabilitySchema => {
+  const place = item.placeName ?? item.placeText ?? null;
+  const timezone =
+    item.timezone ??
+    (item.minimumUtcOffsetMinutes != null
+      ? item.maximumUtcOffsetMinutes != null &&
+        item.maximumUtcOffsetMinutes !== item.minimumUtcOffsetMinutes
+        ? `${formatUtcOffset(item.minimumUtcOffsetMinutes)}–${formatUtcOffset(item.maximumUtcOffsetMinutes)}`
+        : formatUtcOffset(item.minimumUtcOffsetMinutes)
+      : item.maximumUtcOffsetMinutes != null
+        ? formatUtcOffset(item.maximumUtcOffsetMinutes)
+        : null);
+  const workMode = item.workMode ? capitalize(item.workMode, true) : null;
+  const label = [workMode, place, timezone].filter(Boolean).join(' · ');
+  const href = place
+    ? `/l-${slugify(place)}`
+    : timezone
+      ? `/tz-${slugify(timezone.replaceAll('+', ' '))}`
+      : item.workMode
+        ? `/lt-${slugify(item.workMode)}`
+        : null;
+  return {
+    requirement: item.requirement,
+    label: label || item.rawText,
+    href,
+    rawText: item.rawText,
   };
 };
 
@@ -123,6 +170,7 @@ const createJobInfoTags = (
   tags.push({
     iconKey: 'posted',
     label: prettyTimestamp(timestamp),
+    ...(dto.publishedTimestampIsVerified === true && { verified: true }),
   });
 
   if (seniority && seniority in SENIORITY_MAPPING) {
@@ -234,9 +282,7 @@ const dtoToFundingRounds = (
     .sort((a, b) => (b.date ?? 0) - (a.date ?? 0))
     .map((fr) => ({
       roundName: fr.roundName ?? null,
-      amount: fr.raisedAmount
-        ? `$${formatNumber(fr.raisedAmount * 1_000_000)}`
-        : null,
+      amount: fr.raisedAmount ? `$${formatNumber(fr.raisedAmount)}` : null,
       date: fr.date ? shortTimestamp(fr.date) : null,
       href: fr.roundName ? `/fr-${slugify(fr.roundName)}` : null,
     }));
@@ -249,32 +295,118 @@ const dtoToInvestors = (investors: InvestorDto[]): JobInvestorSchema[] => {
   }));
 };
 
-const dtoToJobItemOrg = (
+const normalizeSocialUrl = (
+  value: string | null | undefined,
+  buildUrl: (handle: string) => string,
+): string | null => {
+  if (!value) return null;
+  if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  return buildUrl(value.replace(/^@/, ''));
+};
+
+// Any org-shaped payload (job list/details org, pillar static org) —
+// only `name` is guaranteed.
+export interface OrgInfoSource {
+  name: string;
+  normalizedName?: string | null;
+  website?: string | null;
+  location?: string | null;
+  logoUrl?: string | null;
+  headcountEstimate?: number | null;
+  summary?: string | null;
+  description?: string | null;
+  discord?: string | null;
+  telegram?: string | null;
+  twitter?: string | null;
+  github?: string | null;
+  docs?: string | null;
+  projects?: JobOrgProjectDto[];
+  fundingRounds?: FundingRoundDto[];
+  investors?: InvestorDto[];
+  fundingStage?: string | null;
+  recentlyFunded?: boolean;
+  teamCoverageStatus?: 'current' | 'unknown' | null;
+  teamSignalsAsOf?: string | null;
+  currentMaintainerCount?: number | null;
+  activeLeadCount?: number | null;
+  newActiveLeadCount?: number | null;
+  steppedDownLeadCount?: number | null;
+  movedLeadCount?: number | null;
+  earlyLeadDepartureCount?: number | null;
+  growingTeam?: boolean | null;
+  shrinkingTeam?: boolean | null;
+  earlyTeamShrinkage?: boolean | null;
+}
+
+const dtoToOrgSocials = (
+  dto: OrgInfoSource,
+): JobOrganizationSchema['socials'] => {
+  const socials = {
+    twitter: normalizeSocialUrl(dto.twitter, (h) => `https://x.com/${h}`),
+    telegram: normalizeSocialUrl(dto.telegram, (h) => `https://t.me/${h}`),
+    discord: normalizeSocialUrl(dto.discord, (h) => `https://discord.gg/${h}`),
+    github: normalizeSocialUrl(dto.github, (h) => `https://github.com/${h}`),
+    docs: dto.docs ?? null,
+  };
+
+  const hasAny = Object.values(socials).some(Boolean);
+  return hasAny ? socials : null;
+};
+
+const dtoToOrgProjects = (
+  dto: OrgInfoSource,
+): JobOrganizationSchema['projects'] => {
+  return (dto.projects ?? [])
+    .filter((project) => !!project.name)
+    .map((project) => ({
+      id: project.id,
+      name: project.name as string,
+      logo: getLogoUrl(
+        project.website ?? null,
+        project.logoUrl ?? project.logo ?? null,
+      ),
+      website: project.website ?? null,
+      category: project.category ?? null,
+    }));
+};
+
+export const dtoToOrgInfo = (
+  dto: OrgInfoSource,
+  href: string,
+): JobOrganizationSchema => ({
+  name: dto.name,
+  href,
+  websiteUrl: dto.website ?? null,
+  location: dto.location ?? null,
+  logo: getLogoUrl(dto.website ?? null, dto.logoUrl ?? null),
+  employeeCount: dto.headcountEstimate ? `${dto.headcountEstimate}` : null,
+  summary: dto.summary ?? null,
+  description: dto.description ?? null,
+  socials: dtoToOrgSocials(dto),
+  projects: dtoToOrgProjects(dto),
+  fundingRounds: dtoToFundingRounds(dto.fundingRounds ?? []),
+  investors: dtoToInvestors(dto.investors ?? []),
+  fundingStage: dto.fundingStage ?? null,
+  recentlyFunded: dto.recentlyFunded ?? false,
+  teamCoverageStatus: dto.teamCoverageStatus ?? null,
+  teamSignalsAsOf: dto.teamSignalsAsOf ?? null,
+  currentMaintainerCount: dto.currentMaintainerCount ?? null,
+  activeLeadCount: dto.activeLeadCount ?? null,
+  newActiveLeadCount: dto.newActiveLeadCount ?? null,
+  steppedDownLeadCount: dto.steppedDownLeadCount ?? null,
+  movedLeadCount: dto.movedLeadCount ?? null,
+  earlyLeadDepartureCount: dto.earlyLeadDepartureCount ?? null,
+  growingTeam: dto.growingTeam ?? null,
+  shrinkingTeam: dto.shrinkingTeam ?? null,
+  earlyTeamShrinkage: dto.earlyTeamShrinkage ?? null,
+  intelligenceUrl: `https://ecosystem.vision/organizations/info/${dto.normalizedName ?? slugify(dto.name)}`,
+});
+
+export const dtoToJobItemOrg = (
   dto: JobListItemDto['organization'],
 ): JobOrganizationSchema | null => {
   if (!dto) return null;
-
-  const {
-    name,
-    normalizedName,
-    website,
-    location,
-    logoUrl,
-    headcountEstimate,
-    fundingRounds,
-    investors,
-  } = dto;
-
-  return {
-    name,
-    href: `/o-${normalizedName}`,
-    websiteUrl: website,
-    location,
-    logo: getLogoUrl(website, logoUrl),
-    employeeCount: headcountEstimate ? `${headcountEstimate}` : null,
-    fundingRounds: dtoToFundingRounds(fundingRounds),
-    investors: dtoToInvestors(investors),
-  };
+  return dtoToOrgInfo(dto, `/o-${dto.normalizedName}`);
 };
 
 const dtoToJobItemBadge = (dto: JobListItemDto): JobListItemSchema['badge'] => {

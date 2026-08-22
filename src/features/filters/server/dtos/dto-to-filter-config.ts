@@ -28,11 +28,30 @@ import { checkIsRemoteFilter } from '@/features/filters/utils';
 
 const PARAM_KEYS = {
   LOCATIONS: 'locations',
+  WORK_MODES: 'workModes',
+  AVAILABILITY: 'availability',
+  CITIES: 'cities',
+  REGIONS: 'regions',
+  COUNTRIES: 'countries',
+  CONTINENTS: 'continents',
+  TIMEZONES: 'timezones',
+  COLLABORATION_HOURS: 'collaborationHours',
   SENIORITY: 'seniority',
   TAGS: 'tags',
   ORGANIZATIONS: 'organizations',
   PUBLICATION_DATE: 'publicationDate',
   INVESTORS: 'investors',
+  EXPERT_JOBS: 'expertJobs',
+  ONBOARD_INTO_WEB3: 'onboardIntoWeb3',
+  FUNDING_STAGES: 'fundingStages',
+  NEW_ACTIVE_LEADS: 'newActiveLeads',
+  STEPPED_DOWN_LEADS: 'steppedDownLeads',
+  MOVED_LEADS: 'movedLeads',
+  EARLY_LEAD_DEPARTURES: 'earlyLeadDepartures',
+  GROWING_TEAM: 'growingTeam',
+  SHRINKING_TEAM: 'shrinkingTeam',
+  EARLY_TEAM_SHRINKAGE: 'earlyTeamShrinkage',
+  RECENTLY_FUNDED: 'recentlyFunded',
 } as const;
 
 type ParamKey = (typeof PARAM_KEYS)[keyof typeof PARAM_KEYS];
@@ -45,11 +64,37 @@ const LABELS = {
 
 const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.LOCATIONS,
+  PARAM_KEYS.WORK_MODES,
+  PARAM_KEYS.AVAILABILITY,
+  PARAM_KEYS.CITIES,
+  PARAM_KEYS.REGIONS,
+  PARAM_KEYS.COUNTRIES,
+  PARAM_KEYS.CONTINENTS,
+  PARAM_KEYS.TIMEZONES,
+  PARAM_KEYS.COLLABORATION_HOURS,
   PARAM_KEYS.SENIORITY,
   PARAM_KEYS.TAGS,
   PARAM_KEYS.ORGANIZATIONS,
   PARAM_KEYS.PUBLICATION_DATE,
   PARAM_KEYS.INVESTORS,
+  PARAM_KEYS.EXPERT_JOBS,
+  PARAM_KEYS.ONBOARD_INTO_WEB3,
+  PARAM_KEYS.FUNDING_STAGES,
+  PARAM_KEYS.NEW_ACTIVE_LEADS,
+  PARAM_KEYS.STEPPED_DOWN_LEADS,
+  PARAM_KEYS.MOVED_LEADS,
+  PARAM_KEYS.EARLY_LEAD_DEPARTURES,
+  PARAM_KEYS.GROWING_TEAM,
+  PARAM_KEYS.SHRINKING_TEAM,
+  PARAM_KEYS.EARLY_TEAM_SHRINKAGE,
+  PARAM_KEYS.RECENTLY_FUNDED,
+]);
+
+const SUGGESTED_RANGE_PARAM_KEYS = new Set([
+  'minCurrentMaintainers',
+  'maxCurrentMaintainers',
+  'minActiveLeads',
+  'maxActiveLeads',
 ]);
 
 const RADIO_FILTER_OPTION_THRESHOLD = 6;
@@ -73,6 +118,7 @@ const dtoToSelectOptions = (dto: SelectOptionDto): SelectOptionsSchema => {
   return {
     value: `${dto.value}`,
     label: dto.label,
+    aliases: dto.aliases,
   };
 };
 
@@ -157,6 +203,9 @@ const handleRangeFilter = (
   const isSalarySuggested =
     lowest.paramKey.toLowerCase().includes('salary') ||
     highest.paramKey.toLowerCase().includes('salary');
+  const isIntelligenceSuggested =
+    SUGGESTED_RANGE_PARAM_KEYS.has(lowest.paramKey) ||
+    SUGGESTED_RANGE_PARAM_KEYS.has(highest.paramKey);
 
   return {
     ...dtoToFilterConfigSharedProps(dto),
@@ -164,7 +213,7 @@ const handleRangeFilter = (
     lowest,
     highest,
     prefix: dto.prefix,
-    isSuggested: isSalarySuggested || undefined,
+    isSuggested: isSalarySuggested || isIntelligenceSuggested || undefined,
   };
 };
 
@@ -202,7 +251,10 @@ const adjustLocationLabel = (
     | SearchFilterConfigSchema
     | RemoteSearchFilterConfigSchema,
 ) => {
-  if (dto.paramKey === PARAM_KEYS.LOCATIONS) {
+  if (
+    dto.paramKey === PARAM_KEYS.LOCATIONS ||
+    dto.paramKey === PARAM_KEYS.WORK_MODES
+  ) {
     baseFilter.label = LABELS.WORK_MODE;
   }
 };
@@ -226,7 +278,11 @@ const handleMultiSelect = (
   dto: MultiSelectFilterConfigDto,
 ): FilterConfigSchema | null => {
   // Get rid of issues where options look borked
-  const hasNoOptions = dto.options.length < SELECT_OPTION_THRESHOLD;
+  const minimumOptions =
+    dto.paramKey === PARAM_KEYS.COLLABORATION_HOURS
+      ? 1
+      : SELECT_OPTION_THRESHOLD;
+  const hasNoOptions = dto.options.length < minimumOptions;
   if (hasNoOptions) return null;
 
   const isCheckbox = dto.options.length <= CHECKBOX_FILTER_OPTION_THRESHOLD;
@@ -243,6 +299,7 @@ const handleMultiSelect = (
 const handleFilterConfig = (
   dto: FilterConfigDto[string],
 ): FilterConfigSchema | null => {
+  if (!dto.show) return null;
   adjustFilterPosition(dto);
 
   let baseFilter: FilterConfigSchema | null = null;

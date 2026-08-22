@@ -14,6 +14,7 @@ interface CtaCardProps {
   jobId: string;
   jobTitle: string;
   organization: string | null;
+  classification: string | null;
 }
 
 export const CtaCard = ({
@@ -22,6 +23,7 @@ export const CtaCard = ({
   jobId,
   jobTitle,
   organization,
+  classification,
 }: CtaCardProps) => {
   if (!hasApplyUrl && !isExpertJob) return null;
 
@@ -35,6 +37,7 @@ export const CtaCard = ({
             jobId={jobId}
             jobTitle={jobTitle}
             organization={organization}
+            classification={classification}
             className='w-full'
           />
         </Suspense>

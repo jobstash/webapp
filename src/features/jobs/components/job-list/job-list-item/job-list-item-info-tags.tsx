@@ -1,3 +1,5 @@
+import { BadgeCheckIcon } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { type MappedInfoTagSchema } from '@/lib/schemas';
@@ -26,6 +28,14 @@ export const JobListItemInfoTags = ({ tags }: JobListItemInfoTagsProps) => {
           <>
             <InfoTagIcon iconKey={tag.iconKey} />
             <span>{tag.label}</span>
+            {tag.verified && (
+              <span title='Publish date verified'>
+                <BadgeCheckIcon
+                  className='size-3.5 text-emerald-400'
+                  aria-label='Publish date verified'
+                />
+              </span>
+            )}
           </>
         );
 

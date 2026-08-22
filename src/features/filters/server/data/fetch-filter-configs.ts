@@ -8,7 +8,7 @@ import { clientEnv } from '@/lib/env/client';
 
 export const fetchFilterConfigs = async () => {
   const url = `${clientEnv.MW_URL}/jobs/filters`;
-  const response = await fetch(url, { next: { revalidate: 3600 } });
+  const response = await fetch(url, { cache: 'no-store' });
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => '');

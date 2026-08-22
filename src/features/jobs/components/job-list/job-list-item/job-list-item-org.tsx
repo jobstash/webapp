@@ -4,15 +4,32 @@ import { Badge } from '@/components/ui/badge';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { cn } from '@/lib/utils';
 import { type JobOrganizationSchema } from '@/features/jobs/schemas';
+import { OrganizationIntelligenceBadges } from '@/features/jobs/components/organization-intelligence-badges';
 
 interface JobListItemOrgProps {
   organization: JobOrganizationSchema;
 }
 
 export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
-  const { fundingRounds, investors } = organization;
+  const { summary, fundingRounds, investors } = organization;
 
-  const hasExpandableContent = fundingRounds.length > 0 || investors.length > 0;
+  const hasIntelligence =
+    !!organization.fundingStage ||
+    organization.recentlyFunded ||
+    organization.currentMaintainerCount !== null ||
+    organization.activeLeadCount !== null ||
+    (organization.newActiveLeadCount ?? 0) > 0 ||
+    (organization.steppedDownLeadCount ?? 0) > 0 ||
+    (organization.movedLeadCount ?? 0) > 0 ||
+    (organization.earlyLeadDepartureCount ?? 0) > 0 ||
+    !!organization.growingTeam ||
+    !!organization.shrinkingTeam ||
+    !!organization.earlyTeamShrinkage;
+  const hasExpandableContent =
+    !!summary ||
+    fundingRounds.length > 0 ||
+    investors.length > 0 ||
+    hasIntelligence;
 
   if (!hasExpandableContent) return null;
 
@@ -38,6 +55,13 @@ export const JobListItemOrg = ({ organization }: JobListItemOrgProps) => {
       </summary>
 
       <div className='mt-3 space-y-3 pl-4'>
+        <OrganizationIntelligenceBadges organization={organization} />
+        {summary && (
+          <p className='text-sm leading-relaxed text-muted-foreground'>
+            {summary}
+          </p>
+        )}
+
         {/* Funding rounds - card style */}
         {fundingRounds.length > 0 && (
           <div className='space-y-2'>

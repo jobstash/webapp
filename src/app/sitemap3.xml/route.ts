@@ -1,7 +1,8 @@
-import { buildPillarSitemap } from '@/lib/server/sitemap/build-pillar-sitemap';
+import { buildUrlsetResponse } from '@/lib/server/sitemap/build-sitemap-xml';
+import { getPillarsChunk } from '@/lib/server/sitemap/chunks';
 
 export const revalidate = 3600;
 
 export async function GET() {
-  return buildPillarSitemap(0);
+  return buildUrlsetResponse(await getPillarsChunk(1));
 }

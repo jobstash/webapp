@@ -157,13 +157,6 @@ export const useManualLinksEditor = ({
     setIsSaving(true);
     setError(null);
 
-    const linkedinHandle = handles['linkedin']?.trim();
-    if (!linkedinHandle) {
-      setError('LinkedIn profile is required.');
-      setIsSaving(false);
-      return;
-    }
-
     try {
       const items = showcase ?? [];
 
@@ -204,7 +197,6 @@ export const useManualLinksEditor = ({
     key: kind,
     label: CONTACT_LABELS[kind],
     icon: CONTACT_ICONS[kind],
-    required: kind === 'linkedin',
   }));
 
   const selectedList = CONTACT_KINDS.filter((kind) => selectedKinds.has(kind));

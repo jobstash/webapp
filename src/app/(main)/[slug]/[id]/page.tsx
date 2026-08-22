@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 
 import { JobDetailsPage } from '@/features/jobs/components/job-details';
 import { JobPostingSchema } from '@/features/jobs/components/job-posting-schema';
@@ -25,16 +25,17 @@ export const generateMetadata = async ({
   const { id } = await params;
   const job = await fetchJobDetails({ id });
 
-  if (!job) return { title: 'Job Not Found | JobStash' };
+  if (!job) return { title: 'Job Not Found' };
 
   const title = job.organization
-    ? `${job.title} at ${job.organization.name} | JobStash`
-    : `${job.title} | JobStash`;
+    ? `${job.title} at ${job.organization.name}`
+    : job.title;
 
   const description = job.summary ?? `View details for ${job.title}`;
   const canonicalUrl = `${clientEnv.FRONTEND_URL}${job.href}`;
   const keywords = job.tags.map((tag) => tag.name);
 
+  // og/twitter titles inherit the templated page title when unset.
   return {
     title,
     description,
@@ -43,23 +44,24 @@ export const generateMetadata = async ({
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
       description,
       url: canonicalUrl,
     },
     twitter: {
       card: 'summary_large_image',
-      title,
       description,
     },
   };
 };
 
 const JobDetailsRoute = async ({ params }: Props) => {
-  const { id } = await params;
+  const { slug, id } = await params;
   const job = await fetchJobDetails({ id });
 
   if (!job) notFound();
+
+  const requestedPath = `/${slug}/${id}`;
+  if (requestedPath !== job.href) permanentRedirect(job.href);
 
   return (
     <>

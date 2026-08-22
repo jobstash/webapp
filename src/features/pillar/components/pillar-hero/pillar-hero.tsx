@@ -38,13 +38,18 @@ const Headline = ({
     <span className={cn('inline-block', accent)}>{pillarName}</span>
   );
 
+  // Keep the separating space inside a single text expression: a static
+  // space next to an expression creates two adjacent text nodes, which SSR
+  // splits with a <!-- --> marker inside the <h1>.
   return nameFirst ? (
     <>
-      {accentedName} {tagline}
+      {accentedName}
+      {` ${tagline}`}
     </>
   ) : (
     <>
-      {tagline} {accentedName}
+      {`${tagline} `}
+      {accentedName}
     </>
   );
 };

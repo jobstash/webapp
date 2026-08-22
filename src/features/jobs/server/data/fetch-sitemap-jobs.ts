@@ -7,7 +7,39 @@ import {
 import { clientEnv } from '@/lib/env/client';
 import { slugify } from '@/lib/server/utils';
 
-export const fetchSitemapJobs = async () => {
+// lastmod sanity floor: anything before 2000-01-01 is a data artifact
+// (epoch-0 placeholders), not a real date. A wrong lastmod is worse than
+// none — Google stops trusting the sitemap's lastmod signals entirely.
+const MIN_VALID_TIMESTAMP = Date.UTC(2000, 0, 1);
+
+export interface SitemapJobEntry {
+  href: string;
+  lastModified?: Date;
+}
+
+export const toSitemapEntries = (jobs: SitemapJobDto[]): SitemapJobEntry[] => {
+  const byHref = new Map<string, SitemapJobEntry>();
+
+  for (const job of jobs) {
+    const href = createSitemapJobHref(job);
+    const isValidDate =
+      typeof job.timestamp === 'number' && job.timestamp >= MIN_VALID_TIMESTAMP;
+    const lastModified = isValidDate
+      ? new Date(job.timestamp as number)
+      : undefined;
+
+    const existing = byHref.get(href);
+    const keepNew =
+      !existing ||
+      (lastModified &&
+        (!existing.lastModified || lastModified > existing.lastModified));
+    if (keepNew) byHref.set(href, { href, lastModified });
+  }
+
+  return [...byHref.values()];
+};
+
+export const fetchSitemapJobs = async (): Promise<SitemapJobEntry[]> => {
   const url = `${clientEnv.MW_URL}/v2/search/sitemap/jobs`;
   const response = await fetch(url, {
     cache: 'force-cache',
@@ -19,10 +51,7 @@ export const fetchSitemapJobs = async () => {
   const parsed = sitemapJobsResponseDto.safeParse(json);
   if (!parsed.success) throw new Error('Failed to parse sitemap jobs');
 
-  return parsed.data.data.map((job) => ({
-    href: createSitemapJobHref(job),
-    lastModified: new Date(job.timestamp),
-  }));
+  return toSitemapEntries(parsed.data.data);
 };
 
 const createSitemapJobHref = (job: SitemapJobDto) => {

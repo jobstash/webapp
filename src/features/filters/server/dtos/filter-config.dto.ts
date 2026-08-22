@@ -37,6 +37,7 @@ export type RangeFilterConfigDto = z.infer<typeof rangeFilterConfigDto>;
 export const selectOptionDto = z.object({
   label: nonEmptyStringSchema,
   value: z.union([nonEmptyStringSchema, z.boolean()]),
+  aliases: nonEmptyStringSchema.array().optional(),
 });
 export type SelectOptionDto = z.infer<typeof selectOptionDto>;
 

@@ -15,6 +15,7 @@ import { JobListItemOrg } from './job-list-item-org';
 import { JobListItemInfoTags } from './job-list-item-info-tags';
 import { JobListItemTechTags } from './job-list-item-tech-tags';
 import { EligibilityBadge } from './eligibility-badge.lazy';
+import { AvailabilityPills } from '@/features/jobs/components/availability-pills';
 
 interface JobListItemProps {
   job: JobListItemSchema;
@@ -113,6 +114,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
           </div>
 
           <JobListItemInfoTags tags={infoTags} />
+          <AvailabilityPills items={job.availability} limit={3} />
 
           <div>
             {organization && <JobListItemOrg organization={organization} />}

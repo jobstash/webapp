@@ -25,5 +25,17 @@ export const FooterLegal = () => (
     <p className='mt-4 text-xs text-muted-foreground'>
       &copy; {CURRENT_YEAR} JobStash. All rights reserved.
     </p>
+    <p className='text-xs text-muted-foreground'>
+      Location data by{' '}
+      <a
+        href='https://www.geonames.org/'
+        target='_blank'
+        rel='noreferrer'
+        className='transition-colors hover:text-foreground'
+      >
+        GeoNames
+      </a>
+      .
+    </p>
   </div>
 );

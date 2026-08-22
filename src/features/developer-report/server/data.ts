@@ -1,0 +1,36 @@
+import 'server-only';
+
+import { cache } from 'react';
+
+import { clientEnv } from '@/lib/env/client';
+import { slugify } from '@/lib/server/utils';
+import {
+  developerReportSchema,
+  type DeveloperReport,
+  type DeveloperReportRange,
+} from '../schemas';
+
+const fetchDeveloperReportUncached = async (
+  vertical?: string | null,
+  chain?: string,
+  range: DeveloperReportRange = 'max',
+): Promise<DeveloperReport | null> => {
+  try {
+    const search = new URLSearchParams();
+    if (vertical) search.set('vertical', slugify(vertical));
+    if (chain) search.set('chain', slugify(chain));
+    search.set('range', range);
+
+    const response = await fetch(
+      `${clientEnv.MW_URL}/people/developer-report?${search}`,
+      { cache: 'no-store' },
+    );
+    if (!response.ok) return null;
+    const parsed = developerReportSchema.safeParse(await response.json());
+    return parsed.success && parsed.data.available ? parsed.data : null;
+  } catch {
+    return null;
+  }
+};
+
+export const fetchDeveloperReport = cache(fetchDeveloperReportUncached);

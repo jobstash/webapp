@@ -38,4 +38,9 @@ describe('slugify', () => {
   it('handles dashes', () => {
     expect(slugify('Full-Time')).toBe('full-time');
   });
+
+  it('canonicalizes punctuation and legacy chain separators', () => {
+    expect(slugify('re.al')).toBe('real');
+    expect(slugify('op_bnb')).toBe('opbnb');
+  });
 });

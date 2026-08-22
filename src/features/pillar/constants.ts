@@ -1,17 +1,24 @@
-import { SENIORITY_LABEL_TO_KEY } from '@/lib/constants';
+import { SENIORITY_LABEL_TO_KEY, SENIORITY_MAPPING } from '@/lib/constants';
 
-import type { PillarFilterContext } from './schemas';
+import type { PillarFilterContext, SuggestedPillar } from './schemas';
+
+// Pillar pages with fewer jobs than this are thin/doorway content:
+// they render normally for humans but are noindexed.
+export const PILLAR_MIN_INDEXABLE_JOBS = 3;
 
 export type PillarCategory =
   | 'tag'
   | 'classification'
   | 'location'
+  | 'timezone'
+  | 'collaborationHours'
   | 'commitment'
   | 'locationType'
   | 'organization'
   | 'seniority'
   | 'investor'
   | 'fundingRound'
+  | 'fundingStage'
   | 'boolean';
 
 interface CategoryConfig {
@@ -43,6 +50,20 @@ export const PILLAR_CATEGORY_CONFIG: Record<PillarCategory, CategoryConfig> = {
     accent: 'text-amber-400',
     dot: 'bg-amber-400',
     nameFirst: false,
+  },
+  timezone: {
+    label: 'Timezone',
+    tagline: 'Jobs in',
+    accent: 'text-sky-400',
+    dot: 'bg-sky-400',
+    nameFirst: false,
+  },
+  collaborationHours: {
+    label: 'Team Hours',
+    tagline: 'Collaboration Jobs',
+    accent: 'text-sky-300',
+    dot: 'bg-sky-300',
+    nameFirst: true,
   },
   commitment: {
     label: 'Work Type',
@@ -86,6 +107,13 @@ export const PILLAR_CATEGORY_CONFIG: Record<PillarCategory, CategoryConfig> = {
     dot: 'bg-indigo-400',
     nameFirst: true,
   },
+  fundingStage: {
+    label: 'Current Stage',
+    tagline: 'Startup Jobs',
+    accent: 'text-fuchsia-400',
+    dot: 'bg-fuchsia-400',
+    nameFirst: true,
+  },
   boolean: {
     label: 'Filter',
     tagline: '',
@@ -112,9 +140,16 @@ interface PrefixMapping {
 const PREFIX_MAPPINGS: PrefixMapping[] = [
   { prefix: 'cl-', category: 'classification', paramKey: 'classifications' },
   { prefix: 'co-', category: 'commitment', paramKey: 'commitments' },
-  { prefix: 'lt-', category: 'locationType', paramKey: 'locations' },
+  { prefix: 'lt-', category: 'locationType', paramKey: 'workModes' },
   { prefix: 'fr-', category: 'fundingRound', paramKey: 'fundingRounds' },
+  { prefix: 'fs-', category: 'fundingStage', paramKey: 'fundingStages' },
   { prefix: 't-', category: 'tag', paramKey: 'tags' },
+  { prefix: 'tz-', category: 'timezone', paramKey: null },
+  {
+    prefix: 'ct-',
+    category: 'collaborationHours',
+    paramKey: 'collaborationHours',
+  },
   { prefix: 'l-', category: 'location', paramKey: null },
   { prefix: 'o-', category: 'organization', paramKey: 'organizations' },
   { prefix: 's-', category: 'seniority', paramKey: 'seniority' },
@@ -165,6 +200,10 @@ const toTitleCase = (str: string): string =>
 
 export const getPillarName = (slug: string): string => {
   const withoutPrefix = slug.replace(PREFIX_REGEX, '');
+  const collaborationHour = withoutPrefix.match(/^utc-(\d{2})$/);
+  if (getPillarCategory(slug) === 'collaborationHours' && collaborationHour) {
+    return `${collaborationHour[1]}:00 UTC`;
+  }
   return PILLAR_NAME_OVERRIDES[withoutPrefix] ?? toTitleCase(withoutPrefix);
 };
 
@@ -229,4 +268,52 @@ export const getPillarFilterHref = (
 ): string => {
   if (!pillarContext) return '/';
   return `/?${pillarContext.paramKey}=${encodeURIComponent(pillarContext.value)}`;
+};
+
+// Boolean filter params → their pillar page (alias slugs preferred for SEO)
+const BOOLEAN_PARAM_KEY_TO_SLUG: Record<string, string> = {
+  expertJobs: 'urgently-hiring',
+  onboardIntoWeb3: 'crypto-beginner-jobs',
+  paysInCrypto: 'b-pays-in-crypto',
+  offersTokenAllocation: 'b-offers-token-allocation',
+};
+
+const MAX_PILLAR_LINKS = 8;
+
+/**
+ * Reverse-maps active filter params to their pillar pages so filtered views
+ * can cross-link to the SEO landing pages (e.g. `?tags=react` → `/t-react`).
+ * Location has no filter param and is correctly skipped.
+ */
+export const getPillarLinksFromSearchParams = (
+  searchParams: Record<string, string>,
+): SuggestedPillar[] => {
+  const slugs: string[] = [];
+
+  for (const { prefix, paramKey } of PREFIX_MAPPINGS) {
+    const paramValue = paramKey ? searchParams[paramKey] : undefined;
+    if (!paramValue) continue;
+
+    for (const value of paramValue.split(',')) {
+      const trimmed = value.trim().toLowerCase();
+      if (!trimmed) continue;
+
+      if (paramKey === 'seniority') {
+        const label = (SENIORITY_MAPPING as Record<string, string>)[trimmed];
+        if (label) slugs.push(`s-${label.toLowerCase()}`);
+        continue;
+      }
+
+      slugs.push(`${prefix}${trimmed}`);
+    }
+  }
+
+  for (const [paramKey, slug] of Object.entries(BOOLEAN_PARAM_KEY_TO_SLUG)) {
+    if (searchParams[paramKey] === 'true') slugs.push(slug);
+  }
+
+  return [...new Set(slugs)].slice(0, MAX_PILLAR_LINKS).map((slug) => ({
+    label: getPillarName(slug),
+    href: `/${slug}`,
+  }));
 };

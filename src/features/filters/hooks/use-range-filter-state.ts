@@ -11,6 +11,8 @@ import {
   roundToNiceNumber,
 } from '@/features/filters/utils';
 
+import { usePillarFilterMode } from './use-pillar-filter-mode';
+
 interface UseRangeFilterStateProps {
   lowestParamKey: string;
   highestParamKey: string;
@@ -48,6 +50,7 @@ export const useRangeFilterState = ({
   defaultHighest,
 }: UseRangeFilterStateProps): UseRangeFilterStateReturn => {
   const { start } = useProgress();
+  const pillarMode = usePillarFilterMode();
 
   const [lowestParam, setLowestParam] = useQueryState(lowestParamKey);
   const [highestParam, setHighestParam] = useQueryState(highestParamKey);
@@ -83,14 +86,23 @@ export const useRangeFilterState = ({
   const apply = (): void => {
     if (!canApply) return;
     start();
-    setPage(null);
-    setLowestParam(String(displayValues[0]));
-    setHighestParam(String(displayValues[1]));
     trackEvent(GA_EVENT.FILTER_APPLIED, {
       filter_name: lowestParamKey,
       filter_value: `${displayValues[0]}-${displayValues[1]}`,
       filter_type: 'RANGE',
     });
+
+    if (pillarMode) {
+      pillarMode.navigate({
+        [lowestParamKey]: String(displayValues[0]),
+        [highestParamKey]: String(displayValues[1]),
+      });
+      return;
+    }
+
+    setPage(null);
+    setLowestParam(String(displayValues[0]));
+    setHighestParam(String(displayValues[1]));
   };
 
   const reset = (): void => {

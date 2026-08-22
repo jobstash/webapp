@@ -20,6 +20,7 @@ export type FilterConfigSharedPropertiesSchema = z.infer<
 export const selectOptionsSchema = z.object({
   label: nonEmptyStringSchema,
   value: nonEmptyStringSchema,
+  aliases: nonEmptyStringSchema.array().optional(),
 });
 export type SelectOptionsSchema = z.infer<typeof selectOptionsSchema>;
 

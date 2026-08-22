@@ -1,19 +1,30 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 
 import {
-  PillarCTA,
+  FiltersAside,
+  FiltersDrawer,
+} from '@/features/filters/components/filters-aside';
+import { OrgInfoCard } from '@/features/jobs/components/job-details/org-info-card';
+import { PillarMarketSection } from '@/features/job-market/components';
+import { fetchPillarMarket } from '@/features/job-market/server';
+import {
+  OrgAboutSection,
   PillarHero,
   PillarJobList,
   SuggestedPillars,
 } from '@/features/pillar/components';
 import {
+  PILLAR_MIN_INDEXABLE_JOBS,
+  getPillarCategory,
   getPillarFilterContext,
   isValidPillarSlug,
 } from '@/features/pillar/constants';
 import { fetchPillarPageStatic } from '@/features/pillar/server';
 import { fetchPillarStaticParams } from '@/features/pillar/server/data';
+import { fetchCanonicalPillarSlug } from '@/features/pillar/server/data/fetch-canonical-pillar-slug';
 import { clientEnv } from '@/lib/env/client';
+import { robotsNoindexFollow } from '@/lib/seo';
 
 export const generateStaticParams =
   process.env.DISABLE_STATIC_GENERATION === 'true' ||
@@ -21,11 +32,16 @@ export const generateStaticParams =
     ? undefined
     : async () => fetchPillarStaticParams();
 
+// Route-level revalidation bounds every cached state of this page — including
+// notFound() results — so a pillar that was empty or erroring recovers within
+// the hour once MW serves data for it again.
+export const revalidate = 3600;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-const NOT_FOUND_METADATA: Metadata = { title: 'Page Not Found | JobStash' };
+const NOT_FOUND_METADATA: Metadata = { title: 'Page Not Found' };
 
 export const generateMetadata = async ({
   params,
@@ -37,22 +53,26 @@ export const generateMetadata = async ({
   const pillarPage = await fetchPillarPageStatic(slug);
   if (!pillarPage) return NOT_FOUND_METADATA;
 
-  const { title: pageTitle, description } = pillarPage;
-  const title = `${pageTitle} | JobStash`;
+  const { title, description } = pillarPage;
   const url = `${clientEnv.FRONTEND_URL}/${slug}`;
 
+  // Thin pillars (junk/low-volume tags) stay usable for humans but are
+  // kept out of the index; no canonical alongside noindex.
+  const isThin = pillarPage.jobs.length < PILLAR_MIN_INDEXABLE_JOBS;
+
+  // og/twitter titles inherit the templated page title when unset.
   return {
     title,
     description,
-    alternates: { canonical: url },
+    ...(isThin
+      ? { robots: robotsNoindexFollow() }
+      : { alternates: { canonical: url } }),
     openGraph: {
-      title,
       description,
       url,
     },
     twitter: {
       card: 'summary_large_image',
-      title,
       description,
     },
   };
@@ -63,21 +83,61 @@ const PillarPage = async ({ params }: Props) => {
 
   if (!isValidPillarSlug(slug)) notFound();
 
-  const pillarPage = await fetchPillarPageStatic(slug);
+  const canonicalSlug = await fetchCanonicalPillarSlug(slug);
+  if (canonicalSlug) permanentRedirect(`/${canonicalSlug}`);
+
+  const [pillarPage, pillarMarket] = await Promise.all([
+    fetchPillarPageStatic(slug),
+    fetchPillarMarket(slug),
+  ]);
   if (!pillarPage) notFound();
 
   const pillarContext = getPillarFilterContext(slug);
   const { title, description, jobs, suggestedPillars } = pillarPage;
 
+  // Org pillars show the org's real copy instead of the generated pillar
+  // descriptor. Prefer MW's dedicated org object (works with 0 jobs), fall
+  // back to the org carried on any listed job.
+  const org =
+    getPillarCategory(slug) === 'organization'
+      ? (pillarPage.organization ??
+        jobs.find((job) => job.organization)?.organization ??
+        null)
+      : null;
+  const heroDescription = org?.summary ?? description;
+  const orgDescription =
+    org?.description && org.description !== org.summary
+      ? org.description
+      : null;
+
   return (
     <>
-      <PillarHero slug={slug} pillarDetails={{ title, description }} />
+      <PillarHero
+        slug={slug}
+        pillarDetails={{ title, description: heroDescription }}
+      />
+      {pillarMarket && <PillarMarketSection market={pillarMarket} />}
+      {/* Below lg the aside is hidden — surface the org card under the hero */}
+      {org && (
+        <div className='mx-auto w-full max-w-2xl px-4 pt-6 lg:hidden'>
+          <OrgInfoCard organization={org} hideJobsButton />
+        </div>
+      )}
+      {org && orgDescription && (
+        <OrgAboutSection name={org.name} description={orgDescription} />
+      )}
       <div id='jobs' className='flex scroll-mt-20 gap-4 pt-4 lg:scroll-mt-24'>
-        <aside className='sticky top-20 hidden max-h-[calc(100vh-5rem)] w-68 shrink-0 flex-col gap-4 self-start overflow-y-auto lg:top-24 lg:flex lg:max-h-[calc(100vh-6rem)]'>
+        {/* Normal flow, natural height — a viewport-capped column gives the
+            filter block its own scrollbar once the org card is present */}
+        <aside className='hidden w-68 shrink-0 flex-col gap-4 self-start lg:flex'>
+          {org && <OrgInfoCard organization={org} hideJobsButton />}
+          <FiltersAside pillarMode pillarContext={pillarContext} />
           <SuggestedPillars items={suggestedPillars} />
-          <PillarCTA slug={slug} pillarContext={pillarContext} />
         </aside>
         <section className='min-w-0 grow'>
+          <div className='mb-4 lg:hidden'>
+            <FiltersDrawer pillarMode pillarContext={pillarContext} />
+          </div>
           <PillarJobList
             slug={slug}
             pillarContext={pillarContext}

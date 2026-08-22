@@ -14,12 +14,15 @@ const CATEGORY_ACCENT_HEX: Record<PillarCategory, string> = {
   tag: '#34D399',
   classification: '#60A5FA',
   location: '#FBBF24',
+  timezone: '#38BDF8',
+  collaborationHours: '#7DD3FC',
   commitment: '#A78BFA',
   locationType: '#22D3EE',
   organization: '#FB7185',
   seniority: '#FB923C',
   investor: '#2DD4BF',
   fundingRound: '#818CF8',
+  fundingStage: '#E879F9',
   boolean: '#94A3B8',
 };
 

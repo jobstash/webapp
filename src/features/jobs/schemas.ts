@@ -30,6 +30,33 @@ export const jobInvestorSchema = z.object({
 });
 export type JobInvestorSchema = z.infer<typeof jobInvestorSchema>;
 
+// Absolute URLs, normalized from MW handles/invites in the transform
+export const jobOrgSocialsSchema = z.object({
+  twitter: nullableStringSchema,
+  telegram: nullableStringSchema,
+  discord: nullableStringSchema,
+  github: nullableStringSchema,
+  docs: nullableStringSchema,
+});
+export type JobOrgSocialsSchema = z.infer<typeof jobOrgSocialsSchema>;
+
+export const jobOrgProjectSchema = z.object({
+  id: nonEmptyStringSchema,
+  name: nonEmptyStringSchema,
+  logo: nullableStringSchema,
+  website: nullableStringSchema,
+  category: nullableStringSchema,
+});
+export type JobOrgProjectSchema = z.infer<typeof jobOrgProjectSchema>;
+
+export const jobAvailabilitySchema = z.object({
+  requirement: z.enum(['required', 'preferred']),
+  label: nonEmptyStringSchema,
+  href: nullableStringSchema,
+  rawText: nonEmptyStringSchema,
+});
+export type JobAvailabilitySchema = z.infer<typeof jobAvailabilitySchema>;
+
 export const jobOrganizationSchema = z.object({
   name: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
@@ -37,8 +64,27 @@ export const jobOrganizationSchema = z.object({
   location: nullableStringSchema,
   logo: nullableStringSchema,
   employeeCount: nullableStringSchema,
+  summary: nullableStringSchema,
+  description: nullableStringSchema,
+  // null when the source endpoint doesn't carry socials (job list)
+  socials: jobOrgSocialsSchema.nullable(),
+  projects: jobOrgProjectSchema.array(),
   fundingRounds: jobFundingRoundSchema.array(),
   investors: jobInvestorSchema.array(),
+  fundingStage: nullableStringSchema,
+  recentlyFunded: z.boolean(),
+  teamCoverageStatus: z.enum(['current', 'unknown']).nullable(),
+  teamSignalsAsOf: nullableStringSchema,
+  currentMaintainerCount: z.number().nullable(),
+  activeLeadCount: z.number().nullable(),
+  newActiveLeadCount: z.number().nullable(),
+  steppedDownLeadCount: z.number().nullable(),
+  movedLeadCount: z.number().nullable(),
+  earlyLeadDepartureCount: z.number().nullable(),
+  growingTeam: z.boolean().nullable(),
+  shrinkingTeam: z.boolean().nullable(),
+  earlyTeamShrinkage: z.boolean().nullable(),
+  intelligenceUrl: nonEmptyStringSchema,
 });
 export type JobOrganizationSchema = z.infer<typeof jobOrganizationSchema>;
 
@@ -47,10 +93,14 @@ export const jobListItemSchema = z.object({
   title: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
   hasApplyUrl: z.boolean(),
+  classification: nullableStringSchema,
   summary: nullableStringSchema,
+  location: nullableStringSchema,
+  locationType: nullableStringSchema,
   addresses: addressSchema.array().nullable(),
   infoTags: mappedInfoTagSchema.array(),
   tags: jobTagSchema.array(),
+  availability: jobAvailabilitySchema.array(),
   organization: jobOrganizationSchema.nullable(),
   timestampText: nonEmptyStringSchema,
   datePosted: nonEmptyStringSchema,
@@ -83,6 +133,7 @@ export const jobDetailsSchema = jobListItemSchema.extend({
   responsibilities: z.string().array(),
   benefits: z.string().array(),
   culture: nullableStringSchema,
+  hiringProcess: nullableStringSchema,
   similarJobs: similarJobSchema.array(),
 });
 export type JobDetailsSchema = z.infer<typeof jobDetailsSchema>;

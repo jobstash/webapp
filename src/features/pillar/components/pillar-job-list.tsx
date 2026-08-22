@@ -48,7 +48,7 @@ const EmptyState = ({ pillarName, pillarContext }: EmptyStateProps) => {
 
       <div className='space-y-1 text-center'>
         <p className='font-medium text-foreground'>
-          No jobs published for this criteria in the past 30 days
+          No jobs published for this criteria in the past 3 months
         </p>
         <p className='text-sm text-muted-foreground'>
           Check back soon or explore all available positions

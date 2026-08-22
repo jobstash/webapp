@@ -15,8 +15,6 @@ export const fetchJobListPage = async ({
   limit = JOBS_PER_PAGE,
   searchParams,
 }: Props) => {
-  const hasSearchParams = Object.keys(searchParams ?? {}).length > 0;
-
   const urlSearchParams = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -28,11 +26,7 @@ export const fetchJobListPage = async ({
 
   const url = `${clientEnv.MW_URL}/jobs/list?${urlSearchParams}`;
   const response = await fetch(url, {
-    // Only cache requests with no search params (avoid cache stampede)
-    ...(!hasSearchParams && {
-      cache: 'force-cache',
-      next: { revalidate: 3600 },
-    }),
+    cache: 'no-store',
   });
 
   if (!response.ok) {

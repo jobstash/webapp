@@ -12,7 +12,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
-import { FILTER_DROPDOWN_CONTENT_CLASS } from '@/features/filters/constants';
+import {
+  FILTER_DROPDOWN_CONTENT_CLASS,
+  PILLAR_FALLBACK_CHIP_LABELS,
+} from '@/features/filters/constants';
 
 import { ActiveFilterTrigger } from './active-filter-trigger';
 
@@ -48,7 +51,11 @@ export const ActiveFilterRadio = ({ label, paramKey, options }: Props) => {
       <DropdownMenuTrigger disabled={isPending} asChild>
         <ActiveFilterTrigger
           isPending={isPending}
-          label={findActiveLabel(filterParam) ?? ''}
+          label={
+            findActiveLabel(filterParam) ??
+            PILLAR_FALLBACK_CHIP_LABELS[paramKey] ??
+            ''
+          }
           tooltipLabel={label}
           icon={<MappedFilterIcon paramKey={paramKey} />}
           onClose={handleClose}

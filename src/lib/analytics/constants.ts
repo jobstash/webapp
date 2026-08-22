@@ -12,8 +12,9 @@ export const GA_EVENT = {
   // Interest
   SIMILAR_JOB_CLICKED: 'similar_job_clicked',
 
-  // Conversion
-  APPLY_BUTTON_CLICKED: 'apply_button_clicked',
+  // Conversion. 'job_apply' is the historical event name from the previous
+  // frontend — GA4 key events and reports are keyed to it. Do not rename.
+  JOB_APPLY: 'job_apply',
 
   // Auth
   LOGIN_STARTED: 'login_started',
@@ -63,10 +64,15 @@ export type GaEventParams = {
     job_id: string;
     source: string;
   };
-  [GA_EVENT.APPLY_BUTTON_CLICKED]: {
-    job_id: string;
-    job_title: string;
-    organization: string;
+  // Parameter names match the previous frontend's payload so existing GA4
+  // custom dimensions keep working.
+  [GA_EVENT.JOB_APPLY]: {
+    event_category: 'job';
+    job_shortuuid: string;
+    job_classification: string;
+    organization_name: string;
+    user_role: string;
+    job_title?: string;
     apply_destination?: string;
   };
   [GA_EVENT.LOGIN_STARTED]: {

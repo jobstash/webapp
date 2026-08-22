@@ -13,6 +13,7 @@ export const mappedInfoTagSchema = z.object({
   iconKey: nonEmptyStringSchema,
   label: nonEmptyStringSchema,
   href: optionalStringSchema,
+  verified: z.boolean().optional(),
 });
 export type MappedInfoTagSchema = z.infer<typeof mappedInfoTagSchema>;
 
