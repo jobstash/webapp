@@ -13,11 +13,11 @@ const makeAddress = (overrides: Partial<Address> = {}): Address => ({
   ...overrides,
 });
 
-const evidenceQuote = 'This role is remote in the United States.';
 const makeRemoteArrangement = (
   overrides: Partial<WorkArrangementV1> = {},
 ): WorkArrangementV1 => ({
   classification: 'verified_remote',
+  fullyRemote: true,
   remoteOptions: [
     {
       classification: 'verified_remote',
@@ -35,16 +35,6 @@ const makeRemoteArrangement = (
       officeCity: null,
       attendanceCadence: null,
       travelRequirement: null,
-      evidence: [
-        {
-          quote: evidenceQuote,
-          startOffset: 10,
-          endOffset: 10 + evidenceQuote.length,
-          source: 'employer_body',
-          trust: 'employer_body',
-          provenance: 'job.description',
-        },
-      ],
       confidence: 'source_stated',
     },
   ],
@@ -147,21 +137,11 @@ describe('buildJobPostingSchema', () => {
       makeRemoteArrangement({ classification: 'remote_unqualified' }),
     ],
     [
-      'aggregator-only evidence',
+      'inherited-only remote claim',
       makeRemoteArrangement({
         remoteOptions: [
           {
             ...makeRemoteArrangement().remoteOptions[0],
-            evidence: [
-              {
-                quote: evidenceQuote,
-                startOffset: 10,
-                endOffset: 10 + evidenceQuote.length,
-                source: 'aggregator',
-                trust: 'aggregator',
-                provenance: 'aggregator.location',
-              },
-            ],
             confidence: 'inherited',
           },
         ],

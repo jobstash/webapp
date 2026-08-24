@@ -61,16 +61,6 @@ const upstreamMatch = {
     attendanceCadence: null,
     travelRequirement: null,
     confidence: 'source_stated',
-    evidence: [
-      {
-        quote: 'This role is remote.',
-        startOffset: 0,
-        endOffset: 20,
-        source: 'employer_body',
-        trust: 'employer_body',
-        provenance: 'job.description',
-      },
-    ],
   },
   explanation: 'The role explicitly supports remote work worldwide.',
   needsChecking: [],

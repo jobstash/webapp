@@ -93,4 +93,33 @@ describe('dtoToFilterConfig location facets', () => {
       }),
     );
   });
+
+  it('shows broad Remote and 100% Remote as independent work-mode options', () => {
+    const [result] = dtoToFilterConfig({
+      workModes: {
+        position: 1,
+        label: 'Work Mode',
+        show: true,
+        googleAnalyticsEventId: null,
+        googleAnalyticsEventName: 'filter_joblist_work_modes',
+        kind: 'MULTI_SELECT_WITH_SEARCH',
+        paramKey: 'workModes',
+        options: [
+          { label: 'Remote', value: 'remote' },
+          { label: '100% Remote', value: 'fully-remote' },
+        ],
+      },
+    });
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        label: 'Work Mode',
+        paramKey: 'workModes',
+        options: [
+          { label: 'Remote', value: 'remote' },
+          { label: '100% Remote', value: 'fully-remote' },
+        ],
+      }),
+    );
+  });
 });

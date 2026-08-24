@@ -40,7 +40,6 @@ vi.mock(
 
 import { JobsForMe } from './jobs-for-me';
 
-const quote = 'Remote worldwide, except the US and APAC.';
 const match: JobForMe = {
   job: {
     id: 'job-1',
@@ -77,16 +76,6 @@ const match: JobForMe = {
     attendanceCadence: null,
     travelRequirement: null,
     confidence: 'source_stated',
-    evidence: [
-      {
-        quote,
-        startOffset: 20,
-        endOffset: 20 + quote.length,
-        source: 'employer_body',
-        trust: 'employer_body',
-        provenance: 'job.description',
-      },
-    ],
   },
   explanation: 'The employer offers remote work.',
   needsChecking: [
@@ -140,7 +129,7 @@ describe('JobsForMe', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the honest result group, exclusions, evidence, and receipt', () => {
+  it('renders the honest result group, exclusions, and receipt', () => {
     render(<JobsForMe />);
 
     expect(
@@ -149,7 +138,6 @@ describe('JobsForMe', () => {
     const exclusions = screen.getByLabelText('Excluded locations');
     expect(within(exclusions).getByText('Countries: US, CA')).toBeVisible();
     expect(within(exclusions).getByText('Regions: APAC')).toBeVisible();
-    expect(screen.getByText(`“${quote}”`)).toBeVisible();
     expect(screen.getByText('UTC+5:45')).toBeVisible();
   });
 

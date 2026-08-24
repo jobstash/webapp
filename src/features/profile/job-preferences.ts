@@ -52,7 +52,7 @@ export const jobForMeSchema = z.strictObject({
   job: jobListItemSchema,
   // A null option is the truthful representation for a job whose latest
   // extraction states no work arrangement. Inventing a mode would turn
-  // missing employer evidence into eligibility.
+  // an unverified inherited source label into eligibility.
   option: workArrangementOptionSchema.nullable(),
   explanation: nonEmptyStringSchema,
   needsChecking: z.array(

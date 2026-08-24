@@ -6,7 +6,6 @@ import {
   workArrangementOptionSchema,
 } from './job-preferences';
 
-const quote = 'Remote worldwide, except the US and APAC.';
 const option = {
   classification: 'verified_remote' as const,
   mode: 'remote' as const,
@@ -27,16 +26,6 @@ const option = {
   attendanceCadence: null,
   travelRequirement: null,
   confidence: 'source_stated' as const,
-  evidence: [
-    {
-      quote,
-      startOffset: 100,
-      endOffset: 100 + quote.length,
-      source: 'employer_body' as const,
-      trust: 'employer_body' as const,
-      provenance: 'job.description',
-    },
-  ],
 };
 
 const preferences = {
@@ -115,11 +104,11 @@ describe('workArrangementOptionSchema', () => {
     });
   });
 
-  it('rejects evidence whose offsets do not exactly span its quote', () => {
+  it('rejects removed evidence bundles', () => {
     expect(
       workArrangementOptionSchema.safeParse({
         ...option,
-        evidence: [{ ...option.evidence[0], endOffset: 101 }],
+        evidence: [{ quote: 'Remote' }],
       }).success,
     ).toBe(false);
   });

@@ -111,7 +111,7 @@ const RESULT_COPY: Record<
     title: 'Confirmed matches',
     itemTitle: 'Confirmed where you can work',
     description:
-      'Employer evidence confirms a compatible work option for your saved preferences.',
+      'The employer information confirms a compatible work option for your saved preferences.',
   },
   timezoneNearMisses: {
     id: 'jobs-for-me-timezone-near-misses',
@@ -140,19 +140,6 @@ const MatchCard = ({ match, kind }: { match: JobForMe; kind: ResultKind }) => (
           countries={match.option.excludedCountries}
           regions={match.option.excludedRegions}
         />
-      )}
-      {match.option && match.option.evidence.length > 0 && (
-        <div className='mt-3 rounded-lg border border-border/50 px-3 py-2'>
-          <p className='text-xs font-medium'>Employer evidence</p>
-          {match.option.evidence.map((evidence) => (
-            <blockquote
-              key={`${evidence.provenance}-${evidence.startOffset}-${evidence.endOffset}`}
-              className='mt-1 border-l-2 border-primary/50 pl-2 text-xs text-muted-foreground'
-            >
-              “{evidence.quote}”
-            </blockquote>
-          ))}
-        </div>
       )}
       {match.needsChecking.length > 0 && (
         <ul className='mt-3 space-y-2 text-muted-foreground'>

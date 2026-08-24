@@ -47,29 +47,6 @@ export const utcBandSchema = z
     { message: 'UTC band minimum must not exceed its maximum' },
   );
 
-export const workArrangementEvidenceSchema = z
-  .strictObject({
-    quote: nonEmptyStringSchema,
-    startOffset: z.number().int().nonnegative(),
-    endOffset: z.number().int().positive(),
-    source: z.enum([
-      'employer_body',
-      'employer_ats_field',
-      'verified_employer_policy',
-      'aggregator',
-    ]),
-    trust: z.enum([
-      'employer_body',
-      'employer_ats_field',
-      'verified_employer_policy',
-      'aggregator',
-    ]),
-    provenance: nonEmptyStringSchema,
-  })
-  .refine(({ quote, startOffset, endOffset }) => {
-    return endOffset > startOffset && endOffset - startOffset === quote.length;
-  }, 'Evidence offsets must exactly span the quoted text');
-
 export const workArrangementOptionSchema = z.strictObject({
   classification: workArrangementClassificationSchema,
   mode: workModeSchema,
@@ -91,12 +68,12 @@ export const workArrangementOptionSchema = z.strictObject({
   officeCity: nonEmptyStringSchema.nullable(),
   attendanceCadence: nonEmptyStringSchema.nullable(),
   travelRequirement: nonEmptyStringSchema.nullable(),
-  evidence: z.array(workArrangementEvidenceSchema),
   confidence: z.enum(['source_stated', 'parsed', 'inherited']),
 });
 
 export const workArrangementV1Schema = z.strictObject({
   classification: workArrangementClassificationSchema,
+  fullyRemote: z.boolean().nullable(),
   // Keep the three employer-authored arms separate. In particular, a
   // remote-or-office statement must not collapse into one synthetic mode.
   remoteOptions: z.array(workArrangementOptionSchema),

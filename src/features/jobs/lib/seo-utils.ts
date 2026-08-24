@@ -87,17 +87,12 @@ export const extractEmploymentType = (
  */
 type SchemaJobLocationType = 'TELECOMMUTE' | null;
 
-const EMPLOYER_EVIDENCE_SOURCES = new Set([
-  'employer_body',
-  'employer_ats_field',
-  'verified_employer_policy',
-]);
-
-const hasEmployerEvidence = (
-  evidence: WorkArrangementV1['remoteOptions'][number]['evidence'][number],
+const isEmployerBackedRemoteOption = (
+  option: WorkArrangementV1['remoteOptions'][number],
 ): boolean =>
-  EMPLOYER_EVIDENCE_SOURCES.has(evidence.source) &&
-  EMPLOYER_EVIDENCE_SOURCES.has(evidence.trust);
+  option.mode === 'remote' &&
+  option.classification === 'verified_remote' &&
+  option.confidence !== 'inherited';
 
 /**
  * Extracts job location type for Schema.org structured data.
@@ -117,14 +112,15 @@ export const extractJobLocationType = (
   void infoTags;
   void addresses;
   void sourceLocationType;
-  if (workArrangement?.classification !== 'verified_remote') return null;
-  const hasEmployerRemoteEvidence = workArrangement.remoteOptions.some(
-    (option) =>
-      option.mode === 'remote' &&
-      option.classification === 'verified_remote' &&
-      option.evidence.some(hasEmployerEvidence),
-  );
-  if (hasEmployerRemoteEvidence) return 'TELECOMMUTE';
+  if (
+    workArrangement?.classification !== 'verified_remote' ||
+    workArrangement.fullyRemote !== true
+  ) {
+    return null;
+  }
+  if (workArrangement.remoteOptions.some(isEmployerBackedRemoteOption)) {
+    return 'TELECOMMUTE';
+  }
   return null;
 };
 
@@ -148,12 +144,7 @@ export const extractApplicantLocationRequirements = (
   if (workArrangement?.classification !== 'verified_remote') return null;
 
   const remoteCountries = workArrangement.remoteOptions
-    .filter(
-      (option) =>
-        option.mode === 'remote' &&
-        option.classification === 'verified_remote' &&
-        option.evidence.some(hasEmployerEvidence),
-    )
+    .filter(isEmployerBackedRemoteOption)
     .flatMap((option) =>
       option.includedCountries.filter(
         (country) => !option.excludedCountries.includes(country),
