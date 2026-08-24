@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 
 import { PublicProfilePage } from '@/features/public-profiles/components';
+import { getPublicProfileMetadataDescription } from '@/features/public-profiles/metadata';
 import { fetchPublicProfile } from '@/features/public-profiles/server';
 import { clientEnv } from '@/lib/env/client';
 
@@ -19,10 +20,7 @@ export const generateMetadata = async ({
   if (!profile) return NOT_FOUND_METADATA;
 
   const title = profile.info.displayName;
-  const description =
-    profile.info.description ??
-    profile.info.tagline ??
-    `Organizations, projects, reviews, and salary aggregates for ${title}.`;
+  const description = getPublicProfileMetadataDescription(profile);
   const url = `${clientEnv.FRONTEND_URL}/profiles/${profile.canonicalSlug}`;
 
   return {

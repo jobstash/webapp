@@ -8,7 +8,9 @@ export const publicProfileFixture = {
     category: 'Infrastructure',
     info: {
       displayName: 'Example Labs',
-      description: 'Builds public infrastructure.',
+      summary: 'Public infrastructure for open networks.',
+      description:
+        'Example Labs builds and maintains public infrastructure for open networks.',
       logo: 'https://example.com/logo.png',
       canonicalSite: 'https://example.com',
       tagline: 'Infrastructure for everyone',

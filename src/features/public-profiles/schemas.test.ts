@@ -37,4 +37,19 @@ describe('publicProfileResponseSchema', () => {
       }).success,
     ).toBe(false);
   });
+
+  it('rejects the non-canonical descriptionShort field', () => {
+    expect(
+      publicProfileResponseSchema.safeParse({
+        ...publicProfileFixture,
+        data: {
+          ...publicProfileFixture.data,
+          info: {
+            ...publicProfileFixture.data.info,
+            descriptionShort: 'This field is not part of ProfileInfo.',
+          },
+        },
+      }).success,
+    ).toBe(false);
+  });
 });

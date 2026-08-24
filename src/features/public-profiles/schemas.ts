@@ -21,6 +21,7 @@ export const publicProfileSchema = z.strictObject({
   category: nullableStringSchema,
   info: z.strictObject({
     displayName: nonEmptyStringSchema,
+    summary: nullableStringSchema.optional(),
     description: nullableStringSchema.optional(),
     logo: publicHttpUrlSchema.nullable().optional(),
     canonicalSite: publicHttpUrlSchema.nullable().optional(),

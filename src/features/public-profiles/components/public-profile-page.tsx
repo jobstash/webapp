@@ -90,8 +90,13 @@ export const PublicProfilePage = ({ profile }: { profile: PublicProfile }) => {
             </Link>
           )}
         </div>
+        {info.summary && (
+          <p className='mt-5 max-w-3xl text-base leading-7 font-medium'>
+            {info.summary}
+          </p>
+        )}
         {info.description && (
-          <p className='mt-5 max-w-3xl leading-7 text-muted-foreground'>
+          <p className='mt-3 max-w-3xl leading-7 whitespace-pre-wrap text-muted-foreground'>
             {info.description}
           </p>
         )}

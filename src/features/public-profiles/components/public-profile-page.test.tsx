@@ -38,6 +38,14 @@ describe('PublicProfilePage', () => {
     render(<PublicProfilePage profile={publicProfileFixture.data} />);
 
     expect(screen.getByRole('heading', { name: 'Example Labs' })).toBeVisible();
+    expect(
+      screen.getByText('Public infrastructure for open networks.'),
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        'Example Labs builds and maintains public infrastructure for open networks.',
+      ),
+    ).toBeVisible();
     expect(screen.getByText('4.25 / 5 average')).toBeVisible();
     expect(screen.getByText('€120,000')).toBeVisible();
     expect(
