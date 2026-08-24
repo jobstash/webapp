@@ -21,7 +21,7 @@ describe('fetchPublicProfile', () => {
     );
     expect(fetchMock).toHaveBeenCalledWith(
       'https://middleware.test/profiles/example%20labs',
-      { cache: 'force-cache', next: { revalidate: 3600 } },
+      { cache: 'no-store' },
     );
   });
 

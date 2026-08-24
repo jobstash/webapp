@@ -8,7 +8,7 @@ export const fetchPublicProfile = async (
 ): Promise<PublicProfile | null> => {
   const response = await fetch(
     `${clientEnv.MW_URL}/profiles/${encodeURIComponent(slug)}`,
-    { cache: 'force-cache', next: { revalidate: 3600 } },
+    { cache: 'no-store' },
   );
 
   if (response.status === 404) return null;
