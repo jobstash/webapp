@@ -94,7 +94,7 @@ describe('dtoToFilterConfig location facets', () => {
     );
   });
 
-  it('shows broad Remote and 100% Remote as independent work-mode options', () => {
+  it('shows broad Remote and 100% Remote when the API has no work-mode facets yet', () => {
     const [result] = dtoToFilterConfig({
       workModes: {
         position: 1,
@@ -104,10 +104,7 @@ describe('dtoToFilterConfig location facets', () => {
         googleAnalyticsEventName: 'filter_joblist_work_modes',
         kind: 'MULTI_SELECT_WITH_SEARCH',
         paramKey: 'workModes',
-        options: [
-          { label: 'Remote', value: 'remote' },
-          { label: '100% Remote', value: 'fully-remote' },
-        ],
+        options: [],
       },
     });
 
@@ -118,6 +115,35 @@ describe('dtoToFilterConfig location facets', () => {
         options: [
           { label: 'Remote', value: 'remote' },
           { label: '100% Remote', value: 'fully-remote' },
+        ],
+      }),
+    );
+  });
+
+  it('keeps other API work modes after the two remote options', () => {
+    const [result] = dtoToFilterConfig({
+      workModes: {
+        position: 1,
+        label: 'Work Mode',
+        show: true,
+        googleAnalyticsEventId: null,
+        googleAnalyticsEventName: 'filter_joblist_work_modes',
+        kind: 'MULTI_SELECT_WITH_SEARCH',
+        paramKey: 'workModes',
+        options: [
+          { label: 'Onsite', value: 'onsite' },
+          { label: 'Hybrid', value: 'hybrid' },
+        ],
+      },
+    });
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        options: [
+          { label: 'Remote', value: 'remote' },
+          { label: '100% Remote', value: 'fully-remote' },
+          { label: 'Onsite', value: 'onsite' },
+          { label: 'Hybrid', value: 'hybrid' },
         ],
       }),
     );

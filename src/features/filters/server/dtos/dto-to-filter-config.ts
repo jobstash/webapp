@@ -105,6 +105,41 @@ const RADIO_FILTER_OPTION_THRESHOLD = 6;
 const CHECKBOX_FILTER_OPTION_THRESHOLD = 6;
 const SELECT_OPTION_THRESHOLD = 2;
 
+const REQUIRED_REMOTE_WORK_MODE_OPTIONS: SelectOptionDto[] = [
+  { label: 'Remote', value: 'remote' },
+  { label: '100% Remote', value: 'fully-remote' },
+];
+
+const withRequiredRemoteWorkModes = (
+  dto: MultiSelectFilterConfigDto,
+): MultiSelectFilterConfigDto => {
+  if (dto.paramKey !== PARAM_KEYS.WORK_MODES) return dto;
+
+  const canonicalOptions = dto.options.map((option) =>
+    option.value === 'fully_remote'
+      ? { ...option, label: '100% Remote', value: 'fully-remote' }
+      : option,
+  );
+  const optionsByValue = new Map(
+    canonicalOptions.map((option) => [option.value, option]),
+  );
+
+  return {
+    ...dto,
+    options: [
+      ...REQUIRED_REMOTE_WORK_MODE_OPTIONS.map(
+        (required) => optionsByValue.get(required.value) ?? required,
+      ),
+      ...canonicalOptions.filter(
+        (option) =>
+          !REQUIRED_REMOTE_WORK_MODE_OPTIONS.some(
+            (required) => required.value === option.value,
+          ),
+      ),
+    ],
+  };
+};
+
 const dtoToFilterConfigSharedProps = (
   dto: FilterConfigSharedPropertiesDto,
 ): FilterConfigSharedPropertiesSchema => {
@@ -278,21 +313,24 @@ const adjustSeniorityOptions = (
 const handleMultiSelect = (
   dto: MultiSelectFilterConfigDto,
 ): FilterConfigSchema | null => {
+  const normalizedDto = withRequiredRemoteWorkModes(dto);
+
   // Get rid of issues where options look borked
   const minimumOptions =
-    dto.paramKey === PARAM_KEYS.COLLABORATION_HOURS
+    normalizedDto.paramKey === PARAM_KEYS.COLLABORATION_HOURS
       ? 1
       : SELECT_OPTION_THRESHOLD;
-  const hasNoOptions = dto.options.length < minimumOptions;
+  const hasNoOptions = normalizedDto.options.length < minimumOptions;
   if (hasNoOptions) return null;
 
-  const isCheckbox = dto.options.length <= CHECKBOX_FILTER_OPTION_THRESHOLD;
+  const isCheckbox =
+    normalizedDto.options.length <= CHECKBOX_FILTER_OPTION_THRESHOLD;
   const baseFilter = isCheckbox
-    ? dtoToCheckboxFilterConfig(dto)
-    : dtoToMultiSelectFilterConfig(dto);
+    ? dtoToCheckboxFilterConfig(normalizedDto)
+    : dtoToMultiSelectFilterConfig(normalizedDto);
 
-  adjustLocationLabel(dto, baseFilter);
-  adjustSeniorityOptions(dto, baseFilter);
+  adjustLocationLabel(normalizedDto, baseFilter);
+  adjustSeniorityOptions(normalizedDto, baseFilter);
 
   return baseFilter;
 };
