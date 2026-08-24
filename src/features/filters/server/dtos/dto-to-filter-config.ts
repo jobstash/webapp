@@ -108,6 +108,8 @@ const SELECT_OPTION_THRESHOLD = 2;
 const REQUIRED_REMOTE_WORK_MODE_OPTIONS: SelectOptionDto[] = [
   { label: 'Remote', value: 'remote' },
   { label: '100% Remote', value: 'fully-remote' },
+  { label: 'Onsite', value: 'onsite' },
+  { label: 'Hybrid', value: 'hybrid' },
 ];
 
 const withRequiredRemoteWorkModes = (

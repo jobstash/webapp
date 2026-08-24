@@ -115,6 +115,8 @@ describe('dtoToFilterConfig location facets', () => {
         options: [
           { label: 'Remote', value: 'remote' },
           { label: '100% Remote', value: 'fully-remote' },
+          { label: 'Onsite', value: 'onsite' },
+          { label: 'Hybrid', value: 'hybrid' },
         ],
       }),
     );
