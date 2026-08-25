@@ -65,6 +65,37 @@ describe('fetchPillarItems', () => {
     expect(categories).toContain('locationType');
     expect(categories).toContain('commitment');
   });
+
+  it('includes the fully remote pillar and canonical main regions', async () => {
+    const items = await fetchPillarItems();
+
+    expect(items).toEqual(
+      expect.arrayContaining([
+        {
+          category: 'locationType',
+          label: 'Fully Remote',
+          href: '/lt-fully-remote',
+        },
+        { category: 'location', label: 'Europe', href: '/l-europe' },
+        {
+          category: 'location',
+          label: 'North America',
+          href: '/l-north-america',
+        },
+        {
+          category: 'location',
+          label: 'Latin America',
+          href: '/l-latin-america',
+        },
+        {
+          category: 'location',
+          label: 'Asia-Pacific',
+          href: '/l-asia-pacific',
+        },
+        { category: 'location', label: 'Africa', href: '/l-africa' },
+      ]),
+    );
+  });
 });
 
 describe('HeroWithPillars', () => {

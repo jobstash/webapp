@@ -26,6 +26,12 @@ const CRYPTO_BEGINNER_JOBS: PillarLink = {
   gaSource: 'crypto_beginner_jobs',
 };
 
+const FULLY_REMOTE_JOBS: PillarLink = {
+  slug: 'lt-fully-remote',
+  label: 'Fully Remote Jobs',
+  gaSource: 'fully_remote_jobs',
+};
+
 const SECONDARY_CLASS = 'bg-input/30 text-base';
 
 const PrimaryPillarButton = ({ pillar }: { pillar: PillarLink }) => (
@@ -93,10 +99,11 @@ export const HeroCtas = ({ slug }: Props) => {
   }
 
   return (
-    <div className='flex flex-col items-center gap-3 sm:flex-row'>
+    <div className='flex flex-col flex-wrap items-center justify-center gap-3 sm:flex-row'>
       <PrimaryPillarButton pillar={URGENTLY_HIRING} />
       <SecondaryPillarButton pillar={CRYPTO_BEGINNER_JOBS} />
       <HeroJobsForYouButton />
+      <SecondaryPillarButton pillar={FULLY_REMOTE_JOBS} />
     </div>
   );
 };

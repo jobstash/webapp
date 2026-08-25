@@ -30,9 +30,31 @@ export const fetchPillarItems = async (): Promise<PillarItem[]> => {
     { category: 'location', label: 'London', href: '/l-london' },
     { category: 'location', label: 'New York', href: '/l-new-york' },
     { category: 'location', label: 'Singapore', href: '/l-singapore' },
+    { category: 'location', label: 'Europe', href: '/l-europe' },
+    {
+      category: 'location',
+      label: 'North America',
+      href: '/l-north-america',
+    },
+    {
+      category: 'location',
+      label: 'Latin America',
+      href: '/l-latin-america',
+    },
+    {
+      category: 'location',
+      label: 'Asia-Pacific',
+      href: '/l-asia-pacific',
+    },
+    { category: 'location', label: 'Africa', href: '/l-africa' },
 
     // Location Type - Work arrangement
     { category: 'locationType', label: 'Remote', href: '/lt-remote' },
+    {
+      category: 'locationType',
+      label: 'Fully Remote',
+      href: '/lt-fully-remote',
+    },
     { category: 'locationType', label: 'Onsite', href: '/lt-onsite' },
     { category: 'locationType', label: 'Hybrid', href: '/lt-hybrid' },
 
