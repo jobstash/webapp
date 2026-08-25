@@ -72,8 +72,10 @@ const fetchPillarPageStaticUncached = async (
 // the metadata and page reads during the same render.
 const fetchPillarPageStaticCached = unstable_cache(
   fetchPillarPageStaticUncached,
-  ['pillar-page-static-v1'],
-  { revalidate: 3600 },
+  // Increment this namespace when the pillar selection contract changes so a
+  // deployment cannot keep serving a previous job set.
+  ['pillar-page-static-v2'],
+  { revalidate: 300 },
 );
 
 export const fetchPillarPageStatic = cache(fetchPillarPageStaticCached);
