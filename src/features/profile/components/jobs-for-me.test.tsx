@@ -1,37 +1,43 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { JobForMe, JobsForMeResponse } from '../job-preferences';
+import type { RecommendedJobsResponse } from '../recommended-jobs';
 
-const { mockUseJobsForMe } = vi.hoisted(() => ({
-  mockUseJobsForMe: vi.fn(),
-}));
+const { mockUseRecommendedJobs, mockDismiss, mockImpression } = vi.hoisted(
+  () => ({
+    mockUseRecommendedJobs: vi.fn(),
+    mockDismiss: vi.fn(),
+    mockImpression: vi.fn().mockResolvedValue(undefined),
+  }),
+);
 
-vi.mock('../hooks/use-jobs-for-me', () => ({
-  useJobsForMe: () => mockUseJobsForMe(),
+vi.mock('../hooks/use-recommended-jobs', () => ({
+  useRecommendedJobs: () => mockUseRecommendedJobs(),
+  useDismissRecommendedJob: () => ({
+    mutate: mockDismiss,
+    isPending: false,
+  }),
+  recordRecommendedJobImpression: mockImpression,
 }));
 
 vi.mock('next/link', () => ({
   default: ({
     children,
     href,
-    ...props
   }: {
     children: React.ReactNode;
     href: string;
   }) => (
     // eslint-disable-next-line @next/next/no-html-link-for-pages
-    <a href={href} {...props}>
-      {children}
-    </a>
+    <a href={href}>{children}</a>
   ),
 }));
 
 vi.mock(
   '@/features/jobs/components/job-list/job-list-item/job-list-item',
   () => ({
-    JobListItem: ({ job }: { job: JobForMe['job'] }) => (
+    JobListItem: ({ job }: { job: { title: string; href: string } }) => (
       // eslint-disable-next-line @next/next/no-html-link-for-pages
       <a href={job.href}>{job.title}</a>
     ),
@@ -40,82 +46,42 @@ vi.mock(
 
 import { JobsForMe } from './jobs-for-me';
 
-const match: JobForMe = {
-  job: {
-    id: 'job-1',
-    title: 'Protocol engineer',
-    href: '/engineering/protocol-engineer-job-1',
-    hasApplyUrl: true,
-    classification: null,
-    summary: null,
-    location: 'Worldwide',
-    locationType: 'Remote',
-    addresses: null,
-    infoTags: [],
-    tags: [],
-    availability: [],
-    organization: null,
-    timestampText: 'Today',
-    datePosted: '2026-08-22',
-    badge: null,
-  },
-  option: {
-    classification: 'verified_remote',
-    mode: 'remote',
-    scope: 'global',
-    includedCountries: [],
-    excludedCountries: ['US', 'CA'],
-    includedRegions: [],
-    excludedRegions: ['APAC'],
-    requiredUtcBand: null,
-    preferredUtcBand: null,
-    residencyRequirements: [],
-    workAuthorizationRequirements: [],
-    sponsorshipStatus: 'unstated',
-    officeCity: null,
-    attendanceCadence: null,
-    travelRequirement: null,
-    confidence: 'source_stated',
-  },
-  explanation: 'The employer offers remote work.',
-  needsChecking: [
+const response: RecommendedJobsResponse = {
+  jobs: [
     {
-      code: 'add_country_for_exclusions',
-      message:
-        'Add your country to check whether the employer excludes your location.',
-    },
-    {
-      code: 'sponsorship_unstated',
-      message: 'The employer has not stated whether sponsorship is available.',
+      reason: 'Engineering Management · Architecture',
+      job: {
+        id: 'job-1',
+        title: 'Engineering Manager',
+        href: '/engineering-manager/job-1',
+        hasApplyUrl: true,
+        classification: 'engineering_management',
+        workArrangement: null,
+        summary: null,
+        location: 'Remote',
+        locationType: 'Remote',
+        addresses: null,
+        infoTags: [],
+        tags: [],
+        availability: [],
+        organization: null,
+        timestampText: 'Today',
+        datePosted: '2026-08-26',
+        badge: null,
+      },
     },
   ],
-  optionalSignals: [],
-};
-
-const response: JobsForMeResponse = {
-  confirmedMatches: [],
-  timezoneNearMisses: [],
-  needsChecking: [match],
-  summary: {
-    confirmedMatches: 0,
-    timezoneNearMisses: 0,
-    needsChecking: 1,
-    total: 1,
-  },
-  appliedPreferences: {
-    workModes: ['remote'],
-    residenceCountry: null,
-    utcOffset: 5.75,
-    workAuthorization: null,
-    requiresSponsorship: null,
-    attendancePreference: null,
-    travelTolerance: null,
-  },
+  total: 1,
 };
 
 describe('JobsForMe', () => {
   beforeEach(() => {
-    mockUseJobsForMe.mockReturnValue({
+    class IntersectionObserverMock {
+      observe() {}
+      disconnect() {}
+    }
+    vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
+    mockUseRecommendedJobs.mockReturnValue({
       data: response,
       isPending: false,
       isError: false,
@@ -127,103 +93,39 @@ describe('JobsForMe', () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
   });
 
-  it('renders the honest result group, exclusions, and receipt', () => {
+  it('shows one concise reason and lets the user hide a job', () => {
     render(<JobsForMe />);
 
+    expect(screen.getByText('Engineering Manager')).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: 'Needs checking (1)' }),
+      screen.getByText('Engineering Management · Architecture'),
     ).toBeVisible();
-    const exclusions = screen.getByLabelText('Excluded locations');
-    expect(within(exclusions).getByText('Countries: US, CA')).toBeVisible();
-    expect(within(exclusions).getByText('Regions: APAC')).toBeVisible();
-    expect(screen.getByText('UTC+5:45')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+    expect(mockDismiss).toHaveBeenCalledWith('job-1');
   });
 
-  it('places a working action next to every item that needs checking', () => {
-    render(<JobsForMe />);
+  it('uses short error and empty messages', () => {
+    mockUseRecommendedJobs.mockReturnValueOnce({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      refetch: vi.fn(),
+      isFetching: false,
+    });
+    const { rerender } = render(<JobsForMe />);
+    expect(screen.getByText("Couldn't load matches.")).toBeVisible();
 
-    const items = screen.getAllByRole('listitem');
-    expect(items).toHaveLength(2);
-    expect(
-      within(items[0]).getByRole('link', { name: 'Add country' }),
-    ).toHaveAttribute(
-      'href',
-      '/profile/settings?returnTo=%2Fprofile%2Fjobs#job-preferences-residence-country',
-    );
-    expect(
-      within(items[1]).getByRole('link', { name: 'View job details' }),
-    ).toHaveAttribute('href', '/engineering/protocol-engineer-job-1');
-  });
-
-  it('keeps timezone near misses separate from confirmed results', () => {
-    mockUseJobsForMe.mockReturnValue({
-      data: {
-        ...response,
-        confirmedMatches: [],
-        timezoneNearMisses: [{ ...match, needsChecking: [] }],
-        needsChecking: [],
-        summary: {
-          confirmedMatches: 0,
-          timezoneNearMisses: 1,
-          needsChecking: 0,
-          total: 1,
-        },
-      },
+    mockUseRecommendedJobs.mockReturnValueOnce({
+      data: { jobs: [], total: 0 },
       isPending: false,
       isError: false,
       refetch: vi.fn(),
       isFetching: false,
     });
-
-    render(<JobsForMe />);
-
-    expect(
-      screen.getByRole('heading', { name: 'Timezone near misses (1)' }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole('heading', { name: /Confirmed matches/ }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('keeps a latest zero-option extraction visible without inventing a mode', () => {
-    mockUseJobsForMe.mockReturnValue({
-      data: {
-        ...response,
-        needsChecking: [
-          {
-            ...match,
-            option: null,
-            explanation:
-              'The employer has not stated a work arrangement for this job.',
-            needsChecking: [
-              {
-                code: 'work_arrangement_unstated',
-                message: 'Check the job for employer-authored work terms.',
-              },
-            ],
-          },
-        ],
-      },
-      isPending: false,
-      isError: false,
-      refetch: vi.fn(),
-      isFetching: false,
-    });
-
-    render(<JobsForMe />);
-
-    expect(
-      screen.getByText(
-        'The employer has not stated a work arrangement for this job.',
-      ),
-    ).toBeVisible();
-    expect(
-      screen.queryByLabelText('Excluded locations'),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: 'View job details' }),
-    ).toHaveAttribute('href', '/engineering/protocol-engineer-job-1');
+    rerender(<JobsForMe />);
+    expect(screen.getByText('No matches yet.')).toBeVisible();
   });
 });

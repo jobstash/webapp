@@ -5,22 +5,16 @@ import { describe, expect, it, vi } from 'vitest';
 import ProfileJobsPage from './page';
 
 vi.mock('@/features/profile/components/jobs-for-me', () => ({
-  JobsForMe: () => <div>Work option results</div>,
-}));
-
-vi.mock('@/features/profile/components/profile-jobs', () => ({
-  ProfileJobs: () => <div>Skill results</div>,
+  JobsForMe: () => <div>Recommended results</div>,
 }));
 
 describe('Profile jobs page', () => {
-  it('keeps both canonical personalized-job capabilities reachable', () => {
+  it('shows one activity-based job feed with short copy', () => {
     render(<ProfileJobsPage />);
     expect(screen.getByRole('heading', { name: 'Jobs for me' })).toBeVisible();
+    expect(screen.getByText('Fresh matches from your activity.')).toBeVisible();
     expect(
-      screen.getByRole('region', { name: 'Work preference matches' }),
-    ).toHaveTextContent('Work option results');
-    expect(
-      screen.getByRole('region', { name: 'Skill matches' }),
-    ).toHaveTextContent('Skill results');
+      screen.getByRole('region', { name: 'Recommended jobs' }),
+    ).toHaveTextContent('Recommended results');
   });
 });
