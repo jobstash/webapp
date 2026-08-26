@@ -12,34 +12,140 @@ import {
 
 import { cn } from '@/lib/utils';
 import { getFrontendSlug } from '@/features/pillar/constants';
-import { compactNumber, momentumLabel, momentumTone } from '../lib/format';
-import type { JobMarketOverview, JobMarketTicker } from '../schemas';
+import { compactNumber } from '../lib/format';
+import type {
+  JobMarketOverview,
+  JobMarketPoint,
+  JobMarketTicker,
+} from '../schemas';
+
+const weeklyVacancyChange = (history: JobMarketPoint[] | undefined) => {
+  if (!history || history.length < 2) return null;
+  const current = history.at(-1)!;
+  const currentTime = Date.parse(current.date);
+  const targetTime = currentTime - 7 * 24 * 60 * 60 * 1_000;
+  const baseline = [...history]
+    .reverse()
+    .find((point) => Date.parse(point.date) <= targetTime);
+  if (!baseline) return null;
+  if (baseline.activeJobs === 0) {
+    return current.activeJobs === 0 ? 0 : null;
+  }
+  return (
+    Math.round(
+      ((current.activeJobs - baseline.activeJobs) / baseline.activeJobs) *
+        1_000,
+    ) / 10
+  );
+};
+
+const changeLabel = (change: number | null) => {
+  if (change === null) return 'Not enough history';
+  return `${change > 0 ? '+' : ''}${change.toFixed(1)}%`;
+};
+
+const VacancySparkline = ({ ticker }: { ticker: JobMarketTicker }) => {
+  const history = ticker.history ?? [];
+  if (history.length < 2) return null;
+  const historySpanDays =
+    Math.round(
+      (Date.parse(history.at(-1)!.date) - Date.parse(history[0].date)) /
+        (24 * 60 * 60 * 1_000),
+    ) + 1;
+  const values = history.map((point) => point.activeJobs);
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const range = maximum - minimum || 1;
+  const width = 160;
+  const height = 38;
+  const padding = 2;
+  const points = values.map((value, index) => {
+    const x = padding + (index / (values.length - 1)) * (width - padding * 2);
+    const y =
+      height - padding - ((value - minimum) / range) * (height - padding * 2);
+    return { x, y };
+  });
+  const line = points.map(({ x, y }) => `${x},${y}`).join(' ');
+  const area = `M ${points[0].x} ${height - padding} L ${points
+    .map(({ x, y }) => `${x} ${y}`)
+    .join(' L ')} L ${points.at(-1)!.x} ${height - padding} Z`;
+
+  return (
+    <div className='hidden min-w-28 text-primary sm:block'>
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        role='img'
+        className='h-9 w-full overflow-visible'
+      >
+        <title>{`${ticker.label} open vacancies over the last ${historySpanDays} days`}</title>
+        <path d={area} fill='currentColor' opacity='0.12' />
+        <polyline
+          points={line}
+          fill='none'
+          stroke='currentColor'
+          strokeWidth='2'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+        <circle
+          cx={points.at(-1)!.x}
+          cy={points.at(-1)!.y}
+          r='2.5'
+          fill='currentColor'
+        />
+      </svg>
+      <span className='block text-[10px] text-muted-foreground'>
+        Open vacancies · {historySpanDays} days
+      </span>
+    </div>
+  );
+};
 
 const Move = ({ ticker }: { ticker: JobMarketTicker }) => {
-  const tone = momentumTone(ticker.momentum);
-  const Icon = tone === 'negative' ? ArrowDownRightIcon : ArrowUpRightIcon;
+  const change = weeklyVacancyChange(ticker.history);
+  const tone =
+    change === null || change === 0
+      ? 'neutral'
+      : change > 0
+        ? 'positive'
+        : 'negative';
+  const Icon =
+    tone === 'negative'
+      ? ArrowDownRightIcon
+      : tone === 'positive'
+        ? ArrowUpRightIcon
+        : ArrowRightIcon;
   return (
     <Link
       href={`/${getFrontendSlug(ticker.slug)}`}
-      className='group flex min-w-0 items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/55 px-3 py-2.5 transition-colors hover:border-primary/50 hover:bg-background'
+      className='group grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-border/60 bg-background/55 px-4 py-3 transition-colors hover:border-primary/50 hover:bg-background sm:grid-cols-[minmax(0,1fr)_minmax(112px,.65fr)_auto]'
     >
       <span className='min-w-0'>
         <span className='block truncate text-sm font-semibold'>
           {ticker.label}
         </span>
         <span className='text-xs text-muted-foreground'>
-          {compactNumber(ticker.current.activeJobs)} open roles
+          {compactNumber(ticker.current.activeJobs)} open vacancies
         </span>
       </span>
+      <VacancySparkline ticker={ticker} />
       <span
         className={cn(
-          'flex shrink-0 items-center gap-1 text-sm font-bold',
+          'shrink-0 text-right',
           tone === 'positive' && 'text-emerald-400',
           tone === 'negative' && 'text-rose-400',
+          tone === 'neutral' && 'text-muted-foreground',
         )}
       >
-        <Icon className='size-4' aria-hidden />
-        {momentumLabel(ticker.momentum)}
+        <span className='flex items-center justify-end gap-1 text-sm font-bold'>
+          <Icon className='size-4' aria-hidden />
+          {changeLabel(change)}
+        </span>
+        <span className='mt-0.5 block text-[10px] leading-tight text-muted-foreground'>
+          Open vacancies
+          <br />
+          vs 7 days ago
+        </span>
       </span>
     </Link>
   );
@@ -54,6 +160,13 @@ export const MarketOverviewDashboard = ({
     ...overview.movers.bullish.slice(0, 3),
     ...overview.movers.cooling.slice(0, 3),
   ];
+  const marketWeeklyChange = weeklyVacancyChange(overview.market.history);
+  const marketTone =
+    marketWeeklyChange === null || marketWeeklyChange === 0
+      ? 'neutral'
+      : marketWeeklyChange > 0
+        ? 'positive'
+        : 'negative';
   return (
     <section
       aria-labelledby='market-overview-heading'
@@ -61,16 +174,13 @@ export const MarketOverviewDashboard = ({
     >
       <div className='grid gap-4 lg:grid-cols-[minmax(260px,.8fr)_minmax(0,1.8fr)_auto] lg:items-center'>
         <div>
-          <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-emerald-400 uppercase'>
+          <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-primary uppercase'>
             <ChartNoAxesCombinedIcon className='size-4' aria-hidden />
             Market pulse
           </div>
           <h2 id='market-overview-heading' className='mt-1 text-xl font-bold'>
-            Crypto hiring, priced like a market
+            Job Market Analytics
           </h2>
-          <p className='mt-1 text-sm text-muted-foreground'>
-            Daily opportunity, compensation, skill repricing, and regional pay.
-          </p>
         </div>
 
         <div className='grid grid-cols-2 gap-2 sm:grid-cols-3'>
@@ -96,10 +206,19 @@ export const MarketOverviewDashboard = ({
               className='size-4 text-violet-400'
               aria-hidden
             />
-            <strong className='mt-1 block text-lg'>
-              {momentumLabel(overview.market.momentum)}
+            <strong
+              className={cn(
+                'mt-1 block text-lg',
+                marketTone === 'positive' && 'text-emerald-400',
+                marketTone === 'negative' && 'text-rose-400',
+              )}
+            >
+              {changeLabel(marketWeeklyChange)}
             </strong>
-            <span className='text-xs text-muted-foreground'>Market trend</span>
+            <span className='text-xs text-muted-foreground'>Weekly change</span>
+            <span className='block text-[10px] text-muted-foreground/75'>
+              Open vacancies vs 7 days ago
+            </span>
           </div>
         </div>
 

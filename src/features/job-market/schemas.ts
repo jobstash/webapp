@@ -138,6 +138,7 @@ export const jobMarketTickerSchema = z.object({
   slug: z.string(),
   label: z.string(),
   current: jobMarketPointSchema,
+  history: jobMarketPointSchema.array().optional(),
   momentum: jobMarketMomentumSchema,
   activity: jobMarketActivitySchema,
   eligibleMover: z.boolean(),

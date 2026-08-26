@@ -66,13 +66,14 @@ export const HeroSection = ({ pillarItems }: Props) => {
             <h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
               Find Your Next{' '}
               <span className='bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent'>
-                Web3
+                Crypto, AI or Fintech
               </span>{' '}
-              Role
+              role
             </h1>
             <p className='mx-auto max-w-2xl text-base text-muted-foreground md:text-lg'>
-              Connect with leading crypto and blockchain organizations. Discover
-              opportunities in DeFi, NFTs, DAOs, and the decentralized future.
+              JobStash is a job board which empowers the data and analytics
+              demanding user to make an informed decision about which role to
+              choose for their future career.
             </p>
           </div>
 

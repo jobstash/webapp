@@ -103,7 +103,12 @@ describe('HeroWithPillars', () => {
     render(await HeroWithPillars());
 
     expect(
-      screen.getByRole('heading', { name: /find your next web3 role/i }),
+      screen.getByRole('heading', {
+        name: /find your next crypto, ai or fintech role/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/empowers the data and analytics demanding user/i),
     ).toBeInTheDocument();
   });
 
