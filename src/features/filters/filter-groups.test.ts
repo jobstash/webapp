@@ -50,6 +50,7 @@ describe('filter groups', () => {
       checkbox('Work Mode', 'workModes'),
       checkbox('Country', 'countries'),
       checkbox('Publication Date', 'publicationDate'),
+      checkbox('New Active Leads', 'newActiveLeads'),
       {
         ...shared,
         kind: 'RANGE',
@@ -72,6 +73,7 @@ describe('filter groups', () => {
       checkbox('Work Mode', 'workModes'),
       checkbox('Category', 'classifications'),
       checkbox('Publication Date', 'publicationDate'),
+      checkbox('Lead Movements', 'movedLeads'),
       switchFilter('Future Filter', 'futureFilter'),
     ];
 
@@ -82,6 +84,7 @@ describe('filter groups', () => {
       'Work setup & location',
       'Pay & timing',
       'Company & funding',
+      'Developer activity',
       'Protocol & market',
       'More options',
     ]);
@@ -95,6 +98,7 @@ describe('filter groups', () => {
       'Work Mode',
       'Publication Date',
       'Investors',
+      'Lead Movements',
       'Chains',
       'Future Filter',
     ]);

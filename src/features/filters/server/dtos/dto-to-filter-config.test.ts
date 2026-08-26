@@ -151,7 +151,7 @@ describe('dtoToFilterConfig location facets', () => {
     );
   });
 
-  it('does not expose restricted intelligence filters to JobStash', () => {
+  it('exposes developer activity filters to JobStash', () => {
     const result = dtoToFilterConfig({
       currentMaintainers: {
         position: 1,
@@ -175,16 +175,26 @@ describe('dtoToFilterConfig location facets', () => {
         kind: 'SINGLE_SELECT',
         paramKey: 'movedLeads',
         options: [
-          { label: 'No', value: false },
-          { label: 'Yes', value: true },
+          { label: 'No lead movements', value: false },
+          { label: 'Lead movements', value: true },
         ],
       },
       countries: locationConfig(3, 'Country', 'countries'),
     });
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toEqual(
+    expect(result).toHaveLength(3);
+    expect(result).toEqual([
+      expect.objectContaining({
+        label: 'Current Maintainers',
+        kind: 'RANGE',
+        lowest: { paramKey: 'minCurrentMaintainers', value: 0 },
+        highest: { paramKey: 'maxCurrentMaintainers', value: 100 },
+      }),
+      expect.objectContaining({
+        label: 'Lead movements',
+        paramKey: 'movedLeads',
+      }),
       expect.objectContaining({ paramKey: 'countries' }),
-    );
+    ]);
   });
 });

@@ -61,6 +61,20 @@ export const FILTER_GROUPS = [
     ]),
   },
   {
+    id: 'developer-activity',
+    label: 'Developer activity',
+    paramKeys: new Set([
+      'minCurrentMaintainers',
+      'maxCurrentMaintainers',
+      'minActiveLeads',
+      'maxActiveLeads',
+      'newActiveLeads',
+      'steppedDownLeads',
+      'movedLeads',
+      'earlyLeadDepartures',
+    ]),
+  },
+  {
     id: 'protocol',
     label: 'Protocol & market',
     paramKeys: new Set([
@@ -98,6 +112,14 @@ const PRIMARY_FILTER_PARAM_KEYS = new Set([
   'publicationDate',
   'minSalaryRange',
   'maxSalaryRange',
+  'minCurrentMaintainers',
+  'maxCurrentMaintainers',
+  'minActiveLeads',
+  'maxActiveLeads',
+  'newActiveLeads',
+  'steppedDownLeads',
+  'movedLeads',
+  'earlyLeadDepartures',
 ]);
 
 export const getFilterParamKeys = (config: FilterConfigSchema): string[] => {
