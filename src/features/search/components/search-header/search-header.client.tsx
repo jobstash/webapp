@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 
@@ -10,6 +11,7 @@ import { SearchSuggestions } from './search-suggestions';
 import { useSearchSuggestions } from './use-search-suggestions';
 
 export const SearchHeaderClient = () => {
+  const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileOverlayOpen, setIsMobileOverlayOpen] = useState(false);
@@ -34,6 +36,17 @@ export const SearchHeaderClient = () => {
     if (trimmed) {
       trackEvent(GA_EVENT.SEARCH_QUERY, { search_query: trimmed });
     }
+  };
+
+  const submitJobTitleSearch = () => {
+    const trimmed = inputValue.trim();
+    if (!trimmed) return;
+
+    trackSearchQuery();
+    setIsOpen(false);
+    setIsMobileOverlayOpen(false);
+    inputRef.current?.blur();
+    router.push(`/?titleQuery=${encodeURIComponent(trimmed)}`);
   };
 
   const handleItemSelect = () => {
@@ -82,7 +95,10 @@ export const SearchHeaderClient = () => {
         className='relative hidden min-w-0 grow items-center gap-2 lg:flex'
       >
         <form
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={(event) => {
+            event.preventDefault();
+            submitJobTitleSearch();
+          }}
           className='flex w-full items-center gap-2'
         >
           <SearchButton />
@@ -132,6 +148,7 @@ export const SearchHeaderClient = () => {
         query={inputValue}
         {...suggestions}
         onQueryChange={setInputValue}
+        onSubmit={submitJobTitleSearch}
         onItemSelect={handleMobileItemSelect}
         onClose={closeMobileOverlay}
       />

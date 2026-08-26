@@ -17,6 +17,7 @@ import { SearchResultsList } from './search-results-list';
 interface Props extends SearchSuggestionsProps {
   open: boolean;
   onQueryChange: (query: string) => void;
+  onSubmit: () => void;
   onItemSelect: () => void;
 }
 
@@ -32,6 +33,7 @@ export const SearchOverlay = ({
   onGroupChange,
   loadMore,
   onQueryChange,
+  onSubmit,
   onItemSelect,
   onClose,
 }: Props) => {
@@ -52,7 +54,13 @@ export const SearchOverlay = ({
         </DialogHeader>
 
         <div className='flex h-full flex-col'>
-          <div className='flex items-center gap-2 border-b border-border px-4 py-3'>
+          <form
+            className='flex items-center gap-2 border-b border-border px-4 py-3'
+            onSubmit={(event) => {
+              event.preventDefault();
+              onSubmit();
+            }}
+          >
             <Button
               variant='ghost'
               size='icon'
@@ -74,7 +82,7 @@ export const SearchOverlay = ({
                 className='h-10 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground'
               />
             </div>
-          </div>
+          </form>
 
           <div className='flex-1 overflow-y-auto'>
             <SearchResultsList

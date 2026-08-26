@@ -41,14 +41,13 @@ const commonProps = {
 };
 
 describe('SearchResultsTabs', () => {
-  it('lets the Job Titles tab open the complete free-text result set', () => {
+  it('shows job suggestions without presenting the query as a filter action', () => {
     render(<SearchResultsTabs {...commonProps} activeGroup='jobs' />);
 
     expect(
-      screen.getByRole('link', {
-        name: 'View all jobs matching “technical clerk”',
-      }),
-    ).toHaveAttribute('href', '/?titleQuery=technical%20clerk');
+      screen.queryByRole('link', { name: /View all jobs matching/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByText('Job Titles')).not.toHaveLength(0);
   });
 
   it('does not show the free-text result action in Job Category', () => {
