@@ -71,7 +71,7 @@ const VacancySparkline = ({ ticker }: { ticker: JobMarketTicker }) => {
     .join(' L ')} L ${points.at(-1)!.x} ${height - padding} Z`;
 
   return (
-    <div className='hidden min-w-28 text-primary sm:block'>
+    <div className='hidden min-w-28 text-violet-400 sm:block'>
       <svg
         viewBox={`0 0 ${width} ${height}`}
         role='img'
@@ -174,7 +174,7 @@ export const MarketOverviewDashboard = ({
     >
       <div className='grid gap-4 lg:grid-cols-[minmax(260px,.8fr)_minmax(0,1.8fr)_auto] lg:items-center'>
         <div>
-          <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-primary uppercase'>
+          <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-violet-400 uppercase'>
             <ChartNoAxesCombinedIcon className='size-4' aria-hidden />
             Market pulse
           </div>

@@ -127,6 +127,6 @@ describe('MarketOverviewDashboard', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/open vacancies/i).length).toBeGreaterThan(1);
-    expect(screen.getByText('Market pulse')).toHaveClass('text-primary');
+    expect(screen.getByText('Market pulse')).toHaveClass('text-violet-400');
   });
 });
