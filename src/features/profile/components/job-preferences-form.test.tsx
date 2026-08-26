@@ -2,7 +2,10 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { JobPreferences } from '../job-preferences';
+import {
+  recommendationPreferenceDefaults,
+  type JobPreferences,
+} from '../job-preferences';
 import { JOB_PREFERENCE_FIELD_IDS } from '../jobs-for-me-resolution';
 
 const { mockUseMutation, mockUseQuery, mockUseQueryClient } = vi.hoisted(
@@ -38,6 +41,7 @@ vi.mock('next/link', () => ({
 import { JobPreferencesForm } from './job-preferences-form';
 
 const preferences: JobPreferences = {
+  ...recommendationPreferenceDefaults,
   workModes: ['remote'],
   residenceCountry: null,
   utcOffset: null,
@@ -96,6 +100,13 @@ describe('JobPreferencesForm action destinations', () => {
     for (const id of Object.values(JOB_PREFERENCE_FIELD_IDS)) {
       expect(document.getElementById(id)).toBeInstanceOf(HTMLElement);
     }
+    expect(screen.getByLabelText('What matters most')).toBeVisible();
+    expect(screen.getByLabelText('Job categories')).toBeVisible();
+    expect(screen.getByLabelText('Skills')).toBeVisible();
+    expect(screen.getByLabelText('Companies you want')).toBeVisible();
+    expect(screen.getByLabelText('Minimum annual salary')).toBeVisible();
+    expect(screen.getByLabelText('Search status')).toBeVisible();
+    expect(screen.getByLabelText('Showcase repositories')).toBeVisible();
   });
 
   it('does not render a return action for an external target', async () => {

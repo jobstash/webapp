@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { GET } from './route';
+import { recommendationPreferenceDefaults } from '@/features/profile/job-preferences';
 
 vi.mock('@/lib/env/client', () => ({
   clientEnv: { MW_URL: 'https://middleware.test' },
@@ -78,12 +79,13 @@ const upstreamResponse = {
     total: 1,
   },
   appliedPreferences: {
+    ...recommendationPreferenceDefaults,
     workModes: ['remote'],
     residenceCountry: 'NL',
     utcOffset: 1,
     workAuthorization: 'EU',
     requiresSponsorship: false,
-    attendancePreference: 'Remote only',
+    attendancePreference: 'remote_only',
     travelTolerance: 'Once per quarter',
   },
 };

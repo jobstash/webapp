@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PATCH } from './route';
+import { recommendationPreferenceDefaults } from '@/features/profile/job-preferences';
 
 vi.mock('@/lib/env/client', () => ({
   clientEnv: { MW_URL: 'https://middleware.test' },
@@ -11,13 +12,18 @@ vi.mock('@/lib/server/session', () => ({
 }));
 
 const preferences = {
+  ...recommendationPreferenceDefaults,
   workModes: ['remote'],
   residenceCountry: 'NL',
   utcOffset: 5.75,
   workAuthorization: 'EU',
   requiresSponsorship: false,
-  attendancePreference: 'Remote only',
+  attendancePreference: 'remote_only',
   travelTolerance: 'Once per quarter',
+  jobCategories: ['Engineering'],
+  preferredSkills: ['TypeScript'],
+  minimumSalary: 150_000,
+  salaryCurrency: 'USD',
 };
 
 const request = (body: unknown) =>
@@ -30,7 +36,7 @@ const request = (body: unknown) =>
 describe('PATCH /api/profile/job-preferences', () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('forwards only the seven canonical preference fields', async () => {
+  it('forwards the complete recommendation profile', async () => {
     const fetchMock = vi.fn().mockResolvedValue(Response.json(preferences));
     vi.stubGlobal('fetch', fetchMock);
 

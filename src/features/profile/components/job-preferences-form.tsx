@@ -34,6 +34,70 @@ const savePreferences = async (preferences: JobPreferences) => {
 const fieldClass =
   'mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring';
 
+const parseList = (value: string): string[] => [
+  ...new Set(
+    value
+      .split(/[,\n]/)
+      .map((item) => item.trim())
+      .filter(Boolean),
+  ),
+];
+
+const ListField = ({
+  label,
+  value,
+  placeholder,
+  onChange,
+  multiline = false,
+}: {
+  label: string;
+  value: string[];
+  placeholder: string;
+  onChange: (value: string[]) => void;
+  multiline?: boolean;
+}) => {
+  const separator = multiline ? '\n' : ', ';
+  const [raw, setRaw] = useState(value.join(separator));
+
+  useEffect(() => {
+    const current = parseList(raw);
+    if (
+      current.length !== value.length ||
+      current.some((item, index) => item !== value[index])
+    ) {
+      setRaw(value.join(separator));
+    }
+  }, [raw, separator, value]);
+
+  const update = (next: string) => {
+    setRaw(next);
+    onChange(parseList(next));
+  };
+
+  return (
+    <label className={multiline ? 'text-sm sm:col-span-2' : 'text-sm'}>
+      {label}
+      {multiline ? (
+        <textarea
+          aria-label={label}
+          className={`${fieldClass} min-h-20 resize-y`}
+          value={raw}
+          placeholder={placeholder}
+          onChange={(event) => update(event.target.value)}
+        />
+      ) : (
+        <input
+          aria-label={label}
+          className={fieldClass}
+          value={raw}
+          placeholder={placeholder}
+          onChange={(event) => update(event.target.value)}
+        />
+      )}
+    </label>
+  );
+};
+
 export const JobPreferencesForm = () => {
   const client = useQueryClient();
   const query = useQuery({
@@ -79,7 +143,7 @@ export const JobPreferencesForm = () => {
 
   if (query.isPending) {
     return (
-      <ProfileCard title='Where you can work'>
+      <ProfileCard title='Your next role'>
         <p className='text-sm text-muted-foreground'>
           Loading your preferences…
         </p>
@@ -88,7 +152,7 @@ export const JobPreferencesForm = () => {
   }
   if (query.isError || !draft) {
     return (
-      <ProfileCard title='Where you can work'>
+      <ProfileCard title='Your next role'>
         <p className='text-sm text-muted-foreground'>
           We could not load your preferences.
         </p>
@@ -116,14 +180,230 @@ export const JobPreferencesForm = () => {
 
   return (
     <ProfileCard
-      title='Where you can work'
+      title='Your next role'
       className='scroll-mt-24'
       id='job-preferences'
     >
-      <p className='mb-4 text-sm text-muted-foreground'>
-        Used only to explain which jobs have a compatible work option. Unstated
-        eligibility stays marked as needing checking.
+      <p className='mb-5 text-sm text-muted-foreground'>
+        Tell us what fits. We learn from your activity too.
       </p>
+      <h3 className='mb-3 text-sm font-semibold'>Role</h3>
+      <div className='grid gap-4 sm:grid-cols-2'>
+        <ListField
+          label='What matters most'
+          value={draft.rolePriorities}
+          placeholder={'Mission-driven\nSmall team\nTechnical ownership'}
+          multiline
+          onChange={(rolePriorities) => setDraft({ ...draft, rolePriorities })}
+        />
+        <ListField
+          label='Job categories'
+          value={draft.jobCategories}
+          placeholder='Engineering, Product Management'
+          onChange={(jobCategories) => setDraft({ ...draft, jobCategories })}
+        />
+        <ListField
+          label='Seniority'
+          value={draft.seniorityLevels}
+          placeholder='Senior, Lead'
+          onChange={(seniorityLevels) =>
+            setDraft({ ...draft, seniorityLevels })
+          }
+        />
+        <ListField
+          label='Skills'
+          value={draft.preferredSkills}
+          placeholder='TypeScript, Solidity, Rust'
+          onChange={(preferredSkills) =>
+            setDraft({ ...draft, preferredSkills })
+          }
+        />
+        <ListField
+          label='Industries'
+          value={draft.industries}
+          placeholder='Infrastructure, AI, Fintech'
+          onChange={(industries) => setDraft({ ...draft, industries })}
+        />
+        <ListField
+          label='Commitment'
+          value={draft.commitments}
+          placeholder='Full Time, Contract'
+          onChange={(commitments) => setDraft({ ...draft, commitments })}
+        />
+      </div>
+
+      <h3 className='mt-6 mb-3 text-sm font-semibold'>Company</h3>
+      <div className='grid gap-4 sm:grid-cols-2'>
+        <ListField
+          label='Companies you want'
+          value={draft.targetOrganizations}
+          placeholder='Protocol Labs, OpenAI'
+          onChange={(targetOrganizations) =>
+            setDraft({ ...draft, targetOrganizations })
+          }
+        />
+        <ListField
+          label='Funding stages'
+          value={draft.fundingStages}
+          placeholder='Seed, Series A, Profitable'
+          onChange={(fundingStages) => setDraft({ ...draft, fundingStages })}
+        />
+        <label className='text-sm'>
+          Minimum company size
+          <input
+            aria-label='Minimum company size'
+            type='number'
+            min={0}
+            className={fieldClass}
+            value={draft.companySizeMin ?? ''}
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                companySizeMin:
+                  event.target.value === '' ? null : Number(event.target.value),
+              })
+            }
+          />
+        </label>
+        <label className='text-sm'>
+          Maximum company size
+          <input
+            aria-label='Maximum company size'
+            type='number'
+            min={0}
+            className={fieldClass}
+            value={draft.companySizeMax ?? ''}
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                companySizeMax:
+                  event.target.value === '' ? null : Number(event.target.value),
+              })
+            }
+          />
+        </label>
+      </div>
+
+      <h3 className='mt-6 mb-3 text-sm font-semibold'>Offer</h3>
+      <div className='grid gap-4 sm:grid-cols-2'>
+        <label className='text-sm'>
+          Minimum annual salary
+          <input
+            aria-label='Minimum annual salary'
+            type='number'
+            min={0}
+            className={fieldClass}
+            value={draft.minimumSalary ?? ''}
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                minimumSalary:
+                  event.target.value === '' ? null : Number(event.target.value),
+              })
+            }
+          />
+        </label>
+        <label className='text-sm'>
+          Salary currency
+          <input
+            aria-label='Salary currency'
+            className={fieldClass}
+            maxLength={3}
+            value={draft.salaryCurrency ?? ''}
+            placeholder='USD'
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                salaryCurrency: event.target.value.toUpperCase() || null,
+              })
+            }
+          />
+        </label>
+        <ListField
+          label='Payment currencies'
+          value={draft.paymentCurrencies}
+          placeholder='USD, EUR, USDC'
+          onChange={(paymentCurrencies) =>
+            setDraft({
+              ...draft,
+              paymentCurrencies: paymentCurrencies.map((value) =>
+                value.toUpperCase(),
+              ),
+            })
+          }
+        />
+      </div>
+
+      <h3 className='mt-6 mb-3 text-sm font-semibold'>About you</h3>
+      <div className='grid gap-4 sm:grid-cols-2'>
+        <label className='text-sm'>
+          Search status
+          <select
+            aria-label='Search status'
+            className={fieldClass}
+            value={draft.searchStatus ?? ''}
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                searchStatus:
+                  event.target.value === ''
+                    ? null
+                    : (event.target.value as JobPreferences['searchStatus']),
+              })
+            }
+          >
+            <option value=''>Not stated</option>
+            <option value='not_looking'>Not looking</option>
+            <option value='open'>Open</option>
+            <option value='active'>Actively looking</option>
+            <option value='immediate'>Available now</option>
+          </select>
+        </label>
+        <label className='text-sm'>
+          Education
+          <select
+            aria-label='Education'
+            className={fieldClass}
+            value={draft.educationLevel ?? ''}
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                educationLevel:
+                  event.target.value === ''
+                    ? null
+                    : (event.target.value as JobPreferences['educationLevel']),
+              })
+            }
+          >
+            <option value=''>Not stated</option>
+            <option value='secondary'>Secondary</option>
+            <option value='associate'>Associate</option>
+            <option value='bachelor'>Bachelor</option>
+            <option value='master'>Master</option>
+            <option value='doctorate'>Doctorate</option>
+            <option value='other'>Other</option>
+          </select>
+        </label>
+        <ListField
+          label='Languages and level'
+          value={draft.languages}
+          placeholder='English: native, Dutch: professional'
+          onChange={(languages) => setDraft({ ...draft, languages })}
+        />
+        <ListField
+          label='Showcase repositories'
+          value={draft.showcaseRepositories}
+          placeholder={
+            'https://github.com/you/project\nhttps://github.com/you/tool'
+          }
+          multiline
+          onChange={(showcaseRepositories) =>
+            setDraft({ ...draft, showcaseRepositories })
+          }
+        />
+      </div>
+
+      <h3 className='mt-6 mb-3 text-sm font-semibold'>Eligibility</h3>
       <div className='grid gap-4 sm:grid-cols-2'>
         <label className='text-sm'>
           Country (two-letter code)
@@ -207,18 +487,27 @@ export const JobPreferencesForm = () => {
         </label>
         <label className='text-sm'>
           Attendance preference
-          <input
+          <select
             id={JOB_PREFERENCE_FIELD_IDS.attendancePreference}
             className={fieldClass}
             value={draft.attendancePreference ?? ''}
-            placeholder='Remote only / up to 1 day a week'
             onChange={(event) =>
               setDraft({
                 ...draft,
-                attendancePreference: event.target.value.trim() || null,
+                attendancePreference:
+                  event.target.value === ''
+                    ? null
+                    : (event.target
+                        .value as JobPreferences['attendancePreference']),
               })
             }
-          />
+          >
+            <option value=''>Not stated</option>
+            <option value='remote_only'>Remote only</option>
+            <option value='remote_preferred'>Remote preferred</option>
+            <option value='hybrid_ok'>Hybrid is fine</option>
+            <option value='onsite_ok'>On-site is fine</option>
+          </select>
         </label>
         <label className='text-sm'>
           Travel tolerance
@@ -264,7 +553,7 @@ export const JobPreferencesForm = () => {
       )}
       {!validation.success && draft.workModes.length > 0 && (
         <p className='mt-3 text-sm text-destructive'>
-          Check that the country and UTC offset use the formats shown above.
+          Check the values above before saving.
         </p>
       )}
       {mutation.isError && (

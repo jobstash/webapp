@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   jobPreferencesSchema,
   jobsForMeResponseSchema,
+  recommendationPreferenceDefaults,
   workArrangementOptionSchema,
 } from './job-preferences';
 
@@ -29,12 +30,13 @@ const option = {
 };
 
 const preferences = {
+  ...recommendationPreferenceDefaults,
   workModes: ['remote'] as const,
   residenceCountry: 'NL',
   utcOffset: 5.75,
   workAuthorization: 'EU',
   requiresSponsorship: false,
-  attendancePreference: 'Remote only',
+  attendancePreference: 'remote_only',
   travelTolerance: 'Once per quarter',
 };
 
@@ -66,8 +68,37 @@ const match = {
 };
 
 describe('jobPreferencesSchema', () => {
-  it('accepts the seven canonical fields and fractional UTC offsets', () => {
-    expect(jobPreferencesSchema.parse(preferences)).toEqual(preferences);
+  it('accepts eligibility and recommendation preferences', () => {
+    const complete = {
+      ...preferences,
+      rolePriorities: ['Mission-driven'],
+      targetOrganizations: ['Protocol Labs'],
+      languages: ['English: native'],
+      jobCategories: ['Engineering'],
+      seniorityLevels: ['Senior'],
+      educationLevel: 'bachelor' as const,
+      companySizeMin: 20,
+      companySizeMax: 500,
+      industries: ['Infrastructure'],
+      preferredSkills: ['TypeScript'],
+      minimumSalary: 150_000,
+      salaryCurrency: 'USD',
+      fundingStages: ['Series A'],
+      paymentCurrencies: ['USD', 'USDC'],
+      commitments: ['Full Time'],
+      showcaseRepositories: ['https://github.com/example/project'],
+    };
+    expect(jobPreferencesSchema.parse(complete)).toEqual(complete);
+  });
+
+  it('rejects an inverted company-size range', () => {
+    expect(
+      jobPreferencesSchema.safeParse({
+        ...preferences,
+        companySizeMin: 500,
+        companySizeMax: 20,
+      }).success,
+    ).toBe(false);
   });
 
   it.each([
