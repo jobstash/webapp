@@ -5,6 +5,10 @@ import { ImageWithFallback } from '@/components/image-with-fallback';
 import { cn } from '@/lib/utils';
 import { slugify } from '@/lib/server/utils';
 import type { PublicProfile } from '../schemas';
+import {
+  NoticeAppealForm,
+  ProfileContributionForms,
+} from './profile-contribution-forms';
 
 const facetValues = (value: string | string[] | null | undefined): string[] =>
   value ? (Array.isArray(value) ? value : [value]) : [];
@@ -194,6 +198,8 @@ export const PublicProfilePage = ({ profile }: { profile: PublicProfile }) => {
         </section>
       )}
 
+      <ProfileContributionForms profile={profile} />
+
       {profile.notices.length > 0 && (
         <section aria-labelledby='profile-notices'>
           <h2
@@ -215,6 +221,7 @@ export const PublicProfilePage = ({ profile }: { profile: PublicProfile }) => {
                 <p className='mt-2 text-xs text-muted-foreground'>
                   Decided {new Date(notice.decidedAt).toLocaleDateString('en')}
                 </p>
+                <NoticeAppealForm noticeId={notice.id} />
               </article>
             ))}
           </div>

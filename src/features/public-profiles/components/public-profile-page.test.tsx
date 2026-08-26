@@ -31,6 +31,10 @@ vi.mock('next/link', () => ({
   ),
 }));
 
+vi.mock('@/features/auth/hooks/use-session', () => ({
+  useSession: () => ({ isAuthenticated: false, isLoading: false }),
+}));
+
 import { PublicProfilePage } from './public-profile-page';
 
 describe('PublicProfilePage', () => {

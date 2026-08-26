@@ -72,4 +72,47 @@ export const publicProfileResponseSchema = z.strictObject({
   data: publicProfileSchema,
 });
 
+export const publicProfileReviewInputSchema = z.strictObject({
+  childId: nonEmptyStringSchema,
+  rating: z.number().int().min(1).max(5),
+  reviewText: nonEmptyStringSchema.max(4000),
+  salary: z.number().nonnegative().nullable().optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Z]{3}$/)
+    .nullable()
+    .optional(),
+  offersTokenAllocation: z.boolean().nullable().optional(),
+});
+
+export const publicRecruiterCaseInputSchema = z.strictObject({
+  childId: nonEmptyStringSchema.nullable().optional(),
+  allegation: z.strictObject({
+    category: z.enum([
+      'impersonation',
+      'payment_request',
+      'phishing',
+      'identity_misrepresentation',
+      'other',
+    ]),
+    recruiterContact: nullableStringSchema.optional(),
+    evidenceUrl: publicHttpUrlSchema.nullable().optional(),
+    details: nonEmptyStringSchema.max(4000),
+  }),
+});
+
+export const publicProfileAppealInputSchema = z.strictObject({
+  appealText: nonEmptyStringSchema.min(10).max(4000),
+});
+
+export const publicProfileMutationResponseSchema = z.strictObject({
+  success: z.literal(true),
+  message: nonEmptyStringSchema,
+  data: z.strictObject({
+    id: nonEmptyStringSchema,
+    status: nonEmptyStringSchema,
+    createdAt: nonEmptyStringSchema.optional(),
+  }),
+});
+
 export type PublicProfile = z.infer<typeof publicProfileSchema>;
