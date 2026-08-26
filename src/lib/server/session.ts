@@ -12,6 +12,7 @@ export interface SessionData {
   privyDid?: string;
   displayName?: string;
   identityType?: string;
+  hasVerifiedEmail?: boolean;
 }
 
 const SESSION_OPTIONS = {

@@ -15,7 +15,11 @@ import { createSession } from '@/features/auth/lib/create-session';
 const LOGIN_TIMEOUT = 20_000;
 
 export const useLoginAuth = (redirectTo: string) => {
-  const { isAuthenticated, isLoading: isSessionLoading } = useSession();
+  const {
+    isAuthenticated,
+    isLoading: isSessionLoading,
+    hasVerifiedEmail,
+  } = useSession();
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -30,10 +34,10 @@ export const useLoginAuth = (redirectTo: string) => {
 
   // Redirect when useSession resolves as authenticated
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && hasVerifiedEmail) {
       router.replace(redirectTo);
     }
-  }, [isAuthenticated, redirectTo, router]);
+  }, [hasVerifiedEmail, isAuthenticated, redirectTo, router]);
 
   // Re-trigger session query after Privy becomes ready.
   // useSession's queryFn already tries getAccessToken() → createSession(),
@@ -113,6 +117,10 @@ export const useLoginAuth = (redirectTo: string) => {
 
   return {
     login,
-    isLoading: !ready || isSessionLoading || isAuthenticated || isLoggingIn,
+    isLoading:
+      !ready ||
+      isSessionLoading ||
+      (isAuthenticated && hasVerifiedEmail === true) ||
+      isLoggingIn,
   };
 };

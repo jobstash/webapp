@@ -63,6 +63,18 @@ export const useProfileCompleteness = (): ProfileCompleteness => {
     'Phone',
   ]);
   const completionMap: Record<string, boolean> = {
+    email:
+      user?.linkedAccounts.some((account) => {
+        if (account.type === 'email') return Boolean(account.address);
+        if (
+          account.type === 'google_oauth' ||
+          account.type === 'apple_oauth' ||
+          account.type === 'github_oauth'
+        ) {
+          return Boolean(account.email);
+        }
+        return false;
+      }) ?? false,
     skills: (skills ?? []).length > 0,
     resume: showcaseItems.some((item) => item.label === 'CV'),
     'linked-accounts': linkedAccountCount > 0,

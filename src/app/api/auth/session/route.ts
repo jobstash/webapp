@@ -20,18 +20,21 @@ const toSessionPayload = (session: {
   isExpert?: boolean;
   displayName?: string;
   identityType?: string;
+  hasVerifiedEmail?: boolean;
 }) => ({
   apiToken: session.apiToken ?? null,
   expiresAt: session.expiresAt ?? null,
   isExpert: session.isExpert ?? null,
   displayName: session.displayName ?? null,
   identityType: session.identityType ?? null,
+  hasVerifiedEmail: session.hasVerifiedEmail ?? null,
 });
 
 const checkWalletResponseSchema = z.object({
   token: z.string().min(1),
   cryptoNative: z.boolean(),
   permissions: z.array(z.string()).min(1),
+  hasVerifiedEmail: z.boolean(),
 });
 
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
@@ -123,6 +126,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   session.apiToken = parsed.data.token;
   session.expiresAt = Date.now() + SESSION_EXPIRY;
   session.isExpert = parsed.data.cryptoNative;
+  session.hasVerifiedEmail = parsed.data.hasVerifiedEmail;
   session.privyDid = privyClaims.userId;
   if (identity) {
     session.displayName = identity.displayName;
@@ -145,6 +149,24 @@ export const GET = async (): Promise<NextResponse> => {
     session.expiresAt !== undefined && session.expiresAt <= Date.now();
 
   if (isExpired) session.destroy();
+
+  if (
+    !isExpired &&
+    session.apiToken &&
+    session.hasVerifiedEmail === undefined
+  ) {
+    const response = await fetch(`${clientEnv.MW_URL}/profile/email-digest`, {
+      headers: { Authorization: `Bearer ${session.apiToken}` },
+      cache: 'no-store',
+    }).catch(() => null);
+    const parsed = z
+      .object({ email: z.string().email().nullable() })
+      .safeParse(await response?.json().catch(() => null));
+    if (response?.ok && parsed.success) {
+      session.hasVerifiedEmail = parsed.data.email !== null;
+      await session.save();
+    }
+  }
 
   return NextResponse.json(toSessionPayload(isExpired ? {} : session));
 };

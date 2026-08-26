@@ -75,7 +75,7 @@ export const PROFILE_TIERS = [
       'bg-linear-to-r from-[#f5a00d] to-[#8743FF] bg-clip-text text-transparent',
     bgColor: 'bg-linear-to-r from-[#D68800] to-[#8743FF]',
     message: 'Fully optimized — recruiters see you first',
-    minItems: 4,
+    minItems: 5,
   },
 ] as const;
 
@@ -141,6 +141,7 @@ export const getDisplayHandle = (label: string, url: string): string | null => {
 };
 
 export type CtaType =
+  | 'contact-email'
   | 'skills-editor'
   | 'resume-upload'
   | 'manual-links-editor'
@@ -153,6 +154,13 @@ export const COMPLETENESS_ITEMS: readonly {
   unlocks: string;
   ctaType: CtaType;
 }[] = [
+  {
+    key: 'email',
+    label: 'Add a contact email',
+    action: 'Add Email',
+    unlocks: 'Let recruiters contact you',
+    ctaType: 'contact-email',
+  },
   {
     key: 'resume',
     label: 'Upload your resume',

@@ -8,6 +8,7 @@ export interface SessionData {
   isExpert: boolean | null;
   displayName: string | null;
   identityType: string | null;
+  hasVerifiedEmail: boolean | null;
 }
 
 export const EMPTY_SESSION: SessionData = {
@@ -16,6 +17,7 @@ export const EMPTY_SESSION: SessionData = {
   isExpert: null,
   displayName: null,
   identityType: null,
+  hasVerifiedEmail: null,
 };
 
 export const fetchSession = async (): Promise<SessionData> => {

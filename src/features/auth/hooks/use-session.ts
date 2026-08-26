@@ -61,6 +61,7 @@ export const useSession = () => {
     isExpert: session?.isExpert ?? null,
     displayName: session?.displayName ?? null,
     identityType: session?.identityType ?? null,
+    hasVerifiedEmail: session?.hasVerifiedEmail ?? null,
     isAuthenticated: apiToken !== null,
     isSessionReady: apiToken !== null,
     isLoading: isPending,

@@ -43,9 +43,12 @@ const CompleteBadge = ({ className }: { className?: string }) => (
 );
 
 const scrollToLinkedAccounts = () => {
-  document
-    .getElementById('linked-accounts')
-    ?.scrollIntoView({ behavior: 'smooth' });
+  const linkedAccounts = document.getElementById('linked-accounts');
+  if (linkedAccounts) {
+    linkedAccounts.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    window.location.assign('/profile#linked-accounts');
+  }
 };
 
 const useCtaAction = () => {
@@ -54,6 +57,7 @@ const useCtaAction = () => {
 
   return (ctaType: CtaType) => {
     const actions: Record<CtaType, () => void> = {
+      'contact-email': scrollToLinkedAccounts,
       'skills-editor': openSkillsEditor,
       'resume-upload': openResumeUpload,
       'manual-links-editor': openManualLinksEditor,
