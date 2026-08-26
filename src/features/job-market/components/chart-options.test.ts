@@ -116,9 +116,19 @@ describe('job-market Flint chart options', () => {
   });
 
   it('encodes canonical slugs in clickable treemap tiles', () => {
-    const growing = ticker('cl-backend', 40);
+    const growing = {
+      ...ticker('cl-backend', 40),
+      current: point({ activeJobs: 300 }),
+    };
     const cooling = ticker('cl-frontend', -40);
-    const option = marketTreemapOption([growing, cooling]);
+    const empty = {
+      ...ticker('cl-empty', 20),
+      current: point({ activeJobs: 0 }),
+    };
+    const option = marketTreemapOption(
+      [growing, cooling, empty],
+      ticker('market', -3),
+    );
     const series = Array.isArray(option.series) ? option.series[0] : undefined;
     const data = (series as { data?: { slug?: string }[] })?.data ?? [];
 
@@ -127,6 +137,24 @@ describe('job-market Flint chart options', () => {
       'cl-frontend',
     ]);
     expect(tickerColor(growing)).not.toBe(tickerColor(cooling));
+
+    const labelFormatter = (
+      series as {
+        label?: { formatter?: (params: { name: string }) => string };
+      }
+    ).label?.formatter;
+    const tooltipFormatter = (
+      option.tooltip as {
+        formatter?: (params: { name: string }) => string;
+      }
+    ).formatter;
+    expect(labelFormatter?.({ name: 'backend' })).toContain(
+      '+40.0 pp vs market',
+    );
+    expect(labelFormatter?.({ name: 'backend' })).not.toContain('/mo');
+    expect(tooltipFormatter?.({ name: 'backend' })).toContain(
+      'Overall market: +11.1%',
+    );
   });
 
   it('builds observed and adjusted weekly skill-pay charts', () => {

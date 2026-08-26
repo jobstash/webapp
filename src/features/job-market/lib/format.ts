@@ -29,6 +29,11 @@ export const percentLabel = (value: number | null): string =>
     ? 'Not enough evidence'
     : `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
 
+export const percentagePointLabel = (value: number | null): string =>
+  value === null
+    ? 'Not enough history'
+    : `${value > 0 ? '+' : ''}${value.toFixed(1)} pp`;
+
 export const momentumTone = (
   momentum: JobMarketMomentum,
 ): 'positive' | 'negative' | 'neutral' => {

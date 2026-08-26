@@ -347,6 +347,19 @@ describe('MarketStateDashboard', () => {
         name: 'Hiring intelligence you can act on',
       }),
     ).toBeInTheDocument();
+    expect(screen.getByText('Market breadth · 7D')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Opportunity map' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Market movers' }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('+3.0 pp').length).toBeGreaterThan(0);
+    expect(
+      screen.queryByRole('button', {
+        name: 'Open Forward Deployed Engineer market analysis',
+      }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('option', { name: 'Engineering Management' }),
     ).toBeInTheDocument();
@@ -377,11 +390,72 @@ describe('MarketStateDashboard', () => {
       screen.getByRole('link', { name: 'Staff Engineer' }),
     ).toHaveAttribute('href', '/staff-engineer-acme/abc123');
 
+    const engineeringActions = screen.getAllByRole('button', {
+      name: 'Open Engineering Management market analysis',
+    });
+    const moverAction = engineeringActions.find((button) =>
+      button.textContent?.includes('vs overall market'),
+    );
+    expect(moverAction).toBeDefined();
+    expect(moverAction?.querySelector('.text-rose-400')).toBeNull();
+    await user.click(moverAction!);
+    expect(push).toHaveBeenCalledWith(
+      '/market?classification=cl-engineering-management',
+    );
+
     await user.click(screen.getByRole('button', { name: 'Analyze' }));
     expect(push).toHaveBeenCalledWith('/market?skill=t-typescript');
 
     await user.click(screen.getByRole('button', { name: 'Onsite & hybrid' }));
     expect(push).toHaveBeenCalledWith('/market?mode=local');
+  });
+
+  it('colors relative movers from the displayed market comparison', () => {
+    const relativeLeader = ticker({
+      momentum: {
+        ...ticker().momentum,
+        direction: 'down',
+        percentChange: -12,
+      },
+      activity: {
+        ...ticker().activity,
+        marketComparison: {
+          ...ticker().activity.marketComparison,
+          openInventoryPercentagePoints: 55.4,
+        },
+      },
+    });
+
+    render(
+      <MarketStateDashboard
+        state={{
+          ...state,
+          movers: { bullish: [relativeLeader], cooling: [] },
+        }}
+        skills={skills}
+        scopeMarket={null}
+        topPaying={topPaying}
+        selection={{
+          range: 'max',
+          classification: 'market',
+          mode: 'remote',
+          sort: 'breakout',
+          query: '',
+          skill: null,
+          payRegion: null,
+        }}
+      />,
+    );
+
+    const moverAction = screen
+      .getAllByRole('button', {
+        name: 'Open Engineering Management market analysis',
+      })
+      .find((button) => button.textContent?.includes('vs overall market'));
+    expect(moverAction).toBeDefined();
+    expect(within(moverAction!).getByText('+55.4 pp')).toBeInTheDocument();
+    expect(moverAction?.querySelector('.text-emerald-400')).not.toBeNull();
+    expect(moverAction?.querySelector('.text-rose-400')).toBeNull();
   });
 
   it('uses the API-selected market scope when a URL classification is invalid', () => {

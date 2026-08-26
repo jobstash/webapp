@@ -6,7 +6,12 @@ import type {
   JobMarketSkillWeeklyPoint,
   JobMarketTicker,
 } from '../schemas';
-import { compactNumber, monthlySalary } from '../lib/format';
+import {
+  compactNumber,
+  monthlySalary,
+  percentagePointLabel,
+  percentLabel,
+} from '../lib/format';
 
 const chartBase = {
   backgroundColor: 'transparent',
@@ -160,38 +165,34 @@ export const salaryChartOption = (
   return option;
 };
 
-const mix = (
-  from: readonly [number, number, number],
-  to: readonly [number, number, number],
-  amount: number,
-) =>
-  `rgb(${from.map((channel, index) => Math.round(channel + (to[index] - channel) * amount)).join(', ')})`;
-
 export const tickerColor = (ticker: JobMarketTicker): string => {
-  const neutral = [39, 39, 42] as const;
   if (ticker.activity.openInventory.direction === 'new') {
-    return mix(neutral, [5, 150, 105], 0.85);
+    return '#334155';
   }
-  const change =
-    ticker.activity.marketComparison.openInventoryPercentagePoints ?? 0;
-  if (Math.abs(change) < 5) return mix(neutral, [82, 82, 91], 0.45);
-  const strength = Math.min(1, 0.35 + Math.abs(change) / 100);
-  return change > 0
-    ? mix(neutral, [5, 150, 105], strength)
-    : mix(neutral, [220, 38, 38], strength);
+  const change = ticker.activity.marketComparison.openInventoryPercentagePoints;
+  if (change === null) return '#334155';
+  if (change <= -25) return '#9f3345';
+  if (change < -5) return '#71343e';
+  if (change <= 5) return '#3f3f46';
+  if (change < 25) return '#285b4d';
+  return '#2f8063';
 };
 
 const marketDifferenceLabel = (ticker: JobMarketTicker): string => {
   const value = ticker.activity.marketComparison.openInventoryPercentagePoints;
   return value === null
     ? 'Not enough history'
-    : `${value > 0 ? '+' : ''}${value.toFixed(1)} points vs market`;
+    : `${percentagePointLabel(value)} vs market`;
 };
 
 export const marketTreemapOption = (
   tickers: JobMarketTicker[],
+  market?: JobMarketTicker,
 ): EChartsCoreOption => {
-  const values = tickers.map((ticker) => ({
+  const visibleTickers = tickers.filter(
+    (ticker) => ticker.current.activeJobs > 0,
+  );
+  const values = visibleTickers.map((ticker) => ({
     classification: ticker.label,
     activeJobs: ticker.current.activeJobs,
   }));
@@ -210,7 +211,9 @@ export const marketTreemapOption = (
     },
   };
   const option = assembleECharts(input) as EChartsCoreOption;
-  const byLabel = new Map(tickers.map((ticker) => [ticker.label, ticker]));
+  const byLabel = new Map(
+    visibleTickers.map((ticker) => [ticker.label, ticker]),
+  );
   const baseSeries = Array.isArray(option.series)
     ? (option.series[0] as Record<string, unknown>)
     : (option.series as Record<string, unknown> | undefined);
@@ -218,6 +221,9 @@ export const marketTreemapOption = (
   return {
     ...option,
     ...chartBase,
+    animationDuration: 240,
+    animationDurationUpdate: 220,
+    animationEasingUpdate: 'cubicOut',
     tooltip: {
       renderMode: 'richText',
       backgroundColor: '#18181b',
@@ -226,12 +232,23 @@ export const marketTreemapOption = (
       formatter: (params: { name: string }) => {
         const ticker = byLabel.get(params.name);
         if (!ticker) return params.name;
+        const salary = ticker.current.salary.reliable
+          ? monthlySalary(ticker.current.salary.medianMonthlyUsd)
+          : null;
         return [
           ticker.label,
           `${compactNumber(ticker.current.activeJobs)} open jobs`,
           `${compactNumber(ticker.current.hiringCompanies)} hiring companies`,
-          `Open-job change: ${marketDifferenceLabel(ticker)}`,
-          monthlySalary(ticker.current.salary.medianMonthlyUsd),
+          `Role inventory: ${percentLabel(ticker.activity.openInventory.percentChange)}`,
+          ...(market
+            ? [
+                `Overall market: ${percentLabel(market.activity.openInventory.percentChange)}`,
+              ]
+            : []),
+          `Relative momentum: ${marketDifferenceLabel(ticker)}`,
+          `New postings: ${compactNumber(ticker.activity.newPostings.current)}`,
+          ...(salary ? [`Median listed pay: ${salary}`] : []),
+          'Select to open category analysis',
         ].join('\n');
       },
     },
@@ -240,39 +257,84 @@ export const marketTreemapOption = (
         ...baseSeries,
         roam: false,
         nodeClick: false,
+        sort: 'desc',
+        visibleMin: 500,
+        left: 6,
+        right: 6,
+        top: 6,
+        bottom: 6,
         breadcrumb: { show: false },
         label: {
           show: true,
           color: '#fafafa',
           textShadowColor: 'rgba(0,0,0,.5)',
           textShadowBlur: 3,
+          overflow: 'truncate',
+          ellipsis: '…',
           formatter: (params: { name: string }) => {
             const ticker = byLabel.get(params.name);
             if (!ticker) return params.name;
-            const salary = ticker.current.salary.medianMonthlyUsd;
+            if (ticker.current.activeJobs < 80) return '';
+            if (ticker.current.activeJobs < 150) {
+              return `{name|${ticker.label}}`;
+            }
+            if (ticker.current.activeJobs < 240) {
+              return [
+                `{name|${ticker.label}}`,
+                `{value|${compactNumber(ticker.current.activeJobs)} jobs}`,
+              ].join('\n');
+            }
             return [
               `{name|${ticker.label}}`,
               `{value|${compactNumber(ticker.current.activeJobs)} jobs}`,
               `{move|${marketDifferenceLabel(ticker)}}`,
-              ...(salary === null ? [] : [`{salary|${monthlySalary(salary)}}`]),
             ].join('\n');
           },
           rich: {
-            name: { fontSize: 17, fontWeight: 700, lineHeight: 24 },
-            value: { fontSize: 13, lineHeight: 19 },
-            move: { fontSize: 13, fontWeight: 700, lineHeight: 19 },
-            salary: { fontSize: 12, lineHeight: 18, color: '#e4e4e7' },
+            name: { fontSize: 15, fontWeight: 700, lineHeight: 22 },
+            value: { fontSize: 12, lineHeight: 18, color: '#e4e4e7' },
+            move: { fontSize: 12, fontWeight: 700, lineHeight: 18 },
           },
         },
         upperLabel: { show: false },
-        itemStyle: { borderColor: '#18181b', borderWidth: 2, gapWidth: 2 },
+        itemStyle: {
+          borderColor: '#09090b',
+          borderWidth: 3,
+          gapWidth: 2,
+          borderRadius: 5,
+        },
+        emphasis: {
+          focus: 'self',
+          itemStyle: {
+            borderColor: '#e4e4e7',
+            borderWidth: 2,
+            shadowBlur: 16,
+            shadowColor: 'rgba(0, 0, 0, .4)',
+          },
+        },
+        levels: [
+          {
+            itemStyle: {
+              borderColor: '#09090b',
+              borderWidth: 3,
+              gapWidth: 2,
+              borderRadius: 5,
+            },
+          },
+        ],
         data: data.map((item) => {
           const record = item as Record<string, unknown>;
           const ticker = byLabel.get(String(record.name ?? ''));
           return {
             ...record,
             slug: ticker?.slug,
-            itemStyle: { color: ticker ? tickerColor(ticker) : '#27272a' },
+            itemStyle: {
+              color: ticker ? tickerColor(ticker) : '#27272a',
+              borderColor: '#09090b',
+              borderWidth: 3,
+              gapWidth: 2,
+              borderRadius: 5,
+            },
           };
         }),
       },

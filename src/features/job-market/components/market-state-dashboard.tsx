@@ -19,6 +19,7 @@ import { activityChartOption, marketTreemapOption } from './chart-options';
 import { CompensationBandChart } from './compensation-band-chart';
 import { FlintEChart } from './flint-echart';
 import { MarketGeographyMap } from './market-geography-map';
+import { MarketOpportunityPanel } from './market-opportunity-panel';
 import { TopPayingOpportunities } from './top-paying-opportunities';
 import { compactNumber, monthlySalary, percentLabel } from '../lib/format';
 import { hasPublishableSkillCompensation } from '../lib/skill-evidence';
@@ -26,7 +27,6 @@ import type {
   JobMarketCompensation,
   JobMarketSkillList,
   JobMarketState,
-  JobMarketTicker,
   JobMarketTopPaying,
   PillarMarket,
 } from '../schemas';
@@ -106,32 +106,6 @@ const CompensationCard = ({
   </div>
 );
 
-const ClassificationMove = ({ ticker }: { ticker: JobMarketTicker }) => (
-  <Link
-    href={`/${getFrontendSlug(ticker.slug)}`}
-    className='flex items-center justify-between gap-3 border-t border-border/50 py-3 first:border-0'
-  >
-    <span>
-      <strong className='block text-sm'>{ticker.label}</strong>
-      <span className='text-xs text-muted-foreground'>
-        {compactNumber(ticker.current.activeJobs)} open jobs
-      </span>
-    </span>
-    <span
-      className={cn(
-        'text-sm font-bold',
-        ticker.momentum.direction === 'up' && 'text-emerald-400',
-        ticker.momentum.direction === 'down' && 'text-rose-400',
-      )}
-    >
-      {percentLabel(
-        ticker.activity.marketComparison.openInventoryPercentagePoints,
-      )}{' '}
-      points
-    </span>
-  </Link>
-);
-
 export const MarketStateDashboard = ({
   state,
   skills,
@@ -149,8 +123,8 @@ export const MarketStateDashboard = ({
   const [query, setQuery] = useState(selection.query);
   const selectedClassification = state.selectedClassification;
   const treemap = useMemo(
-    () => marketTreemapOption(state.classifications),
-    [state.classifications],
+    () => marketTreemapOption(state.classifications, state.market),
+    [state.classifications, state.market],
   );
   const activityChart = useMemo(
     () => activityChartOption(scopeMarket?.history ?? []),
@@ -378,38 +352,11 @@ export const MarketStateDashboard = ({
       )}
 
       {!scoped && (
-        <section className='grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,.7fr)]'>
-          <div className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-            <h2 className='text-2xl font-bold'>Opportunity map</h2>
-            <p className='mt-1 text-sm text-muted-foreground'>
-              Area represents current open jobs. Color shows each role's
-              open-inventory change minus the overall market change.
-            </p>
-            <FlintEChart
-              option={treemap}
-              className='mt-4 h-[32rem] w-full'
-              ariaLabel='Crypto job classifications sized by open jobs and colored by open-inventory change relative to the market'
-              onSelect={(entry) => {
-                if (typeof entry.slug === 'string') {
-                  navigate({ classification: entry.slug });
-                }
-              }}
-            />
-          </div>
-          <div className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
-            <h2 className='text-xl font-bold'>Unusual moves</h2>
-            <p className='mt-1 text-sm text-muted-foreground'>
-              Broad roles moving differently from the overall market.
-            </p>
-            <div className='mt-4'>
-              {[...state.movers.bullish, ...state.movers.cooling]
-                .slice(0, 12)
-                .map((ticker) => (
-                  <ClassificationMove key={ticker.slug} ticker={ticker} />
-                ))}
-            </div>
-          </div>
-        </section>
+        <MarketOpportunityPanel
+          state={state}
+          treemap={treemap}
+          onSelect={(classification) => navigate({ classification })}
+        />
       )}
 
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
