@@ -12,11 +12,24 @@ const proxy = async (request?: Request) => {
   const method = request?.method === 'PATCH' ? 'PATCH' : 'GET';
   const body =
     method === 'PATCH' ? await request!.json().catch(() => null) : null;
-  if (method === 'PATCH' && !jobPreferencesSchema.safeParse(body).success) {
-    return NextResponse.json(
-      { error: 'Check the highlighted preferences' },
-      { status: 400 },
-    );
+  if (method === 'PATCH') {
+    const parsedBody = jobPreferencesSchema.safeParse(body);
+    if (!parsedBody.success) {
+      const issue = parsedBody.error.issues[0];
+      const field = issue?.path[0];
+      const fieldName =
+        typeof field === 'string'
+          ? field.replace(/([a-z])([A-Z])/g, '$1 $2').toLocaleLowerCase()
+          : 'preference';
+      return NextResponse.json(
+        {
+          error: issue
+            ? `Check ${fieldName}: ${issue.message}`
+            : 'Check your preferences',
+        },
+        { status: 400 },
+      );
+    }
   }
   const response = await fetch(`${clientEnv.MW_URL}/profile/job-preferences`, {
     method,

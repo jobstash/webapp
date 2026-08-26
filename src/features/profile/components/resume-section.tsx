@@ -68,7 +68,12 @@ export const ResumeSection = () => {
       <SectionHeader />
       <div className='flex gap-2'>
         <Button variant='secondary' size='sm' className='flex-1' asChild>
-          <Link href={resume.url} target='_blank' rel='noopener noreferrer'>
+          <Link
+            href={resume.url}
+            target='_blank'
+            rel='noopener noreferrer'
+            prefetch={false}
+          >
             <ExternalLinkIcon className='size-3.5' />
             View File
           </Link>

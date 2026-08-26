@@ -96,7 +96,7 @@ describe('JobPreferencesForm action destinations', () => {
   it('renders every mapped preference-field destination', async () => {
     render(<JobPreferencesForm />);
 
-    await screen.findByLabelText('Country (two-letter code)');
+    await screen.findByLabelText('Country');
     for (const id of Object.values(JOB_PREFERENCE_FIELD_IDS)) {
       expect(document.getElementById(id)).toBeInstanceOf(HTMLElement);
     }
@@ -118,7 +118,7 @@ describe('JobPreferencesForm action destinations', () => {
 
     render(<JobPreferencesForm />);
 
-    await screen.findByLabelText('Country (two-letter code)');
+    await screen.findByLabelText('Country');
     expect(
       screen.queryByRole('link', { name: 'Back to Jobs for me' }),
     ).not.toBeInTheDocument();
@@ -142,6 +142,8 @@ describe('JobPreferencesForm action destinations', () => {
     expect(
       screen.getByRole('button', { name: 'Save preferences' }),
     ).toBeDisabled();
-    expect(screen.getByRole('checkbox', { name: 'Remote' })).toBeEnabled();
+    expect(
+      screen.getByRole('combobox', { name: 'Work modes you accept' }),
+    ).toBeEnabled();
   });
 });

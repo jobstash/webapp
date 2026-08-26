@@ -2,16 +2,63 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import countryMetadata from '@d3-maps/atlas/metadata/countries';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 
 import { jobPreferencesSchema, type JobPreferences } from '../job-preferences';
 import {
+  COMMITMENT_OPTIONS,
+  CURRENCY_OPTIONS,
+  FUNDING_STAGE_OPTIONS,
+  INDUSTRY_OPTIONS,
+  JOB_CATEGORY_OPTIONS,
+  LANGUAGE_OPTIONS,
+  ROLE_PRIORITY_OPTIONS,
+  SENIORITY_OPTIONS,
+  SKILL_OPTIONS,
+  WORK_MODE_OPTIONS,
+} from '../job-preference-options';
+import {
   JOB_PREFERENCE_FIELD_IDS,
   parseJobsForMeReturnTo,
 } from '../jobs-for-me-resolution';
+import { PreferenceMultiSelect } from './preference-multi-select';
 import { ProfileCard } from './profile-card';
+
+const COUNTRY_OPTIONS = [
+  ...new Map(
+    countryMetadata.flatMap((country) =>
+      typeof country.isoA2 === 'string' && /^[A-Z]{2}$/.test(country.isoA2)
+        ? ([[country.isoA2, country]] as const)
+        : [],
+    ),
+  ).values(),
+].sort((left, right) => left.name.localeCompare(right.name));
+
+const isGithubRepositoryUrl = (value: string): boolean => {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === 'https:' &&
+      url.hostname === 'github.com' &&
+      url.pathname.split('/').filter(Boolean).length >= 2
+    );
+  } catch {
+    return false;
+  }
+};
+
+const responseError = async (response: Response): Promise<string> => {
+  const body: unknown = await response.json().catch(() => null);
+  if (!body || typeof body !== 'object') return 'Unable to save preferences';
+  const error = body as { error?: unknown; message?: unknown };
+  if (typeof error.error === 'string') return error.error;
+  if (typeof error.message === 'string') return error.message;
+  if (Array.isArray(error.message)) return error.message.join('. ');
+  return 'Unable to save preferences';
+};
 
 const loadPreferences = async (): Promise<JobPreferences> => {
   const response = await fetch('/api/profile/job-preferences', {
@@ -27,82 +74,19 @@ const savePreferences = async (preferences: JobPreferences) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(preferences),
   });
-  if (!response.ok) throw new Error('Unable to save job preferences');
+  if (!response.ok) throw new Error(await responseError(response));
   return jobPreferencesSchema.parse(await response.json());
 };
 
 const fieldClass =
   'mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring';
 
-const parseList = (value: string): string[] => [
-  ...new Set(
-    value
-      .split(/[,\n]/)
-      .map((item) => item.trim())
-      .filter(Boolean),
-  ),
-];
-
-const ListField = ({
-  label,
-  value,
-  placeholder,
-  onChange,
-  multiline = false,
-}: {
-  label: string;
-  value: string[];
-  placeholder: string;
-  onChange: (value: string[]) => void;
-  multiline?: boolean;
-}) => {
-  const separator = multiline ? '\n' : ', ';
-  const [raw, setRaw] = useState(value.join(separator));
-
-  useEffect(() => {
-    const current = parseList(raw);
-    if (
-      current.length !== value.length ||
-      current.some((item, index) => item !== value[index])
-    ) {
-      setRaw(value.join(separator));
-    }
-  }, [raw, separator, value]);
-
-  const update = (next: string) => {
-    setRaw(next);
-    onChange(parseList(next));
-  };
-
-  return (
-    <label className={multiline ? 'text-sm sm:col-span-2' : 'text-sm'}>
-      {label}
-      {multiline ? (
-        <textarea
-          aria-label={label}
-          className={`${fieldClass} min-h-20 resize-y`}
-          value={raw}
-          placeholder={placeholder}
-          onChange={(event) => update(event.target.value)}
-        />
-      ) : (
-        <input
-          aria-label={label}
-          className={fieldClass}
-          value={raw}
-          placeholder={placeholder}
-          onChange={(event) => update(event.target.value)}
-        />
-      )}
-    </label>
-  );
-};
-
 export const JobPreferencesForm = () => {
   const client = useQueryClient();
   const query = useQuery({
     queryKey: ['job-preferences'],
     queryFn: loadPreferences,
+    throwOnError: false,
   });
   const [draft, setDraft] = useState<JobPreferences | null>(null);
   const [returnTo, setReturnTo] = useState<string | null>(null);
@@ -134,6 +118,7 @@ export const JobPreferencesForm = () => {
 
   const mutation = useMutation({
     mutationFn: savePreferences,
+    throwOnError: false,
     onSuccess: (data) => {
       client.setQueryData(['job-preferences'], data);
       void client.invalidateQueries({ queryKey: ['jobs-for-me'] });
@@ -163,20 +148,10 @@ export const JobPreferencesForm = () => {
     );
   }
 
-  const toggleMode = (mode: JobPreferences['workModes'][number]) => {
-    setDraft((current) => {
-      if (!current) return current;
-      const selected = current.workModes.includes(mode);
-      return {
-        ...current,
-        workModes: selected
-          ? current.workModes.filter((item) => item !== mode)
-          : [...current.workModes, mode],
-      };
-    });
-  };
-
   const validation = jobPreferencesSchema.safeParse(draft);
+  const validationMessage = validation.success
+    ? null
+    : validation.error.issues[0]?.message;
 
   return (
     <ProfileCard
@@ -189,63 +164,79 @@ export const JobPreferencesForm = () => {
       </p>
       <h3 className='mb-3 text-sm font-semibold'>Role</h3>
       <div className='grid gap-4 sm:grid-cols-2'>
-        <ListField
+        <PreferenceMultiSelect
           label='What matters most'
           value={draft.rolePriorities}
-          placeholder={'Mission-driven\nSmall team\nTechnical ownership'}
-          multiline
+          options={ROLE_PRIORITY_OPTIONS}
+          placeholder='Choose priorities'
+          searchPlaceholder='Search or add a priority…'
+          allowCustom
           onChange={(rolePriorities) => setDraft({ ...draft, rolePriorities })}
+          className='sm:col-span-2'
         />
-        <ListField
+        <PreferenceMultiSelect
           label='Job categories'
           value={draft.jobCategories}
-          placeholder='Engineering, Product Management'
+          options={JOB_CATEGORY_OPTIONS}
+          placeholder='Choose categories'
           onChange={(jobCategories) => setDraft({ ...draft, jobCategories })}
         />
-        <ListField
+        <PreferenceMultiSelect
           label='Seniority'
           value={draft.seniorityLevels}
-          placeholder='Senior, Lead'
+          options={SENIORITY_OPTIONS}
+          placeholder='Choose seniority levels'
           onChange={(seniorityLevels) =>
             setDraft({ ...draft, seniorityLevels })
           }
         />
-        <ListField
+        <PreferenceMultiSelect
           label='Skills'
           value={draft.preferredSkills}
-          placeholder='TypeScript, Solidity, Rust'
+          options={SKILL_OPTIONS}
+          placeholder='Choose skills'
+          searchPlaceholder='Search or add a skill…'
+          allowCustom
           onChange={(preferredSkills) =>
             setDraft({ ...draft, preferredSkills })
           }
         />
-        <ListField
+        <PreferenceMultiSelect
           label='Industries'
           value={draft.industries}
-          placeholder='Infrastructure, AI, Fintech'
+          options={INDUSTRY_OPTIONS}
+          placeholder='Choose industries'
+          searchPlaceholder='Search or add an industry…'
+          allowCustom
           onChange={(industries) => setDraft({ ...draft, industries })}
         />
-        <ListField
+        <PreferenceMultiSelect
           label='Commitment'
           value={draft.commitments}
-          placeholder='Full Time, Contract'
+          options={COMMITMENT_OPTIONS}
+          placeholder='Choose commitments'
           onChange={(commitments) => setDraft({ ...draft, commitments })}
         />
       </div>
 
       <h3 className='mt-6 mb-3 text-sm font-semibold'>Company</h3>
       <div className='grid gap-4 sm:grid-cols-2'>
-        <ListField
+        <PreferenceMultiSelect
           label='Companies you want'
           value={draft.targetOrganizations}
-          placeholder='Protocol Labs, OpenAI'
+          options={[]}
+          placeholder='Choose or add companies'
+          searchPlaceholder='Add a company…'
+          allowCustom
           onChange={(targetOrganizations) =>
             setDraft({ ...draft, targetOrganizations })
           }
         />
-        <ListField
+        <PreferenceMultiSelect
           label='Funding stages'
           value={draft.fundingStages}
-          placeholder='Seed, Series A, Profitable'
+          options={FUNDING_STAGE_OPTIONS}
+          placeholder='Choose funding stages'
           onChange={(fundingStages) => setDraft({ ...draft, fundingStages })}
         />
         <label className='text-sm'>
@@ -305,24 +296,36 @@ export const JobPreferencesForm = () => {
         </label>
         <label className='text-sm'>
           Salary currency
-          <input
+          <select
             aria-label='Salary currency'
             className={fieldClass}
-            maxLength={3}
             value={draft.salaryCurrency ?? ''}
-            placeholder='USD'
             onChange={(event) =>
               setDraft({
                 ...draft,
-                salaryCurrency: event.target.value.toUpperCase() || null,
+                salaryCurrency: event.target.value || null,
               })
             }
-          />
+          >
+            <option value=''>Not stated</option>
+            {CURRENCY_OPTIONS.filter((option) => option.value.length === 3).map(
+              (option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ),
+            )}
+          </select>
         </label>
-        <ListField
+        <PreferenceMultiSelect
           label='Payment currencies'
           value={draft.paymentCurrencies}
-          placeholder='USD, EUR, USDC'
+          options={CURRENCY_OPTIONS}
+          placeholder='Choose payment currencies'
+          searchPlaceholder='Search or add a currency…'
+          allowCustom
+          normalizeCustom={(value) => value.trim().toUpperCase()}
+          validateCustom={(value) => /^[A-Z]{2,10}$/.test(value)}
           onChange={(paymentCurrencies) =>
             setDraft({
               ...draft,
@@ -384,19 +387,24 @@ export const JobPreferencesForm = () => {
             <option value='other'>Other</option>
           </select>
         </label>
-        <ListField
-          label='Languages and level'
+        <PreferenceMultiSelect
+          label='Languages'
           value={draft.languages}
-          placeholder='English: native, Dutch: professional'
+          options={LANGUAGE_OPTIONS}
+          placeholder='Choose languages'
+          searchPlaceholder='Search or add a language…'
+          allowCustom
           onChange={(languages) => setDraft({ ...draft, languages })}
         />
-        <ListField
+        <PreferenceMultiSelect
           label='Showcase repositories'
           value={draft.showcaseRepositories}
-          placeholder={
-            'https://github.com/you/project\nhttps://github.com/you/tool'
-          }
-          multiline
+          options={[]}
+          placeholder='Add GitHub repositories'
+          searchPlaceholder='Paste a GitHub repository URL…'
+          allowCustom
+          customLabel='Add repository'
+          validateCustom={isGithubRepositoryUrl}
           onChange={(showcaseRepositories) =>
             setDraft({ ...draft, showcaseRepositories })
           }
@@ -406,20 +414,26 @@ export const JobPreferencesForm = () => {
       <h3 className='mt-6 mb-3 text-sm font-semibold'>Eligibility</h3>
       <div className='grid gap-4 sm:grid-cols-2'>
         <label className='text-sm'>
-          Country (two-letter code)
-          <input
+          Country
+          <select
             id={JOB_PREFERENCE_FIELD_IDS.country}
+            aria-label='Country'
             className={fieldClass}
             value={draft.residenceCountry ?? ''}
-            maxLength={2}
-            placeholder='NL'
             onChange={(event) =>
               setDraft({
                 ...draft,
-                residenceCountry: event.target.value.toUpperCase() || null,
+                residenceCountry: event.target.value || null,
               })
             }
-          />
+          >
+            <option value=''>Not stated</option>
+            {COUNTRY_OPTIONS.map((country) => (
+              <option key={country.isoA2} value={country.isoA2}>
+                {country.name}
+              </option>
+            ))}
+          </select>
         </label>
         <label className='text-sm'>
           UTC offset
@@ -525,27 +539,19 @@ export const JobPreferencesForm = () => {
           />
         </label>
       </div>
-      <fieldset className='mt-4'>
-        <legend className='text-sm font-medium'>Work modes you accept</legend>
-        <div className='mt-2 flex flex-wrap gap-3'>
-          {(
-            [
-              ['remote', 'Remote'],
-              ['hybrid', 'Hybrid'],
-              ['onsite', 'On-site'],
-            ] as const
-          ).map(([value, label]) => (
-            <label key={value} className='flex items-center gap-2 text-sm'>
-              <input
-                type='checkbox'
-                checked={draft.workModes.includes(value)}
-                onChange={() => toggleMode(value)}
-              />
-              {label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      <PreferenceMultiSelect
+        label='Work modes you accept'
+        value={draft.workModes}
+        options={WORK_MODE_OPTIONS}
+        placeholder='Choose work modes'
+        onChange={(workModes) =>
+          setDraft({
+            ...draft,
+            workModes: workModes as JobPreferences['workModes'],
+          })
+        }
+        className='mt-4'
+      />
       {draft.workModes.length === 0 && (
         <p className='mt-3 text-sm text-destructive'>
           Select at least one work mode above before saving.
@@ -553,13 +559,14 @@ export const JobPreferencesForm = () => {
       )}
       {!validation.success && draft.workModes.length > 0 && (
         <p className='mt-3 text-sm text-destructive'>
-          Check the values above before saving.
+          {validationMessage ?? 'Check the values above before saving.'}
         </p>
       )}
       {mutation.isError && (
         <p className='mt-3 text-sm text-destructive'>
-          Your changes were not saved. Retry or cancel to restore the previous
-          values.
+          {mutation.error instanceof Error
+            ? mutation.error.message
+            : 'Your changes were not saved.'}
         </p>
       )}
       {mutation.isSuccess && (

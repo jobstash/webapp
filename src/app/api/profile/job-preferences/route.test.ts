@@ -66,6 +66,9 @@ describe('PATCH /api/profile/job-preferences', () => {
       const response = await PATCH(request({ ...preferences, [key]: value }));
 
       expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({
+        error: expect.stringContaining(key),
+      });
       expect(fetchMock).not.toHaveBeenCalled();
     },
   );

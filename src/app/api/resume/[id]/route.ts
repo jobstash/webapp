@@ -3,11 +3,8 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import { serverEnv } from '@/lib/env/server';
-
-const PRESIGN_EXPIRY = 3600; // 1 hour
 
 const UUID_REGEX = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i;
 
@@ -44,16 +41,30 @@ export const GET = async (
       return Response.json({ error: 'Resume not found' }, { status: 404 });
     }
 
-    const url = await getSignedUrl(
-      s3,
+    const object = await s3.send(
       new GetObjectCommand({
         Bucket: serverEnv.R2_BUCKET_NAME,
         Key: key,
       }),
-      { expiresIn: PRESIGN_EXPIRY },
     );
+    if (!object.Body) {
+      return Response.json({ error: 'Resume not found' }, { status: 404 });
+    }
 
-    return Response.redirect(url, 302);
+    const fileName = key.split('/').at(-1) ?? 'resume';
+    const headers = new Headers({
+      'Cache-Control': 'private, no-store',
+      'Content-Disposition':
+        object.ContentDisposition ??
+        `inline; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+      'Content-Type': object.ContentType ?? 'application/octet-stream',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    if (object.ContentLength !== undefined) {
+      headers.set('Content-Length', String(object.ContentLength));
+    }
+
+    return new Response(object.Body.transformToWebStream(), { headers });
   } catch {
     return Response.json(
       { error: 'Failed to retrieve resume' },
