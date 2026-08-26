@@ -201,7 +201,7 @@ const jobMarketTopPayingBreakdownSchema = z.object({
 
 export const jobMarketTopPayingSchema = z.object({
   asOf: z.string(),
-  methodologyVersion: z.literal('market-top-pay-v1'),
+  methodologyVersion: z.enum(['market-top-pay-v1', 'market-top-pay-v2']),
   scope: z.object({
     classification: z.string(),
     classificationLabel: z.string(),

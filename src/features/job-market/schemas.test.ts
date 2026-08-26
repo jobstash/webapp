@@ -38,7 +38,7 @@ describe('job-market schemas', () => {
   it('accepts a sparse top-pay cohort without suppressing its estimate', () => {
     const parsed = jobMarketTopPayingSchema.parse({
       asOf: '2026-08-12',
-      methodologyVersion: 'market-top-pay-v1',
+      methodologyVersion: 'market-top-pay-v2',
       scope: {
         classification: 'market',
         classificationLabel: 'Crypto Job Market',

@@ -227,7 +227,7 @@ const skills: JobMarketSkillList = {
 
 const topPaying: JobMarketTopPaying = {
   asOf: '2026-08-12',
-  methodologyVersion: 'market-top-pay-v1',
+  methodologyVersion: 'market-top-pay-v2',
   scope: {
     classification: 'market',
     classificationLabel: 'Crypto Job Market',
@@ -383,6 +383,9 @@ describe('MarketStateDashboard', () => {
       screen.getByRole('heading', {
         name: 'What the top 10% of open jobs pay',
       }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/salary ranges wider than \$200K/i),
     ).toBeInTheDocument();
     expect(screen.getByText('$15K/mo')).toBeInTheDocument();
     expect(screen.queryByText(/most common/i)).not.toBeInTheDocument();

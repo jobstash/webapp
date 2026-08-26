@@ -133,7 +133,8 @@ export const TopPayingOpportunities = ({
             <p className='mt-2 max-w-4xl text-sm text-muted-foreground'>
               We take current jobs with a listed salary, convert each one to
               monthly USD, and recalculate the highest-paid 10% for the work
-              mode and location you choose. Every job below is open now.
+              mode and location you choose. Salary ranges wider than $200K after
+              currency conversion are excluded. Every job below is open now.
             </p>
           </div>
           <div className='flex flex-wrap gap-2' aria-label='Top pay work mode'>
