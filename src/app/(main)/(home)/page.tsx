@@ -78,14 +78,14 @@ const HomePage = async ({ searchParams }: Props) => {
         <SocialsAside />
       </aside>
       <section className='min-w-0 grow'>
-        <div className='mb-4 lg:hidden'>
-          <FiltersDrawer />
-        </div>
-        <Suspense fallback={<JobListSkeleton />}>
+        <Suspense
+          fallback={<JobListSkeleton mobileFilters={<FiltersDrawer />} />}
+        >
           <JobListBoundary>
             <JobList
               currentPage={currentPage}
               searchParams={restSearchParams}
+              mobileFilters={<FiltersDrawer />}
             />
           </JobListBoundary>
         </Suspense>

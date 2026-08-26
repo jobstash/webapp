@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowRightIcon, SearchIcon } from 'lucide-react';
 
@@ -7,11 +8,13 @@ import type { PillarFilterContext } from '@/features/pillar/schemas';
 
 import { JobListPagination } from './job-list-pagination';
 import { JobListItem } from './job-list-item';
+import { JobListToolbar } from './job-list-toolbar';
 
 interface JobListProps {
   currentPage: number;
   searchParams: Record<string, string>;
   pillarContext?: PillarFilterContext;
+  mobileFilters?: ReactNode;
 }
 
 const mergeSearchParams = (
@@ -64,6 +67,7 @@ export const JobList = async ({
   currentPage,
   searchParams,
   pillarContext,
+  mobileFilters,
 }: JobListProps) => {
   const mergedParams = mergeSearchParams(searchParams, pillarContext);
   const { total, data } = await fetchJobListPage({
@@ -72,13 +76,19 @@ export const JobList = async ({
   });
 
   if (data.length === 0) {
-    return <EmptyState hasFilters={Object.keys(searchParams).length > 0} />;
+    return (
+      <div>
+        <JobListToolbar total={total}>{mobileFilters}</JobListToolbar>
+        <EmptyState hasFilters={Object.keys(searchParams).length > 0} />
+      </div>
+    );
   }
 
   const totalPages = Math.ceil(total / JOBS_PER_PAGE);
 
   return (
     <div>
+      <JobListToolbar total={total}>{mobileFilters}</JobListToolbar>
       <div className='space-y-4 pb-4'>
         {data.map((job) => (
           <JobListItem key={job.id} job={job} />

@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowRightIcon, SearchIcon } from 'lucide-react';
 
 import { JobListItem } from '@/features/jobs/components/job-list/job-list-item';
+import { JobListToolbar } from '@/features/jobs/components/job-list/job-list-toolbar';
 import type { JobListItemSchema } from '@/features/jobs/schemas';
 import {
   getPillarFilterHref,
@@ -13,20 +15,34 @@ interface Props {
   slug: string;
   pillarContext: PillarFilterContext | null;
   jobs: JobListItemSchema[];
+  mobileFilters?: ReactNode;
 }
 
-export const PillarJobList = ({ slug, pillarContext, jobs }: Props) => {
+export const PillarJobList = ({
+  slug,
+  pillarContext,
+  jobs,
+  mobileFilters,
+}: Props) => {
   const pillarName = getPillarName(slug);
 
   if (jobs.length === 0) {
-    return <EmptyState pillarName={pillarName} pillarContext={pillarContext} />;
+    return (
+      <div>
+        <JobListToolbar total={0}>{mobileFilters}</JobListToolbar>
+        <EmptyState pillarName={pillarName} pillarContext={pillarContext} />
+      </div>
+    );
   }
 
   return (
-    <div className='space-y-4'>
-      {jobs.map((job) => (
-        <JobListItem key={job.id} job={job} />
-      ))}
+    <div>
+      <JobListToolbar total={jobs.length}>{mobileFilters}</JobListToolbar>
+      <div className='space-y-4'>
+        {jobs.map((job) => (
+          <JobListItem key={job.id} job={job} />
+        ))}
+      </div>
     </div>
   );
 };

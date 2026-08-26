@@ -155,4 +155,17 @@ describe('HeroWithPillars', () => {
       screen.getByRole('button', { name: /jobs for you/i }),
     ).toBeInTheDocument();
   });
+
+  it('keeps the CTA and discovery links out of the mobile layout', async () => {
+    render(await HeroWithPillars());
+
+    expect(screen.getByTestId('desktop-hero-ctas')).toHaveClass(
+      'hidden',
+      'md:block',
+    );
+    expect(screen.getByTestId('desktop-hero-pillars')).toHaveClass(
+      'hidden',
+      'md:flex',
+    );
+  });
 });

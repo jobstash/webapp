@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -57,9 +58,12 @@ export const FiltersDrawerClient = ({
       >
         <SheetHeader className='border-b border-border/50'>
           <SheetTitle>Filters</SheetTitle>
+          <SheetDescription className='sr-only'>
+            Refine the jobs shown in the results list.
+          </SheetDescription>
         </SheetHeader>
         <div className='flex-1 overflow-y-auto px-4 pb-6'>
-          <div className='flex flex-col gap-2 [&_button]:w-fit'>
+          <div className='flex flex-col gap-4'>
             <FiltersAsideClient
               configs={configs}
               pillarContext={pillarContext}

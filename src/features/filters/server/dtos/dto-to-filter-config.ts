@@ -49,10 +49,6 @@ const PARAM_KEYS = {
   EXPERT_JOBS: 'expertJobs',
   ONBOARD_INTO_WEB3: 'onboardIntoWeb3',
   FUNDING_STAGES: 'fundingStages',
-  NEW_ACTIVE_LEADS: 'newActiveLeads',
-  STEPPED_DOWN_LEADS: 'steppedDownLeads',
-  MOVED_LEADS: 'movedLeads',
-  EARLY_LEAD_DEPARTURES: 'earlyLeadDepartures',
   RECENTLY_FUNDED: 'recentlyFunded',
 } as const;
 
@@ -87,18 +83,18 @@ const SUGGESTED_FILTERS = new Set<ParamKey>([
   PARAM_KEYS.EXPERT_JOBS,
   PARAM_KEYS.ONBOARD_INTO_WEB3,
   PARAM_KEYS.FUNDING_STAGES,
-  PARAM_KEYS.NEW_ACTIVE_LEADS,
-  PARAM_KEYS.STEPPED_DOWN_LEADS,
-  PARAM_KEYS.MOVED_LEADS,
-  PARAM_KEYS.EARLY_LEAD_DEPARTURES,
   PARAM_KEYS.RECENTLY_FUNDED,
 ]);
 
-const SUGGESTED_RANGE_PARAM_KEYS = new Set([
+const RESTRICTED_FILTER_PARAM_KEYS = new Set([
   'minCurrentMaintainers',
   'maxCurrentMaintainers',
   'minActiveLeads',
   'maxActiveLeads',
+  'newActiveLeads',
+  'steppedDownLeads',
+  'movedLeads',
+  'earlyLeadDepartures',
 ]);
 
 const RADIO_FILTER_OPTION_THRESHOLD = 6;
@@ -244,18 +240,25 @@ const handleRangeFilter = (
   const isSalarySuggested =
     lowest.paramKey.toLowerCase().includes('salary') ||
     highest.paramKey.toLowerCase().includes('salary');
-  const isIntelligenceSuggested =
-    SUGGESTED_RANGE_PARAM_KEYS.has(lowest.paramKey) ||
-    SUGGESTED_RANGE_PARAM_KEYS.has(highest.paramKey);
-
   return {
     ...dtoToFilterConfigSharedProps(dto),
     kind: FILTER_KIND.RANGE,
     lowest,
     highest,
     prefix: dto.prefix,
-    isSuggested: isSalarySuggested || isIntelligenceSuggested || undefined,
+    isSuggested: isSalarySuggested || undefined,
   };
+};
+
+const isRestrictedFilter = (dto: FilterConfigDto[string]): boolean => {
+  if (dto.kind === 'RANGE') {
+    return (
+      RESTRICTED_FILTER_PARAM_KEYS.has(dto.value.lowest.paramKey) ||
+      RESTRICTED_FILTER_PARAM_KEYS.has(dto.value.highest.paramKey)
+    );
+  }
+
+  return RESTRICTED_FILTER_PARAM_KEYS.has(dto.paramKey);
 };
 
 const adjustFilterPosition = (dto: FilterConfigDto[string]) => {
@@ -340,7 +343,7 @@ const handleMultiSelect = (
 const handleFilterConfig = (
   dto: FilterConfigDto[string],
 ): FilterConfigSchema | null => {
-  if (!dto.show) return null;
+  if (!dto.show || isRestrictedFilter(dto)) return null;
   adjustFilterPosition(dto);
 
   let baseFilter: FilterConfigSchema | null = null;

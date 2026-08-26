@@ -60,8 +60,8 @@ export const HeroSection = ({ pillarItems }: Props) => {
     <section className='relative w-full overflow-hidden border-b bg-linear-to-b from-primary/5 via-background to-background'>
       <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/4 via-transparent to-transparent' />
 
-      <div className='relative mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24'>
-        <div className='flex flex-col items-center gap-10 text-center'>
+      <div className='relative mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-24'>
+        <div className='flex flex-col items-center gap-8 text-center md:gap-10'>
           <div className='flex flex-col gap-6'>
             <h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
               Find Your Next{' '}
@@ -77,10 +77,15 @@ export const HeroSection = ({ pillarItems }: Props) => {
             </p>
           </div>
 
-          <HeroCtas />
+          <div data-testid='desktop-hero-ctas' className='hidden md:block'>
+            <HeroCtas />
+          </div>
 
           {!!pillarItems?.length && (
-            <div className='flex w-full max-w-3xl flex-col items-center gap-6 pt-4'>
+            <div
+              data-testid='desktop-hero-pillars'
+              className='hidden w-full max-w-3xl flex-col items-center gap-6 pt-4 md:flex'
+            >
               <div className='flex flex-col items-center gap-2 text-muted-foreground/60'>
                 <span className='text-xs font-medium tracking-widest uppercase'>
                   Or explore by

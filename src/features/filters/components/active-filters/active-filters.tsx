@@ -42,79 +42,84 @@ export const ActiveFilters = ({ configs, pillarContext }: Props) => {
   if (activeFilters.length === 0 && fallbackKeys.length === 0) return null;
 
   return (
-    <div className='flex flex-wrap gap-2'>
-      {fallbackKeys.map((key) => (
-        <ActiveFilterSwitch
-          key={key}
-          label={PILLAR_FALLBACK_CHIP_LABELS[key] ?? key}
-          paramKey={key}
-        />
-      ))}
-      {activeFilters.map((config) => {
-        const key = config.label;
+    <section aria-label='Applied filters'>
+      <h3 className='mb-2 text-[11px] font-medium tracking-wide text-muted-foreground'>
+        Applied filters
+      </h3>
+      <div className='flex flex-wrap gap-2'>
+        {fallbackKeys.map((key) => (
+          <ActiveFilterSwitch
+            key={key}
+            label={PILLAR_FALLBACK_CHIP_LABELS[key] ?? key}
+            paramKey={key}
+          />
+        ))}
+        {activeFilters.map((config) => {
+          const key = config.label;
 
-        switch (config.kind) {
-          case FILTER_KIND.SWITCH: {
-            return (
-              <ActiveFilterSwitch
-                key={key}
-                label={config.label}
-                paramKey={config.paramKey}
-              />
-            );
+          switch (config.kind) {
+            case FILTER_KIND.SWITCH: {
+              return (
+                <ActiveFilterSwitch
+                  key={key}
+                  label={config.label}
+                  paramKey={config.paramKey}
+                />
+              );
+            }
+            case FILTER_KIND.CHECKBOX: {
+              return (
+                <ActiveFilterCheckbox
+                  key={key}
+                  label={config.label}
+                  paramKey={config.paramKey}
+                  options={config.options}
+                />
+              );
+            }
+            case FILTER_KIND.RADIO: {
+              return (
+                <ActiveFilterRadio
+                  key={key}
+                  label={config.label}
+                  paramKey={config.paramKey}
+                  options={config.options}
+                />
+              );
+            }
+            case FILTER_KIND.SEARCH: {
+              return (
+                <ActiveFiltersSearch
+                  key={key}
+                  label={config.label}
+                  paramKey={config.paramKey}
+                  options={config.options}
+                />
+              );
+            }
+            case FILTER_KIND.REMOTE_SEARCH: {
+              const excludeValues =
+                pillarContext?.paramKey === config.paramKey
+                  ? [pillarContext.value]
+                  : undefined;
+              return (
+                <ActiveFilterRemoteSearch
+                  key={key}
+                  label={config.label}
+                  paramKey={config.paramKey}
+                  options={config.options}
+                  excludeValues={excludeValues}
+                />
+              );
+            }
+            case FILTER_KIND.RANGE: {
+              return <ActiveFilterRange key={key} config={config} />;
+            }
+            default:
+              return null;
           }
-          case FILTER_KIND.CHECKBOX: {
-            return (
-              <ActiveFilterCheckbox
-                key={key}
-                label={config.label}
-                paramKey={config.paramKey}
-                options={config.options}
-              />
-            );
-          }
-          case FILTER_KIND.RADIO: {
-            return (
-              <ActiveFilterRadio
-                key={key}
-                label={config.label}
-                paramKey={config.paramKey}
-                options={config.options}
-              />
-            );
-          }
-          case FILTER_KIND.SEARCH: {
-            return (
-              <ActiveFiltersSearch
-                key={key}
-                label={config.label}
-                paramKey={config.paramKey}
-                options={config.options}
-              />
-            );
-          }
-          case FILTER_KIND.REMOTE_SEARCH: {
-            const excludeValues =
-              pillarContext?.paramKey === config.paramKey
-                ? [pillarContext.value]
-                : undefined;
-            return (
-              <ActiveFilterRemoteSearch
-                key={key}
-                label={config.label}
-                paramKey={config.paramKey}
-                options={config.options}
-                excludeValues={excludeValues}
-              />
-            );
-          }
-          case FILTER_KIND.RANGE: {
-            return <ActiveFilterRange key={key} config={config} />;
-          }
-          default:
-            return null;
-        }
-      })}
-    </div>
+        })}
+      </div>
+    </section>
   );
 };

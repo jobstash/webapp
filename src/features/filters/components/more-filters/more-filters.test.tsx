@@ -22,6 +22,7 @@ const FILTER_KIND = {
   CHECKBOX: 'CHECKBOX',
   SEARCH: 'SEARCH',
   REMOTE_SEARCH: 'REMOTE_SEARCH',
+  RANGE: 'RANGE',
 } as const;
 
 import { type FilterConfigSchema } from '@/features/filters/schemas';
@@ -35,6 +36,7 @@ vi.mock('@/features/filters/constants', () => ({
     CHECKBOX: 'CHECKBOX',
     SEARCH: 'SEARCH',
     REMOTE_SEARCH: 'REMOTE_SEARCH',
+    RANGE: 'RANGE',
   },
   REMOTE_FILTERS_SET: new Set(['tags']),
 }));
@@ -111,6 +113,34 @@ describe('MoreFilters', () => {
 
     expect(screen.getByText('Remote Only')).toBeInTheDocument();
     expect(screen.getByText('Seniority')).toBeInTheDocument();
+  });
+
+  it('groups filters under meaningful headings', async () => {
+    const user = userEvent.setup();
+    render(<MoreFilters configs={configs} />);
+
+    await user.click(screen.getByRole('button', { name: /more filters/i }));
+
+    expect(screen.getByText('Role & requirements')).toBeInTheDocument();
+    expect(screen.getByText('More options')).toBeInTheDocument();
+  });
+
+  it('keeps the scrollable menu inside the mobile filter sheet', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <div data-slot='sheet-content'>
+        <MoreFilters configs={configs} />
+      </div>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /more filters/i }));
+
+    const sheet = container.querySelector('[data-slot="sheet-content"]');
+    const menu = sheet?.querySelector('[data-slot="popover-content"]');
+    const list = menu?.querySelector('[data-slot="command-list"]');
+
+    expect(menu).toBeInTheDocument();
+    expect(list).toHaveClass('touch-pan-y', 'overscroll-contain');
   });
 
   it('excludes active filters from options', async () => {

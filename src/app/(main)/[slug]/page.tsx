@@ -139,13 +139,13 @@ const PillarPage = async ({ params }: Props) => {
           <SuggestedPillars items={suggestedPillars} />
         </aside>
         <section className='min-w-0 grow'>
-          <div className='mb-4 lg:hidden'>
-            <FiltersDrawer pillarMode pillarContext={pillarContext} />
-          </div>
           <PillarJobList
             slug={slug}
             pillarContext={pillarContext}
             jobs={jobs}
+            mobileFilters={
+              <FiltersDrawer pillarMode pillarContext={pillarContext} />
+            }
           />
         </section>
       </div>

@@ -150,4 +150,41 @@ describe('dtoToFilterConfig location facets', () => {
       }),
     );
   });
+
+  it('does not expose restricted intelligence filters to JobStash', () => {
+    const result = dtoToFilterConfig({
+      currentMaintainers: {
+        position: 1,
+        label: 'Current Maintainers',
+        show: true,
+        googleAnalyticsEventId: null,
+        googleAnalyticsEventName: null,
+        kind: 'RANGE',
+        value: {
+          lowest: { paramKey: 'minCurrentMaintainers', value: 0 },
+          highest: { paramKey: 'maxCurrentMaintainers', value: 100 },
+        },
+        prefix: null,
+      },
+      leadMovements: {
+        position: 2,
+        label: 'Lead movements',
+        show: true,
+        googleAnalyticsEventId: null,
+        googleAnalyticsEventName: null,
+        kind: 'SINGLE_SELECT',
+        paramKey: 'movedLeads',
+        options: [
+          { label: 'No', value: false },
+          { label: 'Yes', value: true },
+        ],
+      },
+      countries: locationConfig(3, 'Country', 'countries'),
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({ paramKey: 'countries' }),
+    );
+  });
 });

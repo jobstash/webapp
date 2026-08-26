@@ -25,7 +25,7 @@ const FiltersAsideRSC = async ({
   const filterConfigs = await fetchFilterConfigs();
   return (
     <FiltersAsideLayout>
-      <div className='flex flex-col gap-2 [&_button]:w-fit'>
+      <div className='flex flex-col gap-4'>
         <FiltersAsideClient
           configs={filterConfigs}
           pillarContext={pillarContext}

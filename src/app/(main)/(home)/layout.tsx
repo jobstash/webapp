@@ -16,9 +16,11 @@ const HomeLayout = ({ children }: Readonly<React.PropsWithChildren>) => {
       <PillarItemsBoundary fallback={<HeroSection />}>
         <HeroWithPillars />
       </PillarItemsBoundary>
-      <Suspense fallback={<JobMarketOverviewSkeleton />}>
-        <JobMarketOverviewSection />
-      </Suspense>
+      <div className='hidden md:block'>
+        <Suspense fallback={<JobMarketOverviewSkeleton />}>
+          <JobMarketOverviewSection />
+        </Suspense>
+      </div>
       <div id='jobs' className='scroll-mt-20 space-y-4 pt-4 lg:scroll-mt-24'>
         {children}
       </div>
