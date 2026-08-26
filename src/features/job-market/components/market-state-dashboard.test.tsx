@@ -392,6 +392,9 @@ describe('MarketStateDashboard', () => {
     expect(
       screen.getByRole('link', { name: 'Staff Engineer' }),
     ).toHaveAttribute('href', '/staff-engineer-acme/abc123');
+    expect(
+      screen.getByRole('link', { name: 'Browse all jobs in this scope' }),
+    ).toHaveAttribute('href', '/?workModes=fully-remote');
 
     const engineeringActions = screen.getAllByRole('button', {
       name: 'Open Engineering Management market analysis',
