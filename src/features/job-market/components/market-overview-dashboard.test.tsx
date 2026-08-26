@@ -115,8 +115,14 @@ describe('MarketOverviewDashboard', () => {
     render(<MarketOverviewDashboard overview={overview} />);
 
     expect(
-      screen.getByRole('heading', { name: 'Job Market Analytics' }),
+      screen.getByRole('heading', { name: 'Market pulse' }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Job Market Analytics' }),
+    ).toHaveAttribute('href', '/market');
+    expect(
+      screen.queryByRole('heading', { name: 'Job Market Analytics' }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(/priced like a market/i)).not.toBeInTheDocument();
     expect(screen.getByText('Weekly change')).toBeInTheDocument();
     expect(screen.getByText('+25.0%')).toBeInTheDocument();
@@ -127,6 +133,9 @@ describe('MarketOverviewDashboard', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/open vacancies/i).length).toBeGreaterThan(1);
-    expect(screen.getByText('Market pulse')).toHaveClass('text-violet-400');
+    expect(screen.getByText('Market pulse')).toHaveClass(
+      'text-2xl',
+      'text-violet-400',
+    );
   });
 });

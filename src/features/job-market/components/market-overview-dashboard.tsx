@@ -10,6 +10,7 @@ import {
   ChartNoAxesCombinedIcon,
 } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getFrontendSlug } from '@/features/pillar/constants';
 import { compactNumber } from '../lib/format';
@@ -174,12 +175,12 @@ export const MarketOverviewDashboard = ({
     >
       <div className='grid gap-4 lg:grid-cols-[minmax(260px,.8fr)_minmax(0,1.8fr)_auto] lg:items-center'>
         <div>
-          <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-violet-400 uppercase'>
-            <ChartNoAxesCombinedIcon className='size-4' aria-hidden />
+          <h2
+            id='market-overview-heading'
+            className='flex items-center gap-3 text-2xl font-bold tracking-wide text-violet-400 uppercase'
+          >
+            <ChartNoAxesCombinedIcon className='size-6' aria-hidden />
             Market pulse
-          </div>
-          <h2 id='market-overview-heading' className='mt-1 text-xl font-bold'>
-            Job Market Analytics
           </h2>
         </div>
 
@@ -222,13 +223,12 @@ export const MarketOverviewDashboard = ({
           </div>
         </div>
 
-        <Link
-          href='/market'
-          className='inline-flex items-center justify-center gap-2 rounded-xl bg-foreground px-4 py-3 text-sm font-bold text-background transition-opacity hover:opacity-90'
-        >
-          Open market intelligence
-          <ArrowRightIcon className='size-4' aria-hidden />
-        </Link>
+        <Button variant='secondary' size='lg' asChild>
+          <Link href='/market'>
+            Job Market Analytics
+            <ArrowRightIcon aria-hidden />
+          </Link>
+        </Button>
       </div>
 
       {moves.length > 0 && (
