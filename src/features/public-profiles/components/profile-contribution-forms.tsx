@@ -153,9 +153,10 @@ export const ProfileContributionForms = ({
                     ))}
                   </select>
                 </label>
-                <label className='block text-sm'>
+                <label htmlFor='profile-review-text' className='block text-sm'>
                   Review
                   <Textarea
+                    id='profile-review-text'
                     name='reviewText'
                     minLength={1}
                     maxLength={4000}
@@ -163,13 +164,29 @@ export const ProfileContributionForms = ({
                   />
                 </label>
                 <div className='grid grid-cols-[1fr_6rem] gap-2'>
-                  <label className='block text-sm'>
+                  <label
+                    htmlFor='profile-review-salary'
+                    className='block text-sm'
+                  >
                     Salary (optional)
-                    <Input name='salary' type='number' min={0} />
+                    <Input
+                      id='profile-review-salary'
+                      name='salary'
+                      type='number'
+                      min={0}
+                    />
                   </label>
-                  <label className='block text-sm'>
+                  <label
+                    htmlFor='profile-review-currency'
+                    className='block text-sm'
+                  >
                     Currency
-                    <Input name='currency' maxLength={3} placeholder='USD' />
+                    <Input
+                      id='profile-review-currency'
+                      name='currency'
+                      maxLength={3}
+                      placeholder='USD'
+                    />
                   </label>
                 </div>
                 <label className='flex items-center gap-2 text-sm'>
@@ -220,17 +237,35 @@ export const ProfileContributionForms = ({
                   <option value='other'>Other</option>
                 </select>
               </label>
-              <label className='block text-sm'>
+              <label
+                htmlFor='recruiter-report-contact'
+                className='block text-sm'
+              >
                 Recruiter contact (optional)
-                <Input name='recruiterContact' maxLength={500} />
+                <Input
+                  id='recruiter-report-contact'
+                  name='recruiterContact'
+                  maxLength={500}
+                />
               </label>
-              <label className='block text-sm'>
+              <label
+                htmlFor='recruiter-report-evidence'
+                className='block text-sm'
+              >
                 Evidence link (optional)
-                <Input name='evidenceUrl' type='url' />
+                <Input
+                  id='recruiter-report-evidence'
+                  name='evidenceUrl'
+                  type='url'
+                />
               </label>
-              <label className='block text-sm'>
+              <label
+                htmlFor='recruiter-report-details'
+                className='block text-sm'
+              >
                 What happened?
                 <Textarea
+                  id='recruiter-report-details'
                   name='details'
                   minLength={1}
                   maxLength={4000}
