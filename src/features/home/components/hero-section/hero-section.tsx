@@ -73,7 +73,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
             <p className='mx-auto max-w-2xl text-base text-muted-foreground md:text-lg'>
               JobStash is a job board which empowers the data and analytics
               demanding user to make an informed decision about which role to
-              choose for their future career.
+              choose for their future career in crypto, AI, robotics or fintech.
             </p>
           </div>
 
