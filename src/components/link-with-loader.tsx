@@ -34,6 +34,7 @@ export function LinkWithLoader({
   onClick,
   children,
   className,
+  prefetch = false,
   loaderPosition = 'right',
   loader,
   scroll = true,
@@ -64,6 +65,7 @@ export function LinkWithLoader({
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       onClick={handleClick}
       className={cn(
         'inline-flex items-center gap-2',

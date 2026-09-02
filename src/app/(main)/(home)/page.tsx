@@ -9,7 +9,6 @@ import {
 import { JobList } from '@/features/jobs/components/job-list/job-list';
 import { JobListBoundary } from '@/features/jobs/components/job-list/job-list.error';
 import { JobListSkeleton } from '@/features/jobs/components/job-list/job-list.skeleton';
-import { fetchJobListPage } from '@/features/jobs/server/data';
 import { SuggestedPillars } from '@/features/pillar/components';
 import { getPillarLinksFromSearchParams } from '@/features/pillar/constants';
 import { clientEnv } from '@/lib/env/client';
@@ -46,26 +45,10 @@ export const generateMetadata = async ({
   };
 };
 
-const preload = (currentPage: number, searchParams: Record<string, string>) => {
-  const adjacentPages = [
-    currentPage - 2,
-    currentPage - 1,
-    currentPage + 1,
-    currentPage + 2,
-  ].filter((page) => page >= 1);
-
-  for (const page of adjacentPages) {
-    fetchJobListPage({ page, searchParams }).catch((error) => {
-      console.warn(`[Preload] Failed to preload page ${page}:`, error.message);
-    });
-  }
-};
-
 const HomePage = async ({ searchParams }: Props) => {
   const rawSearchParams = await searchParams;
   const { page, ...restSearchParams } = rawSearchParams;
   const currentPage = Number(page) || 1;
-  preload(currentPage, restSearchParams);
 
   // Cross-link filtered views to their pillar pages (internal linking).
   const suggestedPillarLinks = getPillarLinksFromSearchParams(restSearchParams);

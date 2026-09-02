@@ -55,6 +55,7 @@ export const SuggestedPillars = ({ items }: Props) => {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               onClick={() => handlePillarClick(item)}
               className={cn(
                 'group flex max-w-full items-center gap-1.5 rounded-full border border-border/60 bg-card/40 px-3 py-1.5 text-xs font-medium',
