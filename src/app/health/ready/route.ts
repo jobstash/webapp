@@ -35,9 +35,10 @@ export const GET = async () => {
     responseTimeMs: 0,
   };
   const dependencies = { configuration, middleware };
-  const ready = Object.values(dependencies).every(
-    (dependency) => dependency.status === 'up',
-  );
+  // A transient downstream outage must not remove every frontend replica
+  // from the proxy. The process is ready when its own configuration is valid;
+  // middleware health remains visible here as a degraded dependency.
+  const ready = configuration.status === 'up';
 
   return NextResponse.json(
     {
