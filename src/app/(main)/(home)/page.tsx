@@ -21,6 +21,13 @@ interface Props {
 const HOME_TITLE = 'Crypto Jobs — Web3, DeFi & Blockchain Jobs';
 const HOME_DESCRIPTION =
   'Browse crypto native jobs across the entire Web3 ecosystem — engineering, product, design, marketing and more. Aggregated from thousands of crypto organizations and updated daily.';
+const HOME_URL = `${clientEnv.FRONTEND_URL}/`;
+const HOME_OG_IMAGE = {
+  url: `${clientEnv.FRONTEND_URL}/og?v=20260903`,
+  width: 1200,
+  height: 630,
+  alt: 'Find your next Crypto, AI or Fintech role on JobStash',
+};
 
 export const generateMetadata = async ({
   searchParams,
@@ -41,7 +48,21 @@ export const generateMetadata = async ({
   return {
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
-    alternates: { canonical: `${clientEnv.FRONTEND_URL}/` },
+    alternates: { canonical: HOME_URL },
+    openGraph: {
+      type: 'website',
+      siteName: 'JobStash',
+      title: HOME_TITLE,
+      description: HOME_DESCRIPTION,
+      url: HOME_URL,
+      images: [HOME_OG_IMAGE],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: HOME_TITLE,
+      description: HOME_DESCRIPTION,
+      images: [HOME_OG_IMAGE],
+    },
   };
 };
 
