@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getTagColorIndex } from '@/lib/utils';
 import type { PopularTagItem, UserSkill } from '@/features/profile/schemas';
+import { uniqueSkills } from '../unique-skills';
 
 const LIMIT = 10;
 
@@ -32,15 +33,16 @@ const fetchSuggestedSkills = async (): Promise<UserSkill[]> => {
   }));
 };
 
-export const useSuggestedSkills = (selectedIds: Set<string>) => {
+export const useSuggestedSkills = (
+  selectedSkills: { id: string; name: string }[],
+) => {
   const { data, isPending } = useQuery({
     queryKey: ['suggested-skills'],
     queryFn: fetchSuggestedSkills,
     staleTime: Infinity,
   });
 
-  const suggestedSkills =
-    data?.filter((skill) => !selectedIds.has(skill.id)) ?? [];
+  const suggestedSkills = uniqueSkills(data ?? [], selectedSkills);
 
   return { suggestedSkills, isLoading: isPending };
 };

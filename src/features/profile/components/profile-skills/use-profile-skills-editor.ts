@@ -10,6 +10,7 @@ import { getTagColorIndex } from '@/lib/utils/get-tag-color-index';
 import { useSkillsSearch } from '@/features/profile/hooks/use-skills-search';
 import { useSuggestedSkills } from '@/features/profile/hooks/use-suggested-skills';
 import type { ProfileSkill, UserSkill } from '@/features/profile/schemas';
+import { uniqueSkills } from '../../unique-skills';
 
 const toUserSkill = (skill: ProfileSkill): UserSkill => ({
   id: skill.id,
@@ -26,7 +27,6 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const selectedIds = new Set(editedSkills.map((s) => s.id));
   const {
     searchValue: skillSearch,
     setSearchValue: setSkillSearch,
@@ -37,12 +37,12 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
     hasMore,
     loadMore,
     hasQuery,
-  } = useSkillsSearch(selectedIds, isDropdownOpen && isOpen);
+  } = useSkillsSearch(editedSkills, isDropdownOpen && isOpen);
   const { suggestedSkills, isLoading: isSuggestedLoading } =
-    useSuggestedSkills(selectedIds);
+    useSuggestedSkills(editedSkills);
 
   const handleOpen = () => {
-    setEditedSkills(currentSkills.map(toUserSkill));
+    setEditedSkills(uniqueSkills(currentSkills).map(toUserSkill));
     setIsOpen(true);
   };
 
@@ -70,8 +70,11 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
   const isAtErrorCap = skillStatus === 'error';
 
   const handleAddSkill = (skill: UserSkill) => {
-    if (editedSkills.length >= SKILL_ERROR_THRESHOLD) return;
-    setEditedSkills((prev) => [...prev, skill]);
+    setEditedSkills((prev) =>
+      prev.length >= SKILL_ERROR_THRESHOLD
+        ? prev
+        : uniqueSkills([...prev, skill]),
+    );
     setSkillSearch('');
     setIsDropdownOpen(false);
     searchInputRef.current?.blur();
@@ -104,6 +107,7 @@ export const useProfileSkillsEditor = (currentSkills: ProfileSkill[]) => {
       });
 
       await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
+      await queryClient.invalidateQueries({ queryKey: ['recommended-jobs'] });
       handleClose();
     } finally {
       setIsSaving(false);

@@ -25,6 +25,7 @@ import {
   resumeCareerUpdateSchema,
   type ResumeCareerUpdate,
 } from '../resume-profile';
+import { uniqueSkills } from '../unique-skills';
 
 const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx';
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -114,7 +115,12 @@ const syncSkills = async (
   const res = await fetch('/api/profile/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ skills, socials: [], email: null, resume: null }),
+    body: JSON.stringify({
+      skills: uniqueSkills(skills),
+      socials: [],
+      email: null,
+      resume: null,
+    }),
   });
   if (!res.ok) throw new Error('Failed to save skills');
 };
@@ -131,14 +137,17 @@ const getSkillsToSync = (
   excludedSkillIds: Set<string>,
   profileSkills: { id: string; name: string }[],
 ): { id: string; name: string }[] | null => {
-  if (isOverCap) return editedSkills.map(toIdName);
+  if (isOverCap) return uniqueSkills(editedSkills).map(toIdName);
 
   if (detectedSkills.length === 0) return null;
 
   const includedNew = detectedSkills.filter((s) => !excludedSkillIds.has(s.id));
   if (includedNew.length === 0) return null;
 
-  return [...profileSkills.map(toIdName), ...includedNew.map(toIdName)];
+  return uniqueSkills([
+    ...profileSkills.map(toIdName),
+    ...includedNew.map(toIdName),
+  ]);
 };
 
 interface UseResumeUploadParams {
@@ -231,12 +240,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       setResumeSocials(parsed.socials);
 
       // Filter out skills the user already has
-      const existingIds = new Set(
-        (profileSkills ?? []).map((skill) => skill.id),
-      );
-      const newSkills = parsed.skills.filter(
-        (skill) => !existingIds.has(skill.id),
-      );
+      const newSkills = uniqueSkills(parsed.skills, profileSkills ?? []);
       setDetectedSkills(newSkills);
 
       // Build merged skill list for over-cap editing

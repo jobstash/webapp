@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
 import { recommendationCareerSchema } from '@/features/profile/recommendation-career';
+import { uniqueSkills } from '@/features/profile/unique-skills';
 import {
   resumePreferencesSchema,
   supportedResumeDates,
@@ -191,7 +192,7 @@ export const matchSkills = async (
       })
       .parse(json);
 
-    return parsed.data;
+    return uniqueSkills(parsed.data);
   } catch {
     return [];
   }
