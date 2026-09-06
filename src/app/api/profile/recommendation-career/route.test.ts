@@ -69,4 +69,28 @@ describe('career matching API', () => {
     );
     expect((await PATCH(request(career))).status).toBe(502);
   });
+  it('forwards CV profile defaults without losing them between parse and save', async () => {
+    const body = {
+      ...career,
+      profile: {
+        name: 'Example',
+        location: {
+          city: 'Amsterdam',
+          country: 'Netherlands',
+          countryCode: 'NL',
+        },
+      },
+      preferences: {
+        residenceCountry: 'NL',
+        languages: ['Dutch'],
+        seniorityLevels: ['senior'],
+      },
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(Response.json({ success: true }));
+    vi.stubGlobal('fetch', fetchMock);
+    expect((await PATCH(request(body))).status).toBe(200);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual(body);
+  });
 });

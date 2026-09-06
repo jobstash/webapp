@@ -21,7 +21,10 @@ import {
 } from '@/features/profile/constants';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
-import type { RecommendationCareer } from '../recommendation-career';
+import {
+  resumeCareerUpdateSchema,
+  type ResumeCareerUpdate,
+} from '../resume-profile';
 
 const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx';
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -90,7 +93,7 @@ const validateFile = (file: File): string | null => {
 };
 
 interface ResumeParseResponse {
-  career?: RecommendationCareer;
+  career?: ResumeCareerUpdate;
   resumeId: string;
   fileName: string;
   name: string | null;
@@ -154,7 +157,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [resumeId, setResumeId] = useState<string | null>(null);
-  const [career, setCareer] = useState<RecommendationCareer | null>(null);
+  const [career, setCareer] = useState<ResumeCareerUpdate | null>(null);
   const [detectedSkills, setDetectedSkills] = useState<PopularTagItem[]>([]);
   const [excludedSkillIds, setExcludedSkillIds] = useState<Set<string>>(
     new Set(),
@@ -220,7 +223,9 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       const parsed = (await parseRes.json()) as ResumeParseResponse;
 
       setResumeId(parsed.resumeId);
-      setCareer(parsed.career ?? null);
+      setCareer(
+        parsed.career ? resumeCareerUpdateSchema.parse(parsed.career) : null,
+      );
       setResumeEmail(parsed.email);
       setResumePhone(parsed.phone);
       setResumeSocials(parsed.socials);
@@ -344,6 +349,8 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
         await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
       }
       await queryClient.invalidateQueries({ queryKey: ['recommended-jobs'] });
+      await queryClient.invalidateQueries({ queryKey: ['job-preferences'] });
+      await queryClient.invalidateQueries({ queryKey: ['jobs-for-me'] });
 
       trackEvent(GA_EVENT.RESUME_UPLOADED, {
         skill_count: skillsToSync?.length ?? 0,

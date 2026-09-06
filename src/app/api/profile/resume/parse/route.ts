@@ -11,6 +11,7 @@ import {
   setCachedResult,
 } from '@/lib/server/guards';
 import { uploadResume } from '@/lib/server/r2';
+import { resumeProfileDefaults } from '@/features/profile/resume-profile';
 import {
   extractText,
   matchSkills,
@@ -116,7 +117,7 @@ export const POST = async (request: Request): Promise<Response> => {
     address,
     skills,
     socials: extraction.socials,
-    career: extraction.career,
+    career: resumeProfileDefaults(extraction, skills),
   });
   setCachedResult(hash, result);
 

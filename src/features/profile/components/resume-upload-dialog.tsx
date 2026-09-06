@@ -172,6 +172,28 @@ export const ResumeUploadDialog = ({
                   Saving uses these CV details to personalize jobs. Remove any
                   incorrect role.
                 </p>
+                <p className='text-xs text-muted-foreground'>
+                  Missing profile details and job preferences will be filled
+                  from your CV. Your existing preferences stay unchanged.
+                </p>
+                {career.profile?.name && <p>Name: {career.profile.name}</p>}
+                {career.profile?.location && (
+                  <p>
+                    Location:{' '}
+                    {[
+                      career.profile.location.city,
+                      career.profile.location.country,
+                    ]
+                      .filter(Boolean)
+                      .join(', ')}
+                  </p>
+                )}
+                {!!career.preferences?.languages?.length && (
+                  <p>Languages: {career.preferences.languages.join(', ')}</p>
+                )}
+                {!!career.preferences?.rolePriorities?.length && (
+                  <p>Roles: {career.preferences.rolePriorities.join(', ')}</p>
+                )}
                 {career.educationLevel && (
                   <p>Education: {career.educationLevel}</p>
                 )}

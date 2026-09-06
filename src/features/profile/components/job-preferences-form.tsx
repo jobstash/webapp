@@ -122,6 +122,7 @@ export const JobPreferencesForm = () => {
     onSuccess: (data) => {
       client.setQueryData(['job-preferences'], data);
       void client.invalidateQueries({ queryKey: ['jobs-for-me'] });
+      void client.invalidateQueries({ queryKey: ['recommended-jobs'] });
       setDraft(data);
     },
   });

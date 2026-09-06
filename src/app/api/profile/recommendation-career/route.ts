@@ -1,4 +1,4 @@
-import { recommendationCareerSchema } from '@/features/profile/recommendation-career';
+import { resumeCareerUpdateSchema } from '@/features/profile/resume-profile';
 import { clientEnv } from '@/lib/env/client';
 import { getSession } from '@/lib/server/session';
 
@@ -10,7 +10,7 @@ export const PATCH = async (request: Request) => {
   ) {
     return Response.json({ error: 'Not authenticated' }, { status: 401 });
   }
-  const parsed = recommendationCareerSchema.safeParse(
+  const parsed = resumeCareerUpdateSchema.safeParse(
     await request.json().catch(() => null),
   );
   if (!parsed.success)
