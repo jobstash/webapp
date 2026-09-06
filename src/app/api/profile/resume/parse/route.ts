@@ -116,6 +116,7 @@ export const POST = async (request: Request): Promise<Response> => {
     address,
     skills,
     socials: extraction.socials,
+    career: extraction.career,
   });
   setCachedResult(hash, result);
 

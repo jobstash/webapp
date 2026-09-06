@@ -23,9 +23,11 @@ import { ProfileCard } from './profile-card';
 const Recommendation = ({
   item,
   position,
+  rankingVersion,
 }: {
   item: RecommendedJob;
   position: number;
+  rankingVersion: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const tracked = useRef(false);
@@ -41,9 +43,11 @@ const Recommendation = ({
           timer ??= setTimeout(() => {
             tracked.current = true;
             observer.disconnect();
-            void recordRecommendedJobImpression(item.job.id, position).catch(
-              () => undefined,
-            );
+            void recordRecommendedJobImpression(
+              item.job.id,
+              position,
+              rankingVersion,
+            ).catch(() => undefined);
           }, 1000);
         } else if (timer) {
           clearTimeout(timer);
@@ -57,7 +61,7 @@ const Recommendation = ({
       if (timer) clearTimeout(timer);
       observer.disconnect();
     };
-  }, [item.job.id, position]);
+  }, [item.job.id, position, rankingVersion]);
 
   return (
     <div ref={ref} className='space-y-2'>
@@ -126,7 +130,12 @@ export const JobsForMe = () => {
   return (
     <div className='space-y-5'>
       {data.jobs.map((item, index) => (
-        <Recommendation key={item.job.id} item={item} position={index} />
+        <Recommendation
+          key={`${data.rankingVersion}:${item.job.id}`}
+          item={item}
+          position={index}
+          rankingVersion={data.rankingVersion}
+        />
       ))}
     </div>
   );

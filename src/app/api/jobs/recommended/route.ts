@@ -11,6 +11,7 @@ import { clientEnv } from '@/lib/env/client';
 import { getSession } from '@/lib/server/session';
 
 const upstreamResponseSchema = z.object({
+  rankingVersion: z.string().default('legacy'),
   jobs: z.array(z.unknown()),
 });
 
@@ -56,6 +57,10 @@ export const GET = async () => {
   });
 
   return NextResponse.json(
-    recommendedJobsResponseSchema.parse({ jobs, total: jobs.length }),
+    recommendedJobsResponseSchema.parse({
+      jobs,
+      total: jobs.length,
+      rankingVersion: upstream.data.rankingVersion,
+    }),
   );
 };

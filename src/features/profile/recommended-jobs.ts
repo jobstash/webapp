@@ -8,6 +8,7 @@ export const recommendedJobSchema = z.object({
 });
 
 export const recommendedJobsResponseSchema = z.object({
+  rankingVersion: z.string().default('legacy'),
   jobs: z.array(recommendedJobSchema),
   total: z.number().int().nonnegative(),
 });

@@ -41,6 +41,8 @@ export const ResumeUploadDialog = ({
   onOpenChange,
 }: ResumeUploadDialogProps) => {
   const {
+    career,
+    setCareer,
     isParsing,
     isDragActive,
     error,
@@ -163,6 +165,61 @@ export const ResumeUploadDialog = ({
               )
             )}
 
+            {career && (
+              <div className='max-h-48 overflow-auto text-sm'>
+                <p className='font-medium'>Work history for job matching</p>
+                <p className='text-xs text-muted-foreground'>
+                  Saving uses these CV details to personalize jobs. Remove any
+                  incorrect role.
+                </p>
+                {career.educationLevel && (
+                  <p>Education: {career.educationLevel}</p>
+                )}
+                {career.roles.map((role, index) => (
+                  <div
+                    key={index}
+                    className='mt-2 flex items-start justify-between gap-2'
+                  >
+                    <div>
+                      <p>
+                        {role.title} · {role.company}
+                      </p>
+                      <p className='text-xs text-muted-foreground'>
+                        {role.seniority && `${role.seniority} · `}
+                        {role.startDate ?? 'Start date not specified'} –{' '}
+                        {role.current
+                          ? 'Present'
+                          : (role.endDate ?? 'End date not specified')}
+                      </p>
+                      <p className='text-xs text-muted-foreground'>
+                        {role.description}
+                      </p>
+                    </div>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      aria-label={`Remove ${role.title}`}
+                      onClick={() =>
+                        setCareer({
+                          ...career,
+                          roles: career.roles.filter((_, i) => i !== index),
+                        })
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => setCareer(null)}
+                >
+                  Do not use CV work history
+                </Button>
+              </div>
+            )}
+            {error && <FieldError>{error}</FieldError>}
             <DialogFooter>
               <Button
                 variant='ghost'

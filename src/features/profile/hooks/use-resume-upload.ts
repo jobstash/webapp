@@ -21,6 +21,7 @@ import {
 } from '@/features/profile/constants';
 import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
 import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
+import type { RecommendationCareer } from '../recommendation-career';
 
 const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx';
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -89,6 +90,7 @@ const validateFile = (file: File): string | null => {
 };
 
 interface ResumeParseResponse {
+  career?: RecommendationCareer;
   resumeId: string;
   fileName: string;
   name: string | null;
@@ -152,6 +154,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [resumeId, setResumeId] = useState<string | null>(null);
+  const [career, setCareer] = useState<RecommendationCareer | null>(null);
   const [detectedSkills, setDetectedSkills] = useState<PopularTagItem[]>([]);
   const [excludedSkillIds, setExcludedSkillIds] = useState<Set<string>>(
     new Set(),
@@ -183,6 +186,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
     setDetectedSkills([]);
     setExcludedSkillIds(new Set());
     setResumeId(null);
+    setCareer(null);
 
     const validationError = validateFile(file);
     if (validationError) {
@@ -216,6 +220,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       const parsed = (await parseRes.json()) as ResumeParseResponse;
 
       setResumeId(parsed.resumeId);
+      setCareer(parsed.career ?? null);
       setResumeEmail(parsed.email);
       setResumePhone(parsed.phone);
       setResumeSocials(parsed.socials);
@@ -316,6 +321,12 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
       });
 
       if (!saveRes.ok) throw new Error('Failed to save showcase');
+      const careerRes = await fetch('/api/profile/recommendation-career', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(career ?? { roles: [], educationLevel: null }),
+      });
+      if (!careerRes.ok) throw new Error('Failed to save career matching data');
 
       await queryClient.invalidateQueries({ queryKey: ['profile-showcase'] });
       queryClient.invalidateQueries({ queryKey: [JOB_APPLY_STATUS_KEY] });
@@ -332,6 +343,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
         await syncSkills(skillsToSync);
         await queryClient.invalidateQueries({ queryKey: ['profile-skills'] });
       }
+      await queryClient.invalidateQueries({ queryKey: ['recommended-jobs'] });
 
       trackEvent(GA_EVENT.RESUME_UPLOADED, {
         skill_count: skillsToSync?.length ?? 0,
@@ -374,6 +386,7 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   };
 
   const reset = (): void => {
+    setCareer(null);
     setError(null);
     setIsAnalyzed(false);
     setFileName(null);
@@ -396,6 +409,8 @@ export const useResumeUpload = ({ onOpenChange }: UseResumeUploadParams) => {
   };
 
   return {
+    career,
+    setCareer,
     isParsing,
     isDragActive,
     error,

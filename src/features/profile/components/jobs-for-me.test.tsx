@@ -47,6 +47,7 @@ vi.mock(
 import { JobsForMe } from './jobs-for-me';
 
 const response: RecommendedJobsResponse = {
+  rankingVersion: 'content-v2',
   jobs: [
     {
       reason: 'Engineering Management · Architecture',

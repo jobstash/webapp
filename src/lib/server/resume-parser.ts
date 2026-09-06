@@ -5,6 +5,7 @@ import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
+import { recommendationCareerSchema } from '@/features/profile/recommendation-career';
 import type { Address } from '@/lib/schemas';
 import {
   type PopularTagItem,
@@ -15,6 +16,9 @@ import {
 export { extractText, type ExtractedText } from '@/lib/server/extract-text';
 
 const resumeExtractionSchema = z.object({
+  career: recommendationCareerSchema.describe(
+    'Extract only supported career facts. Dates must be YYYY-MM-DD or null when the full date is not known. Do not invent dates, tenure or seniority. Do not include sensitive personal attributes or contact details.',
+  ),
   isResume: z
     .boolean()
     .describe(

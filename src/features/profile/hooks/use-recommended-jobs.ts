@@ -25,6 +25,7 @@ const recordActivity = async (body: {
   eventId: string;
   surface: 'jobs_for_me';
   position?: number;
+  metadata?: Record<string, unknown>;
 }) => {
   const response = await fetch('/api/jobs/activity', {
     method: 'POST',
@@ -60,7 +61,7 @@ export const useDismissRecommendedJob = () => {
         (current) => {
           if (!current) return current;
           const jobs = current.jobs.filter(({ job }) => job.id !== shortUUID);
-          return { jobs, total: jobs.length };
+          return { ...current, jobs, total: jobs.length };
         },
       );
     },
@@ -70,6 +71,7 @@ export const useDismissRecommendedJob = () => {
 export const recordRecommendedJobImpression = (
   shortUUID: string,
   position: number,
+  rankingVersion = 'legacy',
 ) =>
   recordActivity({
     shortUUID,
@@ -77,4 +79,5 @@ export const recordRecommendedJobImpression = (
     eventId: crypto.randomUUID(),
     surface: 'jobs_for_me',
     position,
+    metadata: { rankingVersion },
   });

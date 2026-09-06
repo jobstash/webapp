@@ -206,7 +206,8 @@ export const ContactAndDigestSettings = () => {
         <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <div>
             <p className='text-sm text-muted-foreground'>
-              Fresh matches, once a week.
+              Up to three job matches, every Monday. Only after you confirm by
+              email.
             </p>
             {digestStatus === 'pending' && (
               <p className='mt-1 text-xs text-amber-400'>Check your email.</p>

@@ -74,6 +74,22 @@ describe('GET /api/jobs/recommended', () => {
         },
       ],
       total: 1,
+      rankingVersion: 'legacy',
+    });
+  });
+  it('preserves the upstream ranking version for recommendation attribution', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        Response.json({
+          jobs: [{ job: validJob, reason: 'Matches several requirements' }],
+          rankingVersion: 'sentences-v1',
+        }),
+      ),
+    );
+    expect(await (await GET()).json()).toMatchObject({
+      rankingVersion: 'sentences-v1',
+      total: 1,
     });
   });
 });
