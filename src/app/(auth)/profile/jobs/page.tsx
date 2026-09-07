@@ -5,7 +5,7 @@ const ProfileJobsPage = () => (
     <div>
       <h1 className='text-2xl font-semibold'>Jobs for me</h1>
       <p className='mt-1 text-sm text-muted-foreground'>
-        Fresh matches from your activity.
+        All your matches from jobs published in the past month.
       </p>
     </div>
     <section aria-label='Recommended jobs'>

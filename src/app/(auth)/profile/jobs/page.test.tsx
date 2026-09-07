@@ -12,7 +12,11 @@ describe('Profile jobs page', () => {
   it('shows one activity-based job feed with short copy', () => {
     render(<ProfileJobsPage />);
     expect(screen.getByRole('heading', { name: 'Jobs for me' })).toBeVisible();
-    expect(screen.getByText('Fresh matches from your activity.')).toBeVisible();
+    expect(
+      screen.getByText(
+        'All your matches from jobs published in the past month.',
+      ),
+    ).toBeVisible();
     expect(
       screen.getByRole('region', { name: 'Recommended jobs' }),
     ).toHaveTextContent('Recommended results');

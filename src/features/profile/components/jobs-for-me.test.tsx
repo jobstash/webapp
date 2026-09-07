@@ -141,4 +141,27 @@ describe('JobsForMe', () => {
     rerender(<JobsForMe />);
     expect(screen.getByText('No matches yet.')).toBeVisible();
   });
+
+  it('renders every returned match, not just an email-sized shortlist', () => {
+    mockUseRecommendedJobs.mockReturnValueOnce({
+      data: {
+        ...response,
+        total: 51,
+        jobs: Array.from({ length: 51 }, (_, index) => ({
+          ...response.jobs[0],
+          job: {
+            ...response.jobs[0].job,
+            id: `job-${index}`,
+            title: `Engineer ${index}`,
+          },
+        })),
+      },
+      isPending: false,
+      isError: false,
+      isFetching: false,
+    });
+    render(<JobsForMe />);
+    expect(screen.getAllByRole('button', { name: 'Hide' })).toHaveLength(51);
+    expect(screen.getByText('Engineer 50')).toBeVisible();
+  });
 });
