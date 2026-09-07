@@ -16,6 +16,7 @@ const upstreamResponseSchema = z.object({
   total: z.number().int().nonnegative().optional(),
   page: z.number().int().positive().default(1),
   hasMore: z.boolean().default(false),
+  rankedAt: z.string().datetime().optional(),
 });
 
 const upstreamItemSchema = z.object({
@@ -36,8 +37,16 @@ export const GET = async (request: Request) => {
     .max(1_000_000)
     .catch(1)
     .parse(new URL(request.url).searchParams.get('page') ?? 1);
+  const rankedAt = z
+    .string()
+    .datetime()
+    .optional()
+    .catch(undefined)
+    .parse(new URL(request.url).searchParams.get('rankedAt') ?? undefined);
+  const query = new URLSearchParams({ page: String(page) });
+  if (rankedAt) query.set('rankedAt', rankedAt);
   const response = await fetch(
-    `${clientEnv.MW_URL}/jobs/recommended?page=${page}`,
+    `${clientEnv.MW_URL}/jobs/recommended?${query}`,
     {
       headers: { Authorization: `Bearer ${apiToken}` },
       cache: 'no-store',
@@ -81,6 +90,7 @@ export const GET = async (request: Request) => {
             ),
       page: upstream.data.page,
       hasMore: upstream.data.hasMore,
+      rankedAt: upstream.data.rankedAt,
       rankingVersion: upstream.data.rankingVersion,
     }),
   );

@@ -101,26 +101,31 @@ describe('GET /api/jobs/recommended', () => {
     });
   });
   it('forwards the requested page and preserves the total match count', async () => {
+    const rankedAt = '2026-09-07T10:00:00.000Z';
     const fetch = vi.fn().mockResolvedValue(
       Response.json({
         jobs: [{ job: validJob, reason: 'Engineering' }],
         total: 61,
         page: 2,
         hasMore: true,
+        rankedAt,
       }),
     );
     vi.stubGlobal('fetch', fetch);
     const response = await GET(
-      new Request('https://jobstash.xyz/api/jobs/recommended?page=2'),
+      new Request(
+        `https://jobstash.xyz/api/jobs/recommended?page=2&rankedAt=${encodeURIComponent(rankedAt)}`,
+      ),
     );
     expect(fetch).toHaveBeenCalledWith(
-      'https://middleware.test/jobs/recommended?page=2',
+      `https://middleware.test/jobs/recommended?page=2&rankedAt=${encodeURIComponent(rankedAt)}`,
       expect.objectContaining({ cache: 'no-store' }),
     );
     expect(await response.json()).toMatchObject({
       total: 61,
       page: 2,
       hasMore: true,
+      rankedAt,
     });
   });
 });

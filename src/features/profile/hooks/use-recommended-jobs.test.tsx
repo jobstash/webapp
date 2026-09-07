@@ -26,22 +26,35 @@ describe('recommendation pages', () => {
   });
 
   it('fetches and caches the requested page independently', async () => {
-    const fetch = vi
-      .fn()
-      .mockResolvedValue(
-        Response.json({ jobs: [], total: 61, page: 2, hasMore: true }),
-      );
+    const rankedAt = '2026-09-07T10:00:00.000Z';
+    const fetch = vi.fn().mockResolvedValue(
+      Response.json({
+        jobs: [],
+        total: 61,
+        page: 2,
+        hasMore: true,
+        rankedAt,
+      }),
+    );
     vi.stubGlobal('fetch', fetch);
     const { client, wrapper } = setup();
-    const { result } = renderHook(() => useRecommendedJobs(2), { wrapper });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(fetch).toHaveBeenCalledWith('/api/jobs/recommended?page=2', {
-      cache: 'no-store',
+    const { result } = renderHook(() => useRecommendedJobs(2, rankedAt), {
+      wrapper,
     });
-    expect(client.getQueryData(['recommended-jobs', 2])).toMatchObject({
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(fetch).toHaveBeenCalledWith(
+      `/api/jobs/recommended?page=2&rankedAt=${encodeURIComponent(rankedAt)}`,
+      {
+        cache: 'no-store',
+      },
+    );
+    expect(
+      client.getQueryData(['recommended-jobs', 2, rankedAt]),
+    ).toMatchObject({
       total: 61,
       page: 2,
       hasMore: true,
+      rankedAt,
     });
     expect(client.getQueryData(['recommended-jobs', 1])).toBeUndefined();
     client.clear();

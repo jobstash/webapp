@@ -13,7 +13,8 @@ const { mockUseRecommendedJobs, mockDismiss, mockImpression } = vi.hoisted(
 );
 
 vi.mock('../hooks/use-recommended-jobs', () => ({
-  useRecommendedJobs: (page: number) => mockUseRecommendedJobs(page),
+  useRecommendedJobs: (page: number, rankedAt?: string) =>
+    mockUseRecommendedJobs(page, rankedAt),
   useDismissRecommendedJob: () => ({
     mutate: mockDismiss,
     isPending: false,
@@ -84,6 +85,7 @@ describe('JobsForMe', () => {
       disconnect() {}
     }
     vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
+    vi.stubGlobal('scrollTo', vi.fn());
     mockUseRecommendedJobs.mockReturnValue({
       data: response,
       isPending: false,
@@ -174,6 +176,7 @@ describe('JobsForMe', () => {
         page,
         total: 31,
         hasMore: page === 1,
+        rankedAt: '2026-09-07T10:00:00.000Z',
         jobs: response.jobs.map((item) => ({
           ...item,
           job: { ...item.job, id: `job-${page}`, title: `Page ${page} role` },
@@ -187,7 +190,14 @@ describe('JobsForMe', () => {
     expect(screen.getByText('Page 1 · 31 matches')).toBeVisible();
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    expect(mockUseRecommendedJobs).toHaveBeenLastCalledWith(2);
+    expect(mockUseRecommendedJobs).toHaveBeenLastCalledWith(
+      2,
+      '2026-09-07T10:00:00.000Z',
+    );
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      behavior: 'smooth',
+    });
     expect(screen.getByText('Page 2 role')).toBeVisible();
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Previous' }));

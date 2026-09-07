@@ -9,8 +9,13 @@ import {
 
 const QUERY_KEY = ['recommended-jobs'] as const;
 
-const load = async (page: number): Promise<RecommendedJobsResponse> => {
-  const response = await fetch(`/api/jobs/recommended?page=${page}`, {
+const load = async (
+  page: number,
+  rankedAt?: string,
+): Promise<RecommendedJobsResponse> => {
+  const query = new URLSearchParams({ page: String(page) });
+  if (rankedAt) query.set('rankedAt', rankedAt);
+  const response = await fetch(`/api/jobs/recommended?${query}`, {
     cache: 'no-store',
   });
   if (!response.ok) {
@@ -38,10 +43,10 @@ const recordActivity = async (body: {
   }
 };
 
-export const useRecommendedJobs = (page = 1) =>
+export const useRecommendedJobs = (page = 1, rankedAt?: string) =>
   useQuery({
-    queryKey: [...QUERY_KEY, page],
-    queryFn: () => load(page),
+    queryKey: rankedAt ? [...QUERY_KEY, page, rankedAt] : [...QUERY_KEY, page],
+    queryFn: () => load(page, rankedAt),
     staleTime: 60_000,
   });
 

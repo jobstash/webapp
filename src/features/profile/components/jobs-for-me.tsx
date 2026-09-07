@@ -84,8 +84,17 @@ const Recommendation = ({
 
 export const JobsForMe = () => {
   const [page, setPage] = useState(1);
-  const { data, isPending, isError, refetch, isFetching } =
-    useRecommendedJobs(page);
+  const [rankedAt, setRankedAt] = useState<string>();
+  const { data, isPending, isError, refetch, isFetching } = useRecommendedJobs(
+    page,
+    page === 1 ? undefined : rankedAt,
+  );
+
+  const changePage = (next: number) => {
+    if (page === 1) setRankedAt(data?.rankedAt);
+    setPage(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (isPending) {
     return (
@@ -122,7 +131,7 @@ export const JobsForMe = () => {
             {page === 1 ? 'No matches yet.' : 'No matches on this page.'}
           </p>
           {page > 1 && (
-            <Button size='sm' variant='secondary' onClick={() => setPage(1)}>
+            <Button size='sm' variant='secondary' onClick={() => changePage(1)}>
               Back to first page
             </Button>
           )}
@@ -151,7 +160,7 @@ export const JobsForMe = () => {
         <Button
           variant='secondary'
           disabled={page === 1 || isFetching}
-          onClick={() => setPage(page - 1)}
+          onClick={() => changePage(page - 1)}
         >
           Previous
         </Button>
@@ -161,7 +170,7 @@ export const JobsForMe = () => {
         <Button
           variant='secondary'
           disabled={!data.hasMore || isFetching}
-          onClick={() => setPage(page + 1)}
+          onClick={() => changePage(page + 1)}
         >
           Next
         </Button>

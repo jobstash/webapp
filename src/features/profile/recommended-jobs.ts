@@ -13,6 +13,7 @@ export const recommendedJobsResponseSchema = z.object({
   total: z.number().int().nonnegative(),
   page: z.number().int().positive().default(1),
   hasMore: z.boolean().default(false),
+  rankedAt: z.string().datetime().optional(),
 });
 
 export type RecommendedJob = z.infer<typeof recommendedJobSchema>;
