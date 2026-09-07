@@ -50,6 +50,7 @@ const response: RecommendedJobsResponse = {
   rankingVersion: 'content-v2',
   jobs: [
     {
+      reason: 'Engineering Management · Architecture',
       job: {
         id: 'job-1',
         title: 'Engineering Manager',

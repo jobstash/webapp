@@ -17,6 +17,7 @@ const upstreamResponseSchema = z.object({
 
 const upstreamItemSchema = z.object({
   job: jobListItemDto,
+  reason: z.string().min(1),
 });
 
 export const GET = async () => {
@@ -47,6 +48,7 @@ export const GET = async () => {
     try {
       const mapped = recommendedJobSchema.safeParse({
         job: dtoToJobListItem(item.data.job),
+        reason: item.data.reason,
       });
       return mapped.success ? [mapped.data] : [];
     } catch {
