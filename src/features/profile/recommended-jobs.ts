@@ -4,7 +4,6 @@ import { jobListItemSchema } from '@/features/jobs/schemas';
 
 export const recommendedJobSchema = z.object({
   job: jobListItemSchema,
-  reason: z.string().min(1),
 });
 
 export const recommendedJobsResponseSchema = z.object({

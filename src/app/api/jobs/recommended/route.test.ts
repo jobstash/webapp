@@ -61,7 +61,7 @@ describe('GET /api/jobs/recommended', () => {
 
     const response = await GET();
     const body = (await response.json()) as {
-      jobs: Array<{ job: { id: string }; reason: string }>;
+      jobs: Array<{ job: { id: string } }>;
       total: number;
     };
 
@@ -70,7 +70,6 @@ describe('GET /api/jobs/recommended', () => {
       jobs: [
         {
           job: expect.objectContaining({ id: 'abc123' }),
-          reason: 'Engineering',
         },
       ],
       total: 1,
@@ -82,7 +81,7 @@ describe('GET /api/jobs/recommended', () => {
       'fetch',
       vi.fn().mockResolvedValue(
         Response.json({
-          jobs: [{ job: validJob, reason: 'Matches several requirements' }],
+          jobs: [{ job: validJob }],
           rankingVersion: 'sentences-v1',
         }),
       ),

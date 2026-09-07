@@ -66,8 +66,7 @@ const Recommendation = ({
   return (
     <div ref={ref} className='space-y-2'>
       <JobListItem job={item.job} />
-      <div className='flex items-center justify-between gap-3 px-1 text-xs text-muted-foreground'>
-        <span>{item.reason}</span>
+      <div className='flex justify-end px-1 text-xs text-muted-foreground'>
         <Button
           type='button'
           size='sm'

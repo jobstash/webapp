@@ -50,7 +50,6 @@ const response: RecommendedJobsResponse = {
   rankingVersion: 'content-v2',
   jobs: [
     {
-      reason: 'Engineering Management · Architecture',
       job: {
         id: 'job-1',
         title: 'Engineering Manager',
@@ -97,13 +96,25 @@ describe('JobsForMe', () => {
     vi.unstubAllGlobals();
   });
 
-  it('shows one concise reason and lets the user hide a job', () => {
+  it('shows the job without explanations and lets the user hide it', () => {
+    mockUseRecommendedJobs.mockReturnValueOnce({
+      data: {
+        ...response,
+        jobs: response.jobs.map((item) => ({
+          ...item,
+          reason: 'Funding Profile You Explored',
+        })),
+      },
+      isPending: false,
+      isError: false,
+      isFetching: false,
+    });
     render(<JobsForMe />);
 
     expect(screen.getByText('Engineering Manager')).toBeVisible();
     expect(
-      screen.getByText('Engineering Management · Architecture'),
-    ).toBeVisible();
+      screen.queryByText('Funding Profile You Explored'),
+    ).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
     expect(mockDismiss).toHaveBeenCalledWith('job-1');
   });
