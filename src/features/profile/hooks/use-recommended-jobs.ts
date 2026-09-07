@@ -9,8 +9,8 @@ import {
 
 const QUERY_KEY = ['recommended-jobs'] as const;
 
-const load = async (): Promise<RecommendedJobsResponse> => {
-  const response = await fetch('/api/jobs/recommended', {
+const load = async (page: number): Promise<RecommendedJobsResponse> => {
+  const response = await fetch(`/api/jobs/recommended?page=${page}`, {
     cache: 'no-store',
   });
   if (!response.ok) {
@@ -38,10 +38,10 @@ const recordActivity = async (body: {
   }
 };
 
-export const useRecommendedJobs = () =>
+export const useRecommendedJobs = (page = 1) =>
   useQuery({
-    queryKey: QUERY_KEY,
-    queryFn: load,
+    queryKey: [...QUERY_KEY, page],
+    queryFn: () => load(page),
     staleTime: 60_000,
   });
 
@@ -56,14 +56,15 @@ export const useDismissRecommendedJob = () => {
         surface: 'jobs_for_me',
       }),
     onSuccess: (_, shortUUID) => {
-      queryClient.setQueryData<RecommendedJobsResponse>(
-        QUERY_KEY,
+      queryClient.setQueriesData<RecommendedJobsResponse>(
+        { queryKey: QUERY_KEY },
         (current) => {
           if (!current) return current;
           const jobs = current.jobs.filter(({ job }) => job.id !== shortUUID);
-          return { ...current, jobs, total: jobs.length };
+          return { ...current, jobs, total: Math.max(0, current.total - 1) };
         },
       );
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
 };

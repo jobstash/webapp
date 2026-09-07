@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   AlertCircleIcon,
@@ -83,8 +83,9 @@ const Recommendation = ({
 };
 
 export const JobsForMe = () => {
+  const [page, setPage] = useState(1);
   const { data, isPending, isError, refetch, isFetching } =
-    useRecommendedJobs();
+    useRecommendedJobs(page);
 
   if (isPending) {
     return (
@@ -117,7 +118,14 @@ export const JobsForMe = () => {
       <ProfileCard title='Jobs for me'>
         <div className='flex flex-col items-center gap-3 py-6'>
           <SearchIcon className='size-8 text-muted-foreground/50' />
-          <p className='text-sm text-muted-foreground'>No matches yet.</p>
+          <p className='text-sm text-muted-foreground'>
+            {page === 1 ? 'No matches yet.' : 'No matches on this page.'}
+          </p>
+          {page > 1 && (
+            <Button size='sm' variant='secondary' onClick={() => setPage(1)}>
+              Back to first page
+            </Button>
+          )}
           <Button size='sm' variant='secondary' asChild>
             <Link href='/'>Browse jobs</Link>
           </Button>
@@ -132,10 +140,32 @@ export const JobsForMe = () => {
         <Recommendation
           key={`${data.rankingVersion}:${item.job.id}`}
           item={item}
-          position={index}
+          position={(page - 1) * 30 + index}
           rankingVersion={data.rankingVersion}
         />
       ))}
+      <nav
+        aria-label='Recommendation pages'
+        className='flex items-center justify-between gap-3'
+      >
+        <Button
+          variant='secondary'
+          disabled={page === 1 || isFetching}
+          onClick={() => setPage(page - 1)}
+        >
+          Previous
+        </Button>
+        <span className='text-sm text-muted-foreground'>
+          Page {page} · {data.total} matches
+        </span>
+        <Button
+          variant='secondary'
+          disabled={!data.hasMore || isFetching}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </Button>
+      </nav>
     </div>
   );
 };

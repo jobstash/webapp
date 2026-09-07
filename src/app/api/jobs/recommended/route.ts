@@ -13,6 +13,9 @@ import { getSession } from '@/lib/server/session';
 const upstreamResponseSchema = z.object({
   rankingVersion: z.string().default('legacy'),
   jobs: z.array(z.unknown()),
+  total: z.number().int().nonnegative().optional(),
+  page: z.number().int().positive().default(1),
+  hasMore: z.boolean().default(false),
 });
 
 const upstreamItemSchema = z.object({
@@ -20,16 +23,26 @@ const upstreamItemSchema = z.object({
   reason: z.string().min(1),
 });
 
-export const GET = async () => {
+export const GET = async (request: Request) => {
   const { apiToken } = await getSession();
   if (!apiToken) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const response = await fetch(`${clientEnv.MW_URL}/jobs/recommended`, {
-    headers: { Authorization: `Bearer ${apiToken}` },
-    cache: 'no-store',
-  }).catch(() => null);
+  const page = z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(1_000_000)
+    .catch(1)
+    .parse(new URL(request.url).searchParams.get('page') ?? 1);
+  const response = await fetch(
+    `${clientEnv.MW_URL}/jobs/recommended?page=${page}`,
+    {
+      headers: { Authorization: `Bearer ${apiToken}` },
+      cache: 'no-store',
+    },
+  ).catch(() => null);
   if (!response) {
     return NextResponse.json({ error: 'Service unavailable' }, { status: 502 });
   }
@@ -59,7 +72,15 @@ export const GET = async () => {
   return NextResponse.json(
     recommendedJobsResponseSchema.parse({
       jobs,
-      total: jobs.length,
+      total:
+        upstream.data.total === undefined
+          ? jobs.length
+          : Math.max(
+              jobs.length,
+              upstream.data.total - upstream.data.jobs.length + jobs.length,
+            ),
+      page: upstream.data.page,
+      hasMore: upstream.data.hasMore,
       rankingVersion: upstream.data.rankingVersion,
     }),
   );

@@ -13,7 +13,7 @@ const { mockUseRecommendedJobs, mockDismiss, mockImpression } = vi.hoisted(
 );
 
 vi.mock('../hooks/use-recommended-jobs', () => ({
-  useRecommendedJobs: () => mockUseRecommendedJobs(),
+  useRecommendedJobs: (page: number) => mockUseRecommendedJobs(page),
   useDismissRecommendedJob: () => ({
     mutate: mockDismiss,
     isPending: false,
@@ -73,6 +73,8 @@ const response: RecommendedJobsResponse = {
     },
   ],
   total: 1,
+  page: 1,
+  hasMore: false,
 };
 
 describe('JobsForMe', () => {
@@ -163,5 +165,32 @@ describe('JobsForMe', () => {
     render(<JobsForMe />);
     expect(screen.getAllByRole('button', { name: 'Hide' })).toHaveLength(51);
     expect(screen.getByText('Engineer 50')).toBeVisible();
+  });
+
+  it('lets users reach every page and shows the full match count', () => {
+    mockUseRecommendedJobs.mockImplementation((page: number) => ({
+      data: {
+        ...response,
+        page,
+        total: 31,
+        hasMore: page === 1,
+        jobs: response.jobs.map((item) => ({
+          ...item,
+          job: { ...item.job, id: `job-${page}`, title: `Page ${page} role` },
+        })),
+      },
+      isPending: false,
+      isError: false,
+      isFetching: false,
+    }));
+    render(<JobsForMe />);
+    expect(screen.getByText('Page 1 · 31 matches')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(mockUseRecommendedJobs).toHaveBeenLastCalledWith(2);
+    expect(screen.getByText('Page 2 role')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Previous' }));
+    expect(screen.getByText('Page 1 role')).toBeVisible();
   });
 });

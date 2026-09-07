@@ -11,6 +11,8 @@ export const recommendedJobsResponseSchema = z.object({
   rankingVersion: z.string().default('legacy'),
   jobs: z.array(recommendedJobSchema),
   total: z.number().int().nonnegative(),
+  page: z.number().int().positive().default(1),
+  hasMore: z.boolean().default(false),
 });
 
 export type RecommendedJob = z.infer<typeof recommendedJobSchema>;

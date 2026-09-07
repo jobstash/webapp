@@ -59,7 +59,9 @@ describe('GET /api/jobs/recommended', () => {
       ),
     );
 
-    const response = await GET();
+    const response = await GET(
+      new Request('https://jobstash.xyz/api/jobs/recommended'),
+    );
     const body = (await response.json()) as {
       jobs: Array<{ job: { id: string }; reason: string }>;
       total: number;
@@ -75,6 +77,8 @@ describe('GET /api/jobs/recommended', () => {
       ],
       total: 1,
       rankingVersion: 'legacy',
+      page: 1,
+      hasMore: false,
     });
   });
   it('preserves the upstream ranking version for recommendation attribution', async () => {
@@ -87,9 +91,36 @@ describe('GET /api/jobs/recommended', () => {
         }),
       ),
     );
-    expect(await (await GET()).json()).toMatchObject({
+    expect(
+      await (
+        await GET(new Request('https://jobstash.xyz/api/jobs/recommended'))
+      ).json(),
+    ).toMatchObject({
       rankingVersion: 'sentences-v1',
       total: 1,
+    });
+  });
+  it('forwards the requested page and preserves the total match count', async () => {
+    const fetch = vi.fn().mockResolvedValue(
+      Response.json({
+        jobs: [{ job: validJob, reason: 'Engineering' }],
+        total: 61,
+        page: 2,
+        hasMore: true,
+      }),
+    );
+    vi.stubGlobal('fetch', fetch);
+    const response = await GET(
+      new Request('https://jobstash.xyz/api/jobs/recommended?page=2'),
+    );
+    expect(fetch).toHaveBeenCalledWith(
+      'https://middleware.test/jobs/recommended?page=2',
+      expect.objectContaining({ cache: 'no-store' }),
+    );
+    expect(await response.json()).toMatchObject({
+      total: 61,
+      page: 2,
+      hasMore: true,
     });
   });
 });
