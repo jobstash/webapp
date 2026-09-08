@@ -5,6 +5,7 @@ import { ProfileCard } from './profile-card';
 import { SettingsLogoutButton } from './settings-logout-button';
 import { JobPreferencesForm } from './job-preferences-form';
 import { ContactAndDigestSettings } from './contact-and-digest-settings';
+import { TalentPoolSetting } from './talent-pool-setting';
 
 const SettingsRow = ({
   title,
@@ -26,6 +27,7 @@ const SettingsRow = ({
 
 export const ProfileSettings = () => (
   <div className='flex flex-col gap-4'>
+    <TalentPoolSetting />
     <ContactAndDigestSettings />
     <JobPreferencesForm />
     <ProfileCard title='Session'>
