@@ -113,4 +113,26 @@ describe('visitor activity', () => {
       '2001:4860:4860::8888',
     );
   });
+  it('keeps agent tokens beyond 180 characters and caps collected strings at 1024', async () => {
+    vi.stubEnv(
+      'VISITOR_INGEST_SECRET',
+      'test-ingest-secret-with-at-least-32-characters',
+    );
+    vi.stubEnv('VISITOR_TRUSTED_IP_HEADER', 'x-real-ip');
+    const fetch = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetch);
+    const browser =
+      'Mozilla/5.0 ' + 'x'.repeat(200) + ' AhrefsBot/7.0 ' + 'x'.repeat(1000);
+    await recordVisitorActivity(
+      new NextRequest('https://jobstash.xyz/', {
+        headers: { 'x-real-ip': '8.8.8.8', 'user-agent': browser },
+      }),
+      visitorIdentity(undefined),
+      'request',
+      '/',
+    );
+    const saved = JSON.parse(fetch.mock.calls[0][1].body).browser;
+    expect(saved).toContain('AhrefsBot/7.0');
+    expect(saved).toHaveLength(1024);
+  });
 });

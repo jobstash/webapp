@@ -101,7 +101,7 @@ export async function recordVisitorActivity(
         }
       : {}),
     ...(country && /^[A-Z]{2}$/.test(country) ? { country } : {}),
-    browser: (req.headers.get('user-agent') ?? '').slice(0, 180),
+    browser: (req.headers.get('user-agent') ?? '').slice(0, 1024),
   });
   const authorization = token ? `Bearer ${token}` : '';
   const timestamp = String(Date.now());
