@@ -1,8 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
 import { getSession } from '@/lib/server/session';
+import {
+  recordVisitorActivity,
+  setVisitorCookie,
+  visitorIdentity,
+  VISITOR_COOKIE,
+} from '@/lib/server/visitor-activity';
 
 const requestSchema = z.object({
   shortUUID: z.string().min(1).max(128),
@@ -14,13 +20,27 @@ const requestSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
-export const POST = async (req: Request): Promise<NextResponse> => {
+export const POST = async (req: NextRequest): Promise<NextResponse> => {
   const session = await getSession();
-  if (!session.apiToken) return new NextResponse(null, { status: 204 });
 
   const parsed = requestSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
+
+  if (!session.apiToken) {
+    const identity = visitorIdentity(req.cookies.get(VISITOR_COOKIE)?.value);
+    if (parsed.data.eventType === 'job_view') {
+      await recordVisitorActivity(
+        req,
+        identity,
+        'job_view',
+        `/jobs/${parsed.data.shortUUID}`,
+      );
+    }
+    const response = new NextResponse(null, { status: 204 });
+    setVisitorCookie(response, identity);
+    return response;
   }
 
   const response = await fetch(`${clientEnv.MW_URL}/profile/jobs/activity`, {

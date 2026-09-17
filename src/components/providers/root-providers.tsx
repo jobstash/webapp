@@ -4,6 +4,8 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ProgressProvider } from '@bprogress/next/app';
 import { Progress, Bar } from '@bprogress/next';
 
+import { VisitorPresence } from '@/components/visitor-activity/visitor-presence';
+
 import { ReactQueryProvider } from './react-query-provider';
 
 export const RootProviders = ({ children }: React.PropsWithChildren) => {
@@ -19,6 +21,7 @@ export const RootProviders = ({ children }: React.PropsWithChildren) => {
               <Bar className='absolute! top-0! bg-linear-to-r! from-[#D68800]! to-[#8743FF]!' />
             </Progress>
           </div>
+          <VisitorPresence />
           {children}
         </ProgressProvider>
       </ReactQueryProvider>
