@@ -77,4 +77,40 @@ describe('visitor activity', () => {
     ).resolves.toBeUndefined();
     expect(fetch).toHaveBeenCalledTimes(1);
   });
+  it('does not count internal health checks as visitors', async () => {
+    vi.stubEnv(
+      'VISITOR_INGEST_SECRET',
+      'test-ingest-secret-with-at-least-32-characters',
+    );
+    vi.stubEnv('VISITOR_TRUSTED_IP_HEADER', 'x-real-ip');
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    await recordVisitorActivity(
+      new NextRequest('http://localhost:3000/'),
+      visitorIdentity(undefined),
+      'request',
+      '/',
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it('forwards the raw address from the configured trusted proxy', async () => {
+    vi.stubEnv(
+      'VISITOR_INGEST_SECRET',
+      'test-ingest-secret-with-at-least-32-characters',
+    );
+    vi.stubEnv('VISITOR_TRUSTED_IP_HEADER', 'x-real-ip');
+    const fetch = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetch);
+    await recordVisitorActivity(
+      new NextRequest('https://jobstash.xyz/', {
+        headers: { 'x-real-ip': '2001:4860:4860::8888' },
+      }),
+      visitorIdentity(undefined),
+      'request',
+      '/',
+    );
+    expect(JSON.parse(fetch.mock.calls[0][1].body).ip).toBe(
+      '2001:4860:4860::8888',
+    );
+  });
 });

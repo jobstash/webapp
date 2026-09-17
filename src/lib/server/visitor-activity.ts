@@ -83,6 +83,8 @@ export async function recordVisitorActivity(
   const ipHeader = process.env.VISITOR_TRUSTED_IP_HEADER;
   const countryHeader = process.env.VISITOR_TRUSTED_COUNTRY_HEADER;
   const ip = ipHeader ? req.headers.get(ipHeader)?.trim() : undefined;
+  // Health checks inside the container bypass the public proxy.
+  if (ipHeader && (!ip || !isIP(ip))) return;
   const country = countryHeader
     ? req.headers.get(countryHeader)?.toUpperCase()
     : undefined;
