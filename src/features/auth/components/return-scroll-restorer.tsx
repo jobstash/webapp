@@ -9,7 +9,16 @@ function Restorer() {
   const search = useSearchParams().toString();
   useEffect(() => {
     const saved = readSignInReturn();
-    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    let current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    // Next can append the fragment twice when returning to a cached route.
+    // Correct only that exact duplication of the saved sign-in destination.
+    if (saved?.phase === 'returning') {
+      const hash = new URL(saved.href, window.location.origin).hash;
+      if (hash && current === saved.href + hash) {
+        window.history.replaceState(window.history.state, '', saved.href);
+        current = saved.href;
+      }
+    }
     if (!saved || saved.phase !== 'returning' || saved.href !== current) return;
     let frame = 0;
     let timer: ReturnType<typeof setTimeout>;
