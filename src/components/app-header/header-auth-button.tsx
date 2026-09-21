@@ -1,5 +1,7 @@
 'use client';
 
+import { LoginLink } from '@/features/auth/components/login-link';
+
 import type { ComponentType } from 'react';
 
 import { CircleUserIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
@@ -57,9 +59,9 @@ export const HeaderAuthButton = () => {
       asChild
       className='animate-in bg-input/30 px-3 text-sm duration-200 fade-in lg:px-6 lg:text-base'
     >
-      <LinkWithLoader href='/login' prefetch={false} onClick={handleClick}>
+      <LoginLink prefetch={false} onClick={handleClick}>
         Log in
-      </LinkWithLoader>
+      </LoginLink>
     </Button>
   );
 };

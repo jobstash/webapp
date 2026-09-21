@@ -1,5 +1,7 @@
 'use client';
 
+import { LoginLink } from '@/features/auth/components/login-link';
+
 import { ArrowRightIcon, FlameIcon, SparklesIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -9,7 +11,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { LinkWithLoader } from '@/components/link-with-loader';
 
 import { useJobMatch } from './use-job-match';
 
@@ -61,11 +62,11 @@ export const EligibilityBadge = ({ jobId }: EligibilityBadgeProps) => {
           'hover:from-teal-500/20 hover:to-emerald-500/20 hover:ring-teal-500/30',
         )}
       >
-        <LinkWithLoader href='/login' prefetch={false}>
+        <LoginLink prefetch={false}>
           <SparklesIcon className='size-3' />
           Check eligibility
           <ArrowRightIcon className='size-3' />
-        </LinkWithLoader>
+        </LoginLink>
       </Badge>
     );
   }

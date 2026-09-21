@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ProfileSkill } from '@/features/profile/schemas';
 import { uniqueSkills } from '../unique-skills';
 
-const fetchProfileSkills = async (): Promise<ProfileSkill[]> => {
+export const fetchProfileSkills = async (): Promise<ProfileSkill[]> => {
   const res = await fetch('/api/profile/skills');
   if (!res.ok) throw new Error(`GET /api/profile/skills failed: ${res.status}`);
 

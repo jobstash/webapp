@@ -11,14 +11,45 @@ import { useLoginAuth } from './use-login-auth';
 import { useLoginContent } from './use-login-content';
 
 export const LoginContent = () => {
-  const { isNavigating, redirectTo, isBackToHome, handleBack } =
-    useLoginContent();
-  const { login, isLoading } = useLoginAuth(redirectTo);
+  const {
+    isNavigating,
+    redirectTo,
+    destinationReady,
+    isBackToHome,
+    handleBack: navigateBack,
+  } = useLoginContent();
+  const {
+    login,
+    isLoading,
+    profileError,
+    retryProfile,
+    cancelRedirect,
+    sessionError,
+    retrySession,
+  } = useLoginAuth(redirectTo, destinationReady);
+
+  const handleBack = () => {
+    cancelRedirect();
+    navigateBack();
+  };
 
   if (isLoading) {
     return (
-      <div className='flex h-dvh flex-col items-center justify-center bg-background'>
-        <LoaderIcon className='size-6 animate-spin text-muted-foreground' />
+      <div className='flex h-dvh flex-col items-center justify-center gap-5 bg-background'>
+        <LoaderIcon
+          aria-label='Loading sign-in'
+          className='size-6 animate-spin text-muted-foreground'
+        />
+        {destinationReady && (
+          <button
+            type='button'
+            disabled={isNavigating}
+            onClick={handleBack}
+            className='text-sm text-muted-foreground underline underline-offset-4'
+          >
+            Back to {isBackToHome ? 'jobs' : 'previous page'}
+          </button>
+        )}
       </div>
     );
   }
@@ -47,6 +78,19 @@ export const LoginContent = () => {
           </p>
         </div>
 
+        {sessionError && (
+          <p role='alert' className='text-center text-sm text-muted-foreground'>
+            We couldn’t finish signing you in. Try again, or return to your
+            previous page.
+          </p>
+        )}
+        {profileError && (
+          <p role='alert' className='text-center text-sm text-muted-foreground'>
+            We couldn’t load your profile. Try again, or return to your previous
+            page.
+          </p>
+        )}
+
         <div className='w-48 rounded-lg bg-linear-to-r from-[#8743FF] to-[#D68800] p-px'>
           <Button
             size='lg'
@@ -56,11 +100,19 @@ export const LoginContent = () => {
               'hover:bg-sidebar/80',
             )}
             onClick={() => {
+              if (sessionError) {
+                retrySession();
+                return;
+              }
+              if (profileError) {
+                retryProfile();
+                return;
+              }
               trackEvent(GA_EVENT.LOGIN_STARTED, { login_method: 'privy' });
               login();
             }}
           >
-            Get Started
+            {profileError || sessionError ? 'Try again' : 'Get Started'}
           </Button>
         </div>
 

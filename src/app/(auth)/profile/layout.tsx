@@ -5,6 +5,7 @@ import { ProfileBottomNav } from '@/features/profile/components/profile-bottom-n
 import { ProfileEditorProvider } from '@/features/profile/components/profile-editor-provider';
 import { ProfileErrorBoundary } from '@/features/profile/components/profile-error-boundary';
 import { ProfileLogoutOverlay } from '@/features/profile/components/profile-logout-overlay';
+import { ProfileSetupNotice } from '@/features/profile/components/profile-setup-notice';
 import { ProfileSidebar } from '@/features/profile/components/profile-sidebar';
 
 const ProfileLayout = ({ children }: React.PropsWithChildren) => (
@@ -19,7 +20,10 @@ const ProfileLayout = ({ children }: React.PropsWithChildren) => (
               <ProfileSidebar />
             </aside>
             <section className='flex min-w-0 grow flex-col gap-4 pb-16 lg:pb-0'>
-              <ProfileErrorBoundary>{children}</ProfileErrorBoundary>
+              <ProfileErrorBoundary>
+                <ProfileSetupNotice />
+                {children}
+              </ProfileErrorBoundary>
             </section>
           </div>
           <ProfileBottomNav />

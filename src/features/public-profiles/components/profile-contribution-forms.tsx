@@ -1,7 +1,8 @@
 'use client';
 
+import { LoginLink } from '@/features/auth/components/login-link';
+
 import { useState, type FormEvent } from 'react';
-import Link from 'next/link';
 import { FlagIcon, Loader2Icon, MessageSquareTextIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -23,9 +24,9 @@ const responseMessage = async (response: Response): Promise<string> => {
 
 const LoginRequired = () => (
   <p className='text-sm text-muted-foreground'>
-    <Link href='/login' className='font-medium text-foreground underline'>
+    <LoginLink className='font-medium text-foreground underline'>
       Log in
-    </Link>{' '}
+    </LoginLink>{' '}
     to submit verified experience or report recruiter impersonation.
   </p>
 );
@@ -320,9 +321,9 @@ export const NoticeAppealForm = ({ noticeId }: { noticeId: string }) => {
   if (isLoading) return null;
   if (!isAuthenticated) {
     return (
-      <Link href='/login' className='mt-3 inline-block text-xs underline'>
+      <LoginLink className='mt-3 inline-block text-xs underline'>
         Log in to appeal this notice
-      </Link>
+      </LoginLink>
     );
   }
   return (

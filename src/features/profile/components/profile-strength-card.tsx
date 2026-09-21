@@ -51,7 +51,7 @@ const scrollToLinkedAccounts = () => {
   }
 };
 
-const useCtaAction = () => {
+export const useProfileCompletionAction = () => {
   const { openSkillsEditor, openResumeUpload, openManualLinksEditor } =
     useProfileEditor();
 
@@ -97,11 +97,22 @@ const MobileSkeleton = () => (
 );
 
 export const ProfileStrengthCard = () => {
-  const { isPending, tier, completedCount, nextStep } =
+  const { isPending, isError, retry, tier, completedCount, nextStep } =
     useProfileCompleteness();
-  const handleCta = useCtaAction();
+  const handleCta = useProfileCompletionAction();
 
   const isComplete = completedCount === TOTAL_ITEMS;
+
+  if (isError)
+    return (
+      <button
+        type='button'
+        onClick={retry}
+        className='p-4 text-sm text-muted-foreground'
+      >
+        Couldn’t load profile progress. Try again.
+      </button>
+    );
 
   if (isPending) {
     return (

@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import {
   Pagination,
@@ -37,6 +35,7 @@ const getPageHref = (page: number, searchParams: Record<string, string>) => {
 
 const handlePaginationClick = (pageNumber: number) => {
   trackEvent(GA_EVENT.PAGINATION_CLICKED, { page_number: pageNumber });
+  window.scrollTo({ top: 0, behavior: 'instant' });
 };
 
 export const JobListPagination = ({
@@ -44,10 +43,6 @@ export const JobListPagination = ({
   totalPages,
   searchParams,
 }: Props) => {
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [currentPage]);
-
   const group = Math.ceil(currentPage / 3);
   const groupStart = (group - 1) * 3 + 1;
 

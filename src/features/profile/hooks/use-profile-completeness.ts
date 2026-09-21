@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { usePrivy } from '@privy-io/react-auth';
 
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -9,8 +10,8 @@ import {
   PROFILE_TIERS,
   type ProfileTier,
 } from '@/features/profile/constants';
-import { useProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
-import { useProfileSkills } from '@/features/profile/hooks/use-profile-skills';
+import { fetchProfileShowcase } from '@/features/profile/hooks/use-profile-showcase';
+import { fetchProfileSkills } from '@/features/profile/hooks/use-profile-skills';
 
 interface NextStep {
   key: string;
@@ -22,6 +23,10 @@ interface NextStep {
 
 interface ProfileCompleteness {
   isPending: boolean;
+  isError: boolean;
+  retry: () => void;
+  isComplete: boolean;
+  completionMap: Record<string, boolean>;
   tier: ProfileTier;
   completedCount: number;
   nextStep: NextStep | null;
@@ -36,15 +41,46 @@ const getTier = (completedCount: number): ProfileTier => {
   return PROFILE_TIERS[0];
 };
 
-export const useProfileCompleteness = (): ProfileCompleteness => {
+export const useProfileCompleteness = ({
+  enabled = true,
+  fresh = false,
+} = {}): ProfileCompleteness => {
   const { isSessionReady } = useSession();
-  const { user } = usePrivy();
-  const { data: skills, isPending: isSkillsPending } =
-    useProfileSkills(isSessionReady);
-  const { data: showcase, isPending: isShowcasePending } =
-    useProfileShowcase(isSessionReady);
-
-  const isPending = !isSessionReady || isSkillsPending || isShowcasePending;
+  const { user, ready } = usePrivy();
+  const canLoad = enabled && isSessionReady && ready && Boolean(user);
+  const queryOptions = {
+    enabled: canLoad,
+    staleTime: fresh ? 0 : 5 * 60 * 1000,
+    refetchOnMount: fresh ? ('always' as const) : true,
+    throwOnError: false,
+  };
+  // Scope completion checks to this identity; mutations invalidate the shared prefix.
+  const skillsQuery = useQuery({
+    ...queryOptions,
+    queryKey: ['profile-skills', user?.id, 'completion'],
+    queryFn: fetchProfileSkills,
+  });
+  const showcaseQuery = useQuery({
+    ...queryOptions,
+    queryKey: ['profile-showcase', user?.id, 'completion'],
+    queryFn: fetchProfileShowcase,
+  });
+  const skills = skillsQuery.data;
+  const showcase = showcaseQuery.data;
+  const isError = skillsQuery.isError || showcaseQuery.isError;
+  const isPending =
+    !enabled ||
+    !isSessionReady ||
+    !ready ||
+    !user ||
+    skillsQuery.isPending ||
+    showcaseQuery.isPending ||
+    skillsQuery.isFetching ||
+    showcaseQuery.isFetching;
+  const retry = () => {
+    void skillsQuery.refetch();
+    void showcaseQuery.refetch();
+  };
 
   // Count non-embedded linked accounts from Privy SDK
   const linkedAccountCount =
@@ -92,5 +128,15 @@ export const useProfileCompleteness = (): ProfileCompleteness => {
   const nextStep =
     COMPLETENESS_ITEMS.find((item) => !completionMap[item.key]) ?? null;
 
-  return { isPending, tier, completedCount, nextStep };
+  return {
+    completionMap,
+    isPending,
+    isError,
+    retry,
+    isComplete:
+      !isPending && !isError && completedCount === COMPLETENESS_ITEMS.length,
+    tier,
+    completedCount,
+    nextStep,
+  };
 };
