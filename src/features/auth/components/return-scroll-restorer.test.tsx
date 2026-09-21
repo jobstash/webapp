@@ -84,3 +84,27 @@ it('stops when the user scrolls instead of fighting them', () => {
   expect(window.scrollTo).not.toHaveBeenCalled();
   expect(readSignInReturn()).toBeNull();
 });
+
+it('corrects a duplicated cached-route fragment before restoring the saved offset', () => {
+  saveSignInReturn({ ...readSignInReturn()!, href: '/?page=2#jobs' });
+  window.history.replaceState({ retained: true }, '', '/?page=2#jobs#jobs');
+  render(<ReturnScrollRestorer />);
+  act(() => vi.advanceTimersByTime(20));
+  expect(window.location.hash).toBe('#jobs');
+  expect(window.history.state).toEqual({ retained: true });
+  expect(window.scrollTo).toHaveBeenCalledWith({
+    top: 720,
+    left: 0,
+    behavior: 'instant',
+  });
+  expect(readSignInReturn()).toBeNull();
+});
+it('does not change an unrelated fragment or query', () => {
+  saveSignInReturn({ ...readSignInReturn()!, href: '/?page=2#jobs' });
+  window.history.replaceState({}, '', '/?page=3#jobs#jobs');
+  render(<ReturnScrollRestorer />);
+  act(() => vi.advanceTimersByTime(20));
+  expect(window.location.search).toBe('?page=3');
+  expect(window.location.hash).toBe('#jobs#jobs');
+  expect(window.scrollTo).not.toHaveBeenCalled();
+});
