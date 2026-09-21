@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { LoginLink } from '@/features/auth/components/login-link';
 
 import { useEligibility } from '@/hooks/use-eligibility';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
@@ -22,14 +23,20 @@ export const HeroJobsForYouButton = ({ variant = 'secondary' }: Props) => {
 
   if (isLoading) return <HeroJobsForYouButtonSkeleton variant={variant} />;
 
-  const href = isAuthenticated ? '/profile/jobs' : '/login';
+  const link = isAuthenticated ? (
+    <Link href='/profile/jobs' prefetch={false} onClick={handleClick}>
+      Jobs For You
+    </Link>
+  ) : (
+    <LoginLink destination='/profile/jobs' onClick={handleClick}>
+      Jobs For You
+    </LoginLink>
+  );
 
   if (variant === 'primary') {
     return (
       <PrimaryCTA asChild className='px-6 text-base'>
-        <Link href={href} prefetch={false} onClick={handleClick}>
-          Jobs For You
-        </Link>
+        {link}
       </PrimaryCTA>
     );
   }
@@ -41,9 +48,7 @@ export const HeroJobsForYouButton = ({ variant = 'secondary' }: Props) => {
       className='bg-input/30 text-base'
       asChild
     >
-      <Link href={href} prefetch={false} onClick={handleClick}>
-        Jobs For You
-      </Link>
+      {link}
     </Button>
   );
 };

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { ShowcaseItem } from '@/features/profile/schemas';
 
-const fetchProfileShowcase = async (): Promise<ShowcaseItem[]> => {
+export const fetchProfileShowcase = async (): Promise<ShowcaseItem[]> => {
   const res = await fetch('/api/profile/showcase');
   if (!res.ok)
     throw new Error(`GET /api/profile/showcase failed: ${res.status}`);

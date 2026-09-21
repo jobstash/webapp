@@ -11,6 +11,7 @@ import { useProfileSkillsEditor } from './profile-skills/use-profile-skills-edit
 import { ResumeUploadDialog } from './resume-upload-dialog';
 
 interface ProfileEditorContextValue {
+  isEditorOpen: boolean;
   openSkillsEditor: () => void;
   openResumeUpload: () => void;
   openManualLinksEditor: () => void;
@@ -40,6 +41,7 @@ export const ProfileEditorProvider = ({
   const [isManualLinksOpen, setIsManualLinksOpen] = useState(false);
 
   const value: ProfileEditorContextValue = {
+    isEditorOpen: editor.isOpen || isResumeOpen || isManualLinksOpen,
     openSkillsEditor: () => editor.setIsOpen(true),
     openResumeUpload: () => setIsResumeOpen(true),
     openManualLinksEditor: () => setIsManualLinksOpen(true),

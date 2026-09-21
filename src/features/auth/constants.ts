@@ -4,6 +4,7 @@ export const SESSION_KEY = ['session'];
 
 export interface SessionData {
   apiToken: string | null;
+  privyDid?: string | null;
   expiresAt: number | null;
   isExpert: boolean | null;
   displayName: string | null;
@@ -13,6 +14,7 @@ export interface SessionData {
 
 export const EMPTY_SESSION: SessionData = {
   apiToken: null,
+  privyDid: null,
   expiresAt: null,
   isExpert: null,
   displayName: null,

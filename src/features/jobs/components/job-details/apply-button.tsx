@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { LoginLink } from '@/features/auth/components/login-link';
 import { ExternalLinkIcon, LoaderCircleIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -46,7 +46,6 @@ export const ApplyButton = ({
   classification,
   className,
 }: ApplyButtonProps) => {
-  const pathname = usePathname();
   const { isExpert } = useEligibility();
   const {
     isAuthenticated,
@@ -99,11 +98,10 @@ export const ApplyButton = ({
     }
 
     if (!isAuthLoading && !isAuthenticated) {
-      const href = `/login?redirect=${encodeURIComponent(pathname)}`;
       return {
         icon: linkIcon,
         label: 'Apply Now',
-        internalHref: href,
+        internalHref: true,
         onClick: () => trackApply('login_redirect'),
       };
     }
@@ -148,10 +146,10 @@ export const ApplyButton = ({
   if (internalHref) {
     button = (
       <Button asChild size='lg' className={GRADIENT_BUTTON}>
-        <Link href={internalHref} prefetch={false} onClick={onClick}>
+        <LoginLink returnLabel='Back to job' onClick={onClick}>
           {icon}
           {label}
-        </Link>
+        </LoginLink>
       </Button>
     );
   } else if (externalHref) {

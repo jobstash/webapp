@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { clearSignInReturn } from '../lib/return-navigation';
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ export const useLogout = () => {
   );
 
   const logout = async (): Promise<void> => {
+    clearSignInReturn();
     setIsLoggingOut(true);
     queryClient.cancelQueries({ queryKey: SESSION_KEY });
     queryClient.setQueryData(SESSION_KEY, EMPTY_SESSION);

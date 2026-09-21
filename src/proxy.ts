@@ -11,7 +11,12 @@ import {
 } from '@/lib/server/visitor-activity';
 
 export function proxy(req: NextRequest, event: NextFetchEvent): NextResponse {
-  const response = NextResponse.next();
+  const headers = new Headers(req.headers);
+  headers.set(
+    'x-jobstash-request-path',
+    req.nextUrl.pathname + req.nextUrl.search,
+  );
+  const response = NextResponse.next({ request: { headers } });
   if (!process.env.VISITOR_INGEST_SECRET) return response;
   // Skip browser prefetches; these are not visits.
   if (

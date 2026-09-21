@@ -58,6 +58,7 @@ export const useSession = () => {
 
   return {
     apiToken,
+    privyDid: session?.privyDid ?? null,
     isExpert: session?.isExpert ?? null,
     displayName: session?.displayName ?? null,
     identityType: session?.identityType ?? null,

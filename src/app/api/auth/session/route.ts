@@ -16,6 +16,7 @@ const SESSION_EXPIRY = 55 * 60 * 1000;
 
 const toSessionPayload = (session: {
   apiToken?: string;
+  privyDid?: string;
   expiresAt?: number;
   isExpert?: boolean;
   displayName?: string;
@@ -23,6 +24,7 @@ const toSessionPayload = (session: {
   hasVerifiedEmail?: boolean;
 }) => ({
   apiToken: session.apiToken ?? null,
+  privyDid: session.privyDid ?? null,
   expiresAt: session.expiresAt ?? null,
   isExpert: session.isExpert ?? null,
   displayName: session.displayName ?? null,

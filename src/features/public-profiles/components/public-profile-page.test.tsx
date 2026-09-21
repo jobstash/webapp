@@ -4,6 +4,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { publicProfileFixture } from '../test-fixtures';
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/o-example-labs',
+  useSearchParams: () => new URLSearchParams(),
+}));
+vi.mock('@bprogress/next/app', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 vi.mock('next/image', () => ({
   default: ({
     unoptimized: _unoptimized,

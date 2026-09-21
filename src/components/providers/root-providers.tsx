@@ -6,6 +6,8 @@ import { Progress, Bar } from '@bprogress/next';
 
 import { VisitorPresence } from '@/components/visitor-activity/visitor-presence';
 
+import { ReturnScrollRestorer } from '@/features/auth/components/return-scroll-restorer';
+
 import { ReactQueryProvider } from './react-query-provider';
 
 export const RootProviders = ({ children }: React.PropsWithChildren) => {
@@ -22,6 +24,7 @@ export const RootProviders = ({ children }: React.PropsWithChildren) => {
             </Progress>
           </div>
           <VisitorPresence />
+          <ReturnScrollRestorer />
           {children}
         </ProgressProvider>
       </ReactQueryProvider>
