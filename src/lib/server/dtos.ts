@@ -17,7 +17,7 @@ export type InvestorDto = z.infer<typeof investorDto>;
 
 export const fundingRoundDto = z.object({
   id: nonEmptyStringSchema,
-  date: z.number(),
+  date: z.number().nullable(),
   roundName: nullableStringSchema,
   raisedAmount: nullableNumberSchema,
 });
