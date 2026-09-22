@@ -404,3 +404,34 @@ describe('dtoToJobListItem — existing behavior smoke', () => {
     expect(item.summary).toBe('Bitrefill is looking for a Role at Bitrefill.');
   });
 });
+
+describe('job funding with unknown dates', () => {
+  it('keeps an undated round without rejecting the job or inventing a date', () => {
+    const dto = jobListItemDto.parse(
+      makeJobListItemDto({
+        organization: makeOrganizationDto({
+          fundingRounds: [
+            {
+              id: 'undated',
+              date: null,
+              roundName: 'Seed',
+              raisedAmount: null,
+            },
+            {
+              id: 'dated',
+              date: 1700000000,
+              roundName: 'Series A',
+              raisedAmount: 1000000,
+            },
+          ],
+        }),
+      }),
+    );
+    const item = dtoToJobListItem(dto);
+    expect(
+      item.organization.fundingRounds.map((round) => round.roundName),
+    ).toEqual(['Series A', 'Seed']);
+    expect(item.organization.fundingRounds[1].date).toBeNull();
+    expect(item.organization.fundingRounds[0].date).toBeTruthy();
+  });
+});
