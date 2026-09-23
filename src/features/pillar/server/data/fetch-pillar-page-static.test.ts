@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { fetchJobsRevision } from '@/features/jobs/server/data/fetch-jobs-revision';
+vi.mock('@/features/jobs/server/data/fetch-jobs-revision', () => ({
+  fetchJobsRevision: vi.fn().mockResolvedValue('initial'),
+}));
+
 import { fetchPillarPageStatic } from './fetch-pillar-page-static';
 
 const { cachedResults } = vi.hoisted(() => ({
@@ -79,6 +84,21 @@ afterEach(() => {
 // 404 that deindexes the page. Only a genuine absence (success:true with
 // data:null) may produce null → notFound().
 describe('fetchPillarPageStatic', () => {
+  it('reloads cached jobs after an import completes, even within the cache lifetime', async () => {
+    const fetchMock = stubFetchResponse({
+      body: { success: true, data: null },
+    });
+    vi.mocked(fetchJobsRevision)
+      .mockResolvedValueOnce('before')
+      .mockResolvedValueOnce('before')
+      .mockResolvedValueOnce('after');
+    await fetchPillarPageStatic('lt-fully-remote');
+    await fetchPillarPageStatic('lt-fully-remote');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await fetchPillarPageStatic('lt-fully-remote');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it('throws on non-OK responses', async () => {
     stubFetchResponse({ ok: false, status: 502 });
     await expect(fetchPillarPageStatic('t-react')).rejects.toThrow('502');

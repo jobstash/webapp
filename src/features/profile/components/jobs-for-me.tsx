@@ -1,4 +1,5 @@
 'use client';
+import { useJobsRevision } from '@/features/jobs/components/job-import-refresh';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -85,6 +86,11 @@ const Recommendation = ({
 export const JobsForMe = () => {
   const [page, setPage] = useState(1);
   const [rankedAt, setRankedAt] = useState<string>();
+  const { data: jobsRevision } = useJobsRevision();
+  useEffect(() => {
+    setPage(1);
+    setRankedAt(undefined);
+  }, [jobsRevision]);
   const { data, isPending, isError, refetch, isFetching } = useRecommendedJobs(
     page,
     page === 1 ? undefined : rankedAt,
