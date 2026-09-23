@@ -2,6 +2,7 @@ import 'server-only';
 
 import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
+import { fetchJobsRevision } from '@/features/jobs/server/data/fetch-jobs-revision';
 
 import { clientEnv } from '@/lib/env/client';
 import type { PillarPageStatic } from '@/features/pillar/schemas';
@@ -71,11 +72,16 @@ const fetchPillarPageStaticUncached = async (
 // no-data results) and skips thrown transient failures. React cache coalesces
 // the metadata and page reads during the same render.
 const fetchPillarPageStaticCached = unstable_cache(
-  fetchPillarPageStaticUncached,
+  async (slug: string, revision: string) => {
+    void revision; // Part of the cache key, shared by every request after an import.
+    return fetchPillarPageStaticUncached(slug);
+  },
   // Increment this namespace when the pillar selection contract changes so a
   // deployment cannot keep serving a previous job set.
   ['pillar-page-static-v2'],
   { revalidate: 300 },
 );
 
-export const fetchPillarPageStatic = cache(fetchPillarPageStaticCached);
+export const fetchPillarPageStatic = cache(async (slug: string) =>
+  fetchPillarPageStaticCached(slug, await fetchJobsRevision()),
+);

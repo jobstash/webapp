@@ -12,6 +12,10 @@ const { mockUseRecommendedJobs, mockDismiss, mockImpression } = vi.hoisted(
   }),
 );
 
+vi.mock('@/features/jobs/components/job-import-refresh', () => ({
+  useJobsRevision: () => ({ data: 'initial' }),
+}));
+
 vi.mock('../hooks/use-recommended-jobs', () => ({
   useRecommendedJobs: (page: number, rankedAt?: string) =>
     mockUseRecommendedJobs(page, rankedAt),
