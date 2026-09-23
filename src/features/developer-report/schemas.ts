@@ -155,6 +155,14 @@ export const developerReportSchema = z.object({
   current: developerReportPointSchema.nullable(),
   history: developerReportPointSchema.array(),
   top: z.object({
+    aiCategories: z
+      .array(
+        z.object({
+          slug: z.string(),
+          activeDevelopers: z.number().int().nonnegative(),
+        }),
+      )
+      .optional(),
     verticals: scopeSummarySchema.array(),
     chains: scopeSummarySchema.array(),
     organizations: z

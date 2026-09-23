@@ -1,6 +1,11 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import {
   recommendedJobsResponseSchema,
@@ -47,7 +52,10 @@ export const useRecommendedJobs = (page = 1, rankedAt?: string) =>
   useQuery({
     queryKey: rankedAt ? [...QUERY_KEY, page, rankedAt] : [...QUERY_KEY, page],
     queryFn: () => load(page, rankedAt),
-    staleTime: 60_000,
+    staleTime: 30_000,
+    refetchOnMount: 'always',
+    refetchInterval: page === 1 ? 60_000 : false,
+    placeholderData: keepPreviousData,
   });
 
 export const useDismissRecommendedJob = () => {
