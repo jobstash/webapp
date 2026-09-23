@@ -25,11 +25,27 @@ import {
 } from './chart-options';
 import { OrganizationBubbleTimeline } from './organization-bubble-timeline';
 
+const aiCategoryLabels: Record<string, string> = {
+  'frontier-labs': 'Frontier',
+  'neo-labs': 'Neo-labs',
+  'world-models': 'World models',
+  'agent-platforms': 'Agents',
+  'inference-model-serving': 'Inference',
+  neoclouds: 'Neoclouds',
+  chips: 'Chips',
+  'physical-ai': 'Physical AI',
+  'ai-for-science': 'AI for science',
+  applications: 'Applications',
+  'research-organizations': 'Research orgs',
+  'policy-and-strategy': 'Policy',
+  'science-and-progress': 'Science policy',
+  'funders-and-institutions': 'Funders',
+};
+
 const ranges: Array<{ key: DeveloperReportRange; label: string }> = [
   { key: '3m', label: '3 months' },
   { key: '6m', label: '6 months' },
   { key: '1y', label: '1 year' },
-  { key: '3y', label: '3 years' },
   { key: 'max', label: 'Max' },
 ];
 
@@ -260,7 +276,10 @@ export const DeveloperReportDashboard = ({
               then apply the selected scope.
             </p>
           </div>
-          <nav aria-label='Report range' className='flex flex-wrap gap-2'>
+          <nav
+            aria-label='Report range'
+            className='flex shrink-0 flex-wrap gap-2 sm:flex-nowrap'
+          >
             {ranges.map((range) => (
               <Link
                 key={range.key}
@@ -402,16 +421,31 @@ export const DeveloperReportDashboard = ({
         <div className='rounded-2xl border border-border/60 bg-card/60 p-5'>
           <h2 className='text-xl font-bold'>Largest categories</h2>
           <div className='mt-4 space-y-2'>
-            {report.top.verticals.map((vertical) => (
-              <Link
-                key={vertical.slug}
-                href={reportHref(report, { vertical: vertical.slug })}
-                className='flex items-center justify-between rounded-lg border border-border/50 px-3 py-2 hover:border-emerald-500/40'
-              >
-                <span>{vertical.label}</span>
-                <strong>{compact(vertical.activeDevelopers)}</strong>
-              </Link>
-            ))}
+            {report.top.verticals
+              .filter((vertical) =>
+                ['ai', 'crypto', 'fintech', 'robotics'].includes(vertical.slug),
+              )
+              .map((vertical) => (
+                <Link
+                  key={vertical.slug}
+                  href={reportHref(report, { vertical: vertical.slug })}
+                  className='flex items-center justify-between rounded-lg border border-border/50 px-3 py-2 hover:border-emerald-500/40'
+                >
+                  <span>{vertical.label}</span>
+                  <strong>{compact(vertical.activeDevelopers)}</strong>
+                </Link>
+              ))}
+            {(report.top.aiCategories ?? [])
+              .filter((category) => aiCategoryLabels[category.slug])
+              .map((category) => (
+                <div
+                  key={category.slug}
+                  className='flex items-center justify-between rounded-lg border border-border/50 px-3 py-2'
+                >
+                  <span>AI · {aiCategoryLabels[category.slug]}</span>
+                  <strong>{compact(category.activeDevelopers)}</strong>
+                </div>
+              ))}
           </div>
         </div>
         <div className='rounded-2xl border border-border/60 bg-card/60 p-5'>

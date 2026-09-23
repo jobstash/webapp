@@ -429,6 +429,8 @@ describe('job funding with unknown dates', () => {
       }),
     );
     const item = dtoToJobListItem(dto);
+    if (!item.organization)
+      throw new Error('Expected the organization fixture');
     expect(
       item.organization.fundingRounds.map((round) => round.roundName),
     ).toEqual(['Series A', 'Seed']);

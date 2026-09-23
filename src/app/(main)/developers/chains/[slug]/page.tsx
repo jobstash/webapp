@@ -16,9 +16,7 @@ const selectedRange = (
   params: Record<string, string | string[] | undefined>,
 ): DeveloperReportRange => {
   const raw = Array.isArray(params.range) ? params.range[0] : params.range;
-  return raw === '3m' || raw === '6m' || raw === '1y' || raw === '3y'
-    ? raw
-    : 'max';
+  return raw === '3m' || raw === '6m' || raw === '1y' ? raw : 'max';
 };
 
 const selectedVertical = (

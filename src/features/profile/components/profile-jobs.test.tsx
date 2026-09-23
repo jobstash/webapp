@@ -59,6 +59,7 @@ describe('ProfileJobs', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useProfileEditor).mockReturnValue({
+      isEditorOpen: false,
       openSkillsEditor,
       openResumeUpload,
       openManualLinksEditor,

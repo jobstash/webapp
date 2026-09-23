@@ -171,6 +171,22 @@ const report: DeveloperReport = {
 afterEach(cleanup);
 
 describe('DeveloperReportDashboard', () => {
+  it('shows AI subcategories alongside the primary industries', () => {
+    render(
+      <DeveloperReportDashboard
+        report={{
+          ...report,
+          top: {
+            ...report.top,
+            aiCategories: [{ slug: 'chips', activeDevelopers: 12 }],
+          },
+        }}
+      />,
+    );
+    expect(screen.getByText('AI · Chips')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '3 years' })).toBeNull();
+  });
+
   it('renders corrected activity, cadence, tenure, growth, and atlas sections', () => {
     render(<DeveloperReportDashboard report={report} />);
 
@@ -228,9 +244,10 @@ describe('DeveloperReportDashboard', () => {
     expect(
       screen.getAllByRole('link', { name: /Ethereum/ })[0],
     ).toHaveAttribute('href', '/developers/chains/ethereum?vertical=crypto');
-    expect(screen.getByRole('link', { name: '3 years' })).toHaveAttribute(
+    expect(screen.queryByRole('link', { name: '3 years' })).toBeNull();
+    expect(screen.getByRole('link', { name: '1 year' })).toHaveAttribute(
       'href',
-      '/developers?vertical=crypto&range=3y',
+      '/developers?vertical=crypto&range=1y',
     );
   });
 

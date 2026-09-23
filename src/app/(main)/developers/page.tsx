@@ -8,7 +8,7 @@ import type { DeveloperReportRange } from '@/features/developer-report/schemas';
 import { clientEnv } from '@/lib/env/client';
 
 const canonical = `${clientEnv.FRONTEND_URL}/developers`;
-const ranges: DeveloperReportRange[] = ['3m', '6m', '1y', '3y', 'max'];
+const ranges: DeveloperReportRange[] = ['3m', '6m', '1y', 'max'];
 const slugPattern = /^[a-z0-9][a-z0-9_-]{0,119}$/;
 
 interface Props {
