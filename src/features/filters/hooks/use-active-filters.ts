@@ -15,7 +15,11 @@ export const useActiveFilters = (configs: FilterConfigSchema[]) => {
     // Pillar mode: activeness comes from the pillar's implied criteria, not
     // the URL (the static pillar page ignores query params entirely).
     if (pillarMode) {
-      if (config.kind === FILTER_KIND.RANGE) return false;
+      if (config.kind === FILTER_KIND.RANGE)
+        return (
+          searchParams.has(config.lowest.paramKey) ||
+          searchParams.has(config.highest.paramKey)
+        );
       return config.paramKey in pillarMode.baseParams;
     }
 

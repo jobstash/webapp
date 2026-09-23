@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { ArrowRightIcon, ExternalLinkIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -19,9 +21,10 @@ import { AvailabilityPills } from '@/features/jobs/components/availability-pills
 
 interface JobListItemProps {
   job: JobListItemSchema;
+  footer?: ReactNode;
 }
 
-export const JobListItem = ({ job }: JobListItemProps) => {
+export const JobListItem = ({ job, footer }: JobListItemProps) => {
   const { title, href, organization, infoTags, tags, badge, timestampText } =
     job;
 
@@ -156,6 +159,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
           </Button>
         </div>
       </div>
+      {footer}
     </article>
   );
 };

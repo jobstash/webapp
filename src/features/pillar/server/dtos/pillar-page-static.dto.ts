@@ -49,6 +49,13 @@ export const pillarPageStaticDto = z.object({
   success: z.boolean(),
   message: z.string(),
   data: z.object({
+    filterContext: z
+      .object({
+        paramKey: z.string(),
+        value: z.string(),
+        organizationId: z.string().nullish(),
+      })
+      .optional(),
     title: nonEmptyStringSchema,
     description: nonEmptyStringSchema,
     jobs: jobListItemDto.array(),

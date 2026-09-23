@@ -33,7 +33,7 @@ const fetchPillarPageStaticUncached = async (
   slug: string,
 ): Promise<PillarPageStatic | null> => {
   const apiSlug = getApiSlug(slug);
-  const url = `${clientEnv.MW_URL}/search/pillar/page/static/${apiSlug}`;
+  const url = `${clientEnv.MW_URL}/search/pillar/page/static/${apiSlug}?metadataOnly=true`;
 
   const response = await fetch(url, {
     cache: 'no-store',
@@ -78,7 +78,7 @@ const fetchPillarPageStaticCached = unstable_cache(
   },
   // Increment this namespace when the pillar selection contract changes so a
   // deployment cannot keep serving a previous job set.
-  ['pillar-page-static-v2'],
+  ['pillar-page-static-v3'],
   { revalidate: 300 },
 );
 
