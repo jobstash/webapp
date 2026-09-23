@@ -13,6 +13,7 @@ import {
 } from '@/features/jobs/apply-constants';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { useEligibility } from '@/hooks/use-eligibility';
+import { useHydrated } from '@/hooks/use-hydrated';
 
 import { EligibilityNudgeDialog } from './eligibility-nudge-dialog';
 import { useJobApply } from './use-job-apply';
@@ -46,6 +47,7 @@ export const ApplyButton = ({
   classification,
   className,
 }: ApplyButtonProps) => {
+  const hydrated = useHydrated();
   const { isExpert } = useEligibility();
   const {
     isAuthenticated,
@@ -93,7 +95,7 @@ export const ApplyButton = ({
   const linkIcon = <ExternalLinkIcon className='size-4' />;
 
   const resolveButtonState = () => {
-    if (isLoading) {
+    if (!hydrated || isLoading) {
       return { icon: spinnerIcon, label: 'Loading...', disabled: true };
     }
 
