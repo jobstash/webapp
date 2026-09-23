@@ -55,7 +55,7 @@ it('hydrates safely when sign-in status resolves before the lazy Apply button lo
   container.innerHTML = renderToString(element);
   state.pending = false;
   const onRecoverableError = vi.fn();
-  let root: ReturnType<typeof hydrateRoot>;
+  let root: ReturnType<typeof hydrateRoot> | undefined;
   try {
     await act(async () => {
       root = hydrateRoot(container, element, { onRecoverableError });
