@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -16,6 +16,9 @@ export const JobStack = ({ jobs }: { jobs: JobListItemSchema[] }) => {
   const [selectedId, setSelectedId] = useState(jobs[0].id);
   const found = jobs.findIndex((job) => job.id === selectedId);
   const index = found < 0 ? 0 : found;
+  useEffect(() => {
+    if (!jobs.some((item) => item.id === selectedId)) setSelectedId(jobs[0].id);
+  }, [jobs, selectedId]);
   const job = jobs[index];
   const layers = jobs.length - 1;
   const navigationLabel = `Jobs at ${job.organization?.name ?? 'this organization'}`;

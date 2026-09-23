@@ -57,6 +57,8 @@ describe('organization card stack', () => {
     expect(screen.getByRole('heading').textContent).toBe('Engineer 1');
     view.rerender(<JobStack jobs={[jobs[4], jobs[3]]} />);
     expect(screen.getByRole('heading').textContent).toBe('Engineer 4');
+    view.rerender(<JobStack jobs={jobs} />);
+    expect(screen.getByRole('heading').textContent).toBe('Engineer 4');
   });
   it('omits pager and layers for a single job', () => {
     const { container } = render(<JobStack jobs={[jobs[0]]} />);

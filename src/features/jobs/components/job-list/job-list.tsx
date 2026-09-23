@@ -112,7 +112,7 @@ export const JobList = async ({
       </div>
       <JobListPagination
         basePath={basePath}
-        currentPage={currentPage}
+        currentPage={result.page}
         totalPages={totalPages}
         searchParams={searchParams}
       />
