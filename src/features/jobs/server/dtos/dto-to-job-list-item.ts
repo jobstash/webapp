@@ -311,6 +311,7 @@ const normalizeSocialUrl = (
 // Any org-shaped payload (job list/details org, pillar static org) —
 // only `name` is guaranteed.
 export interface OrgInfoSource {
+  orgId?: string | null;
   name: string;
   normalizedName?: string | null;
   website?: string | null;
@@ -399,7 +400,7 @@ export const dtoToOrgInfo = (
   steppedDownLeadCount: dto.steppedDownLeadCount ?? null,
   movedLeadCount: dto.movedLeadCount ?? null,
   earlyLeadDepartureCount: dto.earlyLeadDepartureCount ?? null,
-  intelligenceUrl: `https://ecosystem.vision/${entityType === 'project' ? 'projects' : 'organizations'}/info/${dto.normalizedName ?? slugify(dto.name)}`,
+  intelligenceUrl: `https://ecosystem.vision/${entityType === 'project' ? 'projects' : 'organizations'}/info/${dto.normalizedName ?? slugify(dto.name)}${entityType === 'organization' && dto.orgId ? `~${dto.orgId}` : ''}`,
 });
 
 export const dtoToJobItemOrg = (

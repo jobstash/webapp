@@ -232,7 +232,8 @@ describe('dtoToJobListItem — company intelligence', () => {
       steppedDownLeadCount: 0,
       movedLeadCount: 1,
       earlyLeadDepartureCount: 0,
-      intelligenceUrl: 'https://ecosystem.vision/organizations/info/bitrefill',
+      intelligenceUrl:
+        'https://ecosystem.vision/organizations/info/bitrefill~345',
     });
   });
 
@@ -433,5 +434,26 @@ describe('job funding with unknown dates', () => {
     ).toEqual(['Series A', 'Seed']);
     expect(item.organization.fundingRounds[1].date).toBeNull();
     expect(item.organization.fundingRounds[0].date).toBeTruthy();
+  });
+});
+
+describe('organization identity links', () => {
+  it('keeps same-name organizations distinct when opening ecosystem.vision', () => {
+    const links = ['123', '456'].map(
+      (orgId) =>
+        dtoToJobListItem(
+          makeJobListItemDto({
+            organization: makeOrganizationDto({
+              name: 'Merlin',
+              normalizedName: 'merlin',
+              orgId,
+            }),
+          }),
+        ).organization?.intelligenceUrl,
+    );
+    expect(links).toEqual([
+      'https://ecosystem.vision/organizations/info/merlin~123',
+      'https://ecosystem.vision/organizations/info/merlin~456',
+    ]);
   });
 });
