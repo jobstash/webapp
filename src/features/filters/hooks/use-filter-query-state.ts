@@ -21,6 +21,7 @@ export const useFilterQueryState = (
   const pillarMode = usePillarFilterMode();
   const [filterParam, setFilterParam] = useQueryState(paramKey);
   const [, setPage] = useQueryState('page');
+  const [, setOrganizationId] = useQueryState('organizationId');
 
   const setFilterWithPageReset = (value: string | null) => {
     start();
@@ -48,6 +49,7 @@ export const useFilterQueryState = (
     }
 
     setPage(null);
+    if (paramKey === 'organizations') setOrganizationId(null);
     return setFilterParam(value);
   };
 

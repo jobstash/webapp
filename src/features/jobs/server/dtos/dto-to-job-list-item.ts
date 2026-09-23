@@ -407,7 +407,10 @@ export const dtoToJobItemOrg = (
   dto: JobListItemDto['organization'],
 ): JobOrganizationSchema | null => {
   if (!dto) return null;
-  return dtoToOrgInfo(dto, `/o-${dto.normalizedName}`);
+  return dtoToOrgInfo(
+    dto,
+    `/o-${dto.normalizedName}~${encodeURIComponent(dto.orgId)}`,
+  );
 };
 
 export const dtoToJobItemEmployer = (

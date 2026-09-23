@@ -202,7 +202,7 @@ const toTitleCase = (str: string): string =>
     .join(' ');
 
 export const getPillarName = (slug: string): string => {
-  const withoutPrefix = slug.replace(PREFIX_REGEX, '');
+  const withoutPrefix = slug.replace(PREFIX_REGEX, '').split('~')[0];
   const collaborationHour = withoutPrefix.match(/^utc-(\d{2})$/);
   if (getPillarCategory(slug) === 'collaborationHours' && collaborationHour) {
     return `${collaborationHour[1]}:00 UTC`;

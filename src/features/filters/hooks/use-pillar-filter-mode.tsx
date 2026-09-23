@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from 'react';
 import { useRouter } from '@bprogress/next/app';
+import { useSearchParams } from 'next/navigation';
 
 import type { PillarFilterContext } from '@/features/pillar/schemas';
 import {
@@ -38,14 +39,28 @@ export const PillarFilterModeProvider = ({
   children,
 }: ProviderProps) => {
   const router = useRouter();
+  const query = useSearchParams();
+  const { page: _page, ...filters } = Object.fromEntries(query.entries());
 
   const baseParams: Record<string, string> = {
-    [PUBLICATION_DATE_PARAM_KEY]: PILLAR_PUBLICATION_DATE_VALUE,
+    ...(pillarContext?.paramKey === 'organizationId' ||
+    pillarContext?.paramKey === 'organizations'
+      ? {}
+      : { [PUBLICATION_DATE_PARAM_KEY]: PILLAR_PUBLICATION_DATE_VALUE }),
+    ...filters,
     ...(pillarContext ? { [pillarContext.paramKey]: pillarContext.value } : {}),
+    ...(pillarContext?.organizationId
+      ? { organizationId: pillarContext.organizationId }
+      : {}),
   };
 
   const navigate = (changes: Record<string, string | null>) => {
-    router.push(buildFilterModeHref(baseParams, changes));
+    router.push(
+      buildFilterModeHref(baseParams, {
+        ...changes,
+        ...('organizations' in changes ? { organizationId: null } : {}),
+      }),
+    );
   };
 
   return (

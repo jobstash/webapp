@@ -2,7 +2,8 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowRightIcon, SearchIcon } from 'lucide-react';
 
-import { fetchJobListPage } from '@/features/jobs/server/data';
+import { fetchJobFeed } from '@/features/jobs/server/data/fetch-job-feed';
+import { JobStack } from './job-stack';
 import { JOBS_PER_PAGE } from '@/features/jobs/constants';
 import type { PillarFilterContext } from '@/features/pillar/schemas';
 
@@ -14,6 +15,8 @@ interface JobListProps {
   currentPage: number;
   searchParams: Record<string, string>;
   pillarContext?: PillarFilterContext;
+  pillarSlug?: string;
+  basePath?: string;
   mobileFilters?: ReactNode;
 }
 
@@ -68,17 +71,21 @@ export const JobList = async ({
   searchParams,
   pillarContext,
   mobileFilters,
+  pillarSlug,
+  basePath = '/',
 }: JobListProps) => {
   const mergedParams = mergeSearchParams(searchParams, pillarContext);
-  const { total, data } = await fetchJobListPage({
-    page: currentPage,
-    searchParams: mergedParams,
+  const result = await fetchJobFeed(currentPage, {
+    ...mergedParams,
+    ...(pillarSlug ? { pillar: pillarSlug } : {}),
   });
+  const { total, totalJobs, data } = result;
+  const selectionKey = JSON.stringify(mergedParams);
 
   if (data.length === 0) {
     return (
       <div>
-        <JobListToolbar total={total}>{mobileFilters}</JobListToolbar>
+        <JobListToolbar total={totalJobs}>{mobileFilters}</JobListToolbar>
         <EmptyState hasFilters={Object.keys(searchParams).length > 0} />
       </div>
     );
@@ -88,14 +95,24 @@ export const JobList = async ({
 
   return (
     <div>
-      <JobListToolbar total={total}>{mobileFilters}</JobListToolbar>
+      <JobListToolbar total={totalJobs}>{mobileFilters}</JobListToolbar>
       <div className='space-y-4 pb-4'>
-        {data.map((job) => (
-          <JobListItem key={job.id} job={job} />
-        ))}
+        {result.mode === 'grouped'
+          ? result.data.map((entry) =>
+              entry.organizationId ? (
+                <JobStack
+                  key={`${selectionKey}:${entry.key}`}
+                  jobs={entry.jobs}
+                />
+              ) : (
+                <JobListItem key={entry.key} job={entry.jobs[0]} />
+              ),
+            )
+          : result.data.map((job) => <JobListItem key={job.id} job={job} />)}
       </div>
       <JobListPagination
-        currentPage={currentPage}
+        basePath={basePath}
+        currentPage={result.page}
         totalPages={totalPages}
         searchParams={searchParams}
       />

@@ -12,12 +12,17 @@ import {
 } from '@/components/ui/pagination';
 
 interface Props {
+  basePath?: string;
   currentPage: number;
   totalPages: number;
   searchParams: Record<string, string>;
 }
 
-const getPageHref = (page: number, searchParams: Record<string, string>) => {
+export const getPageHref = (
+  page: number,
+  searchParams: Record<string, string>,
+  basePath = '/',
+) => {
   const { page: _, ...rest } = searchParams;
   const params = new URLSearchParams();
 
@@ -30,7 +35,7 @@ const getPageHref = (page: number, searchParams: Record<string, string>) => {
   });
 
   const queryString = params.toString();
-  return queryString ? `/?${queryString}` : '/';
+  return queryString ? `${basePath}?${queryString}` : basePath;
 };
 
 const handlePaginationClick = (pageNumber: number) => {
@@ -39,6 +44,7 @@ const handlePaginationClick = (pageNumber: number) => {
 };
 
 export const JobListPagination = ({
+  basePath = '/',
   currentPage,
   totalPages,
   searchParams,
@@ -65,13 +71,13 @@ export const JobListPagination = ({
           {isPrevDisabled ? (
             <span className='pointer-events-none opacity-50'>
               <PaginationPrevious
-                href={getPageHref(1, searchParams)}
+                href={getPageHref(1, searchParams, basePath)}
                 aria-disabled
               />
             </span>
           ) : (
             <PaginationPrevious
-              href={getPageHref(prevPage, searchParams)}
+              href={getPageHref(prevPage, searchParams, basePath)}
               onClick={() => handlePaginationClick(prevPage)}
             />
           )}
@@ -80,7 +86,7 @@ export const JobListPagination = ({
         {pages.map((page) => (
           <PaginationItem key={page}>
             <PaginationLink
-              href={getPageHref(page, searchParams)}
+              href={getPageHref(page, searchParams, basePath)}
               isActive={page === currentPage}
               onClick={() => handlePaginationClick(page)}
             >
@@ -99,13 +105,13 @@ export const JobListPagination = ({
           {isNextDisabled ? (
             <span className='pointer-events-none opacity-50'>
               <PaginationNext
-                href={getPageHref(currentPage, searchParams)}
+                href={getPageHref(currentPage, searchParams, basePath)}
                 aria-disabled
               />
             </span>
           ) : (
             <PaginationNext
-              href={getPageHref(nextPage, searchParams)}
+              href={getPageHref(nextPage, searchParams, basePath)}
               onClick={() => handlePaginationClick(nextPage)}
             />
           )}

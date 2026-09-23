@@ -35,7 +35,10 @@ export const FiltersDrawerClient = ({
   // Outside the pillar provider this counts URL-active filters (home). On
   // pillar pages the URL is empty, so count the pillar's implied criteria.
   const urlActiveCount = useActiveFilters(configs).length;
-  const activeCount = pillarMode ? 1 + (pillarContext ? 1 : 0) : urlActiveCount;
+  const activeCount = pillarMode
+    ? (pillarContext?.paramKey === 'organizations' ? 0 : 1) +
+      (pillarContext ? 1 : 0)
+    : urlActiveCount;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

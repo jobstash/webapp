@@ -1,3 +1,5 @@
+import { JobList } from '@/features/jobs/components/job-list/job-list';
+import { getApiSlug } from '@/features/pillar/constants';
 import { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 
@@ -11,7 +13,6 @@ import { fetchPillarMarket } from '@/features/job-market/server';
 import {
   OrgAboutSection,
   PillarHero,
-  PillarJobList,
   SuggestedPillars,
 } from '@/features/pillar/components';
 import {
@@ -39,12 +40,14 @@ export const revalidate = 300;
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string> & { page?: string }>;
 }
 
 const NOT_FOUND_METADATA: Metadata = { title: 'Page Not Found' };
 
 export const generateMetadata = async ({
   params,
+  searchParams,
 }: Props): Promise<Metadata> => {
   const { slug } = await params;
 
@@ -60,6 +63,7 @@ export const generateMetadata = async ({
   // classifications such as FDE. Keep the count fallback only for a rolling
   // deploy where an older middleware payload has no explicit decision.
   const isNoindex =
+    Object.keys(await searchParams).length > 0 ||
     pillarPage.indexing === 'noindex' ||
     (pillarPage.indexing === undefined &&
       !isPillarIndexable(pillarPage.jobs.length));
@@ -82,13 +86,19 @@ export const generateMetadata = async ({
   };
 };
 
-const PillarPage = async ({ params }: Props) => {
+const PillarPage = async ({ params, searchParams }: Props) => {
+  const query = await searchParams;
+  const { page, ...filters } = query;
+  const currentPage = Math.max(1, Math.trunc(Number(page) || 1));
   const { slug } = await params;
 
   if (!isValidPillarSlug(slug)) notFound();
 
   const canonicalSlug = await fetchCanonicalPillarSlug(slug);
-  if (canonicalSlug) permanentRedirect(`/${canonicalSlug}`);
+  if (canonicalSlug) {
+    const qs = new URLSearchParams(query).toString();
+    permanentRedirect(`/${canonicalSlug}${qs ? `?${qs}` : ''}`);
+  }
 
   const [pillarPage, pillarMarket] = await Promise.all([
     fetchPillarPageStatic(slug),
@@ -96,7 +106,14 @@ const PillarPage = async ({ params }: Props) => {
   ]);
   if (!pillarPage) notFound();
 
-  const pillarContext = getPillarFilterContext(slug);
+  const pillarContext =
+    pillarPage.filterContext ?? getPillarFilterContext(slug);
+  const feedFilters = {
+    ...(getPillarCategory(slug) === 'organization'
+      ? {}
+      : { publicationDate: 'past-3-months' }),
+    ...filters,
+  };
   const { title, description, jobs, suggestedPillars } = pillarPage;
 
   // Org pillars show the org's real copy instead of the generated pillar
@@ -139,10 +156,11 @@ const PillarPage = async ({ params }: Props) => {
           <SuggestedPillars items={suggestedPillars} />
         </aside>
         <section className='min-w-0 grow'>
-          <PillarJobList
-            slug={slug}
-            pillarContext={pillarContext}
-            jobs={jobs}
+          <JobList
+            pillarSlug={getApiSlug(slug)}
+            basePath={`/${slug}`}
+            currentPage={currentPage}
+            searchParams={feedFilters}
             mobileFilters={
               <FiltersDrawer pillarMode pillarContext={pillarContext} />
             }

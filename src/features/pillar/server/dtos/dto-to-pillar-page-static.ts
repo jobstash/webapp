@@ -27,6 +27,7 @@ export const dtoToPillarPageStatic = (
   const org = dto.data.organization;
 
   return {
+    filterContext: dto.data.filterContext,
     title: dto.data.title,
     description: dto.data.description,
     jobs: dto.data.jobs.map(dtoToJobListItem),
