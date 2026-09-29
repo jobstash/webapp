@@ -319,7 +319,13 @@ export const JobStack = ({ jobs, jobTitles, importRunId }: JobStackProps) => {
             {hasPager ? `${index + 1} of ${jobTitles.length}` : '1'}{' '}
           </span>
           <span className='block'>
-            {hasPager ? 'new jobs found' : 'new job found'}
+            {importRunId
+              ? hasPager
+                ? 'new jobs found'
+                : 'new job found'
+              : hasPager
+                ? 'matching jobs'
+                : 'matching job'}
           </span>
         </span>
         {organization && (

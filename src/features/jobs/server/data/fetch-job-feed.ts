@@ -55,7 +55,13 @@ export const fetchJobFeed = async (
     ...searchParams,
     page: String(page),
     limit: '10',
-    batch: 'latest-import',
+    // Discovery batches belong to the unfiltered homepage. Searching and
+    // pillar browsing must include matching open jobs from every import.
+    ...(Object.entries(searchParams).some(
+      ([key, value]) => key !== 'page' && value.trim() !== '',
+    )
+      ? {}
+      : { batch: 'latest-import' }),
   });
   const response = await fetch(`${clientEnv.MW_URL}/jobs/feed?${params}`, {
     cache: 'no-store',

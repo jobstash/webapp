@@ -37,7 +37,7 @@ const clients: QueryClient[] = [];
 const renderStack = (
   jobs: JobListItemSchema[],
   initialJobs = jobs,
-  importRunId = 'run-1',
+  importRunId: string | null = 'run-1',
 ) => {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -67,6 +67,12 @@ afterEach(() => {
 });
 
 describe('organization card stack', () => {
+  it('labels complete search results as matching jobs instead of new discoveries', () => {
+    renderStack(jobs, jobs, null);
+    expect(screen.getByRole('status')).toHaveTextContent('matching jobs');
+    expect(screen.getByRole('status')).not.toHaveTextContent('new jobs found');
+  });
+
   it('selects named jobs, mounts one card and links to the complete organization listing', () => {
     const { container } = renderStack(jobs);
     expect(screen.getAllByRole('tab')).toHaveLength(5);
