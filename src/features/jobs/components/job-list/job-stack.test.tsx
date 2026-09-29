@@ -1,5 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { JobListItemSchema } from '@/features/jobs/schemas';
 import { JobStack } from './job-stack';
@@ -25,7 +31,10 @@ vi.mock('@/components/link-with-loader', () => ({
   ),
 }));
 vi.mock('@/lib/analytics', () => ({ GA_EVENT: {}, trackEvent: vi.fn() }));
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 const jobs = Array.from(
   { length: 5 },
   (_, index) =>
@@ -72,4 +81,60 @@ describe('organization card stack', () => {
     ).toBe('/lt-fully-remote?page=2&workModes=remote');
     expect(getPageHref(1, {}, '/o-acme~org-acme')).toBe('/o-acme~org-acme');
   });
+});
+
+it('fits up to 25 jobs, clamps selection when narrowed, and keeps layers shallow', () => {
+  let resize!: (entries: { contentRect: { width: number } }[]) => void;
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      constructor(callback: typeof resize) {
+        resize = callback;
+      }
+      observe() {}
+      disconnect() {}
+    },
+  );
+  const many = Array.from({ length: 30 }, (_, i) => ({
+    ...jobs[0],
+    id: String(i),
+    title: `Engineer ${i}`,
+  }));
+  const { container } = render(<JobStack jobs={many} />);
+  act(() => resize([{ contentRect: { width: 720 } }]));
+  expect(screen.getAllByRole('button', { name: /Show job/ })).toHaveLength(25);
+  fireEvent.click(screen.getByRole('button', { name: 'Show job 25 of 25' }));
+  act(() => resize([{ contentRect: { width: 240 } }]));
+  expect(screen.getByRole('status')).toHaveTextContent('10 of 10');
+  expect(screen.getByRole('heading')).toHaveTextContent('Engineer 9');
+  act(() => resize([{ contentRect: { width: 120 } }]));
+  expect(screen.getByRole('status')).toHaveTextContent('5 of 5');
+  expect(container.querySelectorAll('div[aria-hidden="true"]')).toHaveLength(3);
+  act(() => resize([{ contentRect: { width: 600 } }]));
+  expect(screen.getByRole('status')).toHaveTextContent('5 of 25');
+  expect(container.querySelectorAll('article')).toHaveLength(1);
+});
+
+it('swipes both ways without changing cards during vertical scrolling or control use', () => {
+  render(<JobStack jobs={jobs} />);
+  const card = screen.getByRole('heading');
+  const swipe = (target: HTMLElement, dx: number, dy = 0) => {
+    fireEvent.touchStart(target, { touches: [{ clientX: 200, clientY: 200 }] });
+    fireEvent.touchEnd(target, {
+      changedTouches: [{ clientX: 200 + dx, clientY: 200 + dy }],
+    });
+  };
+  swipe(card, -100);
+  expect(screen.getByRole('status')).toHaveTextContent('2 of 5');
+  swipe(card, -100, 150);
+  expect(screen.getByRole('status')).toHaveTextContent('2 of 5');
+  swipe(screen.getByRole('link'), -100);
+  expect(screen.getByRole('status')).toHaveTextContent('2 of 5');
+  swipe(card, 100);
+  swipe(card, 100);
+  expect(screen.getByRole('status')).toHaveTextContent('1 of 5');
+  fireEvent.touchStart(card, { touches: [{ clientX: 200, clientY: 200 }] });
+  fireEvent.touchCancel(card);
+  fireEvent.touchEnd(card, { changedTouches: [{ clientX: 0, clientY: 200 }] });
+  expect(screen.getByRole('status')).toHaveTextContent('1 of 5');
 });

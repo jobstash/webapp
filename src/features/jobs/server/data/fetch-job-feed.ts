@@ -24,7 +24,7 @@ export const jobFeedDto = z.discriminatedUnion('mode', [
         key: z.string(),
         organizationId: z.string().nullable(),
         totalJobs: z.number(),
-        jobs: jobListItemDto.array().min(1).max(5),
+        jobs: jobListItemDto.array().min(1).max(25),
       }),
     ),
   }),
@@ -38,6 +38,7 @@ export const fetchJobFeed = async (
     ...searchParams,
     page: String(page),
     limit: '10',
+    jobsPerOrganization: '25',
   });
   const response = await fetch(`${clientEnv.MW_URL}/jobs/feed?${params}`, {
     cache: 'no-store',
