@@ -108,12 +108,8 @@ const PillarPage = async ({ params, searchParams }: Props) => {
 
   const pillarContext =
     pillarPage.filterContext ?? getPillarFilterContext(slug);
-  const feedFilters = {
-    ...(getPillarCategory(slug) === 'organization'
-      ? {}
-      : { publicationDate: 'past-3-months' }),
-    ...filters,
-  };
+  // Open jobs remain available until closed, regardless of publication age.
+  const feedFilters = filters;
   const { title, description, jobs, suggestedPillars } = pillarPage;
 
   // Org pillars show the org's real copy instead of the generated pillar

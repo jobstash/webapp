@@ -5,10 +5,6 @@ import { useRouter } from '@bprogress/next/app';
 import { useSearchParams } from 'next/navigation';
 
 import type { PillarFilterContext } from '@/features/pillar/schemas';
-import {
-  PILLAR_PUBLICATION_DATE_VALUE,
-  PUBLICATION_DATE_PARAM_KEY,
-} from '@/features/filters/constants';
 import { buildFilterModeHref } from '@/features/filters/utils/build-filter-mode-href';
 
 export interface PillarFilterModeValue {
@@ -43,10 +39,6 @@ export const PillarFilterModeProvider = ({
   const { page: _page, ...filters } = Object.fromEntries(query.entries());
 
   const baseParams: Record<string, string> = {
-    ...(pillarContext?.paramKey === 'organizationId' ||
-    pillarContext?.paramKey === 'organizations'
-      ? {}
-      : { [PUBLICATION_DATE_PARAM_KEY]: PILLAR_PUBLICATION_DATE_VALUE }),
     ...filters,
     ...(pillarContext ? { [pillarContext.paramKey]: pillarContext.value } : {}),
     ...(pillarContext?.organizationId

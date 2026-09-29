@@ -68,9 +68,37 @@ describe('organization job feed', () => {
       organizations: 'acme',
       page: '3',
       limit: '10',
-      batch: 'latest-import',
     });
     expect(fetch.mock.calls[0][1]).toEqual({ cache: 'no-store' });
+  });
+
+  it.each<Record<string, string>>([
+    { pillar: 'lt-fully-remote' },
+    { workModes: 'fully-remote' },
+  ])('includes existing open jobs when browsing %j', async (filters) => {
+    const source = batch(137);
+    const response = {
+      ...source,
+      data: source.data.map((group) => ({ ...group, importRunId: null })),
+    };
+    const fetch = vi.fn().mockResolvedValue(Response.json(response));
+    vi.stubGlobal('fetch', fetch);
+    const result = await fetchJobFeed(1, filters);
+    expect(new URL(fetch.mock.calls[0][0]).searchParams.has('batch')).toBe(
+      false,
+    );
+    expect(result.totalJobs).toBe(137);
+    if (result.mode === 'grouped')
+      expect(result.data[0].jobTitles).toHaveLength(137);
+  });
+
+  it('reserves latest-import selection for the unfiltered homepage', async () => {
+    const fetch = vi.fn().mockResolvedValue(Response.json(batch(7)));
+    vi.stubGlobal('fetch', fetch);
+    await fetchJobFeed(2, {});
+    expect(new URL(fetch.mock.calls[0][0]).searchParams.get('batch')).toBe(
+      'latest-import',
+    );
   });
 
   it('still maps individual organization results without adding stack navigation', async () => {

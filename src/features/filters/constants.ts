@@ -12,10 +12,6 @@ export const FILTER_KIND = {
 export type FilterKind = (typeof FILTER_KIND)[keyof typeof FILTER_KIND];
 
 export const PUBLICATION_DATE_PARAM_KEY = 'publicationDate';
-// Pillar pages are prerendered with the past 3 months' jobs (MW's 90-day
-// pillar window); the mock filter UI mirrors that as a pre-set
-// publication-date chip.
-export const PILLAR_PUBLICATION_DATE_VALUE = 'past-3-months';
 
 // Chip labels for pillar params that have no config in MW's /jobs/filters
 // response (yet). Real configs take precedence when present.
