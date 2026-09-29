@@ -2,7 +2,11 @@ import 'server-only';
 import { z } from 'zod';
 import { clientEnv } from '@/lib/env/client';
 import { jobListItemDto } from '../dtos/job-list-item.dto';
-import { dtoToJobListItem } from '../dtos/dto-to-job-list-item';
+import {
+  createJobItemHref,
+  dtoToJobListItem,
+  getJobTitle,
+} from '../dtos/dto-to-job-list-item';
 
 const paging = {
   page: z.number(),
@@ -23,8 +27,21 @@ export const jobFeedDto = z.discriminatedUnion('mode', [
       z.object({
         key: z.string(),
         organizationId: z.string().nullable(),
+        importRunId: z.string().nullable(),
         totalJobs: z.number(),
-        jobs: jobListItemDto.array().min(1).max(5),
+        jobs: jobListItemDto.array().min(1),
+        jobTitles: z
+          .array(
+            z.object({
+              id: z.string(),
+              shortUUID: z.string(),
+              title: z.string(),
+              location: z.string().nullable(),
+              seniority: z.string().nullable().optional(),
+              classification: z.string().nullable().optional(),
+            }),
+          )
+          .min(1),
       }),
     ),
   }),
@@ -38,6 +55,7 @@ export const fetchJobFeed = async (
     ...searchParams,
     page: String(page),
     limit: '10',
+    batch: 'latest-import',
   });
   const response = await fetch(`${clientEnv.MW_URL}/jobs/feed?${params}`, {
     cache: 'no-store',
@@ -51,6 +69,22 @@ export const fetchJobFeed = async (
     data: result.data.map((entry) => ({
       ...entry,
       jobs: entry.jobs.map(dtoToJobListItem),
+      jobTitles: entry.jobTitles.map((item) => {
+        const descriptor = {
+          ...entry.jobs[0],
+          shortUUID: item.shortUUID,
+          title: item.title,
+          seniority: item.seniority ?? null,
+          classification: item.classification ?? null,
+        };
+        const title = getJobTitle(descriptor);
+        return {
+          id: item.shortUUID,
+          title,
+          location: item.location,
+          href: createJobItemHref(title, descriptor),
+        };
+      }),
     })),
   };
 };

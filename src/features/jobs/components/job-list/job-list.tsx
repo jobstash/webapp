@@ -103,6 +103,8 @@ export const JobList = async ({
                 <JobStack
                   key={`${selectionKey}:${entry.key}`}
                   jobs={entry.jobs}
+                  jobTitles={entry.jobTitles}
+                  importRunId={entry.importRunId}
                 />
               ) : (
                 <JobListItem key={entry.key} job={entry.jobs[0]} />

@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 
 import { ArrowRightIcon, ExternalLinkIcon } from 'lucide-react';
 
@@ -22,9 +22,20 @@ import { AvailabilityPills } from '@/features/jobs/components/availability-pills
 interface JobListItemProps {
   job: JobListItemSchema;
   footer?: ReactNode;
+  contentOnly?: boolean;
 }
 
-export const JobListItem = ({ job, footer }: JobListItemProps) => {
+export const JobListItemFrame = ({ children }: { children: ReactNode }) => (
+  <article className='group relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm transition-all duration-200 hover:border-border hover:shadow-md'>
+    {children}
+  </article>
+);
+
+export const JobListItem = ({
+  job,
+  footer,
+  contentOnly = false,
+}: JobListItemProps) => {
   const { title, href, organization, infoTags, tags, badge, timestampText } =
     job;
 
@@ -36,15 +47,9 @@ export const JobListItem = ({ job, footer }: JobListItemProps) => {
     });
   };
 
+  const Frame = contentOnly ? Fragment : JobListItemFrame;
   return (
-    <article
-      className={cn(
-        'group relative overflow-hidden rounded-2xl bg-card',
-        'border border-border/50 shadow-sm',
-        'transition-all duration-200',
-        'hover:border-border hover:shadow-md',
-      )}
-    >
+    <Frame>
       <div
         className={cn(
           'absolute inset-x-0 top-0 h-px',
@@ -160,6 +165,6 @@ export const JobListItem = ({ job, footer }: JobListItemProps) => {
         </div>
       </div>
       {footer}
-    </article>
+    </Frame>
   );
 };
