@@ -303,8 +303,9 @@ export const JobStack = ({ jobs, jobTitles, importRunId }: JobStackProps) => {
       )}
       <div
         className={cn(
-          'flex w-full min-w-0 items-center py-2 @3xl:w-auto @3xl:max-w-[45%] @3xl:shrink-0',
-          hasPager && 'border-t border-border/50 @3xl:border-t-0',
+          'flex w-full min-w-0 items-center py-2',
+          hasPager &&
+            'border-t border-border/50 @3xl:w-auto @3xl:max-w-[45%] @3xl:shrink-0 @3xl:border-t-0',
         )}
       >
         <span
