@@ -14,8 +14,8 @@ import {
   ChevronRightIcon,
   ArrowRightIcon,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { LinkWithLoader } from '@/components/link-with-loader';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { JobListItemSchema } from '@/features/jobs/schemas';
 import type { JobStackTitle } from '@/features/jobs/job-stack';
@@ -61,7 +61,6 @@ export const JobStack = ({ jobs, jobTitles, importRunId }: JobStackProps) => {
   const panelId = useId();
   const hasPager = jobTitles.length > 1;
   const navigationLabel = `Jobs at ${organization?.name ?? 'this organization'}`;
-  const allJobsLabel = `All jobs at ${organization?.name ?? 'this organization'}`;
   const layers = Math.min(3, jobTitles.length - 1);
   const duplicateTitles = useMemo(() => {
     const counts = new Map<string, number>();
@@ -212,102 +211,94 @@ export const JobStack = ({ jobs, jobTitles, importRunId }: JobStackProps) => {
     if (event.pointerType === 'mouse' && event.button === 0)
       startSwipe(event.target as HTMLElement, event.clientX, event.clientY);
   };
-  const footer = (
-    <div className='flex min-w-0 flex-wrap items-center border-t border-border/50 px-2 text-xs text-muted-foreground @xl:text-sm @3xl:flex-nowrap @3xl:gap-x-3 @3xl:px-3'>
-      {hasPager && (
-        <nav
-          aria-label={navigationLabel}
-          className='flex min-w-0 basis-full items-center @3xl:flex-1 @3xl:basis-0'
-        >
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon-sm'
-            className='h-11 w-8 shrink-0'
-            aria-label='Previous job'
-            disabled={index === 0}
-            onMouseEnter={() => index > 0 && prefetch(jobTitles[index - 1].id)}
-            onClick={() => select(index - 1)}
-          >
-            <ChevronLeftIcon />
-          </Button>
-          <div
-            ref={strip}
-            role='tablist'
-            aria-label='Job titles'
-            className='flex min-w-0 flex-1 touch-pan-x items-center gap-1 overflow-x-auto overscroll-x-contain [overflow-anchor:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
-            onKeyDown={(event) => {
-              const next =
-                event.key === 'ArrowRight'
-                  ? index + 1
-                  : event.key === 'ArrowLeft'
-                    ? index - 1
-                    : event.key === 'Home'
-                      ? 0
-                      : event.key === 'End'
-                        ? jobTitles.length - 1
-                        : null;
-              if (next !== null) {
-                event.preventDefault();
-                select(next, true);
-              }
-            }}
-          >
-            {jobTitles.map((item, position) => {
-              const label =
-                duplicateTitles.has(item.title) && item.location
-                  ? `${item.title} · ${item.location}`
-                  : item.title;
-              return (
-                <Button
-                  key={item.id}
-                  ref={position === index ? activeTitle : undefined}
-                  id={`${panelId}-${position}`}
-                  role='tab'
-                  type='button'
-                  variant='ghost'
-                  aria-selected={position === index}
-                  aria-controls={panelId}
-                  tabIndex={position === index ? 0 : -1}
-                  title={label}
-                  onMouseEnter={() => prefetch(item.id)}
-                  onFocus={() => prefetch(item.id)}
-                  onClick={() => select(position)}
-                  className={cn(
-                    'h-11 max-w-[min(100%,22rem)] shrink-0 rounded-none border-b-2 px-3 text-xs @xl:text-sm',
-                    position === index
-                      ? 'border-foreground text-foreground'
-                      : 'border-transparent text-muted-foreground',
-                  )}
-                >
-                  <span className='truncate'>{label}</span>
-                </Button>
-              );
-            })}
-          </div>
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon-sm'
-            className='h-11 w-8 shrink-0'
-            aria-label='Next job'
-            disabled={index === jobTitles.length - 1}
-            onMouseEnter={() =>
-              index < jobTitles.length - 1 && prefetch(jobTitles[index + 1].id)
-            }
-            onClick={() => select(index + 1)}
-          >
-            <ChevronRightIcon />
-          </Button>
-        </nav>
-      )}
-      <div
-        className={cn(
-          'flex w-full min-w-0 items-center py-2',
-          hasPager &&
-            'border-t border-border/50 @3xl:w-auto @3xl:max-w-[45%] @3xl:shrink-0 @3xl:border-t-0',
-        )}
+  const footer = hasPager ? (
+    <div className='flex min-w-0 items-center gap-2 border-t border-border/50 px-2 text-xs text-muted-foreground @xl:text-sm @3xl:px-3'>
+      <nav
+        aria-label={navigationLabel}
+        className='flex min-w-0 flex-1 items-center'
       >
+        <Button
+          type='button'
+          variant='ghost'
+          size='icon-sm'
+          className='h-11 w-8 shrink-0'
+          aria-label='Previous job'
+          disabled={index === 0}
+          onMouseEnter={() => index > 0 && prefetch(jobTitles[index - 1].id)}
+          onClick={() => select(index - 1)}
+        >
+          <ChevronLeftIcon />
+        </Button>
+        <div
+          ref={strip}
+          role='tablist'
+          aria-label='Job titles'
+          className='flex min-w-0 flex-1 touch-pan-x items-center gap-1 overflow-x-auto overscroll-x-contain [overflow-anchor:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+          onKeyDown={(event) => {
+            const next =
+              event.key === 'ArrowRight'
+                ? index + 1
+                : event.key === 'ArrowLeft'
+                  ? index - 1
+                  : event.key === 'Home'
+                    ? 0
+                    : event.key === 'End'
+                      ? jobTitles.length - 1
+                      : null;
+            if (next !== null) {
+              event.preventDefault();
+              select(next, true);
+            }
+          }}
+        >
+          {jobTitles.map((item, position) => {
+            const label =
+              duplicateTitles.has(item.title) && item.location
+                ? `${item.title} · ${item.location}`
+                : item.title;
+            return (
+              <Button
+                key={item.id}
+                ref={position === index ? activeTitle : undefined}
+                id={`${panelId}-${position}`}
+                role='tab'
+                type='button'
+                variant='ghost'
+                aria-selected={position === index}
+                aria-controls={panelId}
+                tabIndex={position === index ? 0 : -1}
+                title={label}
+                onMouseEnter={() => prefetch(item.id)}
+                onFocus={() => prefetch(item.id)}
+                onClick={() => select(position)}
+                className={cn(
+                  'h-11 max-w-[min(100%,22rem)] shrink-0 rounded-none border-b-2 px-3 text-xs @xl:text-sm',
+                  position === index
+                    ? 'border-foreground text-foreground'
+                    : 'border-transparent text-muted-foreground',
+                )}
+              >
+                <span className='truncate'>{label}</span>
+              </Button>
+            );
+          })}
+        </div>
+        <Button
+          type='button'
+          variant='ghost'
+          size='icon-sm'
+          className='h-11 w-8 shrink-0'
+          aria-label='Next job'
+          disabled={index === jobTitles.length - 1}
+          onMouseEnter={() =>
+            index < jobTitles.length - 1 && prefetch(jobTitles[index + 1].id)
+          }
+          onClick={() => select(index + 1)}
+        >
+          <ChevronRightIcon />
+        </Button>
+      </nav>
+      <div className='shrink-0 border-l border-border/50 py-2 pl-2'>
         <span
           role='status'
           aria-live='polite'
@@ -316,41 +307,15 @@ export const JobStack = ({ jobs, jobTitles, importRunId }: JobStackProps) => {
         >
           <span className='sr-only'>{selected.title}, </span>
           <span className='block font-medium text-foreground tabular-nums'>
-            {hasPager ? `${index + 1} of ${jobTitles.length}` : '1'}{' '}
+            {index + 1} of {jobTitles.length}{' '}
           </span>
           <span className='block'>
-            {importRunId
-              ? hasPager
-                ? 'new jobs found'
-                : 'new job found'
-              : hasPager
-                ? 'matching jobs'
-                : 'matching job'}
+            {importRunId ? 'new jobs found' : 'matching jobs'}
           </span>
         </span>
-        {organization && (
-          <div className='ml-3 min-w-0 flex-1 border-l border-border pl-3 @3xl:ml-2 @3xl:pl-2'>
-            <Button
-              asChild
-              variant='ghost'
-              size='sm'
-              className='h-auto min-h-9 w-full min-w-0 justify-end gap-2 px-2 py-1 text-right text-xs whitespace-normal @xl:text-sm'
-            >
-              <LinkWithLoader
-                href={organization.href}
-                aria-label={allJobsLabel}
-              >
-                <span className='min-w-0 [overflow-wrap:anywhere]'>
-                  View all jobs at {organization.name}
-                </span>
-                <ArrowRightIcon className='shrink-0' />
-              </LinkWithLoader>
-            </Button>
-          </div>
-        )}
       </div>
     </div>
-  );
+  ) : null;
   return (
     <div
       className='@container relative isolate min-w-0 overflow-x-clip'

@@ -73,7 +73,7 @@ describe('organization card stack', () => {
     expect(screen.getByRole('status')).not.toHaveTextContent('new jobs found');
   });
 
-  it('selects named jobs, mounts one card and links to the complete organization listing', () => {
+  it('selects named jobs and mounts one card without a duplicate organization link', () => {
     const { container } = renderStack(jobs);
     expect(screen.getAllByRole('tab')).toHaveLength(5);
     expect(screen.getByRole('button', { name: 'Previous job' })).toBeDisabled();
@@ -88,8 +88,8 @@ describe('organization card stack', () => {
     expect(screen.getByRole('heading')).toHaveTextContent('Engineer 4');
     expect(screen.getByRole('button', { name: 'Next job' })).toBeDisabled();
     expect(
-      screen.getByRole('link', { name: 'All jobs at Acme' }),
-    ).toHaveAttribute('href', '/o-acme~org-acme');
+      screen.queryByRole('link', { name: 'All jobs at Acme' }),
+    ).not.toBeInTheDocument();
     expect(container.querySelectorAll('article')).toHaveLength(1);
   });
 
@@ -185,15 +185,19 @@ describe('organization card stack', () => {
     expect(screen.getByRole('status')).toHaveTextContent('1 of 2');
   });
 
-  it('omits paging and decorative layers for one job while keeping the organization link', () => {
-    const { container } = renderStack([jobs[0]]);
-    expect(screen.queryByRole('navigation')).toBeNull();
-    expect(screen.queryByRole('tablist')).toBeNull();
-    expect(container.querySelector('div[aria-hidden="true"]')).toBeNull();
-    expect(
-      screen.getByRole('link', { name: 'All jobs at Acme' }),
-    ).toBeVisible();
-  });
+  it.each(['run-1', null])(
+    'omits the entire footer and layers for one job (import %s)',
+    (importRunId) => {
+      const { container } = renderStack([jobs[0]], [jobs[0]], importRunId);
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      expect(screen.queryByRole('navigation')).toBeNull();
+      expect(screen.queryByRole('tablist')).toBeNull();
+      expect(container.querySelector('div[aria-hidden="true"]')).toBeNull();
+      expect(
+        screen.queryByRole('link', { name: 'All jobs at Acme' }),
+      ).not.toBeInTheDocument();
+    },
+  );
 
   it('swipes cards without intercepting vertical scrolling, title scrolling or controls', () => {
     renderStack(jobs);
