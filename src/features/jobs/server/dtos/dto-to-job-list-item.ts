@@ -51,9 +51,12 @@ const getDefaultTitle = (dto: JobListItemDto): string => {
   return title || 'Open Role';
 };
 
+export const getJobTitle = (dto: JobListItemDto): string =>
+  dto.title?.trim() || getDefaultTitle(dto);
+
 const getDefaultSummary = (dto: JobListItemDto): string => {
   const orgName = dto.organization?.name ?? dto.project?.name;
-  const title = dto.title ?? getDefaultTitle(dto);
+  const title = getJobTitle(dto);
   return orgName
     ? `${orgName} is looking for a ${title}.`
     : `Apply for ${title} position.`;
@@ -76,7 +79,7 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
       ? `[REMOTE] ${location}`
       : location;
   const addressLookup = lookupAddresses(lookupKey);
-  const title = dto.title ?? getDefaultTitle(dto);
+  const title = getJobTitle(dto);
   const href = createJobItemHref(title, dto);
   const infoTags = createJobInfoTags(dto, addressLookup, timestamp);
   const mappedTags = dtoToJobItemTag(tags);
@@ -145,7 +148,7 @@ const dtoToAvailability = (
   };
 };
 
-const createJobItemHref = (title: string, dto: JobListItemDto) => {
+export const createJobItemHref = (title: string, dto: JobListItemDto) => {
   const employerName = dto.organization?.name ?? dto.project?.name;
   const orgText = employerName ? `-${employerName}` : '';
   const slug = slugify(`${title}${orgText}`);
