@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
+  SheetClose,
   SheetDescription,
   SheetHeader,
   SheetTitle,
@@ -55,7 +56,7 @@ export const FiltersDrawerClient = ({
       </SheetTrigger>
       <SheetContent
         side='left'
-        className='w-80 max-w-[85vw]'
+        className='h-dvh w-full max-w-sm gap-0'
         // Don't auto-focus the first chip — it pops its tooltip on open
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
@@ -65,7 +66,7 @@ export const FiltersDrawerClient = ({
             Refine the jobs shown in the results list.
           </SheetDescription>
         </SheetHeader>
-        <div className='flex-1 overflow-y-auto px-4 pb-6'>
+        <div className='min-h-0 flex-1 overflow-y-auto overscroll-contain p-4'>
           <div className='flex flex-col gap-4'>
             <FiltersAsideClient
               configs={configs}
@@ -73,6 +74,11 @@ export const FiltersDrawerClient = ({
               pillarMode={pillarMode}
             />
           </div>
+        </div>
+        <div className='shrink-0 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))]'>
+          <SheetClose asChild>
+            <Button className='min-h-11 w-full'>Show results</Button>
+          </SheetClose>
         </div>
       </SheetContent>
     </Sheet>

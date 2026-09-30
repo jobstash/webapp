@@ -8,7 +8,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/features/filters/components/filter-overlay';
 import { Slider } from '@/components/ui/slider';
 import { useRangeFilterState } from '@/features/filters/hooks/use-range-filter-state';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';

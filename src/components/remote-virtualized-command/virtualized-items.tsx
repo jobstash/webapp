@@ -4,6 +4,7 @@ import { CommandItem } from '@/components/ui/command';
 
 interface Props {
   virtualItems: VirtualItem[];
+  measureElement?: (element: HTMLDivElement | null) => void;
   filteredValues: string[];
   formatLabel: (value: string) => string;
   onSelect: (value: string) => void;
@@ -11,6 +12,7 @@ interface Props {
 
 export const VirtualizedItems = ({
   virtualItems,
+  measureElement,
   filteredValues,
   formatLabel,
   onSelect,
@@ -23,10 +25,11 @@ export const VirtualizedItems = ({
         return (
           <CommandItem
             key={value}
+            data-index={virtualItem.index}
+            ref={measureElement}
             value={value}
-            className='absolute top-0 left-0 w-full bg-transparent data-[selected=true]:bg-white/5'
+            className='absolute top-0 left-0 min-h-11 w-full bg-transparent wrap-anywhere whitespace-normal data-[selected=true]:bg-white/5'
             style={{
-              height: `${virtualItem.size}px`,
               transform: `translateY(${virtualItem.start}px)`,
             }}
             onSelect={onSelect}

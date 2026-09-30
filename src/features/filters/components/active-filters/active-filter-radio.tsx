@@ -9,7 +9,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/features/filters/components/filter-overlay';
 import { useFilterQueryState } from '@/features/filters/hooks';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 import {

@@ -35,8 +35,8 @@ To add a new filter icon: add entry to `filterIconMap` object.
 ```
 filters-aside/              # Sidebar container
 ├── active-filters/         # Currently applied filters (removable chips)
-├── suggested-filters/      # Quick-select suggested filters
-└── more-filters/           # "More filters" dropdown for additional options
+├── suggested-filters/      # All unapplied filters, organized by group
+└── filter-overlay.tsx      # Screen-bounded option lists; kept inside mobile drawer
 ```
 
 ### Suspense Pattern

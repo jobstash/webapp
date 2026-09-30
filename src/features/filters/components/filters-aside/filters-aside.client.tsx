@@ -8,7 +8,7 @@ import {
 } from '@/features/filters/hooks';
 import { ActiveFilters } from '@/features/filters/components/active-filters';
 import { SuggestedFilters } from '@/features/filters/components/suggested-filters';
-import { MoreFilters } from '@/features/filters/components/more-filters';
+import { FilterOverlayProvider } from '@/features/filters/components/filter-overlay';
 
 interface Props {
   configs: FilterConfigSchema[];
@@ -29,7 +29,7 @@ export const FiltersAsideClient = ({
   );
 
   const body = (
-    <>
+    <FilterOverlayProvider>
       <ActiveFilters
         configs={filteredConfigs}
         pillarContext={pillarMode ? null : pillarContext}
@@ -38,8 +38,7 @@ export const FiltersAsideClient = ({
         configs={filteredConfigs}
         pillarContext={pillarMode ? null : pillarContext}
       />
-      <MoreFilters configs={filteredConfigs} />
-    </>
+    </FilterOverlayProvider>
   );
 
   if (!pillarMode) return body;

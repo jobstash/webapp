@@ -66,11 +66,9 @@ describe('VirtualizedItems', () => {
     const secondItem = screen.getByText('ITEM-B').closest('[cmdk-item]');
 
     expect(firstItem).toHaveStyle({
-      height: '35px',
       transform: 'translateY(0px)',
     });
     expect(secondItem).toHaveStyle({
-      height: '35px',
       transform: 'translateY(35px)',
     });
   });

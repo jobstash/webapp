@@ -9,7 +9,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/features/filters/components/filter-overlay';
 import { CommandGroup, CommandItem } from '@/components/ui/command';
 import { VirtualizedCommand } from '@/components/virtualized-command';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
@@ -50,7 +50,9 @@ export const ActiveFiltersSearch = ({ label, paramKey, options }: Props) => {
   );
 
   const selectedOptions = (filterParam?.split(',') || []).map((paramValue) => ({
-    label: capitalizeSlug(paramValue),
+    label:
+      options.find((option) => option.value === paramValue)?.label ??
+      capitalizeSlug(paramValue),
     value: paramValue,
   }));
 

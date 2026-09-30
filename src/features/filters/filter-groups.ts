@@ -102,26 +102,6 @@ export interface FilterConfigGroup {
   configs: FilterConfigSchema[];
 }
 
-const PRIMARY_FILTER_PARAM_KEYS = new Set([
-  'classifications',
-  'commitments',
-  'seniority',
-  'tags',
-  'workModes',
-  'countries',
-  'publicationDate',
-  'minSalaryRange',
-  'maxSalaryRange',
-  'minCurrentMaintainers',
-  'maxCurrentMaintainers',
-  'minActiveLeads',
-  'maxActiveLeads',
-  'newActiveLeads',
-  'steppedDownLeads',
-  'movedLeads',
-  'earlyLeadDepartures',
-]);
-
 export const getFilterParamKeys = (config: FilterConfigSchema): string[] => {
   if (config.kind === FILTER_KIND.RANGE) {
     return [config.lowest.paramKey, config.highest.paramKey];
@@ -129,11 +109,6 @@ export const getFilterParamKeys = (config: FilterConfigSchema): string[] => {
 
   return [config.paramKey];
 };
-
-export const isPrimaryFilter = (config: FilterConfigSchema): boolean =>
-  getFilterParamKeys(config).some((paramKey) =>
-    PRIMARY_FILTER_PARAM_KEYS.has(paramKey),
-  );
 
 export const getFilterGroup = (
   config: FilterConfigSchema,

@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/features/filters/components/filter-overlay';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 import { FILTER_DROPDOWN_CONTENT_CLASS } from '@/features/filters/constants';
 
