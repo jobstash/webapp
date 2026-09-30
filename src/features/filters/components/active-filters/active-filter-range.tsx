@@ -5,7 +5,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/features/filters/components/filter-overlay';
 import { Slider } from '@/components/ui/slider';
 import type { RangeFilterConfig } from '@/features/filters/schemas';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';

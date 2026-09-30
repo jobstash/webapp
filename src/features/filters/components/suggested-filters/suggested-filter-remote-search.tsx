@@ -9,7 +9,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/features/filters/components/filter-overlay';
 import { RemoteVirtualizedCommand } from '@/components/remote-virtualized-command';
 import { FILTER_POPOVER_CONTENT_CLASS } from '@/features/filters/constants';
 import { getRemoteFilterEndpoint } from '@/features/filters/utils';

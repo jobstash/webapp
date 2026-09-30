@@ -45,7 +45,7 @@ export const VirtualizedCommand = ({
   const virtualizer = useVirtualizer({
     count: filteredOptions.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 35,
+    estimateSize: () => 44,
   });
 
   const virtualItems = virtualizer.getVirtualItems();
@@ -69,7 +69,13 @@ export const VirtualizedCommand = ({
       {!searchValue && beforeItems}
       <CommandList
         ref={parentRef}
-        style={{ height, width: '100%', overflow: 'auto' }}
+        style={{
+          height: filteredOptions.length
+            ? `min(${height}, ${virtualizer.getTotalSize() + 8}px)`
+            : 'auto',
+          width: '100%',
+          overflow: 'auto',
+        }}
       >
         <CommandEmpty>No item found.</CommandEmpty>
         <CommandGroup>
@@ -86,10 +92,11 @@ export const VirtualizedCommand = ({
               return (
                 <CommandItem
                   key={option.value}
+                  data-index={virtualItem.index}
+                  ref={virtualizer.measureElement}
                   value={option.value}
-                  className='absolute top-0 left-0 w-full bg-transparent data-[selected=true]:bg-white/5'
+                  className='absolute top-0 left-0 min-h-11 w-full bg-transparent wrap-anywhere whitespace-normal data-[selected=true]:bg-white/5'
                   style={{
-                    height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
                   }}
                   onSelect={handleSelect}

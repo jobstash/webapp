@@ -16,11 +16,11 @@ export const SuggestedFilterTrigger = ({
   <Button
     size='xs'
     variant='secondary'
-    className='flex h-7 items-center gap-1.5 border border-dashed bg-sidebar text-muted-foreground/80 hover:bg-muted'
+    className='flex min-h-11 max-w-full items-center gap-1.5 border border-dashed bg-sidebar text-muted-foreground/80 hover:bg-muted sm:min-h-7'
     disabled={isPending}
     {...props}
   >
     <FilterIconSlot isPending={isPending} icon={icon} />
-    <span className='flex-1 text-left'>{label}</span>
+    <span className='min-w-0 flex-1 text-left whitespace-normal'>{label}</span>
   </Button>
 );

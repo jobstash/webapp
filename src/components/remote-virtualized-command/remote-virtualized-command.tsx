@@ -75,7 +75,7 @@ export const RemoteVirtualizedCommand = <T,>({
   const virtualizer = useVirtualizer({
     count: filteredValues.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 35,
+    estimateSize: () => 44,
   });
 
   return (
@@ -104,7 +104,9 @@ export const RemoteVirtualizedCommand = <T,>({
       <CommandList
         ref={parentRef}
         style={{
-          height: isEmpty ? 'auto' : height,
+          height: isEmpty
+            ? 'auto'
+            : `min(${height}, ${virtualizer.getTotalSize() + 8}px)`,
           width: '100%',
           overflow: 'auto',
         }}
@@ -119,6 +121,7 @@ export const RemoteVirtualizedCommand = <T,>({
           >
             <VirtualizedItems
               virtualItems={virtualizer.getVirtualItems()}
+              measureElement={virtualizer.measureElement}
               filteredValues={filteredValues}
               formatLabel={formatLabel}
               onSelect={handleSelect}

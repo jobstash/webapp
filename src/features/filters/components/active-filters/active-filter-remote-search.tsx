@@ -8,7 +8,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/features/filters/components/filter-overlay';
 import { RemoteVirtualizedCommand } from '@/components/remote-virtualized-command';
 import { MappedFilterIcon } from '@/features/filters/components/mapped-filter-icon';
 import { FILTER_POPOVER_CONTENT_CLASS } from '@/features/filters/constants';

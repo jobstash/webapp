@@ -32,15 +32,16 @@ export const ActiveFilterTrigger = ({
   ...props
 }: Props) => {
   const labelText = usePrevious(label, !isPending);
+  const removeLabel = `Remove ${tooltipLabel ?? label} filter`;
 
   return (
-    <ButtonGroup>
+    <ButtonGroup className='max-w-full'>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
             size='xs'
             variant='secondary'
-            className='group flex h-7 items-center gap-1.5 border-none px-2 pr-3.5 [&_svg]:text-neutral-400'
+            className='group flex min-h-11 min-w-0 items-center gap-1.5 border-none px-2 pr-3.5 whitespace-normal sm:min-h-7 [&_svg]:text-neutral-400'
             disabled={isPending}
             {...props}
           >
@@ -56,7 +57,8 @@ export const ActiveFilterTrigger = ({
           <Button
             size='icon-sm'
             variant='secondary'
-            className='h-7 px-2'
+            className='min-h-11 min-w-11 px-2 sm:min-h-7 sm:min-w-7'
+            aria-label={removeLabel}
             onClick={onClose}
             disabled={isPending}
           >
