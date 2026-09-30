@@ -101,6 +101,15 @@ const SUGGESTED_RANGE_PARAM_KEYS = new Set([
   'maxActiveLeads',
 ]);
 
+// Geography controls stay searchable even when only a few places are available.
+const SEARCHABLE_LOCATION_PARAM_KEYS = new Set<string>([
+  PARAM_KEYS.CITIES,
+  PARAM_KEYS.REGIONS,
+  PARAM_KEYS.COUNTRIES,
+  PARAM_KEYS.CONTINENTS,
+  PARAM_KEYS.TIMEZONES,
+]);
+
 const RADIO_FILTER_OPTION_THRESHOLD = 6;
 const CHECKBOX_FILTER_OPTION_THRESHOLD = 6;
 const SELECT_OPTION_THRESHOLD = 2;
@@ -317,7 +326,11 @@ const handleMultiSelect = (
   const normalizedDto = withRequiredRemoteWorkModes(dto);
 
   // Get rid of issues where options look borked
+  const searchableLocation = SEARCHABLE_LOCATION_PARAM_KEYS.has(
+    normalizedDto.paramKey,
+  );
   const minimumOptions =
+    searchableLocation ||
     normalizedDto.paramKey === PARAM_KEYS.COLLABORATION_HOURS
       ? 1
       : SELECT_OPTION_THRESHOLD;
@@ -325,6 +338,7 @@ const handleMultiSelect = (
   if (hasNoOptions) return null;
 
   const isCheckbox =
+    !searchableLocation &&
     normalizedDto.options.length <= CHECKBOX_FILTER_OPTION_THRESHOLD;
   const baseFilter = isCheckbox
     ? dtoToCheckboxFilterConfig(normalizedDto)

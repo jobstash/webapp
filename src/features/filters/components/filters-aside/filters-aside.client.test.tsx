@@ -62,6 +62,27 @@ afterEach(() => {
 });
 
 describe('main filter panel', () => {
+  it('opens continent search without applying Africa or navigating before a choice', async () => {
+    Element.prototype.scrollIntoView = vi.fn();
+    const user = userEvent.setup();
+    const continents: FilterConfigSchema = {
+      ...configs[0],
+      kind: 'SEARCH',
+      label: 'Continent',
+      paramKey: 'continents',
+      options: [
+        { label: 'Africa', value: 'africa' },
+        { label: 'Europe', value: 'europe' },
+      ],
+    };
+    render(<FiltersAsideClient configs={[continents]} />);
+    await user.click(screen.getByRole('button', { name: 'Continent' }));
+    const search = screen.getByPlaceholderText('Search continent...');
+    await user.type(search, 'Europe');
+    expect(search).toHaveValue('Europe');
+    expect(setParam).not.toHaveBeenCalled();
+  });
+
   it('offers previously hidden filters directly and applies the chosen option without selecting a default first', async () => {
     const user = userEvent.setup();
     render(<FiltersAsideClient configs={configs} />);

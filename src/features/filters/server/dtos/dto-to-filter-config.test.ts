@@ -25,7 +25,7 @@ const locationConfig = (position: number, label: string, paramKey: string) => ({
 });
 
 describe('dtoToFilterConfig location facets', () => {
-  it('keeps each geographic dimension distinct and suggested', () => {
+  it('keeps each geographic dimension searchable even with only two options', () => {
     const result = dtoToFilterConfig({
       countries: locationConfig(1, 'Country', 'countries'),
       regions: locationConfig(2, 'Region', 'regions'),
@@ -64,6 +64,7 @@ describe('dtoToFilterConfig location facets', () => {
       ]),
     );
     for (const config of result) {
+      expect(config.kind).toBe('SEARCH');
       if (!('options' in config)) continue;
       for (const option of config.options) {
         expect(option.value).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
