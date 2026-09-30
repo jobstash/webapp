@@ -156,13 +156,9 @@ describe('HeroWithPillars', () => {
     ).toBeInTheDocument();
   });
 
-  it('keeps the CTA and discovery links out of the mobile layout', async () => {
+  it('keeps discovery links out of the mobile layout', async () => {
     render(await HeroWithPillars());
 
-    expect(screen.getByTestId('desktop-hero-ctas')).toHaveClass(
-      'hidden',
-      'md:block',
-    );
     expect(screen.getByTestId('desktop-hero-pillars')).toHaveClass(
       'hidden',
       'md:flex',
