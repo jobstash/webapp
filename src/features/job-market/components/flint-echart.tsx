@@ -17,6 +17,15 @@ import {
   TooltipComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import type { TooltipComponentOption } from 'echarts/components';
+
+import { cn } from '@/lib/utils';
+
+const containedTooltip = (tooltip: TooltipComponentOption) => ({
+  ...tooltip,
+  confine: true,
+  extraCssText: `${tooltip.extraCssText ?? ''};max-width:calc(100% - 16px);box-sizing:border-box;white-space:normal;overflow-wrap:anywhere;`,
+});
 
 echarts.use([
   AriaComponent,
@@ -62,7 +71,15 @@ export const FlintEChart = ({
   }, []);
 
   useEffect(() => {
-    chartRef.current?.setOption(option, { notMerge: true });
+    chartRef.current?.setOption(
+      {
+        ...option,
+        tooltip: Array.isArray(option.tooltip)
+          ? option.tooltip.map(containedTooltip)
+          : containedTooltip(option.tooltip ?? {}),
+      },
+      { notMerge: true },
+    );
   }, [option]);
 
   useEffect(() => {
@@ -82,7 +99,8 @@ export const FlintEChart = ({
   return (
     <div
       ref={elementRef}
-      className={className}
+      // The canvas must follow the available width, not set a grid's minimum width.
+      className={cn('relative w-full min-w-0 [contain:inline-size]', className)}
       role='img'
       aria-label={ariaLabel}
     />
