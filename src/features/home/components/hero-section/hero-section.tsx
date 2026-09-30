@@ -77,7 +77,7 @@ export const HeroSection = ({ pillarItems }: Props) => {
             </p>
           </div>
 
-          <div data-testid='desktop-hero-ctas' className='hidden md:block'>
+          <div className='w-full'>
             <HeroCtas />
           </div>
 
