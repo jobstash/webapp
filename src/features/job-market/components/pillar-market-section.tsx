@@ -107,7 +107,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
   return (
     <section
       aria-labelledby='pillar-market-heading'
-      className='mx-auto mt-6 w-full rounded-2xl border border-border/60 bg-card/60 p-4 shadow-sm md:p-6'
+      className='mx-auto mt-6 w-full min-w-0 rounded-2xl border border-border/60 bg-card/60 p-4 shadow-sm md:p-6'
     >
       <div className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
         <div>
@@ -253,17 +253,23 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
       )}
 
       <div
-        className={cn('mt-5 grid gap-4', hasSalaryHistory && 'xl:grid-cols-2')}
+        className={cn(
+          'mt-5 grid min-w-0 grid-cols-1 gap-4',
+          hasSalaryHistory && 'xl:grid-cols-2',
+        )}
       >
-        <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
-          <div className='flex items-center justify-between gap-3'>
-            <div>
+        <div className='min-w-0 rounded-xl border border-border/60 bg-background/45 p-4'>
+          <div className='flex items-start justify-between gap-3'>
+            <div className='min-w-0'>
               <h3 className='font-semibold'>Opportunity activity</h3>
               <p className='text-xs text-muted-foreground'>
                 Open roles, employers, and newly listed jobs by day
               </p>
             </div>
-            <UsersRoundIcon className='size-5 text-blue-400' aria-hidden />
+            <UsersRoundIcon
+              className='size-5 shrink-0 text-blue-400'
+              aria-hidden
+            />
           </div>
           <FlintEChart
             option={activityOption}
@@ -272,9 +278,9 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
           />
         </div>
         {hasSalaryHistory && (
-          <div className='rounded-xl border border-border/60 bg-background/45 p-4'>
-            <div className='flex items-center justify-between gap-3'>
-              <div>
+          <div className='min-w-0 rounded-xl border border-border/60 bg-background/45 p-4'>
+            <div className='flex items-start justify-between gap-3'>
+              <div className='min-w-0'>
                 <h3 className='font-semibold'>All-mode pay history</h3>
                 <p className='text-xs text-muted-foreground'>
                   Historical context; use the work-market split above for
@@ -282,7 +288,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
                 </p>
               </div>
               <CircleDollarSignIcon
-                className='size-5 text-amber-400'
+                className='size-5 shrink-0 text-amber-400'
                 aria-hidden
               />
             </div>
