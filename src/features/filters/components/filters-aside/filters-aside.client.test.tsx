@@ -115,6 +115,44 @@ describe('main filter panel', () => {
     expect(setParam).toHaveBeenCalledWith('page', null);
   });
 
+  it('expands mobile search below its trigger inside the filter list without opening a floating popover or forcing keyboard focus', async () => {
+    const user = userEvent.setup();
+    const region: FilterConfigSchema = {
+      ...configs[0],
+      kind: 'SEARCH',
+      label: 'Region',
+      paramKey: 'regions',
+      options: [{ label: 'North Holland', value: 'north-holland' }],
+    };
+    render(<FiltersDrawerClient configs={[region]} />);
+    await user.click(screen.getByRole('button', { name: 'Filters' }));
+    const trigger = screen.getByRole('button', { name: 'Region' });
+    await user.click(trigger);
+    const search = screen.getByPlaceholderText('Search region...');
+    const content = document.getElementById(
+      trigger.getAttribute('aria-controls')!,
+    );
+    expect(content).toContainElement(search);
+    expect(
+      screen.getByRole('region', { name: 'All job filters' }),
+    ).toContainElement(content);
+    expect(content).toHaveAttribute('data-slot', 'filter-disclosure-content');
+    expect(
+      document.querySelector('[data-radix-popper-content-wrapper]'),
+    ).toBeNull();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(search).not.toHaveFocus();
+    await user.type(search, 'Holland');
+    await user.click(screen.getByRole('heading', { name: 'Filters' }));
+    expect(search).toHaveValue('Holland');
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await user.click(trigger);
+    expect(
+      screen.queryByPlaceholderText('Search region...'),
+    ).not.toBeInTheDocument();
+    expect(setParam).not.toHaveBeenCalled();
+  });
+
   it('opens continent search without applying Africa or navigating before a choice', async () => {
     Element.prototype.scrollIntoView = vi.fn();
     const user = userEvent.setup();
