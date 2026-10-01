@@ -29,7 +29,7 @@ export const PillarJobList = ({
   if (jobs.length === 0) {
     return (
       <div>
-        <JobListToolbar total={0}>{mobileFilters}</JobListToolbar>
+        <JobListToolbar>{mobileFilters}</JobListToolbar>
         <EmptyState pillarName={pillarName} pillarContext={pillarContext} />
       </div>
     );
@@ -37,7 +37,7 @@ export const PillarJobList = ({
 
   return (
     <div>
-      <JobListToolbar total={jobs.length}>{mobileFilters}</JobListToolbar>
+      <JobListToolbar>{mobileFilters}</JobListToolbar>
       <div className='space-y-4'>
         {jobs.map((job) => (
           <JobListItem key={job.id} job={job} />

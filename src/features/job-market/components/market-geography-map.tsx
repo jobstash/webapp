@@ -16,9 +16,9 @@ type CountryFeature = Feature<Geometry, { id?: string; name?: string }>;
 const salaryColor = (salary: number | null): string => {
   if (salary === null) return '#27272a';
   const normalized = Math.max(0, Math.min(1, (salary - 3_000) / 17_000));
-  const hue = 175 - normalized * 45;
-  const lightness = 25 + normalized * 30;
-  return `hsl(${hue} 58% ${lightness}%)`;
+  const hue = 262;
+  const lightness = 22 + normalized * 50;
+  return `hsl(${hue} 55% ${lightness}%)`;
 };
 
 export const MarketGeographyMap = ({
@@ -105,7 +105,7 @@ export const MarketGeographyMap = ({
 
   return (
     <div>
-      <div className='overflow-hidden rounded-xl border border-border/60 bg-[#090b0d]'>
+      <div className='overflow-hidden rounded-xl border border-border/60 bg-background'>
         <svg
           viewBox='0 0 960 500'
           className='h-auto w-full'
@@ -202,7 +202,7 @@ export const MarketGeographyMap = ({
         </svg>
         <div className='flex flex-wrap items-center gap-4 border-t border-border/50 px-4 py-3 text-xs text-muted-foreground'>
           <span>Lower monthly pay</span>
-          <span className='h-2 w-32 rounded-full bg-gradient-to-r from-teal-900 via-emerald-600 to-lime-300' />
+          <span className='h-2 w-32 rounded-full bg-gradient-to-r from-[#2f1957] to-[#ad90df]' />
           <span>Higher monthly pay</span>
           <span className='ml-auto'>Country data · fixed $3K–$20K scale</span>
         </div>
@@ -243,7 +243,7 @@ export const MarketGeographyMap = ({
                           ? `?classifications=${encodeURIComponent(classificationParam)}`
                           : ''
                       }`}
-                      className='hover:text-emerald-400 hover:underline'
+                      className='hover:text-primary hover:underline'
                     >
                       {entry.regionLabel}
                     </Link>

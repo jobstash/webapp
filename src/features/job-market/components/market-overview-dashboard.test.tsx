@@ -135,7 +135,7 @@ describe('MarketOverviewDashboard', () => {
     expect(screen.getAllByText(/open vacancies/i).length).toBeGreaterThan(1);
     expect(screen.getByText('Market pulse')).toHaveClass(
       'text-2xl',
-      'text-violet-400',
+      'text-foreground',
     );
   });
 });

@@ -51,8 +51,8 @@ export const CompensationBandChart = ({
               <div
                 className={`absolute top-1/2 h-2 -translate-y-1/2 rounded-full ${
                   band.segment === 'remote'
-                    ? 'bg-emerald-400/70'
-                    : 'bg-cyan-400/70'
+                    ? 'bg-chart-accent/70'
+                    : 'bg-primary/70'
                 }`}
                 style={{ left: `${start}%`, width: `${width}%` }}
               />

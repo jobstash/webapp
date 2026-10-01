@@ -79,13 +79,13 @@ export const JobList = async ({
     ...mergedParams,
     ...(pillarSlug ? { pillar: pillarSlug } : {}),
   });
-  const { total, totalJobs, data } = result;
+  const { total, data } = result;
   const selectionKey = JSON.stringify(mergedParams);
 
   if (data.length === 0) {
     return (
       <div>
-        <JobListToolbar total={totalJobs}>{mobileFilters}</JobListToolbar>
+        <JobListToolbar>{mobileFilters}</JobListToolbar>
         <EmptyState hasFilters={Object.keys(searchParams).length > 0} />
       </div>
     );
@@ -95,7 +95,7 @@ export const JobList = async ({
 
   return (
     <div>
-      <JobListToolbar total={totalJobs}>{mobileFilters}</JobListToolbar>
+      <JobListToolbar>{mobileFilters}</JobListToolbar>
       <div className='space-y-4 pb-4'>
         {result.mode === 'grouped'
           ? result.data.map((entry) =>

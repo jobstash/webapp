@@ -67,8 +67,8 @@ const MoverRow = ({
       <span
         className={cn(
           'min-w-24 text-right tabular-nums',
-          tone === 'positive' && 'text-emerald-400',
-          tone === 'negative' && 'text-rose-400',
+          tone === 'positive' && 'text-primary',
+          tone === 'negative' && 'text-muted-foreground',
           tone === 'neutral' && 'text-muted-foreground',
         )}
       >
@@ -100,7 +100,7 @@ const MoversGroup = ({
       <span
         className={cn(
           'text-[11px] font-bold tracking-[0.16em] uppercase',
-          tone === 'positive' ? 'text-emerald-400' : 'text-rose-400',
+          tone === 'positive' ? 'text-primary' : 'text-primary',
         )}
       >
         {title}
@@ -142,8 +142,8 @@ const MarketSummary = ({
     <strong
       className={cn(
         'mt-2 block truncate text-lg font-bold tracking-tight tabular-nums',
-        tone === 'positive' && 'text-emerald-400',
-        tone === 'negative' && 'text-rose-400',
+        tone === 'positive' && 'text-primary',
+        tone === 'negative' && 'text-muted-foreground',
       )}
     >
       {value}
@@ -193,8 +193,8 @@ const MobileMarketTable = ({
               <span
                 className={cn(
                   'min-w-20 text-right text-xs font-bold tabular-nums',
-                  tone === 'positive' && 'text-emerald-400',
-                  tone === 'negative' && 'text-rose-400',
+                  tone === 'positive' && 'text-primary',
+                  tone === 'negative' && 'text-muted-foreground',
                   tone === 'neutral' && 'text-muted-foreground',
                 )}
               >
@@ -271,10 +271,9 @@ export const MarketOpportunityPanel = ({
       className='overflow-hidden rounded-2xl border border-border/60 bg-card/60 shadow-sm'
     >
       <div className='relative overflow-hidden px-4 py-5 md:px-6 md:py-6'>
-        <div className='pointer-events-none absolute -top-24 right-12 size-64 rounded-full bg-violet-500/8 blur-3xl' />
         <div className='relative flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between'>
           <div className='max-w-3xl'>
-            <div className='flex items-center gap-2 text-[11px] font-semibold tracking-[0.2em] text-violet-400 uppercase'>
+            <div className='flex items-center gap-2 text-[11px] font-semibold tracking-[0.2em] text-foreground uppercase'>
               <ChartNoAxesCombinedIcon className='size-4' aria-hidden />
               Market breadth · 7D
             </div>
@@ -295,7 +294,7 @@ export const MarketOpportunityPanel = ({
               <span>In line</span>
               <span>Outperforming</span>
             </div>
-            <div className='mt-2 h-1.5 rounded-full bg-gradient-to-r from-rose-500 via-zinc-600 to-emerald-500' />
+            <div className='mt-2 h-1.5 rounded-full bg-gradient-to-r from-zinc-600 via-zinc-700 to-[#5b398c]' />
             <div className='mt-2 flex items-center justify-between text-[10px] text-muted-foreground'>
               <span>≤ −5 pp</span>
               <span>−5 to +5 pp</span>

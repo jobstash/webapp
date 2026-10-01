@@ -121,12 +121,12 @@ export const TopPayingOpportunities = ({
   return (
     <section
       id='top-paying-opportunities'
-      className='scroll-mt-24 overflow-hidden rounded-2xl border border-amber-400/25 bg-card/70'
+      className='scroll-mt-24 overflow-hidden rounded-2xl border border-primary/25 bg-card/70'
     >
-      <div className='border-b border-border/60 bg-linear-to-br from-amber-400/[0.09] via-transparent to-emerald-400/[0.05] p-4 md:p-6'>
+      <div className='border-b border-border/60 bg-linear-to-br from-primary/[0.09] via-transparent to-primary/[0.05] p-4 md:p-6'>
         <div className='flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between'>
           <div>
-            <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-amber-300 uppercase'>
+            <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-foreground uppercase'>
               <TrophyIcon className='size-4' aria-hidden />
               Top-paying opportunities
             </div>
@@ -152,7 +152,7 @@ export const TopPayingOpportunities = ({
                 className={cn(
                   'rounded-lg border px-4 py-2 text-sm font-bold',
                   mode === segment
-                    ? 'border-amber-300 bg-amber-300 text-black'
+                    ? 'border-primary bg-primary text-black'
                     : 'border-border bg-background/70 text-muted-foreground hover:text-foreground',
                 )}
               >
@@ -272,7 +272,7 @@ export const TopPayingOpportunities = ({
                     <Link
                       key={item.slug}
                       href={breakdownHref(item)}
-                      className='group block rounded-lg border border-border/50 bg-background/45 p-3 hover:border-amber-300/40'
+                      className='group block rounded-lg border border-border/50 bg-background/45 p-3 hover:border-primary/40'
                     >
                       <div className='flex items-center justify-between gap-3 text-sm'>
                         <strong>{item.label}</strong>
@@ -283,7 +283,7 @@ export const TopPayingOpportunities = ({
                       </div>
                       <div className='mt-2 h-1.5 overflow-hidden rounded-full bg-muted'>
                         <div
-                          className='h-full rounded-full bg-linear-to-r from-amber-300 to-emerald-400 transition-[width]'
+                          className='h-full rounded-full bg-linear-to-r from-primary to-primary transition-[width]'
                           style={{
                             width: `${Math.max(4, (item.jobCount / largestGroup) * 100)}%`,
                           }}
@@ -308,7 +308,7 @@ export const TopPayingOpportunities = ({
                   </div>
                   <Link
                     href={browseHref}
-                    className='text-xs font-bold text-amber-300 hover:underline'
+                    className='text-xs font-bold text-primary hover:underline'
                   >
                     Browse all jobs in this scope
                   </Link>
@@ -323,7 +323,7 @@ export const TopPayingOpportunities = ({
                         <div className='min-w-0'>
                           <Link
                             href={job.href}
-                            className='font-bold hover:text-amber-300 hover:underline'
+                            className='font-bold hover:text-primary hover:underline'
                           >
                             {job.title}
                           </Link>
@@ -332,7 +332,7 @@ export const TopPayingOpportunities = ({
                           </p>
                         </div>
                         <div className='shrink-0 text-right'>
-                          <strong className='block text-emerald-300'>
+                          <strong className='block text-primary'>
                             {monthlySalary(job.salaryMonthlyUsd)}
                           </strong>
                           <span className='text-[11px] text-muted-foreground'>
@@ -350,14 +350,14 @@ export const TopPayingOpportunities = ({
                         </span>
                         <Link
                           href={`/${getFrontendSlug(job.classificationSlug)}`}
-                          className='rounded-full border border-border px-2 py-1 hover:border-amber-300/40'
+                          className='rounded-full border border-border px-2 py-1 hover:border-primary/40'
                         >
                           {job.classificationLabel}
                         </Link>
                         {job.senioritySlug && job.seniorityLabel && (
                           <Link
                             href={`/${job.senioritySlug}`}
-                            className='rounded-full border border-border px-2 py-1 hover:border-amber-300/40'
+                            className='rounded-full border border-border px-2 py-1 hover:border-primary/40'
                           >
                             {job.seniorityLabel}
                           </Link>
@@ -375,7 +375,7 @@ export const TopPayingOpportunities = ({
                         ))}
                         <Link
                           href={job.href}
-                          className='ml-auto inline-flex items-center gap-1 text-xs font-bold text-amber-300 hover:underline'
+                          className='ml-auto inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline'
                         >
                           View job
                           <ArrowUpRightIcon className='size-3' aria-hidden />

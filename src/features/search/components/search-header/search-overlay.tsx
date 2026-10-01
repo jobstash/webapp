@@ -62,6 +62,7 @@ export const SearchOverlay = ({
             }}
           >
             <Button
+              type='button'
               variant='ghost'
               size='icon'
               className='shrink-0'

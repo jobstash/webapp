@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { fetchSearchableJobCount } from '@/features/jobs/server/data/fetch-searchable-job-count';
 import { SearchIcon } from 'lucide-react';
 
 import { SearchHeaderClient } from './search-header.client';
@@ -11,10 +12,14 @@ const SearchHeaderFallback = () => (
   </div>
 );
 
+const SearchWithCount = async () => (
+  <SearchHeaderClient totalJobs={await fetchSearchableJobCount()} />
+);
+
 export const SearchHeader = () => (
   <SearchHeaderBoundary>
     <Suspense fallback={<SearchHeaderFallback />}>
-      <SearchHeaderClient />
+      <SearchWithCount />
     </Suspense>
   </SearchHeaderBoundary>
 );

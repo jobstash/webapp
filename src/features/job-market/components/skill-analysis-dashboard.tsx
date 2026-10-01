@@ -124,7 +124,7 @@ const CurrentJobs = ({
         </div>
         <Link
           href={href}
-          className='inline-flex items-center gap-2 text-sm font-bold text-emerald-400 hover:underline'
+          className='inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline'
         >
           See all {total} jobs <ArrowRightIcon className='size-4' aria-hidden />
         </Link>
@@ -134,11 +134,9 @@ const CurrentJobs = ({
           <Link
             key={job.id}
             href={job.href}
-            className='group rounded-xl border border-border/60 bg-background/55 p-4 transition-colors hover:border-emerald-500/50'
+            className='group rounded-xl border border-border/60 bg-background/55 p-4 transition-colors hover:border-primary/50'
           >
-            <strong className='group-hover:text-emerald-400'>
-              {job.title}
-            </strong>
+            <strong className='group-hover:text-primary'>{job.title}</strong>
             <p className='mt-1 text-sm text-muted-foreground'>
               {job.organization?.name ?? 'Organization not listed'}
               {job.location ? ` · ${job.location}` : ''}
@@ -257,8 +255,7 @@ export const SkillAnalysisDashboard = ({
 
   return (
     <div className='space-y-6 pb-16'>
-      <section className='relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.04] px-5 py-8 md:px-8 md:py-10'>
-        <div className='pointer-events-none absolute -top-24 right-0 size-80 rounded-full bg-emerald-500/10 blur-3xl' />
+      <section className='relative overflow-hidden rounded-2xl border border-primary/30 bg-primary/[0.04] px-5 py-8 md:px-8 md:py-10'>
         <div className='relative'>
           <Link
             href='/market#skill-explorer'
@@ -269,7 +266,7 @@ export const SkillAnalysisDashboard = ({
           </Link>
           <div className='mt-6 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between'>
             <div className='max-w-4xl'>
-              <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-emerald-400 uppercase'>
+              <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-foreground uppercase'>
                 <SparklesIcon className='size-4' aria-hidden /> Skill market
                 analysis
               </div>

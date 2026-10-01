@@ -94,10 +94,10 @@ export const activityChartOption = (
       itemStyle: {
         color:
           name === 'Open jobs'
-            ? '#34d399'
+            ? '#a78bfa'
             : name === 'Hiring companies'
-              ? '#60a5fa'
-              : '#a78bfa',
+              ? '#d4d4d8'
+              : '#71717a',
         opacity: name === 'New jobs' ? 0.55 : 1,
       },
     };
@@ -155,10 +155,10 @@ export const salaryChartOption = (
       itemStyle: {
         color:
           name === 'Median'
-            ? '#fbbf24'
+            ? '#a78bfa'
             : name === '25th'
-              ? '#fb7185'
-              : '#38bdf8',
+              ? '#d4d4d8'
+              : '#71717a',
       },
     };
   });
@@ -167,15 +167,15 @@ export const salaryChartOption = (
 
 export const tickerColor = (ticker: JobMarketTicker): string => {
   if (ticker.activity.openInventory.direction === 'new') {
-    return '#334155';
+    return '#27272a';
   }
   const change = ticker.activity.marketComparison.openInventoryPercentagePoints;
-  if (change === null) return '#334155';
-  if (change <= -25) return '#9f3345';
-  if (change < -5) return '#71343e';
+  if (change === null) return '#27272a';
+  if (change <= -25) return '#52525b';
+  if (change < -5) return '#3f3f46';
   if (change <= 5) return '#3f3f46';
-  if (change < 25) return '#285b4d';
-  return '#2f8063';
+  if (change < 25) return '#432e63';
+  return '#5b398c';
 };
 
 const marketDifferenceLabel = (ticker: JobMarketTicker): string => {
@@ -405,10 +405,10 @@ export const skillSalaryTrendOption = (
       },
       itemStyle: {
         color: median
-          ? '#34d399'
+          ? '#a78bfa'
           : record.name === '25th percentile'
-            ? '#60a5fa'
-            : '#f59e0b',
+            ? '#d4d4d8'
+            : '#8743ff',
       },
     };
   });
