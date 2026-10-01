@@ -8,6 +8,7 @@ import {
 } from '@/features/filters/hooks';
 import { ActiveFilters } from '@/features/filters/components/active-filters';
 import { SuggestedFilters } from '@/features/filters/components/suggested-filters';
+import { SortFilters } from '@/features/filters/components/sort-filters';
 import { FilterOverlayProvider } from '@/features/filters/components/filter-overlay';
 
 interface Props {
@@ -38,6 +39,7 @@ export const FiltersAsideClient = ({
         configs={filteredConfigs}
         pillarContext={pillarMode ? null : pillarContext}
       />
+      <SortFilters configs={filteredConfigs} />
     </FilterOverlayProvider>
   );
 

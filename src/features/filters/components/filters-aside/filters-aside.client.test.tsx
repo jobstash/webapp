@@ -29,6 +29,7 @@ vi.mock('@/lib/env/client', () => ({
 }));
 
 import { FiltersAsideClient } from './filters-aside.client';
+import { FiltersDrawerClient } from './filters-drawer.client';
 
 const configs: FilterConfigSchema[] = [
   {
@@ -62,6 +63,58 @@ afterEach(() => {
 });
 
 describe('main filter panel', () => {
+  it('renders the same controls in the mobile drawer as in the desktop panel, including the last group', async () => {
+    const user = userEvent.setup();
+    const desktop = render(<FiltersAsideClient configs={configs} />);
+    const labels = screen
+      .getAllByRole('button')
+      .map((button) => button.textContent);
+    desktop.unmount();
+    render(<FiltersDrawerClient configs={configs} />);
+    await user.click(screen.getByRole('button', { name: 'Filters' }));
+    const panel = screen.getByRole('region', { name: 'All job filters' });
+    expect(
+      within(panel)
+        .getAllByRole('button')
+        .map((button) => button.textContent),
+    ).toEqual(labels);
+    expect(
+      screen.queryByRole('textbox', { name: 'Find a filter' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /more filters/i }),
+    ).not.toBeInTheDocument();
+    await user.click(within(panel).getByRole('button', { name: 'Has Token' }));
+    expect(setParam).toHaveBeenCalledWith('token', 'true');
+  });
+
+  it('exposes sorting in the shared panel and sends changes to the server query with pagination reset', async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersAsideClient
+        configs={[
+          {
+            ...configs[0],
+            kind: 'SORT',
+            label: 'Order By',
+            paramKey: 'orderBy',
+            options: [
+              { label: 'Publication Date', value: 'publicationDate' },
+              { label: 'Salary', value: 'salary' },
+            ],
+          },
+        ]}
+      />,
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Sort by Publication Date' }),
+    );
+    expect(setParam).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('menuitemradio', { name: 'Salary' }));
+    expect(setParam).toHaveBeenCalledWith('orderBy', 'salary');
+    expect(setParam).toHaveBeenCalledWith('page', null);
+  });
+
   it('opens continent search without applying Africa or navigating before a choice', async () => {
     Element.prototype.scrollIntoView = vi.fn();
     const user = userEvent.setup();
