@@ -92,6 +92,11 @@ export const FILTER_GROUPS = [
       'maxMonthlyRevenue',
     ]),
   },
+  {
+    id: 'sort',
+    label: 'Sort results',
+    paramKeys: new Set(['order', 'orderBy']),
+  },
 ] as const;
 
 export type FilterGroupId = (typeof FILTER_GROUPS)[number]['id'] | 'other';
