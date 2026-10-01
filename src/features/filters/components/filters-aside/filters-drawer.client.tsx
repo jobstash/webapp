@@ -44,9 +44,16 @@ export const FiltersDrawerClient = ({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant='secondary' size='sm' className='gap-2'>
+        <Button
+          variant='ghost'
+          size='sm'
+          aria-label={
+            activeCount ? `Filters (${activeCount} active)` : 'Filters'
+          }
+          className='min-h-11 rounded-none rounded-r-lg border-l border-border px-3'
+        >
           <FunnelIcon className='size-3.5' />
-          Filters
+          <span className='sr-only'>Filters</span>
           {activeCount > 0 && (
             <Badge variant='default' className='px-1.5 text-[10px]'>
               {activeCount}

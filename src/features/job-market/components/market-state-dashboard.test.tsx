@@ -460,7 +460,7 @@ describe('MarketStateDashboard', () => {
       .find((button) => button.textContent?.includes('vs overall market'));
     expect(moverAction).toBeDefined();
     expect(within(moverAction!).getByText('+55.4 pp')).toBeInTheDocument();
-    expect(moverAction?.querySelector('.text-emerald-400')).not.toBeNull();
+    expect(moverAction?.querySelector('.text-primary')).not.toBeNull();
     expect(moverAction?.querySelector('.text-rose-400')).toBeNull();
   });
 

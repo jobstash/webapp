@@ -1,36 +1,36 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-
+import {
+  SearchToolsProvider,
+  SearchToolsSlot,
+} from '@/components/app-header/search-tools';
 import { JobListToolbar } from './job-list-toolbar';
 
 afterEach(cleanup);
-
 describe('JobListToolbar', () => {
-  it('keeps the filter trigger inline with the mobile result count', () => {
-    render(
-      <JobListToolbar total={1_234}>
-        <button type='button'>Filters</button>
-      </JobListToolbar>,
+  it('places the page filters inside the header search bar and removes them on navigation', () => {
+    const Page = ({ hasFeed }: { hasFeed: boolean }) => (
+      <SearchToolsProvider>
+        <header data-testid='search-bar'>
+          <SearchToolsSlot />
+        </header>
+        {hasFeed && (
+          <main>
+            <JobListToolbar>
+              <button>Filters</button>
+            </JobListToolbar>
+          </main>
+        )}
+      </SearchToolsProvider>
     );
-
-    const toolbar = screen.getByTestId('mobile-job-list-toolbar');
-    const trigger = screen.getByRole('button', { name: 'Filters' });
-
-    expect(toolbar).toHaveClass('flex', 'justify-between', 'lg:hidden');
-    expect(toolbar).toHaveTextContent('1,234 open jobs');
-    expect(trigger.closest('[data-testid="mobile-job-list-toolbar"]')).toBe(
-      toolbar,
+    const { rerender } = render(<Page hasFeed />);
+    expect(screen.getByTestId('search-bar')).toContainElement(
+      screen.getByRole('button', { name: 'Filters' }),
     );
-  });
-
-  it('shows the loading and singular result states', () => {
-    const { rerender } = render(<JobListToolbar />);
-    expect(screen.getByText('Loading jobs…')).toBeInTheDocument();
-
-    rerender(<JobListToolbar total={1} />);
-    expect(screen.getByTestId('mobile-job-list-toolbar')).toHaveTextContent(
-      '1 open job',
-    );
+    rerender(<Page hasFeed={false} />);
+    expect(
+      screen.queryByRole('button', { name: 'Filters' }),
+    ).not.toBeInTheDocument();
   });
 });

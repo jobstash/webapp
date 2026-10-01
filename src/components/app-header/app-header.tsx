@@ -2,6 +2,8 @@ import Link from 'next/link';
 
 import { SearchHeader } from '@/features/search';
 
+import { SearchToolsSlot } from './search-tools';
+import { MobileNavigation } from './mobile-navigation';
 import { Brand } from './brand';
 import { HeaderAuthButton } from './header-auth-button.lazy';
 
@@ -10,9 +12,10 @@ export const AppHeader = () => {
     <header className='sticky top-0 z-40 flex justify-center border-b border-neutral-900 bg-background/40 backdrop-blur-lg'>
       <div className='w-full max-w-7xl'>
         <div className='flex h-16 items-center gap-3 px-2 lg:h-20 lg:gap-3'>
-          <div className='w-fit xl:w-48'>
+          <div className='hidden w-fit xl:block xl:w-48'>
             <Brand />
           </div>
+          <MobileNavigation />
 
           <nav
             aria-label='Primary navigation'
@@ -32,30 +35,15 @@ export const AppHeader = () => {
             </Link>
           </nav>
 
-          <div className='flex grow items-center lg:pl-3'>
+          <div className='flex min-w-0 grow items-center rounded-lg border border-border bg-card xl:border-0 xl:bg-transparent xl:pl-3'>
             <SearchHeader />
+            <SearchToolsSlot />
           </div>
 
-          <HeaderAuthButton />
+          <div className='hidden xl:block'>
+            <HeaderAuthButton />
+          </div>
         </div>
-
-        <nav
-          aria-label='Analytics navigation'
-          className='grid grid-cols-2 border-t border-neutral-900 xl:hidden'
-        >
-          <Link
-            href='/market'
-            className='flex min-h-10 items-center justify-center border-r border-neutral-900 px-2 py-2 text-center text-[11px] font-semibold text-muted-foreground transition-colors hover:bg-card hover:text-foreground focus-visible:bg-card focus-visible:text-foreground focus-visible:outline-none sm:text-xs'
-          >
-            Job Market Analytics
-          </Link>
-          <Link
-            href='/developers'
-            className='flex min-h-10 items-center justify-center px-2 py-2 text-center text-[11px] font-semibold text-muted-foreground transition-colors hover:bg-card hover:text-foreground focus-visible:bg-card focus-visible:text-foreground focus-visible:outline-none sm:text-xs'
-          >
-            Developer Ecosystem Analytics
-          </Link>
-        </nav>
       </div>
     </header>
   );

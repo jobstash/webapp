@@ -191,9 +191,8 @@ export const MarketStateDashboard = ({
   return (
     <div className='space-y-6 pb-16'>
       <section className='relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 px-5 py-8 md:px-8 md:py-10'>
-        <div className='pointer-events-none absolute -top-24 right-0 size-80 rounded-full bg-emerald-500/10 blur-3xl' />
         <div className='relative max-w-4xl'>
-          <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-emerald-400 uppercase'>
+          <div className='flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-foreground uppercase'>
             <ChartNoAxesCombinedIcon className='size-4' aria-hidden />
             {scoped
               ? `${scopeLabel} market intelligence`
@@ -361,7 +360,7 @@ export const MarketStateDashboard = ({
 
       <section className='rounded-2xl border border-border/60 bg-card/60 p-4 md:p-6'>
         <div className='flex items-start gap-3'>
-          <Globe2Icon className='mt-1 size-6 text-cyan-400' aria-hidden />
+          <Globe2Icon className='mt-1 size-6 text-primary' aria-hidden />
           <div>
             <h2 className='text-2xl font-bold'>Local pay geography</h2>
             <p className='mt-1 max-w-4xl text-sm text-muted-foreground'>
@@ -402,7 +401,7 @@ export const MarketStateDashboard = ({
       >
         <div className='flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
           <div>
-            <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-violet-400 uppercase'>
+            <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-foreground uppercase'>
               <SparklesIcon className='size-4' aria-hidden />
               {scoped
                 ? `Compensation in ${scopeLabel}`
@@ -454,7 +453,7 @@ export const MarketStateDashboard = ({
               onChange={(event) => setQuery(event.target.value)}
               placeholder='Search skills'
               aria-label='Search skills'
-              className='w-full rounded-lg border border-border bg-background py-2.5 pr-24 pl-10 text-sm outline-none focus:border-emerald-500'
+              className='w-full rounded-lg border border-border bg-background py-2.5 pr-24 pl-10 text-sm outline-none focus:border-primary'
             />
             <button
               type='submit'
@@ -500,13 +499,13 @@ export const MarketStateDashboard = ({
                   key={skill.slug}
                   className={cn(
                     'border-t border-border/50',
-                    selection.skill === skill.slug && 'bg-emerald-500/[0.06]',
+                    selection.skill === skill.slug && 'bg-primary/[0.06]',
                   )}
                 >
                   <td className='px-4 py-3'>
                     <strong>{skill.label}</strong>
                     {skill.strongBreakout && (
-                      <span className='ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 uppercase'>
+                      <span className='ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-foreground uppercase'>
                         Breakout
                       </span>
                     )}
@@ -537,7 +536,7 @@ export const MarketStateDashboard = ({
                         onClick={() => {
                           navigate({ skill: skill.slug });
                         }}
-                        className='font-semibold text-emerald-400 hover:underline'
+                        className='font-semibold text-primary hover:underline'
                       >
                         Analyze
                       </button>
@@ -589,10 +588,10 @@ export const MarketStateDashboard = ({
               <Link
                 key={skill.slug}
                 href={paramsFor({ skill: skill.slug })}
-                className='rounded-xl border border-border/60 bg-background/50 p-4 transition-colors hover:border-emerald-500/50'
+                className='rounded-xl border border-border/60 bg-background/50 p-4 transition-colors hover:border-primary/50'
               >
                 <strong>{skill.label}</strong>
-                <span className='mt-3 block text-2xl font-bold text-emerald-400'>
+                <span className='mt-3 block text-2xl font-bold text-primary'>
                   {percentLabel(skill.signal?.adjustedChangePercent ?? null)}
                 </span>
                 <span className='mt-1 block text-xs text-muted-foreground'>

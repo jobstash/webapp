@@ -72,7 +72,7 @@ const VacancySparkline = ({ ticker }: { ticker: JobMarketTicker }) => {
     .join(' L ')} L ${points.at(-1)!.x} ${height - padding} Z`;
 
   return (
-    <div className='hidden min-w-28 text-violet-400 sm:block'>
+    <div className='hidden min-w-28 text-chart-accent sm:block'>
       <svg
         viewBox={`0 0 ${width} ${height}`}
         role='img'
@@ -133,8 +133,8 @@ const Move = ({ ticker }: { ticker: JobMarketTicker }) => {
       <span
         className={cn(
           'shrink-0 text-right',
-          tone === 'positive' && 'text-emerald-400',
-          tone === 'negative' && 'text-rose-400',
+          tone === 'positive' && 'text-primary',
+          tone === 'negative' && 'text-muted-foreground',
           tone === 'neutral' && 'text-muted-foreground',
         )}
       >
@@ -177,7 +177,7 @@ export const MarketOverviewDashboard = ({
         <div>
           <h2
             id='market-overview-heading'
-            className='flex items-center gap-3 text-2xl font-bold tracking-wide text-violet-400 uppercase'
+            className='flex items-center gap-3 text-2xl font-bold tracking-wide text-foreground uppercase'
           >
             <ChartNoAxesCombinedIcon className='size-6' aria-hidden />
             Market pulse
@@ -187,7 +187,7 @@ export const MarketOverviewDashboard = ({
         <div className='grid grid-cols-2 gap-2 sm:grid-cols-3'>
           <div className='rounded-xl border border-border/60 bg-background/55 p-3'>
             <BriefcaseBusinessIcon
-              className='size-4 text-emerald-400'
+              className='size-4 text-muted-foreground'
               aria-hidden
             />
             <strong className='mt-1 block text-lg'>
@@ -196,7 +196,10 @@ export const MarketOverviewDashboard = ({
             <span className='text-xs text-muted-foreground'>Open jobs</span>
           </div>
           <div className='rounded-xl border border-border/60 bg-background/55 p-3'>
-            <Building2Icon className='size-4 text-blue-400' aria-hidden />
+            <Building2Icon
+              className='size-4 text-muted-foreground'
+              aria-hidden
+            />
             <strong className='mt-1 block text-lg'>
               {compactNumber(overview.market.current.hiringCompanies)}
             </strong>
@@ -204,14 +207,14 @@ export const MarketOverviewDashboard = ({
           </div>
           <div className='col-span-2 rounded-xl border border-border/60 bg-background/55 p-3 sm:col-span-1'>
             <ChartNoAxesCombinedIcon
-              className='size-4 text-violet-400'
+              className='size-4 text-muted-foreground'
               aria-hidden
             />
             <strong
               className={cn(
                 'mt-1 block text-lg',
-                marketTone === 'positive' && 'text-emerald-400',
-                marketTone === 'negative' && 'text-rose-400',
+                marketTone === 'positive' && 'text-primary',
+                marketTone === 'negative' && 'text-muted-foreground',
               )}
             >
               {changeLabel(marketWeeklyChange)}

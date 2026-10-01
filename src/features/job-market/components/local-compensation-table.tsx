@@ -104,7 +104,7 @@ export const LocalCompensationTable = ({
             className={cn(
               'rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors',
               activeLevel.value === level.value
-                ? 'border-emerald-400/50 bg-emerald-500/15 text-emerald-300'
+                ? 'border-primary/50 bg-primary/15 text-primary'
                 : 'border-border/60 text-muted-foreground hover:text-foreground',
             )}
           >
@@ -135,14 +135,14 @@ export const LocalCompensationTable = ({
                   <td className='px-3 py-3 font-medium'>
                     <Link
                       href={href}
-                      className='inline-flex items-center gap-1.5 hover:text-emerald-300'
+                      className='inline-flex items-center gap-1.5 hover:text-primary'
                     >
                       {region.regionLabel}
                       <ArrowRightIcon className='size-3.5' aria-hidden />
                     </Link>
                   </td>
                   <td className='px-3 py-3'>
-                    <Link href={href} className='hover:text-emerald-300'>
+                    <Link href={href} className='hover:text-primary'>
                       {region.activeJobs}
                     </Link>
                   </td>
@@ -157,7 +157,7 @@ export const LocalCompensationTable = ({
                   <td className='px-3 py-3 text-muted-foreground'>
                     {compensationEvidenceCopy(region, organizationPillar)}
                     {region.evidenceLevel === 'limited' && (
-                      <span className='ml-2 text-amber-300'>Limited</span>
+                      <span className='ml-2 text-primary'>Limited</span>
                     )}
                   </td>
                 </tr>
@@ -170,7 +170,7 @@ export const LocalCompensationTable = ({
         <button
           type='button'
           onClick={() => setShowAllGeography((current) => !current)}
-          className='mt-3 text-sm font-semibold text-emerald-400 hover:text-emerald-300'
+          className='mt-3 text-sm font-semibold text-primary hover:text-primary'
         >
           {showAllGeography
             ? 'Show fewer markets'

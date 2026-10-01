@@ -61,8 +61,8 @@ const Metric = ({
     <div
       className={cn(
         'mt-3 text-2xl font-bold tracking-tight',
-        tone === 'positive' && 'text-emerald-400',
-        tone === 'negative' && 'text-rose-400',
+        tone === 'positive' && 'text-primary',
+        tone === 'negative' && 'text-muted-foreground',
       )}
     >
       {value}
@@ -111,7 +111,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
     >
       <div className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
         <div>
-          <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-emerald-400 uppercase'>
+          <div className='flex items-center gap-2 text-xs font-semibold tracking-widest text-foreground uppercase'>
             <ChartNoAxesCombinedIcon className='size-4' aria-hidden />
             Job market intelligence
           </div>
@@ -192,9 +192,9 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
                     className={cn(
                       'rounded-full px-2.5 py-1 text-xs font-semibold',
                       signal.status === 'rising' &&
-                        'bg-emerald-500/15 text-emerald-400',
+                        'bg-primary/15 text-primary',
                       signal.status === 'falling' &&
-                        'bg-rose-500/15 text-rose-400',
+                        'bg-primary/15 text-primary',
                       signal.status === 'stable' &&
                         'bg-zinc-700/50 text-zinc-300',
                     )}
@@ -228,7 +228,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
                         : 'Onsite + hybrid'}
                     </p>
                     {entry.evidenceLevel === 'limited' && (
-                      <span className='rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-300'>
+                      <span className='rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary'>
                         Limited evidence
                       </span>
                     )}
@@ -267,7 +267,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
               </p>
             </div>
             <UsersRoundIcon
-              className='size-5 shrink-0 text-blue-400'
+              className='size-5 shrink-0 text-primary'
               aria-hidden
             />
           </div>
@@ -288,7 +288,7 @@ export const PillarMarketSection = ({ market }: { market: PillarMarket }) => {
                 </p>
               </div>
               <CircleDollarSignIcon
-                className='size-5 shrink-0 text-amber-400'
+                className='size-5 shrink-0 text-primary'
                 aria-hidden
               />
             </div>

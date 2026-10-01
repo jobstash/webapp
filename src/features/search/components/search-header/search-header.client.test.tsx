@@ -76,7 +76,7 @@ describe('SearchHeaderClient', () => {
     const user = userEvent.setup();
     render(<SearchHeaderClient />);
 
-    const desktopInput = screen.getAllByPlaceholderText('Search...')[0];
+    const desktopInput = screen.getByPlaceholderText('Search jobs');
     await user.type(desktopInput, '  engineering manager  ');
     await user.keyboard('{Enter}');
 
@@ -91,7 +91,7 @@ describe('SearchHeaderClient', () => {
     const user = userEvent.setup();
     render(<SearchHeaderClient />);
 
-    await user.click(screen.getByRole('button', { name: 'Open search' }));
+    await user.click(screen.getByRole('button', { name: 'Search jobs' }));
     const mobileInput = screen.getByRole('textbox', {
       name: 'Mobile search query',
     });
