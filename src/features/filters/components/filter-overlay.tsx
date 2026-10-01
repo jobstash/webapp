@@ -2,11 +2,44 @@
 
 import { createContext, useCallback, useContext, useState } from 'react';
 
+import { Collapsible as CollapsiblePrimitive } from 'radix-ui';
+
 import { cn } from '@/lib/utils';
-import { PopoverContent as BasePopoverContent } from '@/components/ui/popover';
+import {
+  Popover as BasePopover,
+  PopoverTrigger as BasePopoverTrigger,
+  PopoverContent as BasePopoverContent,
+} from '@/components/ui/popover';
 import { DropdownMenuContent as BaseDropdownMenuContent } from '@/components/ui/dropdown-menu';
 
-export { Popover, PopoverTrigger } from '@/components/ui/popover';
+// Mobile filter options expand in the drawer's document flow. Unlike a
+// positioned popover, a disclosure cannot flip above the trigger when the
+// software keyboard changes the visible viewport.
+export function Popover(props: React.ComponentProps<typeof BasePopover>) {
+  const container = useContext(FilterOverlayContext);
+  if (!container) return <BasePopover {...props} />;
+  return (
+    <CollapsiblePrimitive.Root
+      open={props.open}
+      defaultOpen={props.defaultOpen}
+      onOpenChange={props.onOpenChange}
+      className='contents'
+    >
+      {props.children}
+    </CollapsiblePrimitive.Root>
+  );
+}
+
+export function PopoverTrigger(
+  props: React.ComponentProps<typeof BasePopoverTrigger>,
+) {
+  const container = useContext(FilterOverlayContext);
+  return container ? (
+    <CollapsiblePrimitive.Trigger {...props} />
+  ) : (
+    <BasePopoverTrigger {...props} />
+  );
+}
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -42,6 +75,23 @@ export function PopoverContent({
   ...props
 }: React.ComponentProps<typeof BasePopoverContent>) {
   const container = useContext(FilterOverlayContext);
+  if (container) {
+    return (
+      <CollapsiblePrimitive.Content
+        data-slot='filter-disclosure-content'
+        className={cn(
+          'rounded-md border bg-popover p-4 text-popover-foreground',
+          className,
+          'relative w-full min-w-0 basis-full overflow-hidden',
+          '[&_[data-slot=command]]:h-auto [&_[data-slot=command]]:min-h-0',
+          '[&_[data-slot=command-input]]:text-base',
+          '[&_[data-slot=command-list]]:max-h-60 [&_[data-slot=command-list]]:touch-pan-y [&_[data-slot=command-list]]:overscroll-contain',
+        )}
+      >
+        {props.children}
+      </CollapsiblePrimitive.Content>
+    );
+  }
   return (
     <BasePopoverContent
       {...props}
