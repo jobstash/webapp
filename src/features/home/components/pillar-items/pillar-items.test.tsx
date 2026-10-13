@@ -13,14 +13,12 @@ afterEach(() => {
   cleanup();
 });
 
+vi.mock('@/features/filters/server', () => ({
+  fetchFilterConfigs: async () => [],
+}));
+
 vi.mock('@/components/hero-ctas', () => ({
-  HeroCtas: () => (
-    <div>
-      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-      <a href='/urgently-hiring'>Urgently Hiring</a>
-      <button>Jobs For You</button>
-    </div>
-  ),
+  HeroCtas: () => <button>Jobs for me</button>,
 }));
 
 vi.mock('next/link', () => ({
@@ -72,8 +70,8 @@ describe('fetchPillarItems', () => {
     expect(items).toEqual(
       expect.arrayContaining([
         {
-          category: 'locationType',
-          label: 'Fully Remote',
+          category: 'shortcut',
+          label: 'Fully Remote Jobs',
           href: '/lt-fully-remote',
         },
         { category: 'location', label: 'Europe', href: '/l-europe' },
@@ -133,35 +131,19 @@ describe('HeroWithPillars', () => {
     }
   });
 
-  it('renders all pillar items in a floating layout', async () => {
-    const items = await fetchPillarItems();
+  it('keeps the old shortcuts as discovery tags with their existing destinations', async () => {
     render(await HeroWithPillars());
 
-    // All items should be rendered as links (no category headers)
-    const links = screen.getAllByRole('link');
-    // +1 for "Urgently Hiring" CTA (Jobs For You is a button, not a link)
-    expect(links.length).toBe(items.length + 1);
-  });
-
-  it('renders primary CTA buttons', async () => {
-    render(await HeroWithPillars());
-
-    // Urgently Hiring is a link (primary CTA)
-    expect(
-      screen.getByRole('link', { name: /urgently hiring/i }),
-    ).toBeInTheDocument();
-    // Jobs For You is a button (mocked HeroJobsForYouButton)
-    expect(
-      screen.getByRole('button', { name: /jobs for you/i }),
-    ).toBeInTheDocument();
-  });
-
-  it('keeps discovery links out of the mobile layout', async () => {
-    render(await HeroWithPillars());
-
-    expect(screen.getByTestId('desktop-hero-pillars')).toHaveClass(
-      'hidden',
-      'md:flex',
-    );
+    const tags = screen.getByTestId('hero-discovery-tags');
+    for (const [label, href] of [
+      ['Urgently Hiring', '/urgently-hiring'],
+      ['Crypto Beginner Jobs', '/crypto-beginner-jobs'],
+      ['Fully Remote Jobs', '/lt-fully-remote'],
+    ]) {
+      const link = screen.getByRole('link', { name: label });
+      expect(link).toHaveAttribute('href', href);
+      expect(tags).toContainElement(link);
+      expect(link).not.toHaveClass('hidden');
+    }
   });
 });

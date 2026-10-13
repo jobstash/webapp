@@ -237,6 +237,26 @@ describe('organization card stack', () => {
     ).toBe('/lt-fully-remote?page=2&workModes=remote');
     expect(getPageHref(1, {}, '/o-acme~org-acme')).toBe('/o-acme~org-acme');
   });
+
+  it('preserves organization classifications independently from job roles across pagination', () => {
+    const filters = {
+      organizationClassifications: 'ai,tech',
+      classifications: 'engineering',
+      tags: 'react',
+      page: '4',
+    };
+    const nextPage = new URL(getPageHref(5, filters), 'https://jobstash.test');
+    expect(Object.fromEntries(nextPage.searchParams)).toEqual({
+      ...filters,
+      page: '5',
+    });
+    const firstPage = new URL(getPageHref(1, filters), 'https://jobstash.test');
+    expect(firstPage.searchParams.has('page')).toBe(false);
+    expect(firstPage.searchParams.get('organizationClassifications')).toBe(
+      'ai,tech',
+    );
+    expect(firstPage.searchParams.get('classifications')).toBe('engineering');
+  });
 });
 
 describe('loading additional job cards', () => {

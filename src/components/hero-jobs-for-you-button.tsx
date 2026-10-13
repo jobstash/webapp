@@ -15,7 +15,7 @@ const handleClick = () => {
 };
 
 interface Props {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'link';
 }
 
 export const HeroJobsForYouButton = ({ variant = 'secondary' }: Props) => {
@@ -25,13 +25,27 @@ export const HeroJobsForYouButton = ({ variant = 'secondary' }: Props) => {
 
   const link = isAuthenticated ? (
     <Link href='/profile/jobs' prefetch={false} onClick={handleClick}>
-      Jobs For You
+      {variant === 'link' ? 'Jobs for me' : 'Jobs For You'}
     </Link>
   ) : (
     <LoginLink destination='/profile/jobs' onClick={handleClick}>
-      Jobs For You
+      {variant === 'link'
+        ? 'Sign in to get job recommendations'
+        : 'Jobs For You'}
     </LoginLink>
   );
+
+  if (variant === 'link') {
+    return (
+      <Button
+        variant='link'
+        className='h-auto max-w-full text-base whitespace-normal'
+        asChild
+      >
+        {link}
+      </Button>
+    );
+  }
 
   if (variant === 'primary') {
     return (

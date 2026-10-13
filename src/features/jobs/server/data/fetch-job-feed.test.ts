@@ -59,6 +59,8 @@ describe('organization job feed', () => {
     await fetchJobFeed(3, {
       workModes: 'remote',
       organizations: 'acme',
+      organizationClassifications: 'ai,tech',
+      classifications: 'engineering',
       page: '2',
     });
     const url = new URL(fetch.mock.calls[0][0]);
@@ -66,6 +68,8 @@ describe('organization job feed', () => {
     expect(Object.fromEntries(url.searchParams)).toEqual({
       workModes: 'remote',
       organizations: 'acme',
+      organizationClassifications: 'ai,tech',
+      classifications: 'engineering',
       page: '3',
       limit: '10',
     });
@@ -75,6 +79,16 @@ describe('organization job feed', () => {
   it.each<Record<string, string>>([
     { pillar: 'lt-fully-remote' },
     { workModes: 'fully-remote' },
+    ...[
+      'ai',
+      'crypto',
+      'fintech',
+      'robotics',
+      'banking',
+      'tech',
+      'out_of_scope',
+      'unclassified',
+    ].map((organizationClassifications) => ({ organizationClassifications })),
   ])('includes existing open jobs when browsing %j', async (filters) => {
     const source = batch(137);
     const response = {
@@ -87,6 +101,9 @@ describe('organization job feed', () => {
     expect(new URL(fetch.mock.calls[0][0]).searchParams.has('batch')).toBe(
       false,
     );
+    for (const [key, value] of Object.entries(filters)) {
+      expect(new URL(fetch.mock.calls[0][0]).searchParams.get(key)).toBe(value);
+    }
     expect(result.totalJobs).toBe(137);
     if (result.mode === 'grouped')
       expect(result.data[0].jobTitles).toHaveLength(137);
