@@ -7,6 +7,8 @@ import { POST_JOB_URL } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { PrimaryCTA } from '@/components/primary-cta';
 import { HeroJobsForYouButton } from '@/components/hero-jobs-for-you-button.lazy';
+import { useCsvParam } from '@/features/filters/components/active-filters/use-csv-param';
+import type { SelectConfigSharedPropertiesSchema } from '@/features/filters/schemas';
 
 interface PillarLink {
   slug: string;
@@ -73,11 +75,60 @@ const PostAJobButton = () => (
   </Button>
 );
 
+const HomepageCtas = ({
+  organizationClassificationFilter,
+}: Pick<Props, 'organizationClassificationFilter'>) => {
+  const { checkIsActive, toggleItem } = useCsvParam(
+    organizationClassificationFilter?.paramKey ?? 'organizationClassifications',
+  );
+  const primaryOptions = organizationClassificationFilter?.options.filter(
+    ({ value }) => value !== 'out_of_scope' && value !== 'unclassified',
+  );
+
+  return (
+    <div className='flex flex-col items-center gap-4'>
+      {!!primaryOptions?.length && (
+        <div
+          role='group'
+          aria-label='Filter jobs by organization classification'
+          className='flex flex-wrap items-center justify-center gap-3'
+        >
+          {primaryOptions.map(({ label, value }) => {
+            const active = checkIsActive(value);
+            return (
+              <Button
+                key={value}
+                size='lg'
+                variant={active ? 'default' : 'secondary'}
+                aria-pressed={active}
+                className='text-base'
+                onClick={() => toggleItem(value, !active)}
+              >
+                {label} Jobs
+              </Button>
+            );
+          })}
+        </div>
+      )}
+      <HeroJobsForYouButton variant='link' />
+    </div>
+  );
+};
+
 interface Props {
   slug?: string;
+  organizationClassificationFilter?: SelectConfigSharedPropertiesSchema;
 }
 
-export const HeroCtas = ({ slug }: Props) => {
+export const HeroCtas = ({ slug, organizationClassificationFilter }: Props) => {
+  if (!slug) {
+    return (
+      <HomepageCtas
+        organizationClassificationFilter={organizationClassificationFilter}
+      />
+    );
+  }
+
   if (slug === URGENTLY_HIRING.slug) {
     return (
       <div className='flex flex-col items-center gap-3 sm:flex-row'>

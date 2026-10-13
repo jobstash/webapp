@@ -67,6 +67,28 @@ Check if a filter is remote: `utils/check-is-remote-filter.ts`
 3. `hooks/use-filter-query-state.ts` - Manages filter state in URL params
 4. Components render based on `kind` discriminator
 
+### Organization classifications on the homepage
+
+The homepage hero uses the `organizationClassifications` options returned by
+`/jobs/filters`, including labels, rather than a second frontend taxonomy.
+The canonical values are `ai`, `crypto`, `fintech`, `robotics`, `banking`,
+`tech` (displayed as Web2), `out_of_scope`, and `unclassified`. These are
+organization/project verticals, not the job-role `classifications` filter.
+Selections are ORed within this filter and ANDed with other filters.
+The hero promotes the six business classifications; Out of scope and
+Unclassified remain available in the full filter panel rather than as CTAs.
+
+Hero buttons use the same CSV query-state hook as active filters: selecting or
+removing a classification preserves other filters and resets pagination.
+The company filter group exposes the same options on desktop and mobile.
+Urgently Hiring, Crypto Beginner Jobs, and Fully Remote Jobs remain canonical
+pillar links in the hero discovery tags, including on mobile.
+
+The homepage recommendation link uses the existing eligibility and LoginLink
+flow: signed-out visitors see “Sign in to get job recommendations” and return
+to `/profile/jobs` after sign-in; signed-in visitors see “Jobs for me”.
+Pillar-page CTA variants retain their existing behavior.
+
 ## Key Hooks
 
 | Hook                       | Purpose                                 |

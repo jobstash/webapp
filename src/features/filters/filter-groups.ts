@@ -49,6 +49,7 @@ export const FILTER_GROUPS = [
     id: 'company',
     label: 'Company & funding',
     paramKeys: new Set([
+      'organizationClassifications',
       'organizations',
       'projects',
       'ecosystems',

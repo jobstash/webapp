@@ -5,7 +5,8 @@ export type PillarCategory =
   | 'skill'
   | 'location'
   | 'locationType'
-  | 'commitment';
+  | 'commitment'
+  | 'shortcut';
 
 export interface PillarItem {
   category: PillarCategory;
@@ -14,8 +15,23 @@ export interface PillarItem {
 }
 
 export const fetchPillarItems = async (): Promise<PillarItem[]> => {
-  // Mock data for pillar items - replace with actual API call when available
   return [
+    {
+      category: 'shortcut',
+      label: 'Urgently Hiring',
+      href: '/urgently-hiring',
+    },
+    {
+      category: 'shortcut',
+      label: 'Crypto Beginner Jobs',
+      href: '/crypto-beginner-jobs',
+    },
+    {
+      category: 'shortcut',
+      label: 'Fully Remote Jobs',
+      href: '/lt-fully-remote',
+    },
+
     // Roles - What you do
     { category: 'role', label: 'BizDev', href: '/cl-bizdev' },
     { category: 'role', label: 'Smart Contracts', href: '/cl-smart-contracts' },
@@ -50,11 +66,6 @@ export const fetchPillarItems = async (): Promise<PillarItem[]> => {
 
     // Location Type - Work arrangement
     { category: 'locationType', label: 'Remote', href: '/lt-remote' },
-    {
-      category: 'locationType',
-      label: 'Fully Remote',
-      href: '/lt-fully-remote',
-    },
     { category: 'locationType', label: 'Onsite', href: '/lt-onsite' },
     { category: 'locationType', label: 'Hybrid', href: '/lt-hybrid' },
 

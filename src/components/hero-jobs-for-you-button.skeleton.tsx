@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { PrimaryCTA } from '@/components/primary-cta';
 
 interface Props {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'link';
 }
 
 // Renders the resolved button's exact box (same component, size, and label) as a
@@ -11,6 +11,17 @@ interface Props {
 export const HeroJobsForYouButtonSkeleton = ({
   variant = 'secondary',
 }: Props) => {
+  if (variant === 'link') {
+    return (
+      <span
+        aria-hidden
+        className='max-w-full px-4 py-2 text-base text-transparent'
+      >
+        Sign in to get job recommendations
+      </span>
+    );
+  }
+
   if (variant === 'primary') {
     return (
       <PrimaryCTA

@@ -6,13 +6,15 @@ import { ChevronDownIcon } from 'lucide-react';
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
 import { HeroCtas } from '@/components/hero-ctas';
+import type { SelectConfigSharedPropertiesSchema } from '@/features/filters/schemas';
 
 type PillarCategory =
   | 'role'
   | 'skill'
   | 'location'
   | 'locationType'
-  | 'commitment';
+  | 'commitment'
+  | 'shortcut';
 
 interface PillarItem {
   category: PillarCategory;
@@ -22,9 +24,14 @@ interface PillarItem {
 
 interface Props {
   pillarItems?: PillarItem[];
+  organizationClassificationFilter?: SelectConfigSharedPropertiesSchema;
 }
 
 const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
+  shortcut: {
+    dot: 'bg-primary',
+    hover: 'hover:border-primary/40 hover:bg-primary/10',
+  },
   role: {
     dot: 'bg-blue-400',
     hover: 'hover:border-blue-500/40 hover:bg-blue-500/10',
@@ -47,7 +54,10 @@ const categoryStyles: Record<PillarCategory, { dot: string; hover: string }> = {
   },
 };
 
-export const HeroSection = ({ pillarItems }: Props) => {
+export const HeroSection = ({
+  pillarItems,
+  organizationClassificationFilter,
+}: Props) => {
   const handlePillarClick = (item: PillarItem) => {
     trackEvent(GA_EVENT.PILLAR_CLICKED, {
       pillar_slug: item.href.slice(1),
@@ -78,15 +88,19 @@ export const HeroSection = ({ pillarItems }: Props) => {
           </div>
 
           <div className='w-full'>
-            <HeroCtas />
+            <HeroCtas
+              organizationClassificationFilter={
+                organizationClassificationFilter
+              }
+            />
           </div>
 
           {!!pillarItems?.length && (
             <div
-              data-testid='desktop-hero-pillars'
-              className='hidden w-full max-w-3xl flex-col items-center gap-6 pt-4 md:flex'
+              data-testid='hero-discovery-tags'
+              className='flex w-full max-w-3xl flex-col items-center gap-6 pt-4'
             >
-              <div className='flex flex-col items-center gap-2 text-muted-foreground/60'>
+              <div className='hidden flex-col items-center gap-2 text-muted-foreground/60 md:flex'>
                 <span className='text-xs font-medium tracking-widest uppercase'>
                   Or explore by
                 </span>
@@ -103,7 +117,10 @@ export const HeroSection = ({ pillarItems }: Props) => {
                       href={item.href}
                       onClick={() => handlePillarClick(item)}
                       className={cn(
-                        'group relative flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-4 py-2 text-sm font-medium',
+                        'group relative items-center gap-2 rounded-full border border-border/60 bg-card/40 px-4 py-2 text-sm font-medium',
+                        item.category === 'shortcut'
+                          ? 'flex'
+                          : 'hidden md:flex',
                         'transition-all duration-200',
                         'hover:shadow-md',
                         'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',

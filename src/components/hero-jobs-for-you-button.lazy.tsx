@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { HeroJobsForYouButtonSkeleton } from './hero-jobs-for-you-button.skeleton';
 
 interface Props {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'link';
 }
 
 // next/dynamic's `loading` can't receive props, so the chunk-load fallback can't
@@ -33,9 +33,22 @@ const SecondaryButton = dynamic(
   },
 );
 
+const RecommendationLink = dynamic(
+  () =>
+    import('./hero-jobs-for-you-button').then(
+      (mod) => mod.HeroJobsForYouButton,
+    ),
+  {
+    ssr: false,
+    loading: () => <HeroJobsForYouButtonSkeleton variant='link' />,
+  },
+);
+
 export const HeroJobsForYouButton = ({ variant = 'secondary' }: Props) =>
   variant === 'primary' ? (
     <PrimaryButton variant='primary' />
+  ) : variant === 'link' ? (
+    <RecommendationLink variant='link' />
   ) : (
     <SecondaryButton variant='secondary' />
   );
