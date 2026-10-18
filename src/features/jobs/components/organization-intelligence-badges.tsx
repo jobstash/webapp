@@ -1,6 +1,3 @@
-import { ExternalLinkIcon } from 'lucide-react';
-import Link from 'next/link';
-
 import { Badge } from '@/components/ui/badge';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import type { JobOrganizationSchema } from '@/features/jobs/schemas';
@@ -14,12 +11,10 @@ const slugify = (value: string) =>
 
 interface OrganizationIntelligenceBadgesProps {
   organization: JobOrganizationSchema;
-  includeEcosystemLink?: boolean;
 }
 
 export const OrganizationIntelligenceBadges = ({
   organization,
-  includeEcosystemLink = false,
 }: OrganizationIntelligenceBadgesProps) => {
   const badges: Array<{ label: string; href?: string }> = [];
   const hasCurrentTeamCoverage = organization.teamCoverageStatus === 'current';
@@ -74,7 +69,7 @@ export const OrganizationIntelligenceBadges = ({
         : 'early lead departures';
     badges.push({ label: `${organization.earlyLeadDepartureCount} ${label}` });
   }
-  if (badges.length === 0 && !includeEcosystemLink) return null;
+  if (badges.length === 0) return null;
 
   return (
     <div className='flex flex-wrap gap-1.5'>
@@ -88,24 +83,6 @@ export const OrganizationIntelligenceBadges = ({
             {badge.label}
           </Badge>
         ),
-      )}
-      {includeEcosystemLink && (
-        <Badge variant='outline' asChild>
-          <Link
-            href={
-              hasCurrentTeamCoverage
-                ? `${organization.intelligenceUrl}/team`
-                : organization.intelligenceUrl
-            }
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            {hasCurrentTeamCoverage
-              ? 'Team intelligence'
-              : 'Company intelligence'}
-            <ExternalLinkIcon className='size-3' />
-          </Link>
-        </Badge>
       )}
     </div>
   );

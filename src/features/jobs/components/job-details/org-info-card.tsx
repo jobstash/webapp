@@ -207,17 +207,7 @@ export const OrgInfoCard = ({
 
       {socials && <OrgSocials name={name} socials={socials} />}
 
-      <OrganizationIntelligenceBadges
-        organization={organization}
-        includeEcosystemLink
-      />
-
-      {organization.teamSignalsAsOf && (
-        <p className='text-[11px] text-muted-foreground'>
-          Maintainer signals as of{' '}
-          {new Date(organization.teamSignalsAsOf).toLocaleDateString()}
-        </p>
-      )}
+      <OrganizationIntelligenceBadges organization={organization} />
 
       <div className='space-y-2'>
         {location && (

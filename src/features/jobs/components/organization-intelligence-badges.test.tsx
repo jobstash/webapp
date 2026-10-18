@@ -54,37 +54,22 @@ const organization = (
 });
 
 describe('OrganizationIntelligenceBadges', () => {
-  it('links current maintainer metrics directly to Ecosystem Vision team detail', () => {
-    render(
-      <OrganizationIntelligenceBadges
-        includeEcosystemLink
-        organization={organization()}
-      />,
-    );
+  it('shows current maintainer metrics without the disabled intelligence link', () => {
+    render(<OrganizationIntelligenceBadges organization={organization()} />);
 
     expect(screen.getByText('8 current maintainers')).toBeInTheDocument();
     expect(screen.getByText('3 active leads')).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: /team intelligence/i }),
-    ).toHaveAttribute(
-      'href',
-      'https://ecosystem.vision/organizations/info/safe/team',
-    );
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
-  it('falls back to company detail when maintainer coverage is unavailable', () => {
+  it('renders nothing when coverage is unavailable and there are no funding badges', () => {
     render(
       <OrganizationIntelligenceBadges
-        includeEcosystemLink
         organization={organization({ teamCoverageStatus: 'unknown' })}
       />,
     );
 
-    expect(
-      screen.getByRole('link', { name: /company intelligence/i }),
-    ).toHaveAttribute(
-      'href',
-      'https://ecosystem.vision/organizations/info/safe',
-    );
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.queryByText('8 current maintainers')).not.toBeInTheDocument();
   });
 });
