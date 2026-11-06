@@ -1,3 +1,4 @@
+import { once } from 'node:events';
 import { createServer } from 'node:http';
 import type { Server } from 'node:http';
 import type * as NextOg from 'next/og';
@@ -213,9 +214,9 @@ beforeAll(async () => {
     }
     res.writeHead(404).end('{}');
   });
-  const listening = Promise.withResolvers<void>();
-  server.listen(0, '127.0.0.1', listening.resolve);
-  await listening.promise;
+  const listening = once(server, 'listening');
+  server.listen(0, '127.0.0.1');
+  await listening;
   const address = server.address();
   if (!address || typeof address === 'string')
     throw new Error('Missing fixture port');
@@ -223,9 +224,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const closing = Promise.withResolvers<void>();
-  server.close((error) => (error ? closing.reject(error) : closing.resolve()));
-  await closing.promise;
+  const closing = once(server, 'close');
+  server.close();
+  await closing;
 });
 beforeEach(() => {
   requests.length = 0;
