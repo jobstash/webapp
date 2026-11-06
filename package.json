@@ -14,7 +14,7 @@
     "lint": "oxlint --fix --fix-suggestions",
     "format": "prettier --write --log-level warn './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "test": "vitest",
-    "test:run": "vitest run && pnpm test:security && node --test scripts/validate-browser-sentry.test.cjs",
+    "test:run": "vitest run && pnpm test:security && node --test scripts/validate-browser-sentry.test.cjs scripts/build-fixtures.test.cjs",
     "test:security": "node --test scripts/zod-security.test.cjs scripts/zod-vendor-compatibility.test.cjs",
     "worktree:exec": "tsx scripts/worktree-exec.ts",
     "analyze": "DISABLE_STATIC_GENERATION=true ANALYZE_BUNDLE=true next build --webpack"

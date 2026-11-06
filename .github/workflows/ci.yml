@@ -48,7 +48,6 @@ jobs:
       - name: Build
         env:
           NEXT_PUBLIC_FRONTEND_URL: https://webapp.invalid
-          NEXT_PUBLIC_MW_URL: https://middleware.invalid
           NEXT_PUBLIC_PRIVY_APP_ID: ci-build-placeholder
           NEXT_PUBLIC_ALLOW_INDEXING: false
           SESSION_SECRET: ci-build-dummy-secret-not-for-prod!
@@ -60,7 +59,7 @@ jobs:
           OPENAI_API_KEY: ci-placeholder
           UPSTASH_REDIS_REST_URL: https://placeholder.test
           UPSTASH_REDIS_REST_TOKEN: ci-placeholder
-        run: pnpm build
+        run: node scripts/build-fixtures.cjs --build
 
   test:
     runs-on: ubuntu-latest

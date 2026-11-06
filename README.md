@@ -124,9 +124,15 @@ titles and employer names are upstream content, not trusted HTML: a literal
 the actual server component and verifies a single script with lossless JSON data.
 
 CI passes untrusted pull-request branch names through an environment variable,
-never GitHub expression interpolation into shell source. Build fixtures use
-reserved `.invalid` service origins and a placeholder Privy application ID, not
-production providers. The CI token has read-only repository content permissions.
+never GitHub expression interpolation into shell source. CI builds run
+`node scripts/build-fixtures.cjs --build`, which starts a loopback-only server
+before spawning the real build and closes it afterward. It serves only explicit
+sitemap fixtures; unknown paths and methods return 404. Other service origins
+use reserved `.invalid` names and the Privy application ID is a placeholder,
+not a production provider. Production builds retain their real API configuration
+and never use fixture data. Build-tool telemetry is disabled; runtime Sentry
+error capture and privacy exclusions are unchanged. The CI token has read-only
+repository content permissions.
 
 GitHub findings remain open until this branch is merged and the default branch
 is rescanned. The vendor Zod backports require source/test review because the

@@ -130,6 +130,7 @@ const analyze = withBundleAnalyzer({
 export default withSentryConfig(analyze(nextConfig), {
   org: 'jobstash',
   project: 'webapp',
+  telemetry: false,
   silent: !process.env.CI,
   authToken: process.env.SENTRY_AUTH_TOKEN,
   bundleSizeOptimizations: {
