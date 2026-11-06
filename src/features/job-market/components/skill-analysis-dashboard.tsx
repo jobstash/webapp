@@ -141,9 +141,11 @@ const CurrentJobs = ({
               {job.organization?.name ?? 'Organization not listed'}
               {job.location ? ` · ${job.location}` : ''}
             </p>
-            <p className='mt-2 text-xs text-muted-foreground'>
-              {job.timestampText}
-            </p>
+            {job.timestampText && (
+              <p className='mt-2 text-xs text-muted-foreground'>
+                {job.timestampText}
+              </p>
+            )}
           </Link>
         ))}
       </div>

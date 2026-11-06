@@ -104,20 +104,22 @@ export const JobListItem = ({
               >
                 {title}
               </LinkWithLoader>
-              <p className='text-xs text-muted-foreground'>
-                {organization && (
-                  <>
-                    <LinkWithLoader
-                      href={organization.href}
-                      className='transition-colors hover:text-foreground hover:underline'
-                    >
-                      {organization.name}
-                    </LinkWithLoader>
-                    <span className='mx-1'>·</span>
-                  </>
-                )}
-                {timestampText}
-              </p>
+              {(organization || timestampText) && (
+                <p className='text-xs text-muted-foreground'>
+                  {organization && (
+                    <>
+                      <LinkWithLoader
+                        href={organization.href}
+                        className='transition-colors hover:text-foreground hover:underline'
+                      >
+                        {organization.name}
+                      </LinkWithLoader>
+                      {timestampText && <span className='mx-1'>·</span>}
+                    </>
+                  )}
+                  {timestampText}
+                </p>
+              )}
             </div>
           </div>
 

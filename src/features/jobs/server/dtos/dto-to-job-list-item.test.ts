@@ -53,6 +53,45 @@ const makeJobListItemDto = (
   ...overrides,
 });
 
+describe('job publication timestamps', () => {
+  it('keeps an unknown publication date unknown and omits the posted tag', () => {
+    const dto = jobListItemDto.parse(
+      makeJobListItemDto({
+        timestamp: null,
+        publishedTimestampIsVerified: true,
+      }),
+    );
+    const item = dtoToJobListItem(dto);
+    expect(item.timestampText).toBeNull();
+    expect(item.datePosted).toBeNull();
+    expect(item.infoTags.some((tag) => tag.iconKey === 'posted')).toBe(false);
+  });
+
+  it.each([0, Date.UTC(2026, 0, 15)])(
+    'preserves an actual numeric timestamp %s',
+    (timestamp) => {
+      const item = dtoToJobListItem(
+        jobListItemDto.parse(makeJobListItemDto({ timestamp })),
+      );
+      expect(item.datePosted).toBe(
+        new Date(timestamp).toISOString().split('T')[0],
+      );
+      expect(item.timestampText).toEqual(expect.any(String));
+      expect(item.infoTags.some((tag) => tag.iconKey === 'posted')).toBe(true);
+    },
+  );
+
+  it.each([undefined, '2026-11-06', NaN, Infinity, -Infinity])(
+    'rejects a missing or malformed timestamp %s instead of treating it as unknown',
+    (timestamp) => {
+      expect(
+        jobListItemDto.safeParse({ ...makeJobListItemDto(), timestamp })
+          .success,
+      ).toBe(false);
+    },
+  );
+});
+
 describe('dtoToJobListItem — direct Project employer', () => {
   it('maps a Project-owned job to a visible employer with Project routes', () => {
     const dto = jobListItemDto.parse(

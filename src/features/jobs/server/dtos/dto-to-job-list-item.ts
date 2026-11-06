@@ -85,8 +85,9 @@ export const dtoToJobListItem = (dto: JobListItemDto): JobListItemSchema => {
   const mappedTags = dtoToJobItemTag(tags);
   const mappedOrg = dtoToJobItemEmployer(organization, project ?? null);
   const badge = dtoToJobItemBadge(dto);
-  const timestampText = prettyTimestamp(timestamp);
-  const datePosted = new Date(timestamp).toISOString().split('T')[0];
+  const timestampText = timestamp === null ? null : prettyTimestamp(timestamp);
+  const datePosted =
+    timestamp === null ? null : new Date(timestamp).toISOString().split('T')[0];
 
   return {
     id: shortUUID,
@@ -158,7 +159,7 @@ export const createJobItemHref = (title: string, dto: JobListItemDto) => {
 const createJobInfoTags = (
   dto: JobListItemDto,
   addressLookup: AddressLookupResult | null,
-  timestamp: number,
+  timestamp: number | null,
 ) => {
   const {
     seniority,
@@ -173,11 +174,13 @@ const createJobInfoTags = (
 
   const tags: MappedInfoTagSchema[] = [];
 
-  tags.push({
-    iconKey: 'posted',
-    label: prettyTimestamp(timestamp),
-    ...(dto.publishedTimestampIsVerified === true && { verified: true }),
-  });
+  if (timestamp !== null) {
+    tags.push({
+      iconKey: 'posted',
+      label: prettyTimestamp(timestamp),
+      ...(dto.publishedTimestampIsVerified === true && { verified: true }),
+    });
+  }
 
   if (seniority && seniority in SENIORITY_MAPPING) {
     const label =

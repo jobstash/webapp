@@ -14,7 +14,7 @@ interface OgImageData {
   commitment: string | null;
   description: string | null;
   badge: string | null;
-  timestampText: string;
+  timestampText: string | null;
 }
 
 export const getTitleFontSize = (title: string): number => {
