@@ -63,3 +63,25 @@ Rollback uses the previous application image and the previously recorded Coolify
 variable settings. Rolling back to an image built with an empty public DSN also
 restores that image's browser-monitoring outage; changing runtime variables alone
 does not repair it. Keep the public build-time variable for future corrected builds.
+
+### Pillar social-image counts
+
+Pillar Open Graph and Twitter images (the `opengraph-image` and `twitter-image`
+routes with Next.js-generated suffixes, advertised in page metadata) display the exact
+`totalJobs` from `/jobs/feed?pillar=<API slug>&limit=1`, using the same canonical
+pillar and public visibility rules as the page's job feed. This is the complete
+open inventory, not just the latest import, recent publications, a page of jobs,
+or the number of employer groups. The headline therefore says **Open**, not New.
+`metadataOnly=true` deliberately returns `jobs: []`; that array is not a count.
+
+Image requests are dynamic and the count fetch is uncached. Metadata retains
+its existing five-minute, jobs-revision-aware cache; it cannot freeze the count.
+The generated image response requires revalidation rather than immutable
+caching. Social networks can retain their own previews and may need a re-scrape
+after deployment. Failed or invalid feed responses fail image generation,
+instead of publishing a misleading `(0)`; a valid zero is displayed as `(0)`.
+
+`src/app/(main)/[slug]/opengraph-image.test.tsx` exercises real PNG rendering
+against a deterministic local API fixture across pillar categories, aliases,
+large/zero counts, visibility and publication-age semantics. Set
+`PILLAR_OG_EVIDENCE_DIR` to save its rendered PNGs and headline evidence.
