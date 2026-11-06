@@ -87,12 +87,12 @@ const extractOrgData = (jobs: JobListItemSchema[]) => {
 export const extractPillarOgImageData = (
   pillarData: PillarPageStatic,
   slug: string,
+  jobCount: number,
 ) => {
   const category = getPillarCategory(slug);
   const config = PILLAR_CATEGORY_CONFIG[category];
   const { orgs, overflowCount } = extractOrgData(pillarData.jobs);
-  const jobCount = pillarData.jobs.length;
-  const jobCountLabel = jobCount >= 20 ? '20+' : String(jobCount);
+  const jobCountLabel = String(jobCount);
   const accentColor = CATEGORY_ACCENT_HEX[category];
 
   const headlineParts = getHeadlineParts(slug, category, config);
