@@ -1,6 +1,6 @@
 import type { NextConfig } from 'next';
 import withBundleAnalyzer from '@next/bundle-analyzer';
-import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs/config';
 import { z } from 'zod';
 
 // Validate public env vars at build/dev start (never ships to client bundle)
@@ -60,6 +60,7 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    useTypeScriptCli: true,
     staticGenerationRetryCount: 1,
     staticGenerationMaxConcurrency: 1,
     staticGenerationMinPagesPerWorker: 13000,

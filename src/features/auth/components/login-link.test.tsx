@@ -8,13 +8,11 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(window.location.search),
 }));
 vi.mock('next/link', () => ({
-  default: ({
-    prefetch: _,
-    children,
-    ...props
-  }: React.ComponentProps<'a'> & { prefetch?: boolean }) => (
-    <a {...props}>{children}</a>
-  ),
+  default: (props: React.ComponentProps<'a'> & { prefetch?: boolean }) => {
+    const linkProps = { ...props };
+    delete linkProps.prefetch;
+    return <a {...linkProps}>{props.children}</a>;
+  },
 }));
 import { LoginLink } from './login-link';
 import { readSignInReturn } from '../lib/return-navigation';

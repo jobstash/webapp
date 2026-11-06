@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { clientEnv } from '@/lib/env/client';
-import type { User } from '@privy-io/server-auth';
+import type { User } from '@privy-io/node';
 
 import {
   extractEmbeddedWallet,
@@ -62,7 +62,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   let privyUser: User;
   try {
-    privyUser = await getPrivyUser(privyClaims.userId);
+    privyUser = await getPrivyUser(privyClaims.user_id);
   } catch {
     return NextResponse.json(
       { error: 'Failed to fetch user' },
@@ -129,7 +129,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   session.expiresAt = Date.now() + SESSION_EXPIRY;
   session.isExpert = parsed.data.cryptoNative;
   session.hasVerifiedEmail = parsed.data.hasVerifiedEmail;
-  session.privyDid = privyClaims.userId;
+  session.privyDid = privyClaims.user_id;
   if (identity) {
     session.displayName = identity.displayName;
     session.identityType = identity.identityType;

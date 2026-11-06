@@ -4,13 +4,14 @@ import { LoginLink } from '@/features/auth/components/login-link';
 
 import type { ComponentType } from 'react';
 
-import { CircleUserIcon, GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
+import { CircleUserIcon, MailIcon, WalletIcon } from 'lucide-react';
 
 import { GA_EVENT, trackEvent } from '@/lib/analytics';
 import { useEligibility } from '@/hooks/use-eligibility';
 import { Button } from '@/components/ui/button';
 import { LinkWithLoader } from '@/components/link-with-loader';
 import { GoogleIcon } from '@/components/svg/google-icon';
+import { GithubIcon } from '@/components/svg/github-icon';
 
 const AUTH_BUTTON_PLACEHOLDER = <div className='h-9 min-w-[4.5rem]' />;
 

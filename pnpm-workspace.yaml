@@ -1,12 +1,67 @@
 packages:
   - .
 
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+allowBuilds:
+  '@reown/appkit': false
+  bufferutil: true
+  esbuild: true
+  keccak: false
+  sharp: false
+  simple-git-hooks: true
+  unrs-resolver: false
+  utf-8-validate: true
 
-onlyBuiltDependencies:
-  - bufferutil
-  - esbuild
-  - simple-git-hooks
-  - utf-8-validate
+# Exact releases required by the November 2026 latest-stable upgrade.
+# Keep the default quarantine for all other packages and future versions.
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - '@aws-sdk/client-s3@3.1163.0'
+  - '@aws-sdk/s3-request-presigner@3.1163.0'
+  - '@privy-io/js-sdk-core@0.79.4'
+  - '@privy-io/react-auth@3.51.3'
+  - '@sentry/browser-utils@11.11.0'
+  - '@sentry/browser@11.11.0'
+  - '@sentry/bundler-plugins@11.11.0'
+  - '@sentry/cloudflare@11.11.0'
+  - '@sentry/core@11.11.0'
+  - '@sentry/feedback@11.11.0'
+  - '@sentry/nextjs@11.11.0'
+  - '@sentry/node@11.11.0'
+  - '@sentry/opentelemetry@11.11.0'
+  - '@sentry/react@11.11.0'
+  - '@sentry/replay-canvas@11.11.0'
+  - '@sentry/replay@11.11.0'
+  - '@sentry/server-runtime-injection@11.11.0'
+  - '@sentry/server-utils@11.11.0'
+  - '@sentry/vercel-edge@11.11.0'
+  - jsdom@31.0.0
+  - lucide-react@1.70.0
+  - oxlint@1.92.0
+  - '@oxlint/binding-android-arm-eabi@1.92.0'
+  - '@oxlint/binding-android-arm64@1.92.0'
+  - '@oxlint/binding-darwin-arm64@1.92.0'
+  - '@oxlint/binding-darwin-x64@1.92.0'
+  - '@oxlint/binding-freebsd-x64@1.92.0'
+  - '@oxlint/binding-linux-arm-gnueabihf@1.92.0'
+  - '@oxlint/binding-linux-arm-musleabihf@1.92.0'
+  - '@oxlint/binding-linux-arm64-gnu@1.92.0'
+  - '@oxlint/binding-linux-arm64-musl@1.92.0'
+  - '@oxlint/binding-linux-ppc64-gnu@1.92.0'
+  - '@oxlint/binding-linux-riscv64-gnu@1.92.0'
+  - '@oxlint/binding-linux-riscv64-musl@1.92.0'
+  - '@oxlint/binding-linux-s390x-gnu@1.92.0'
+  - '@oxlint/binding-linux-x64-gnu@1.92.0'
+  - '@oxlint/binding-linux-x64-musl@1.92.0'
+  - '@oxlint/binding-openharmony-arm64@1.92.0'
+  - '@oxlint/binding-win32-arm64-msvc@1.92.0'
+  - '@oxlint/binding-win32-ia32-msvc@1.92.0'
+  - '@oxlint/binding-win32-x64-msvc@1.92.0'
+
+overrides:
+  '@walletconnect/utils@<2.26.0': 2.26.0
+  uuid@<11.1.1: 11.1.1
+
+patchedDependencies:
+  zod@3.22.4: patches/zod@3.22.4.patch
+  zod@3.25.76: patches/zod@3.25.76.patch
+  zod@4.6.7: patches/zod@4.6.7.patch

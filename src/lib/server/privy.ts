@@ -1,28 +1,30 @@
 import 'server-only';
 
-import { PrivyClient, User, WalletWithMetadata } from '@privy-io/server-auth';
+import { PrivyClient, type LinkedAccount, type User } from '@privy-io/node';
 
 import { clientEnv } from '@/lib/env/client';
 import { serverEnv } from '@/lib/env/server';
 
-const privyClient = new PrivyClient(
-  clientEnv.PRIVY_APP_ID,
-  serverEnv.PRIVY_APP_SECRET,
-);
+const privyClient = new PrivyClient({
+  appId: clientEnv.PRIVY_APP_ID,
+  appSecret: serverEnv.PRIVY_APP_SECRET,
+});
 
 export const verifyPrivyToken = (token: string) =>
-  privyClient.verifyAuthToken(token);
+  privyClient.utils().auth().verifyAccessToken(token);
 
-export const getPrivyUser = (did: string) => privyClient.getUser(did);
+export const getPrivyUser = (did: string) => privyClient.users()._get(did);
 
-const isPrivyWallet = (a: { type: string }): a is WalletWithMetadata =>
-  a.type === 'wallet' && (a as WalletWithMetadata).walletClientType === 'privy';
+type WalletAccount = Extract<LinkedAccount, { type: 'wallet' }>;
+
+const isPrivyWallet = (account: LinkedAccount): account is WalletAccount =>
+  account.type === 'wallet' && account.wallet_client_type === 'privy';
 
 export const extractEmbeddedWallet = (user: User): string | undefined =>
-  user.linkedAccounts?.find(isPrivyWallet)?.address;
+  user.linked_accounts.find(isPrivyWallet)?.address;
 
-export const extractExternalWallets = (user: User): WalletWithMetadata[] =>
-  (user.linkedAccounts ?? []).filter(
-    (a): a is WalletWithMetadata =>
-      a.type === 'wallet' && a.walletClientType !== 'privy',
+export const extractExternalWallets = (user: User): WalletAccount[] =>
+  user.linked_accounts.filter(
+    (account): account is WalletAccount =>
+      account.type === 'wallet' && account.wallet_client_type !== 'privy',
   );

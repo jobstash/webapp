@@ -4,7 +4,6 @@ import { type ComponentType, useEffect, useState } from 'react';
 
 import {
   GlobeIcon,
-  LinkedinIcon,
   MessageCircleIcon,
   PhoneIcon,
 } from 'lucide-react';
@@ -12,6 +11,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 
 import { TelegramIcon } from '@/components/svg/telegram-icon';
+import { LinkedinIcon } from '@/components/svg/linkedin-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import type { User } from '@privy-io/server-auth';
+import type { User } from '@privy-io/node';
 
 import { extractExternalWallets } from '@/lib/server/privy';
 
@@ -18,14 +18,29 @@ const resolveIdentity = (
   user: User,
   method: string,
 ): DisplayIdentity | null => {
-  if (method === 'github' && user.github?.username) {
-    return { displayName: user.github.username, identityType: 'github' };
+  if (method === 'github') {
+    const account = user.linked_accounts.find(
+      (account) => account.type === 'github_oauth',
+    );
+    if (account?.username) {
+      return { displayName: account.username, identityType: 'github' };
+    }
   }
-  if (method === 'google' && user.google?.email) {
-    return { displayName: user.google.email, identityType: 'google' };
+  if (method === 'google') {
+    const account = user.linked_accounts.find(
+      (account) => account.type === 'google_oauth',
+    );
+    if (account?.email) {
+      return { displayName: account.email, identityType: 'google' };
+    }
   }
-  if (method === 'email' && user.email?.address) {
-    return { displayName: user.email.address, identityType: 'email' };
+  if (method === 'email') {
+    const account = user.linked_accounts.find(
+      (account) => account.type === 'email',
+    );
+    if (account?.address) {
+      return { displayName: account.address, identityType: 'email' };
+    }
   }
   if (method === 'wallet') {
     const externalWallet = extractExternalWallets(user)[0]?.address;

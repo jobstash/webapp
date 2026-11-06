@@ -18,6 +18,15 @@ export const GET = async (): Promise<NextResponse> => {
     }
 
     const user = await getPrivyUser(privyDid);
+    const google = user.linked_accounts.find(
+      (account) => account.type === 'google_oauth',
+    );
+    const github = user.linked_accounts.find(
+      (account) => account.type === 'github_oauth',
+    );
+    const email = user.linked_accounts.find(
+      (account) => account.type === 'email',
+    );
 
     const data: {
       type: string;
@@ -25,19 +34,19 @@ export const GET = async (): Promise<NextResponse> => {
       username: string | null;
     }[] = [];
 
-    if (user.google) {
+    if (google) {
       data.push({
         type: 'google_oauth',
-        email: user.google.email ?? null,
+        email: google.email,
         username: null,
       });
     }
 
-    if (user.github) {
+    if (github) {
       data.push({
         type: 'github_oauth',
-        email: user.github.email ?? null,
-        username: user.github.username ?? null,
+        email: github.email,
+        username: github.username,
       });
     }
 
@@ -58,22 +67,13 @@ export const GET = async (): Promise<NextResponse> => {
       });
     }
 
-    if (user.email) {
+    if (email) {
       data.push({
         type: 'email',
-        email: user.email.address ?? null,
+        email: email.address,
         username: null,
       });
     }
-
-    // TODO: Farcaster temporarily hidden
-    // if (user.farcaster) {
-    //   data.push({
-    //     type: 'farcaster',
-    //     email: null,
-    //     username: user.farcaster.username ?? null,
-    //   });
-    // }
 
     return NextResponse.json({ data });
   } catch (error) {

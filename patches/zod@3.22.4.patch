@@ -1,0 +1,93 @@
+diff --git a/lib/index.mjs b/lib/index.mjs
+index db664c8..1003e0e 100644
+--- a/lib/index.mjs
++++ b/lib/index.mjs
+@@ -2026,6 +2026,8 @@ class ZodArray extends ZodType {
+                     exact: true,
+                     message: def.exactLength.message,
+                 });
++                if (tooBig)
++                    return INVALID;
+                 status.dirty();
+             }
+         }
+@@ -2052,7 +2054,7 @@ class ZodArray extends ZodType {
+                     exact: false,
+                     message: def.maxLength.message,
+                 });
+-                status.dirty();
++                return INVALID;
+             }
+         }
+         if (ctx.common.async) {
+@@ -3057,7 +3059,7 @@ class ZodSet extends ZodType {
+                     exact: false,
+                     message: def.maxSize.message,
+                 });
+-                status.dirty();
++                return INVALID;
+             }
+         }
+         const valueType = this._def.valueType;
+diff --git a/lib/index.umd.js b/lib/index.umd.js
+index 36fc981..580a350 100644
+--- a/lib/index.umd.js
++++ b/lib/index.umd.js
+@@ -2032,6 +2032,8 @@
+                         exact: true,
+                         message: def.exactLength.message,
+                     });
++                    if (tooBig)
++                        return INVALID;
+                     status.dirty();
+                 }
+             }
+@@ -2058,7 +2060,7 @@
+                         exact: false,
+                         message: def.maxLength.message,
+                     });
+-                    status.dirty();
++                    return INVALID;
+                 }
+             }
+             if (ctx.common.async) {
+@@ -3063,7 +3065,7 @@
+                         exact: false,
+                         message: def.maxSize.message,
+                     });
+-                    status.dirty();
++                    return INVALID;
+                 }
+             }
+             const valueType = this._def.valueType;
+diff --git a/lib/types.js b/lib/types.js
+index e4d7f47..eda05a8 100644
+--- a/lib/types.js
++++ b/lib/types.js
+@@ -1546,6 +1546,8 @@ class ZodArray extends ZodType {
+                     exact: true,
+                     message: def.exactLength.message,
+                 });
++                if (tooBig)
++                    return parseUtil_1.INVALID;
+                 status.dirty();
+             }
+         }
+@@ -1572,7 +1574,7 @@ class ZodArray extends ZodType {
+                     exact: false,
+                     message: def.maxLength.message,
+                 });
+-                status.dirty();
++                return parseUtil_1.INVALID;
+             }
+         }
+         if (ctx.common.async) {
+@@ -2586,7 +2588,7 @@ class ZodSet extends ZodType {
+                     exact: false,
+                     message: def.maxSize.message,
+                 });
+-                status.dirty();
++                return parseUtil_1.INVALID;
+             }
+         }
+         const valueType = this._def.valueType;

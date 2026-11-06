@@ -8,11 +8,14 @@ import {
   OG_IMAGE_SIZE,
 } from '@/features/pillar/lib/og-image-utils';
 import { fetchPillarPageStatic } from '@/features/pillar/server';
-import { clientEnv } from '@/lib/env/client';
+import { fetchPillarJobCount } from '@/features/pillar/server/data/fetch-pillar-job-count';
+import { jobstashLogoDataUrl } from '@/lib/server/og-logo';
 
 export const size = OG_IMAGE_SIZE;
 export const contentType = 'image/png';
 export const alt = 'Pillar page on JobStash';
+// Counts follow the live pillar feed, rather than a cached metadata preview.
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -44,7 +47,7 @@ const PageNotFoundImage = () => (
     }}
   >
     <img
-      src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
+      src={jobstashLogoDataUrl}
       alt='JobStash'
       width={56}
       height={56}
@@ -178,7 +181,7 @@ const Headline = ({
     return (
       <div style={HEADLINE_STYLE}>
         <span style={{ color: COLORS.text }}>
-          New {text} ({jobCountLabel})
+          Open {text} ({jobCountLabel})
         </span>
       </div>
     );
@@ -187,7 +190,7 @@ const Headline = ({
   if (nameFirst) {
     return (
       <div style={HEADLINE_STYLE}>
-        <span style={{ color: COLORS.text }}>New&nbsp;</span>
+        <span style={{ color: COLORS.text }}>Open&nbsp;</span>
         <span style={{ color: accentColor }}>{coloredText}&nbsp;</span>
         <span style={{ color: COLORS.text }}>
           {text} ({jobCountLabel})
@@ -198,7 +201,7 @@ const Headline = ({
 
   return (
     <div style={HEADLINE_STYLE}>
-      <span style={{ color: COLORS.text }}>New {text}&nbsp;</span>
+      <span style={{ color: COLORS.text }}>Open {text}&nbsp;</span>
       <span style={{ color: accentColor }}>{coloredText}&nbsp;</span>
       <span style={{ color: COLORS.text }}>({jobCountLabel})</span>
     </div>
@@ -218,6 +221,8 @@ const OpengraphImage = async ({ params }: Props) => {
     return new ImageResponse(<PageNotFoundImage />, size);
   }
 
+  const jobCount = await fetchPillarJobCount(slug);
+
   const {
     headlineParts,
     jobCountLabel,
@@ -226,7 +231,7 @@ const OpengraphImage = async ({ params }: Props) => {
     accentColor,
     orgs,
     overflowCount,
-  } = extractPillarOgImageData(pillarData, slug);
+  } = extractPillarOgImageData(pillarData, slug, jobCount);
 
   const { text, coloredText, nameFirst } = headlineParts;
 
@@ -246,7 +251,7 @@ const OpengraphImage = async ({ params }: Props) => {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         <img
-          src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
+          src={jobstashLogoDataUrl}
           alt='JobStash'
           width={60}
           height={60}

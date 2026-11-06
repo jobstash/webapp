@@ -1,24 +1,27 @@
 # Stage 1: Install dependencies
-FROM node:24-alpine3.24.4 AS deps
+FROM node:24-alpine3.24 AS deps
 WORKDIR /app
 
-# Enable corepack and pin pnpm to match package.json's "packageManager".
-# Do NOT use pnpm@latest: a release newer than 10.28.0 made ignored build
-# scripts a fatal error (ERR_PNPM_IGNORED_BUILDS), which broke this build.
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+# Native websocket addons compile on Alpine when no matching prebuild exists.
+# This toolchain stays in deps; builder and runner start from clean Node images.
+RUN apk add --no-cache python3 make g++
+
+# Keep the package manager aligned with package.json.
+RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches ./patches
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Stage 2: Build application
-FROM node:24-alpine3.24.4 AS builder
+FROM node:24-alpine3.24 AS builder
 WORKDIR /app
 
 # Enable corepack and pin pnpm (must match the deps stage and package.json)
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
 
 # Build-time environment variables (Coolify passes these as --build-arg)
 ARG NEXT_PUBLIC_MW_URL
@@ -42,6 +45,10 @@ ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 
+# Browser DSNs are compiled into Next.js assets; runtime-only SENTRY_DSN is insufficient.
+COPY scripts/validate-browser-sentry.cjs ./scripts/validate-browser-sentry.cjs
+RUN node scripts/validate-browser-sentry.cjs
+
 # Server env stubs — only needed to pass Zod validation during build
 # Real secrets injected at runtime by Coolify
 ENV SESSION_SECRET="build-time-placeholder-not-used-at-runtime-"
@@ -62,7 +69,7 @@ COPY . .
 RUN pnpm build
 
 # Stage 3: Production runner
-FROM node:24-alpine3.24.4 AS runner
+FROM node:24-alpine3.24 AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production

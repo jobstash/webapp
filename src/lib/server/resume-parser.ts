@@ -129,7 +129,7 @@ export const parseResume = async (text: string): Promise<ResumeExtraction> => {
   const result = await generateObject({
     model: openai('gpt-4.1-mini'),
     schema: resumeExtractionSchema,
-    system: SYSTEM_PROMPT,
+    instructions: SYSTEM_PROMPT,
     prompt: text,
   });
 
@@ -146,7 +146,7 @@ export const parseResumeFromPdf = async (
   const result = await generateText({
     model: openai('gpt-4o-mini'),
     output: Output.object({ schema: resumeExtractionSchema }),
-    system: SYSTEM_PROMPT,
+    instructions: SYSTEM_PROMPT,
     messages: [
       {
         role: 'user',

@@ -15,14 +15,14 @@ The app is a **BFF (backend-for-frontend)**: it reads data from an external "mid
 - **URL State** — nuqs
 - **Data Fetching** — `@tanstack/react-query` (client), `fetch` + Zod (server)
 - **Validation** — Zod v4
-- **Auth** — Privy (`@privy-io/react-auth` client, `@privy-io/server-auth` server) + `iron-session` (encrypted cookie sessions)
+- **Auth** — Privy (`@privy-io/react-auth` client, `@privy-io/node` server) + `iron-session` (encrypted cookie sessions)
 - **Storage** — Cloudflare R2 (S3-compatible, via `@aws-sdk/client-s3`) for resume files
 - **AI** — Vercel AI SDK (`ai`) + `@ai-sdk/openai` for resume parsing
 - **Rate limiting** — Upstash Redis (`@upstash/ratelimit` + `@upstash/redis`)
 - **Monitoring** — Sentry (`@sentry/nextjs`)
 - **Virtualization / search UX** — `@tanstack/react-virtual`, `@leeoniya/ufuzzy` (client fuzzy filter), `cmdk` (command palette)
 - **Progress bar** — `@bprogress/next`
-- **Package Manager** — pnpm (pinned to `10.28.0` — see Deploy notes)
+- **Package Manager** — pnpm (pinned to `12.18.0` — see Deploy notes)
 - **Linting / Formatting** — oxlint (not ESLint), Prettier
 - **Testing** — Vitest (node environment) + Testing Library
 
@@ -184,7 +184,7 @@ features/{feature}/
 ## Auth & Sessions
 
 - **Client:** Privy hosted modal handles email/OTP/OAuth(GitHub, Google)/wallet login. Embedded Ethereum wallets are auto-created for **all** users. `PrivyClientProvider` is lazy (`ssr: false`) and only mounted in `(auth)`. Login logic: `features/auth/hooks/use-login-auth.ts`; default post-login redirect is `/profile/jobs`.
-- **Session exchange:** on login the Privy access token is POSTed to `/api/auth/session`, which verifies it (`@privy-io/server-auth`), requires an embedded wallet, then exchanges it with `MW/privy/check-wallet` for a backend `apiToken`. That token + `isExpert` (from `cryptoNative`) + display identity are stored in an **iron-session** cookie (`jobstash-session`, httpOnly, sameSite lax, 1h).
+- **Session exchange:** on login the Privy access token is POSTed to `/api/auth/session`, which verifies it (`@privy-io/node`), requires an embedded wallet, then exchanges it with `MW/privy/check-wallet` for a backend `apiToken`. That token + `isExpert` (from `cryptoNative`) + display identity are stored in an **iron-session** cookie (`jobstash-session`, httpOnly, sameSite lax, 1h). Server SDK users use `linked_accounts` and token claims use `user_id`; the React SDK's client-side user shape remains camelCase.
 - **Client session state:** `features/auth/hooks/use-session.ts` (React Query, key `['session']`) reads `/api/auth/session` and auto-refetches before expiry. `useEligibility()` (`src/hooks`) exposes `{ isAuthenticated, isExpert, displayName, identityType }`.
 - **Guarding:** `features/auth/components/auth-guard.tsx` is an async Server Component that `redirect('/login')` when there's no `apiToken`; it wraps `/profile/*`. Every proxy route independently re-checks the session and destroys expired ones. `/login` itself is public.
 - Server helpers: `src/lib/server/session.ts` (`getSession`), `src/lib/server/privy.ts` (`verifyPrivyToken`, `getPrivyUser`, `extractEmbeddedWallet`).
@@ -263,8 +263,8 @@ Use the `seo`/`frontend-design` skills for detailed guidance when touching metad
 
 ## Error Handling & Monitoring (Sentry)
 
-- `instrumentation.ts` (server, runs when `NEXT_RUNTIME==='nodejs'`) and `src/instrumentation-client.ts` (browser) init Sentry: DSN from `NEXT_PUBLIC_SENTRY_DSN`, `tracesSampleRate: 0`, `sendDefaultPii: false`, tracing/replay disabled; server `beforeSend` strips request cookies/headers/data.
-- `next.config.ts` wraps config in `withSentryConfig` (uploads + deletes sourcemaps at build; `silent: !CI`).
+- `instrumentation.ts` (server, runs when `NEXT_RUNTIME==='nodejs'`) and `src/instrumentation-client.ts` (browser) init Sentry: DSN from `NEXT_PUBLIC_SENTRY_DSN`, `tracesSampleRate: 0`, explicit `dataCollection` exclusions for personal/request/AI payload data, tracing/replay disabled; server `beforeSend` additionally strips request cookies/headers/data.
+- `next.config.ts` wraps config in `withSentryConfig` from `@sentry/nextjs/config` (uploads + deletes sourcemaps at build; `silent: !CI`).
 - `src/app/global-error.tsx` and `features/error-reporter/app-error-boundary.tsx` capture exceptions.
 
 ## Environment Variables
@@ -293,8 +293,9 @@ Two Zod-validated layers. **No `.env` / `.env.example` is committed** (`.env*` i
 
 ## Deploy
 
-- Multi-stage `Dockerfile` on `node:22-alpine` → runs `.next/standalone` (`node server.js`) as non-root. Deploy target is **Coolify**.
-- **pnpm is pinned to `10.28.0`** (`packageManager` + `corepack prepare pnpm@10.28.0`). Do **not** bump to `pnpm@latest` — `>10.28.0` turns ignored build scripts into fatal `ERR_PNPM_IGNORED_BUILDS` and breaks the deploy.
+- Multi-stage `Dockerfile` on `node:24-alpine3.24` → runs `.next/standalone` (`node server.js`) as non-root. Local engines and CI also use Node 24. Deploy target is **Coolify**.
+- **pnpm is pinned to `12.18.0`** (`packageManager` + Docker Corepack). `pnpm-workspace.yaml` uses `allowBuilds` to explicitly permit or deny dependency install scripts; unreviewed scripts remain fatal. Exact release-age exceptions cover only the required newly published stable releases.
+- TypeScript 7 uses Next's `experimental.useTypeScriptCli` integration; do not disable build-time type checking.
 - Server secrets are passed as build-time placeholders (to satisfy Zod) and injected for real at runtime.
 
 ## Testing

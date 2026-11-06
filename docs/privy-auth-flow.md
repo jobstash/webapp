@@ -91,7 +91,7 @@ Client: POST /api/auth/session
         Authorization: Bearer <privy-access-token>
 
 Server: 1. Read token from Authorization header
-        2. Verify token with @privy-io/server-auth
+        2. Verify token with @privy-io/node
         3. GET {MW_URL}/privy/check-wallet (Bearer {privyToken})
         4. Receive { token: "<api-token>" }
         5. Store in iron-session: { apiToken, expiresAt }
@@ -223,7 +223,7 @@ SESSION_EXPIRY = 55 * 60 * 1000  // 55 min (safety margin under 1hr TTL)
 | `NEXT_PUBLIC_FRONTEND_URL` | Client+Server | Frontend URL                                |
 | `NEXT_PUBLIC_MW_URL`       | Client+Server | Backend middleware URL                      |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | Client+Server | Privy app ID for the SDK                    |
-| `PRIVY_APP_ID`             | Server only   | Same value, used by `@privy-io/server-auth` |
+| `PRIVY_APP_ID`             | Server only   | Same value, used by `@privy-io/node` |
 | `PRIVY_APP_SECRET`         | Server only   | From Privy Dashboard > App Settings         |
 | `SESSION_SECRET`           | Server only   | iron-session encryption key (min 32 chars)  |
 

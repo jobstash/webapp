@@ -2,9 +2,7 @@ import type { ComponentType } from 'react';
 
 import {
   BriefcaseBusinessIcon,
-  GithubIcon,
   GlobeIcon,
-  LinkedinIcon,
   MailIcon,
   MessageCircleIcon,
   PhoneIcon,
@@ -14,6 +12,8 @@ import {
 
 import { FarcasterIcon } from '@/components/svg/farcaster-icon';
 import { GoogleIcon } from '@/components/svg/google-icon';
+import { GithubIcon } from '@/components/svg/github-icon';
+import { LinkedinIcon } from '@/components/svg/linkedin-icon';
 import { TelegramIcon } from '@/components/svg/telegram-icon';
 import { TwitterIcon } from '@/components/svg/twitter-icon';
 

@@ -2,7 +2,7 @@
 import { ImageResponse } from 'next/og';
 
 import { fetchJobMarketOverview } from '@/features/job-market/server';
-import { clientEnv } from '@/lib/env/client';
+import { jobstashLogoDataUrl } from '@/lib/server/og-logo';
 
 export const runtime = 'nodejs';
 
@@ -87,7 +87,7 @@ export const GET = async () => {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             <img
-              src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
+              src={jobstashLogoDataUrl}
               alt='JobStash'
               width={72}
               height={72}
