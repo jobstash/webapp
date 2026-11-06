@@ -101,7 +101,8 @@ const makeJob = (
 
 describe('JobPostingSchema HTML boundary', () => {
   it('keeps untrusted job and employer text inside the JSON-LD script', () => {
-    const payload = '</script><script>window.__jobSchemaInjected = true</script>';
+    const payload =
+      '</script><script>window.__jobSchemaInjected = true</script>';
     const job = makeJob({ title: payload, description: payload });
     job.organization!.name = payload;
     const html = renderToStaticMarkup(<JobPostingSchema job={job} />);
@@ -120,6 +121,16 @@ describe('JobPostingSchema HTML boundary', () => {
 });
 
 describe('buildJobPostingSchema', () => {
+  it('omits JobPosting markup when the required publication date is unknown', () => {
+    const job = makeJob({ datePosted: null, timestampText: null });
+    expect(buildJobPostingSchema(job)).toBeNull();
+    expect(renderToStaticMarkup(<JobPostingSchema job={job} />)).toBe('');
+    expect(buildJobPostingSchema(makeJob())).toHaveProperty(
+      'datePosted',
+      '2026-07-17',
+    );
+  });
+
   it('uses the Google remote-job model without a fake physical jobLocation', () => {
     const schema = buildJobPostingSchema(
       makeJob({

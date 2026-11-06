@@ -2,13 +2,17 @@ import 'server-only';
 
 import { z } from 'zod';
 
-import { nonEmptyStringSchema, nullableStringSchema } from '@/lib/schemas';
+import {
+  nonEmptyStringSchema,
+  nullableNumberSchema,
+  nullableStringSchema,
+} from '@/lib/schemas';
 
 export const similarJobItemDto = z
   .object({
     shortUUID: nonEmptyStringSchema,
     title: nullableStringSchema,
-    timestamp: z.number(),
+    timestamp: nullableNumberSchema,
     organization: z
       .object({
         name: nonEmptyStringSchema,

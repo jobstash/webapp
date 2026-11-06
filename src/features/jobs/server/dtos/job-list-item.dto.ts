@@ -83,7 +83,7 @@ const jobListItemBaseDto = z.object({
   title: nullableStringSchema,
   url: nullableStringSchema,
   shortUUID: nonEmptyStringSchema,
-  timestamp: z.number(),
+  timestamp: nullableNumberSchema,
   // Optional until MW emits it; true = the publish date is verified (not a
   // resurrected/re-scraped posting).
   publishedTimestampIsVerified: z.boolean().optional(),

@@ -35,13 +35,14 @@ export const buildJobPostingSchema = (
     ? job.locationType.trim().toLowerCase() === 'remote'
     : (job.addresses?.some((address) => address.isRemote) ?? false);
 
-  // Google requires an employer, a way to apply, and either a physical
-  // location or valid country restrictions for a fully remote role. When
-  // upstream data cannot support those claims, omit JobPosting markup while
+  // Google requires a publication date, an employer, a way to apply, and either
+  // a physical location or valid country restrictions for a fully remote role.
+  // When upstream data cannot support those claims, omit JobPosting markup while
   // leaving the ordinary page indexable. Inventing a country is a policy
   // violation and invalid markup cannot appear in Google Jobs anyway.
   if (
     !description ||
+    !job.datePosted ||
     !job.organization ||
     !job.hasApplyUrl ||
     (sourceClaimsRemote && jobLocationType !== 'TELECOMMUTE') ||

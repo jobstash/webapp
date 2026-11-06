@@ -4,6 +4,30 @@ import { dtoToSimilarJob } from './dto-to-job-details';
 import { similarJobItemDto } from './similar-job.dto';
 
 describe('similarJobItemDto', () => {
+  it('accepts an explicit unknown date without manufacturing relative time', () => {
+    const dto = similarJobItemDto.parse({
+      shortUUID: 'BEvbH3',
+      title: 'Engineer',
+      timestamp: null,
+      organization: {
+        name: 'Loopscale',
+        normalizedName: 'loopscale',
+        logoUrl: null,
+        website: null,
+      },
+      project: null,
+    });
+    expect(dtoToSimilarJob(dto)).toMatchObject({
+      href: '/engineer-loopscale/BEvbH3',
+      timestampText: null,
+    });
+    for (const timestamp of [undefined, 'unknown', NaN, Infinity]) {
+      expect(similarJobItemDto.safeParse({ ...dto, timestamp }).success).toBe(
+        false,
+      );
+    }
+  });
+
   it('maps a direct Project employer into the similar-job card', () => {
     const dto = similarJobItemDto.parse({
       shortUUID: 'project-job',

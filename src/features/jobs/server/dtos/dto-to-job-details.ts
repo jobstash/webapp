@@ -25,7 +25,7 @@ export const dtoToSimilarJob = (dto: SimilarJobItemDto): SimilarJobSchema => {
     id,
     title,
     href,
-    timestampText: prettyTimestamp(timestamp),
+    timestampText: timestamp === null ? null : prettyTimestamp(timestamp),
     companyName: employer?.name ?? null,
     companyLogo: employer
       ? getLogoUrl(

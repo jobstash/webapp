@@ -103,8 +103,8 @@ export const jobListItemSchema = z.object({
   tags: jobTagSchema.array(),
   availability: jobAvailabilitySchema.array(),
   organization: jobOrganizationSchema.nullable(),
-  timestampText: nonEmptyStringSchema,
-  datePosted: nonEmptyStringSchema,
+  timestampText: nonEmptyStringSchema.nullable(),
+  datePosted: nonEmptyStringSchema.nullable(),
   badge: z.nullable(
     z.enum(Object.values(JOB_ITEM_BADGE) as [string, ...string[]]),
   ),
@@ -122,7 +122,7 @@ export const similarJobSchema = z.object({
   id: nonEmptyStringSchema,
   title: nonEmptyStringSchema,
   href: nonEmptyStringSchema,
-  timestampText: nonEmptyStringSchema,
+  timestampText: nonEmptyStringSchema.nullable(),
   companyName: nullableStringSchema,
   companyLogo: nullableStringSchema,
 });

@@ -123,6 +123,15 @@ titles and employer names are upstream content, not trusted HTML: a literal
 `</script>` must not escape the structured-data script. The regression renders
 the actual server component and verifies a single script with lossless JSON data.
 
+Job and similar-job API publication timestamps are required finite numbers or
+explicit `null`. A null publication date does not make a job unavailable:
+cards, detail headers and social images omit its date label/posted badge.
+No epoch or current date is substituted. JobPosting structured data is omitted
+when its required publication date is unknown, while the ordinary job page
+remains available and indexable. Missing, nonnumeric and nonfinite timestamp
+payloads still fail validation; real numeric timestamps retain their existing
+display. The retained public Loopscale payload exercises the null-date regression.
+
 CI passes untrusted pull-request branch names through an environment variable,
 never GitHub expression interpolation into shell source. CI builds run
 `node scripts/build-fixtures.cjs --build`, which starts a loopback-only server
