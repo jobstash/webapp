@@ -133,7 +133,10 @@ export const JobPostingSchema = ({ job }: Props) => {
   return (
     <script
       type='application/ld+json'
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{
+        // JSON encoding alone does not prevent HTML from closing a script tag.
+        __html: JSON.stringify(schema).replace(/</g, '\\u003c'),
+      }}
     />
   );
 };

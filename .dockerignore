@@ -11,6 +11,10 @@ build
 # Git
 .git
 .gitignore
+.worktrees
+
+# Local OAuth tooling is not application runtime data
+.gsc
 
 # IDE
 .idea

@@ -3,13 +3,14 @@
 import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 
-import { GithubIcon, MailIcon, WalletIcon } from 'lucide-react';
+import { MailIcon, WalletIcon } from 'lucide-react';
 
 import type { LinkedAccountWithMetadata } from '@privy-io/react-auth';
 import { useLinkAccount, usePrivy } from '@privy-io/react-auth';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { GoogleIcon } from '@/components/svg/google-icon';
+import { GithubIcon } from '@/components/svg/github-icon';
 import { JOB_APPLY_STATUS_KEY } from '@/features/jobs/components/job-details/use-job-apply-status';
 
 interface AccountConfig {

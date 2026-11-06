@@ -24,10 +24,11 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(window.location.search),
 }));
 vi.mock('next/link', () => ({
-  default: ({
-    prefetch: _,
-    ...props
-  }: ComponentProps<'a'> & { prefetch?: boolean }) => <a {...props} />,
+  default: (props: ComponentProps<'a'> & { prefetch?: boolean }) => {
+    const linkProps = { ...props };
+    delete linkProps.prefetch;
+    return <a {...linkProps}>{props.children}</a>;
+  },
 }));
 vi.mock('@/lib/analytics', () => ({ GA_EVENT: {}, trackEvent: vi.fn() }));
 

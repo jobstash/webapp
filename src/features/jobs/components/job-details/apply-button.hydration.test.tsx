@@ -26,15 +26,11 @@ vi.mock('./eligibility-nudge-dialog', () => ({
   EligibilityNudgeDialog: () => null,
 }));
 vi.mock('@/features/auth/components/login-link', () => ({
-  LoginLink: ({
-    children,
-    returnLabel: _,
-    ...props
-  }: React.ComponentProps<'a'> & { returnLabel?: string }) => (
-    <Link {...props} href='/login'>
-      {children}
-    </Link>
-  ),
+  LoginLink: (props: React.ComponentProps<'a'> & { returnLabel?: string }) => {
+    const linkProps = { ...props };
+    delete linkProps.returnLabel;
+    return <Link {...linkProps} href='/login' />;
+  },
 }));
 import { ApplyButton } from './apply-button';
 

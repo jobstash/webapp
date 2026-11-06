@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -12,8 +12,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
-      'server-only': resolve(__dirname, './src/test/stubs/server-only.ts'),
+      '@': resolve(import.meta.dirname, './src'),
+      'server-only': resolve(import.meta.dirname, './src/test/stubs/server-only.ts'),
     },
   },
 });

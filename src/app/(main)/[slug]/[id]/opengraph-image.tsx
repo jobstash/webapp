@@ -8,7 +8,7 @@ import {
   truncateText,
 } from '@/features/jobs/lib/og-image-utils';
 import { fetchJobDetails } from '@/features/jobs/server/data';
-import { clientEnv } from '@/lib/env/client';
+import { jobstashLogoDataUrl } from '@/lib/server/og-logo';
 
 export const size = OG_IMAGE_SIZE;
 export const contentType = 'image/png';
@@ -53,7 +53,7 @@ const JobNotFoundImage = () => (
       }}
     >
       <img
-        src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
+        src={jobstashLogoDataUrl}
         alt='JobStash'
         width={56}
         height={56}
@@ -192,7 +192,7 @@ const OpengraphImage = async ({ params }: Props) => {
         }}
       >
         <img
-          src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
+          src={jobstashLogoDataUrl}
           alt='JobStash'
           width={60}
           height={60}

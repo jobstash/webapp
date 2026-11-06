@@ -4,13 +4,17 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   validate-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Check branch prefix
+        env:
+          BRANCH: ${{ github.head_ref }}
         run: |
-          BRANCH="${{ github.head_ref }}"
           VALID_PREFIXES="feat/|feature/|fix/|chore/|refactor/|style/|perf/|test/|docs/|ci/|build/|revert/|major/"
 
           if [[ ! "$BRANCH" =~ ^($VALID_PREFIXES) ]]; then
@@ -26,7 +30,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
@@ -38,16 +42,14 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - name: Build
         env:
-          NEXT_PUBLIC_FRONTEND_URL: https://jobstash.xyz
-          NEXT_PUBLIC_MW_URL: https://middleware.jobstash.xyz
-          NEXT_PUBLIC_PRIVY_APP_ID: clyr78r8l05a16wqnojin5hbz
+          NEXT_PUBLIC_FRONTEND_URL: https://webapp.invalid
+          NEXT_PUBLIC_PRIVY_APP_ID: ci-build-placeholder
           NEXT_PUBLIC_ALLOW_INDEXING: false
-          NEXT_PUBLIC_GA_MEASUREMENT_ID: G-PQSHG9DB44
           SESSION_SECRET: ci-build-dummy-secret-not-for-prod!
           PRIVY_APP_SECRET: ci-build-dummy-secret
           R2_ENDPOINT: https://placeholder.test
@@ -57,7 +59,7 @@ jobs:
           OPENAI_API_KEY: ci-placeholder
           UPSTASH_REDIS_REST_URL: https://placeholder.test
           UPSTASH_REDIS_REST_TOKEN: ci-placeholder
-        run: pnpm build
+        run: node scripts/build-fixtures.cjs --build
 
   test:
     runs-on: ubuntu-latest
@@ -66,7 +68,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:run

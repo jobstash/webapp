@@ -2,13 +2,16 @@
 FROM node:24-alpine3.24 AS deps
 WORKDIR /app
 
-# Enable corepack and pin pnpm to match package.json's "packageManager".
-# Do NOT use pnpm@latest: a release newer than 10.28.0 made ignored build
-# scripts a fatal error (ERR_PNPM_IGNORED_BUILDS), which broke this build.
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+# Native websocket addons compile on Alpine when no matching prebuild exists.
+# This toolchain stays in deps; builder and runner start from clean Node images.
+RUN apk add --no-cache python3 make g++
+
+# Keep the package manager aligned with package.json.
+RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches ./patches
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -18,7 +21,7 @@ FROM node:24-alpine3.24 AS builder
 WORKDIR /app
 
 # Enable corepack and pin pnpm (must match the deps stage and package.json)
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
 
 # Build-time environment variables (Coolify passes these as --build-arg)
 ARG NEXT_PUBLIC_MW_URL

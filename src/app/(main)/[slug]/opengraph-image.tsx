@@ -9,7 +9,7 @@ import {
 } from '@/features/pillar/lib/og-image-utils';
 import { fetchPillarPageStatic } from '@/features/pillar/server';
 import { fetchPillarJobCount } from '@/features/pillar/server/data/fetch-pillar-job-count';
-import { clientEnv } from '@/lib/env/client';
+import { jobstashLogoDataUrl } from '@/lib/server/og-logo';
 
 export const size = OG_IMAGE_SIZE;
 export const contentType = 'image/png';
@@ -47,7 +47,7 @@ const PageNotFoundImage = () => (
     }}
   >
     <img
-      src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
+      src={jobstashLogoDataUrl}
       alt='JobStash'
       width={56}
       height={56}
@@ -251,7 +251,7 @@ const OpengraphImage = async ({ params }: Props) => {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         <img
-          src={`${clientEnv.FRONTEND_URL}/jobstash-logo.png`}
+          src={jobstashLogoDataUrl}
           alt='JobStash'
           width={60}
           height={60}
