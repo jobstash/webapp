@@ -115,6 +115,23 @@ Before release, run `pnpm install --frozen-lockfile`, `pnpm audit`,
 staging smoke checks for authentication, wallet connection, resume parsing,
 image/OG rendering, and Sentry source-map upload. These checks are not implied
 by regenerating the lockfile.
+
+### Source security boundaries
+
+JobPosting JSON-LD escapes every `<` after JSON serialization. Job descriptions,
+titles and employer names are upstream content, not trusted HTML: a literal
+`</script>` must not escape the structured-data script. The regression renders
+the actual server component and verifies a single script with lossless JSON data.
+
+CI passes untrusted pull-request branch names through an environment variable,
+never GitHub expression interpolation into shell source. Build fixtures use
+reserved `.invalid` service origins and a placeholder Privy application ID, not
+production providers. The CI token has read-only repository content permissions.
+
+GitHub findings remain open until this branch is merged and the default branch
+is rescanned. The vendor Zod backports require source/test review because the
+older version numbers still match the advisory; they must not be bulk-dismissed.
+
 ### Browser error reporting configuration
 
 Docker production builds require `NEXT_PUBLIC_SENTRY_DSN` at **build time**.

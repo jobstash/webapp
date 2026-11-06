@@ -1,10 +1,13 @@
+// @vitest-environment jsdom
+
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
 import type { JobDetailsSchema } from '@/features/jobs/schemas';
 import type { WorkArrangementV1 } from '@/features/jobs/work-arrangement';
 import type { Address } from '@/lib/schemas';
 
-import { buildJobPostingSchema } from './job-posting-schema';
+import { buildJobPostingSchema, JobPostingSchema } from './job-posting-schema';
 
 const makeAddress = (overrides: Partial<Address> = {}): Address => ({
   country: 'United States',
@@ -94,6 +97,26 @@ const makeJob = (
   hiringProcess: null,
   similarJobs: [],
   ...overrides,
+});
+
+describe('JobPostingSchema HTML boundary', () => {
+  it('keeps untrusted job and employer text inside the JSON-LD script', () => {
+    const payload = '</script><script>window.__jobSchemaInjected = true</script>';
+    const job = makeJob({ title: payload, description: payload });
+    job.organization!.name = payload;
+    const html = renderToStaticMarkup(<JobPostingSchema job={job} />);
+    const parsed = new DOMParser().parseFromString(html, 'text/html');
+    const scripts = parsed.querySelectorAll('script');
+
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0].type).toBe('application/ld+json');
+    expect(scripts[0].textContent).not.toContain('<');
+    expect(JSON.parse(scripts[0].textContent!)).toMatchObject({
+      title: payload,
+      description: payload,
+      hiringOrganization: { name: payload },
+    });
+  });
 });
 
 describe('buildJobPostingSchema', () => {
