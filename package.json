@@ -11,7 +11,7 @@
     "lint": "oxlint --fix --fix-suggestions",
     "format": "prettier --write --log-level warn './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "test": "vitest",
-    "test:run": "vitest run",
+    "test:run": "vitest run && node --test scripts/validate-browser-sentry.test.cjs",
     "worktree:exec": "tsx scripts/worktree-exec.ts",
     "analyze": "DISABLE_STATIC_GENERATION=true ANALYZE_BUNDLE=true next build --webpack"
   },

@@ -44,3 +44,22 @@ Branch names must use one of these prefixes:
 Merge the reviewed PR into `main`. Coolify then builds and deploys that commit.
 No release publication, version header, release environment variable, or
 automatic branch merge is part of deployment.
+
+### Browser error reporting configuration
+
+Docker production builds require `NEXT_PUBLIC_SENTRY_DSN` at **build time**.
+In Coolify, mark that variable as build-time and runtime, using the public DSN
+for the `jobstash/webapp` Sentry project. A runtime-only `SENTRY_DSN` enables the
+server SDK but cannot populate the browser bundle. `SENTRY_AUTH_TOKEN` is a
+separate source-map upload secret and must never be used as the public DSN.
+
+The Docker builder validates the public DSN before building assets and reports
+only the variable name on failure. `pnpm test:run` includes its regression checks.
+After deployment, confirm the built browser DSN is nonempty and verify receipt
+of a clearly labeled, nonpersonal browser SDK event; healthy HTTP responses or
+server-only events do not prove browser ingestion.
+
+Rollback uses the previous application image and the previously recorded Coolify
+variable settings. Rolling back to an image built with an empty public DSN also
+restores that image's browser-monitoring outage; changing runtime variables alone
+does not repair it. Keep the public build-time variable for future corrected builds.

@@ -42,6 +42,10 @@ ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 
+# Browser DSNs are compiled into Next.js assets; runtime-only SENTRY_DSN is insufficient.
+COPY scripts/validate-browser-sentry.cjs ./scripts/validate-browser-sentry.cjs
+RUN node scripts/validate-browser-sentry.cjs
+
 # Server env stubs — only needed to pass Zod validation during build
 # Real secrets injected at runtime by Coolify
 ENV SESSION_SECRET="build-time-placeholder-not-used-at-runtime-"
