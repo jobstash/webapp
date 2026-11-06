@@ -4,7 +4,7 @@ const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 let valid = false;
 try {
   const url = new URL(dsn);
-  valid = url.protocol === 'https:' && Boolean(url.username) && /^\/[0-9]+$/.test(url.pathname);
+  valid = url.protocol === 'https:' && /^\w+$/.test(url.username) && /^\/[0-9]+$/.test(url.pathname);
 } catch {
   // Report the variable name only; never print the client key or supplied value.
 }
