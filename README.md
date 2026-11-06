@@ -49,8 +49,8 @@ automatic branch merge is part of deployment.
 
 Docker production builds require `NEXT_PUBLIC_SENTRY_DSN` at **build time**.
 In Coolify, mark that variable as build-time and runtime, using the public DSN
-for the `jobstash/webapp` Sentry project. A runtime-only `SENTRY_DSN` enables the
-server SDK but cannot populate the browser bundle. `SENTRY_AUTH_TOKEN` is a
+for the `jobstash/webapp` Sentry project. A runtime-only `SENTRY_DSN` is available
+to the server SDK but cannot populate the browser bundle. `SENTRY_AUTH_TOKEN` is a
 separate source-map upload secret and must never be used as the public DSN.
 
 The Docker builder validates the public DSN before building assets and reports
