@@ -116,6 +116,20 @@ staging smoke checks for authentication, wallet connection, resume parsing,
 image/OG rendering, and Sentry source-map upload. These checks are not implied
 by regenerating the lockfile.
 
+### Search-header job count
+
+The search header reads the exact global open-job count from `GET /jobs/count`
+(`{ totalJobs: number }`), without fetching feed groups, cards or employer payloads.
+It uses the same public eligibility rules as the unfiltered feed, including all
+imports rather than only the latest batch. Page filters do not narrow this global
+search hint. The request remains uncached across renders; React deduplicates it
+within a render. A valid zero is retained, while a failed or invalid count leaves
+the ordinary search placeholder without an invented number.
+
+The hero, desktop sidebar and mobile drawer share a React render-scoped
+`fetchFilterConfigs` call. This deduplicates `/jobs/filters` within the same
+render without retaining facet data across requests or hiding committed changes.
+
 ### Source security boundaries
 
 JobPosting JSON-LD escapes every `<` after JSON serialization. Job descriptions,
