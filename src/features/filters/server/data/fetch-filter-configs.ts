@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 
 import {
   dtoToFilterConfig,
@@ -6,7 +7,7 @@ import {
 } from '@/features/filters/server/dtos';
 import { clientEnv } from '@/lib/env/client';
 
-export const fetchFilterConfigs = async () => {
+export const fetchFilterConfigs = cache(async () => {
   const url = `${clientEnv.MW_URL}/jobs/filters`;
   const response = await fetch(url, { cache: 'no-store' });
 
@@ -31,4 +32,4 @@ export const fetchFilterConfigs = async () => {
   }
 
   return dtoToFilterConfig(parsed.data);
-};
+});
