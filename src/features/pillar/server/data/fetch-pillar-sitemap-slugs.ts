@@ -10,7 +10,7 @@ import { clientEnv } from '@/lib/env/client';
 const LIMIT_LENGTH = 255;
 
 export const fetchPillarSitemapSlugs = async () => {
-  const url = `${clientEnv.MW_URL}/v2/search/sitemap/pillars`;
+  const url = `${clientEnv.MW_URL}/search/sitemap/pillars`;
   const response = await fetch(url, {
     cache: 'force-cache',
     next: { revalidate: 3600 },

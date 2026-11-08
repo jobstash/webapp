@@ -50,7 +50,7 @@ const fetchMarket = async <T>(
 
 const fetchJobMarketOverviewUncached = () =>
   fetchMarket<JobMarketOverview>(
-    '/v2/search/market/overview',
+    '/search/market/overview',
     jobMarketOverviewSchema,
   );
 
@@ -59,7 +59,7 @@ const fetchPillarMarketUncached = (
   range: '90' | '365' | 'max' = '365',
 ) =>
   fetchMarket<PillarMarket>(
-    `/v2/search/market/pillars/${encodeURIComponent(getApiSlug(slug))}?range=${range}`,
+    `/search/market/pillars/${encodeURIComponent(getApiSlug(slug))}?range=${range}`,
     pillarMarketSchema,
   );
 
@@ -69,7 +69,7 @@ const fetchJobMarketStateUncached = (
 ) => {
   const params = new URLSearchParams({ range, classification });
   return fetchMarket<JobMarketState>(
-    `/v2/search/market/state?${params.toString()}`,
+    `/search/market/state?${params.toString()}`,
     jobMarketStateSchema,
   );
 };
@@ -84,7 +84,7 @@ const fetchJobMarketTopPayingUncached = (
   if (regionType) params.set('regionType', regionType);
   if (region) params.set('region', region);
   return fetchMarket<JobMarketTopPaying>(
-    `/v2/search/market/top-paying?${params.toString()}`,
+    `/search/market/top-paying?${params.toString()}`,
     jobMarketTopPayingSchema,
   );
 };
@@ -98,7 +98,7 @@ const fetchJobMarketSkillsUncached = (
   const params = new URLSearchParams({ mode, sort, classification });
   if (query.trim()) params.set('q', query.trim());
   return fetchMarket<JobMarketSkillList>(
-    `/v2/search/market/skills?${params.toString()}`,
+    `/search/market/skills?${params.toString()}`,
     jobMarketSkillListSchema,
   );
 };
@@ -108,7 +108,7 @@ const fetchJobMarketSkillDetailUncached = (
   range: '90' | '365' | 'max' = 'max',
 ) =>
   fetchMarket<JobMarketSkillDetail>(
-    `/v2/search/market/skills/${encodeURIComponent(getApiSlug(slug))}?range=${range}`,
+    `/search/market/skills/${encodeURIComponent(getApiSlug(slug))}?range=${range}`,
     jobMarketSkillDetailSchema,
   );
 
