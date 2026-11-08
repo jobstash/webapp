@@ -7,7 +7,7 @@ import { clientEnv } from '@/lib/env/client';
 const LIMIT_LENGTH = 255;
 
 export const fetchPillarStaticParams = async () => {
-  const url = `${clientEnv.MW_URL}/v2/search/pillar/slugs`;
+  const url = `${clientEnv.MW_URL}/search/pillar/slugs`;
   const response = await fetch(url, {
     cache: 'force-cache',
     next: { revalidate: 3600 },

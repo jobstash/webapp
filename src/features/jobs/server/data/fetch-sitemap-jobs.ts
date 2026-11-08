@@ -40,7 +40,7 @@ export const toSitemapEntries = (jobs: SitemapJobDto[]): SitemapJobEntry[] => {
 };
 
 export const fetchSitemapJobs = async (): Promise<SitemapJobEntry[]> => {
-  const url = `${clientEnv.MW_URL}/v2/search/sitemap/jobs`;
+  const url = `${clientEnv.MW_URL}/search/sitemap/jobs`;
   const response = await fetch(url, {
     cache: 'force-cache',
     next: { revalidate: 3600 },

@@ -5,8 +5,8 @@ const { spawn } = require('node:child_process');
 
 // Test/build fixtures only. Production builds continue to use the configured API.
 const fixtures = new Map([
-  ['/v2/search/sitemap/jobs', { data: [{ shortUUID: 'ci-fixture', title: 'Fixture Engineer', organizationName: 'Build Fixture', timestamp: 1793923200000 }] }],
-  ['/v2/search/sitemap/pillars', { data: [{ slug: 'engineering', lastModified: '2026-11-06T00:00:00.000Z', jobCount: 20 }] }],
+  ['/search/sitemap/jobs', { data: [{ shortUUID: 'ci-fixture', title: 'Fixture Engineer', organizationName: 'Build Fixture', timestamp: 1793923200000 }] }],
+  ['/search/sitemap/pillars', { data: [{ slug: 'engineering', lastModified: '2026-11-06T00:00:00.000Z', jobCount: 20 }] }],
 ]);
 
 const createFixtureServer = () => createServer((request, response) => {
