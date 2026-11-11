@@ -9,7 +9,12 @@ import { HeroCtas } from '@/components/hero-ctas';
 import type { SelectConfigSharedPropertiesSchema } from '@/features/filters/schemas';
 
 type PillarCategory =
-  'role' | 'skill' | 'location' | 'locationType' | 'commitment' | 'shortcut';
+  | 'role'
+  | 'skill'
+  | 'location'
+  | 'locationType'
+  | 'commitment'
+  | 'shortcut';
 
 interface PillarItem {
   category: PillarCategory;

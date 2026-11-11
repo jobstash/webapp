@@ -52,7 +52,12 @@ const JobNotFoundImage = () => (
         gap: 20,
       }}
     >
-      <img src={jobstashLogoDataUrl} alt='JobStash' width={56} height={56} />
+      <img
+        src={jobstashLogoDataUrl}
+        alt='JobStash'
+        width={56}
+        height={56}
+      />
       <div
         style={{
           fontSize: 48,

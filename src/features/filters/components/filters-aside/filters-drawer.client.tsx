@@ -82,7 +82,7 @@ export const FiltersDrawerClient = ({
           role='region'
           aria-label='All job filters'
           tabIndex={0}
-          className='min-h-0 flex-1 touch-pan-y [scrollbar-gutter:stable] overflow-y-scroll overscroll-contain p-4 pb-[max(1rem,env(safe-area-inset-bottom))]'
+          className='min-h-0 flex-1 touch-pan-y overflow-y-scroll overscroll-contain p-4 pb-[max(1rem,env(safe-area-inset-bottom))] [scrollbar-gutter:stable]'
         >
           <div className='flex flex-col gap-4'>
             <FiltersAsideClient

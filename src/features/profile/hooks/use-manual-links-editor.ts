@@ -2,7 +2,11 @@
 
 import { type ComponentType, useEffect, useState } from 'react';
 
-import { GlobeIcon, MessageCircleIcon, PhoneIcon } from 'lucide-react';
+import {
+  GlobeIcon,
+  MessageCircleIcon,
+  PhoneIcon,
+} from 'lucide-react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
