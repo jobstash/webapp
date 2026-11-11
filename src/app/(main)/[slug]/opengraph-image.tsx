@@ -46,12 +46,7 @@ const PageNotFoundImage = () => (
       backgroundColor: COLORS.background,
     }}
   >
-    <img
-      src={jobstashLogoDataUrl}
-      alt='JobStash'
-      width={56}
-      height={56}
-    />
+    <img src={jobstashLogoDataUrl} alt='JobStash' width={56} height={56} />
     <span
       style={{
         fontSize: 48,

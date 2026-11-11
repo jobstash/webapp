@@ -218,14 +218,14 @@ SESSION_EXPIRY = 55 * 60 * 1000  // 55 min (safety margin under 1hr TTL)
 
 ## Environment Variables
 
-| Variable                   | Side          | Purpose                                     |
-| -------------------------- | ------------- | ------------------------------------------- |
-| `NEXT_PUBLIC_FRONTEND_URL` | Client+Server | Frontend URL                                |
-| `NEXT_PUBLIC_MW_URL`       | Client+Server | Backend middleware URL                      |
-| `NEXT_PUBLIC_PRIVY_APP_ID` | Client+Server | Privy app ID for the SDK                    |
-| `PRIVY_APP_ID`             | Server only   | Same value, used by `@privy-io/node` |
-| `PRIVY_APP_SECRET`         | Server only   | From Privy Dashboard > App Settings         |
-| `SESSION_SECRET`           | Server only   | iron-session encryption key (min 32 chars)  |
+| Variable                   | Side          | Purpose                                    |
+| -------------------------- | ------------- | ------------------------------------------ |
+| `NEXT_PUBLIC_FRONTEND_URL` | Client+Server | Frontend URL                               |
+| `NEXT_PUBLIC_MW_URL`       | Client+Server | Backend middleware URL                     |
+| `NEXT_PUBLIC_PRIVY_APP_ID` | Client+Server | Privy app ID for the SDK                   |
+| `PRIVY_APP_ID`             | Server only   | Same value, used by `@privy-io/node`       |
+| `PRIVY_APP_SECRET`         | Server only   | From Privy Dashboard > App Settings        |
+| `SESSION_SECRET`           | Server only   | iron-session encryption key (min 32 chars) |
 
 ## File Reference
 

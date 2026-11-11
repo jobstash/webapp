@@ -230,10 +230,11 @@ export const JobStack = ({ jobs, jobTitles, importRunId }: JobStackProps) => {
           <ChevronLeftIcon />
         </Button>
         <div
+          tabIndex={0}
           ref={strip}
           role='tablist'
           aria-label='Job titles'
-          className='flex min-w-0 flex-1 touch-pan-x items-center gap-1 overflow-x-auto overscroll-x-contain [overflow-anchor:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+          className='flex min-w-0 flex-1 touch-pan-x [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain [overflow-anchor:none] [&::-webkit-scrollbar]:hidden'
           onKeyDown={(event) => {
             const next =
               event.key === 'ArrowRight'

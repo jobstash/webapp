@@ -162,9 +162,12 @@ describe('Privy Node SDK migration', () => {
     const response = await POST(request());
     expect(response.status).toBe(200);
     expect(mocks.getUser).toHaveBeenCalledWith(user.id);
-    expect(fetch).toHaveBeenCalledWith('https://middleware.test/privy/check-wallet', {
-      headers: { Authorization: 'Bearer access-token' },
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      'https://middleware.test/privy/check-wallet',
+      {
+        headers: { Authorization: 'Bearer access-token' },
+      },
+    );
     expect(mocks.session).toMatchObject({
       privyDid: user.id,
       apiToken: 'backend-token',
@@ -175,7 +178,9 @@ describe('Privy Node SDK migration', () => {
   });
 
   it('does not fetch a user or exchange rejected tokens', async () => {
-    mocks.verifyAccessToken.mockRejectedValue(new Error('Invalid access token'));
+    mocks.verifyAccessToken.mockRejectedValue(
+      new Error('Invalid access token'),
+    );
     const fetch = vi.fn();
     vi.stubGlobal('fetch', fetch);
     expect((await POST(request())).status).toBe(401);

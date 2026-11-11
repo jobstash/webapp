@@ -18,12 +18,13 @@ The profile page (`/profile`) is currently a bare-bones dev view showing raw JSO
 ```
 
 **Sidebar navigation** (4 items):
-| Label | Route | Icon (Lucide) |
-|-------|-------|---------------|
-| Overview | `/profile` | `LayoutDashboard` |
-| Skills | `/profile/skills` | `Tags` |
-| Connections | `/profile/connections` | `Link2` |
-| Settings | `/profile/settings` | `Settings` |
+
+| Label       | Route                  | Icon (Lucide)     |
+| ----------- | ---------------------- | ----------------- |
+| Overview    | `/profile`             | `LayoutDashboard` |
+| Skills      | `/profile/skills`      | `Tags`            |
+| Connections | `/profile/connections` | `Link2`           |
+| Settings    | `/profile/settings`    | `Settings`        |
 
 **Mobile:** Sidebar hidden (`hidden lg:flex`), replaced with horizontal tab bar at top of content.
 

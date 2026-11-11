@@ -1,12 +1,7 @@
 import 'server-only';
 
 export type PillarCategory =
-  | 'role'
-  | 'skill'
-  | 'location'
-  | 'locationType'
-  | 'commitment'
-  | 'shortcut';
+  'role' | 'skill' | 'location' | 'locationType' | 'commitment' | 'shortcut';
 
 export interface PillarItem {
   category: PillarCategory;

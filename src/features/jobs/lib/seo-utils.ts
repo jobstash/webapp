@@ -53,11 +53,7 @@ export const extractSalaryData = (
 };
 
 type SchemaEmploymentType =
-  | 'FULL_TIME'
-  | 'PART_TIME'
-  | 'CONTRACTOR'
-  | 'INTERN'
-  | 'TEMPORARY';
+  'FULL_TIME' | 'PART_TIME' | 'CONTRACTOR' | 'INTERN' | 'TEMPORARY';
 
 /** Extracts employment type from infoTags for Schema.org structured data */
 export const extractEmploymentType = (
