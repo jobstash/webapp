@@ -293,7 +293,7 @@ Two Zod-validated layers. **No `.env` / `.env.example` is committed** (`.env*` i
 
 ## Deploy
 
-- Multi-stage `Dockerfile` on `node:24-alpine3.24` → runs `.next/standalone` (`node server.js`) as non-root. Local engines and CI also use Node 24. Deploy target is **Coolify**.
+- Multi-stage `Dockerfile` on `node:24.22.3-alpine3.24` (exact patch tag; bump it for every Node security release) → runs `.next/standalone` (`node server.js`) as non-root. Local engines (`>=24.22.3 <25`) and CI (24.22.3) use the same Node 24 line. Deploy target is **Coolify**.
 - **pnpm is pinned to `12.18.0`** (`packageManager` + Docker Corepack). `pnpm-workspace.yaml` uses `allowBuilds` to explicitly permit or deny dependency install scripts; unreviewed scripts remain fatal. Exact release-age exceptions cover only the required newly published stable releases.
 - TypeScript 7 uses Next's `experimental.useTypeScriptCli` integration; do not disable build-time type checking.
 - Server secrets are passed as build-time placeholders (to satisfy Zod) and injected for real at runtime.
