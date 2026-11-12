@@ -48,7 +48,7 @@ automatic branch merge is part of deployment.
 ## Security dependency maintenance
 
 Use Node.js 24 and pnpm 12.18.0, pinned in `package.json`. All Docker stages use
-`node:24-alpine3.24`, and CI uses Node 24. Commit `pnpm-lock.yaml` together with
+`node:24.22.3-alpine3.24`, and CI uses Node 24. Commit `pnpm-lock.yaml` together with
 dependency changes. `pnpm-workspace.yaml` contains explicit `allowBuilds`
 permissions and reproducible dependency patches; Docker copies it and `patches/`
 before the frozen install. Unreviewed install scripts remain fatal. The exact
