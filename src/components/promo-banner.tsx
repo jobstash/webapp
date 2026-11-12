@@ -16,10 +16,10 @@ export const PromoBanner = () => (
     className='relative flex h-8 items-center justify-center overflow-hidden bg-[#8743FF] px-2 text-xs font-medium whitespace-nowrap text-white hover:bg-[#6B2ED4] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white md:text-sm'
   >
     <span aria-hidden className='md:hidden'>
-      recruiters.rip: first month free, code {PROMO_CODE}
+      recruiters.rip: let AI apply for you, code {PROMO_CODE}
     </span>
     <span className='sr-only md:not-sr-only'>
-      We launched recruiters.rip, our best tool for finding the freshest jobs.
+      We launched recruiters.rip, let AI apply for you.
       First month free with code {PROMO_CODE}
     </span>
   </a>
